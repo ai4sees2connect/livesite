@@ -63,7 +63,7 @@ const RecNavbar = () => {
                   <Link to='/student/category'>Category</Link>
                 </li>
 
-                <li className="py-2 px-4 hover:bg-purple-300">
+                <li className"py-2 px-4 hover:bg-purple-300">
                   <Link to='/student/courses'>Courses</Link>
                 </li>
               </ul>
