@@ -15,11 +15,6 @@ const StipendSlider = ({ selectedStipend, setSelectedStipend }) => {
     10000: '10k',
   };
 
-  const handleSliderChange = (value) => {
-    setStipend(value);
-    onStipendChange(value); // Notify the parent component of the stipend change
-  };
-
  
 
   return (
