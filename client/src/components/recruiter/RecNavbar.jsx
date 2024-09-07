@@ -71,7 +71,7 @@ const RecNavbar = () => {
           </div>
 
         
-          <Link to={`/recruiter/dashboard/:userId`} className=" hover:bg-purple-300 p-5">
+          <Link to={`/recruiter/dashboard/${userId}`} className=" hover:bg-purple-300 p-5">
             My Dashboard
           </Link>
           <a href={`/recruiter/posting/${userId}`} className=" hover:bg-purple-300 p-5">
