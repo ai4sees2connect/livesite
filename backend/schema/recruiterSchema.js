@@ -59,6 +59,11 @@ const recruiterSchema =new mongoose.Schema({
     ref: 'Internship',
     default: []
   }],
+  companyLogo: {
+    data: Buffer,        // To store the actual image data as a buffer
+    contentType: String, // To store the MIME type of the file (e.g., 'image/png', 'image/jpeg')
+    filename: String     // To store the file name
+  }
   
     
 },{timestamps: true});

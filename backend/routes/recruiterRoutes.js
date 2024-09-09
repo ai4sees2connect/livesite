@@ -3,11 +3,14 @@ const express = require('express');
 const Recruiter =require('../schema/recruiterSchema');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
 
 const {jwtDecode} = require('jwt-decode');
 
 dotenv.config();
 const router= express.Router();
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 router.post('/signup', async (req, res) => {
   const { firstname,lastname,email,phone, password } = req.body;
@@ -134,6 +137,7 @@ router.get('/details', async (req, res) => {
         lastname:recruiter.lastname,
         email:recruiter.email,
         phone: recruiter.phone,
+        companyLogo:recruiter.companyLogo
         
       }
     })
@@ -143,5 +147,66 @@ router.get('/details', async (req, res) => {
     res.sendStatus(500); // Internal server error
   }
 });
+
+router.post('/upload-logo/:recruiterId',upload.single('logo'),async(req,res)=>{
+  try {
+    // Find the student by ID and update their document with the resume file
+    const recruiter = await Recruiter.findById(req.params.recruiterId);
+    if (!recruiter) {
+      return res.status(404).send('recruiter not found.');
+    }
+    // const createdAt = new Date();
+    // const day = String(createdAt.getDate()).padStart(2, '0');
+    
+    // const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    // const month = months[createdAt.getMonth()];
+   
+    recruiter.companyLogo = {
+      data: req.file.buffer,      // The actual logo data
+      contentType: req.file.mimetype, // The content type (e.g., image/jpeg, image/png)
+      filename: req.file.originalname, // The original filename
+    };
+    await recruiter.save();
+
+    res.send('logo uploaded and saved successfully.');
+
+} catch (error) {
+console.error('Error saving logo:', error);
+res.status(500).send('Error saving logo.');
+}
+})
+
+router.get('/get-logo/:recruiterId', async (req, res) => {
+  try {
+    const recruiter = await Recruiter.findById(req.params.recruiterId);
+    if (!recruiter || !recruiter.companyLogo || !recruiter.companyLogo.data) {
+      return res.status(404).json({ message: 'Logo not found.' });
+    }
+
+    res.set('Content-Type', recruiter.companyLogo.contentType);
+    res.status(200).send(recruiter.companyLogo.data);
+    // reres.status(200).send('success');
+  } catch (error) {
+    console.error('Error fetching logo:', error);
+    res.status(500).send('Error fetching logo.');
+  }
+});
+
+router.delete('/delete-logo/:recruiterId',async(req,res)=>{
+  try {
+    const recruiter = await Recruiter.findById(req.params.recruiterId);
+    if(!recruiter)  return res.status(404).json({ message: 'Recruiter not found' });
+    await Recruiter.updateOne(
+      { _id: req.params.recruiterId },
+      { $unset: { companyLogo: "" } }  // This removes the companyLogo field entirely
+    );
+    return res.status(200).json({ message: 'Logo deleted successfully' });
+
+  }catch(error){
+    console.error(error);
+    return res.status(500).send('server error',error);
+  }
+    
+})
 
 module.exports = router;
