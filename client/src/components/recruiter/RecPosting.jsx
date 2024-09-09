@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
@@ -7,6 +7,7 @@ import { toast } from 'react-toastify'
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import api from '../common/server_url'
+import Select from 'react-select';
 
 const RecPosting = () => {
   const [formData, setFormData] = useState({
@@ -15,16 +16,36 @@ const RecPosting = () => {
     internLocation: '',
     numberOfOpenings: '',
     stipend: '',
-    duration:'',
+    duration: '',
     description: '',
     skills: [],
   });
   // const [Location,setLocation]=useState('');
   // const [mode, setMode]=useState('');
 
-  const [skill, setSkill] = useState('');
+  const [skills, setSkills] = useState([]);
+  const [selectedSkills, setSelectedSkills] = useState([]);
   const userId = getUserIdFromToken();
   const [formKey, setFormKey] = useState(0);
+
+
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const response = await axios.get(`${api}/recruiter/api/get-skills`);
+        const skillsData = response.data.map(skill => ({
+          label: skill.name, // Map 'name' field to 'label'
+          value: skill.name  // Map 'name' field to 'value'
+        }));
+        setSkills(skillsData);
+      } catch (error) {
+        console.error('Error fetching skills:', error);
+      }
+    };
+
+    fetchSkills();
+  }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,42 +62,26 @@ const RecPosting = () => {
     });
   };
 
-  const handleSkillChange = (e) => {
-    setSkill(e.target.value);
+  const handleSkillsChange = (selectedOptions) => {
+    setSelectedSkills(selectedOptions);
+    console.log('This is a skill set', selectedOptions);
   };
 
-  const removeSkill = (indexToRemove) => {
-    setFormData({
-      ...formData,
-      skills: formData.skills.filter((_, index) => index !== indexToRemove),
-    });
-  };
-
-  // const handleLocation=(e)=>{
-  //   setLocation(e.target.value);
-  // }
-
-  const addSkill = () => {
-    if (skill.trim()) {
-      setFormData({
-        ...formData,
-        skills: [...formData.skills, skill.trim()],
-      });
-      setSkill(''); // Clear the skill input field after adding
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const skillSet=selectedSkills.map(skill=>{
+      return skill.value;
+    })
     const postData = {
       internshipName: formData.internshipName,
       internshipType: formData.internshipType,
       internLocation: formData.internLocation,
       numberOfOpenings: formData.numberOfOpenings,
       stipend: formData.stipend,
-      duration:formData.duration, 
+      duration: formData.duration,
       description: formData.description,
-      skills: formData.skills,
+      skills: skillSet,
 
     }
     console.log(postData);
@@ -107,11 +112,11 @@ const RecPosting = () => {
           internLocation: '', // Reset internLocation
           numberOfOpenings: '',
           stipend: '',
-          duration:'',
+          duration: '',
           description: '',
           skills: [],
         });
-        setSkill('');
+        // setSkill('');
         setFormKey(formKey + 1);
         console.log(formData);
         return;
@@ -217,20 +222,21 @@ const RecPosting = () => {
         <div className="flex flex-col">
           <label className="mb-2 font-medium">Skills:</label>
           <div className="flex items-center">
-            <input
-              type="text"
-              value={skill}
-              onChange={handleSkillChange}
-              className="p-2 border border-gray-300 rounded-md mr-2"
-              placeholder="Add a skill"
+            <Select
+              isMulti
+              value={selectedSkills}
+              onChange={handleSkillsChange}
+              options={skills}
+              placeholder="Select or type skills"
+              className='w-60'
             />
-            <button
+            {/* <button
               type="button"
               onClick={addSkill}
               className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
             >
               Add Skill
-            </button>
+            </button> */}
           </div>
           <div className="mt-2">
             {formData.skills.map((skill, index) => (
@@ -241,7 +247,7 @@ const RecPosting = () => {
                 {skill}
                 <span
                   className="absolute w-7 h-7 items-center justify-center top-0 right-0 -mt-1 -mr-1 bg-white rounded-full p-1 hidden group-hover:flex"
-                  onClick={() => removeSkill(index)}
+                // onClick={() => removeSkill(index)}
                 >
                   <FontAwesomeIcon
                     icon={faClose}
@@ -261,7 +267,7 @@ const RecPosting = () => {
             onChange={handleDescriptionChange}
             className="p-2   rounded-md h-[200px]"
             theme="snow"
-            
+
           />
 
         </div>

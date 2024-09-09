@@ -1,6 +1,7 @@
 const express = require('express');
 // const Student = require('../schema/studentSchema');
 const Recruiter =require('../schema/recruiterSchema');
+const Skill =require('../schema/skillsSchema')
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
@@ -207,6 +208,15 @@ router.delete('/delete-logo/:recruiterId',async(req,res)=>{
     return res.status(500).send('server error',error);
   }
     
+})
+
+router.get('/api/get-skills',async(req,res)=>{
+  try {
+    const skills=await Skill.find();
+    res.status(200).json(skills);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 })
 
 module.exports = router;

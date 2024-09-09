@@ -17,14 +17,10 @@ dotenv.config();
 //cors middleware
 app.use(cors());
 
-// app.use(cors({
-//   origin:['https://clone-internshub-client.vercel.app'],
-//   methods:['POST','GET','PUT','DELETE'],
-//   credentials:true,
-// }));
+
 
 app.use(express.json());
-// https://clone-internshub-client.vercel.app/
+
 
 app.use('/student',studentRoutes);
 app.use('/recruiter',recruiterRoutes);
