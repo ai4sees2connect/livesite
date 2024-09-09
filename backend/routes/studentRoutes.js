@@ -229,14 +229,11 @@ router.get('/:userId/internships', async (req, res) => {
             lastname: recruiter.lastname,
             email: recruiter.email,
             phone: recruiter.phone,
+            companyLogo:recruiter.companyLogo
           },
         });
       });
     });
-
-    // internships.forEach(internship => {
-    //   // console.log('Internship Type:', internship.internshipType);
-    // });
 
     if(workType==='Work from Home'){
       internships=internships.filter(internship=>internship.internshipType==='Work from Home');

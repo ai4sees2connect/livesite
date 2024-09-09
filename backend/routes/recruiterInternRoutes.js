@@ -102,6 +102,31 @@ router.get('/:recruiterId/getDetails/:internshipId',async(req,res)=>{
   }
 })
 
+router.get('/:internshipId/:recruiterId/get-logo',async(req,res)=>{
+  try {
+    // Extract the recruiterId from the request parameters
+    const { recruiterId } = req.params;
+
+    // Find the recruiter by ID
+    const recruiter = await Recruiter.findById(recruiterId);
+    
+    // Check if recruiter or companyLogo is not found
+    if (!recruiter || !recruiter.companyLogo) {
+      return res.status(404).send('Logo not found.');
+    }
+
+    // Set the Content-Type header based on the logo's MIME type
+    res.setHeader('Content-Type', recruiter.companyLogo.contentType);
+
+    // Send the logo data
+    res.status(200).send(recruiter.companyLogo.data);
+
+  } catch (error) {
+    console.error('Error fetching logo:', error);
+    res.status(500).send('Error fetching logo.');
+  }
+})
+
 
 
 

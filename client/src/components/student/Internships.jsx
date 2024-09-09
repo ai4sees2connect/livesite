@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaMapMarkerAlt, FaMoneyBillWave, FaUsers, FaClipboardList, FaTimes, FaClock, FaCheck } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaMoneyBillWave, FaUsers, FaClipboardList, FaTimes, FaClock, FaCheck, FaBuilding } from 'react-icons/fa';
 import Spinner from '../common/Spinner';
 import getUserIdFromToken from './auth/authUtils';
 import TimeAgo from '../common/TimeAgo';
@@ -87,12 +87,38 @@ const Internships = () => {
 
         const response = await axios.get(`${api}/student/${userId}/internships${queryParam}`);
         const sortedInternships = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setInternships(sortedInternships);
-        // console.log('response',sortedInternships);
+        const internshipsWithLogo = await Promise.all(sortedInternships.map(async (internship) => {
+          if (internship.recruiter && internship.recruiter._id) {
+            try {
+              const res = await axios.get(`${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`, {
+                responseType: 'blob'
+              });
+  
+              const logoBlob = new Blob([res.data], { type: res.headers['content-type'] });
+              const logoUrl = URL.createObjectURL(logoBlob);
+              console.log(logoUrl);
+  
+              return {
+                ...internship,
+                logoUrl
+              };
+            } catch (error) {
+              console.error('Error fetching logo:', error);
+              return {
+                ...internship,
+                logoUrl: null // Or a default image URL
+              };
+            }
+          }
+          return internship;
+        }));
+  
+        setInternships(internshipsWithLogo);
+        console.log('internhsipswith logo', internshipsWithLogo);
 
         const appliedResponse = await axios.get(`${api}/student/internship/${userId}/applied-internships`);
         setAppliedInternships(appliedResponse.data);
-        console.log('response', appliedResponse.data);
+        // console.log('response', appliedResponse.data);
 
         setLoading(false);
       } catch (err) {
@@ -170,7 +196,7 @@ const Internships = () => {
   }
 
   return (
-      
+
     <div className="py-10 px-5 mt-10 relative  bg-gray-100">
       <h1 className="text-3xl font-bold mb-8 mt-8 absolute left-1/2 transform-translate-x-1/2 translate-x-14">{internships.length} Total Internships</h1>
 
@@ -246,12 +272,10 @@ const Internships = () => {
             {internships.map((internship) => (
               <div key={internship._id} className="bg-white shadow-md rounded-lg p-6 w-[95%] my-3 mx-auto relative">
                 <h2 className="text-2xl font-semibold mb-2">{internship.internshipName}</h2>
-                <button
-                  onClick={() => openModal(internship)}
-                  className="absolute right-4 top-8 w-auto py-2 px-4 rounded-md text-blue-500 hover:scale-125 duration-300"
-                >
-                  View details
-                </button>
+                
+
+                {internship.logoUrl ? (<img src={internship.logoUrl} alt={internship.logoUrl} className='absolute right-4 top-5 w-20 h-20' />) : (<FaBuilding />)}
+
                 {/* <p className="text-gray-600 mb-4">Posted by: {internship.recruiter.firstname} {internship.recruiter.lastname}</p> */}
                 <p className='text-gray-600 mb-4'>Posted: {TimeAgo(internship.createdAt)}</p>
 
@@ -266,14 +290,14 @@ const Internships = () => {
                 </div>
 
 
-                {internship.internLocation &&
+                {/* {internship.internLocation &&
                   <div className="flex items-center text-gray-700 mb-4">
                     <FaClipboardList className="mr-2" />
                     <span>{internship.internshipType}</span>
                   </div>
-                }
+                } */}
 
-                <h3 className="text-lg font-medium mb-2">Skills Required:</h3>
+                {/* <h3 className="text-lg font-medium mb-2">Skills Required:</h3>
                 <div className="flex flex-wrap mb-4">
                   {internship.skills.map((skill, index) => (
                     <span
@@ -283,12 +307,19 @@ const Internships = () => {
                       {skill}
                     </span>
                   ))}
-                </div>
+                </div> */}
 
                 {isAlreadyApplied(internship._id) && (
                   <p className="text-green-600 inline-flex rounded-xl border border-green-600 px-2 py-1">Applied<FaCheck className='ml-2 mt-1' /></p>
                 )}
                 <div className='text-gray-500 my-2'>{internship.studentCount} Applicants</div>
+                {/* <FaBuilding /> */}
+                <button
+                  onClick={() => openModal(internship)}
+                  className=" w-auto my-2 rounded-md text-blue-500 hover:scale-105 duration-300"
+                >
+                  View details
+                </button>
 
               </div>
             ))}
