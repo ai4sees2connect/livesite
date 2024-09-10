@@ -11,7 +11,7 @@ mongoose.connect(process.env.MONGO_URI, {
 .catch(err => console.error('MongoDB connection error:', err));
 
 // Define the skill to add
-const newSkillName = 'English'; // Get skill name from command line argument
+const newSkillName = 'MS-Office'; // Get skill name from command line argument
 
 if (!newSkillName) {
   console.error('Please provide a skill name.');

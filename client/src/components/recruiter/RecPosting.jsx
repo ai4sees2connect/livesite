@@ -27,7 +27,8 @@ const RecPosting = () => {
   const [selectedSkills, setSelectedSkills] = useState([]);
   const userId = getUserIdFromToken();
   const [formKey, setFormKey] = useState(0);
-  const [selectedProfile,setSelectedProfile] = useState([]);
+  const [selectedProfile,setSelectedProfile] = useState(null);
+  const [selectedPerks,setSelectedPerks] = useState([]);
   const jobProfiles = [
     "3D Animation",
     "Account Management",
@@ -234,6 +235,8 @@ const RecPosting = () => {
     "Web Development"
   ];
 
+  const perks=["Letter of recommendation", "Flexible work hours", "Certificate", "Informal dress code","5 days a week", "Free snacks & beverages", "Job offer"];
+
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -273,12 +276,17 @@ const RecPosting = () => {
     console.log('This is a skill set', selectedOptions);
   };
 
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const skillSet = selectedSkills.map(skill => {
       return skill.value;
     })
+    const perksSet = selectedPerks.map(perk=>{
+      return perk.value
+    });
+
     const postData = {
       internshipName: formData.internshipName,
       internshipType: formData.internshipType,
@@ -289,10 +297,11 @@ const RecPosting = () => {
       duration: formData.duration,
       description: formData.description,
       skills: skillSet,
+      perks: perksSet,
 
     }
     console.log(postData);
-    if (!postData.internshipName || !postData.internshipType || !postData.stipend || !postData.jobProfile || !postData.duration || !postData.numberOfOpenings || !postData.description || postData.skills.length == 0) {
+    if (!postData.internshipName || !postData.internshipType || postData.perks.length==0 || !postData.stipend || !postData.jobProfile || !postData.duration || !postData.numberOfOpenings || !postData.description || postData.skills.length == 0) {
       toast.error('Please enter all fields');
       return;
     }
@@ -324,6 +333,8 @@ const RecPosting = () => {
           skills: [],
         });
         // setSkill('');
+        setSelectedProfile(null);
+        setSelectedPerks([]);
         setFormKey(formKey + 1);
         console.log(formData);
         return;
@@ -343,8 +354,8 @@ const RecPosting = () => {
       console.error('There was an error posting the internship:', error);
     }
   };
-
-
+console.log(selectedProfile)
+console.log(selectedPerks);
 
   return (
     <div className="border border-gray-300 mt-24 w-[45%]  mx-auto bg-gray-100 p-6 rounded-lg shadow-lg mb-7 ">
@@ -399,7 +410,7 @@ const RecPosting = () => {
                 label: job
               }
             ))}
-            placeholder="e.g Marketing"
+            placeholder="Category of Internship"
             className='w-full mb-3 shadow-md'
           />
         </div>
@@ -451,35 +462,27 @@ const RecPosting = () => {
               placeholder="Select or type skills "
               className='w-60 shadow-md'
             />
-            {/* <button
-              type="button"
-              onClick={addSkill}
-              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
-            >
-              Add Skill
-            </button> */}
-          </div>
-          <div className="mt-2">
-            {formData.skills.map((skill, index) => (
-              <span
-                key={index}
-                className="inline-block group bg-blue-300 px-7 py-2 rounded-full text-sm mx-2 mb-2 relative"
-              >
-                {skill}
-                <span
-                  className="absolute w-7 h-7 items-center justify-center top-0 right-0 -mt-1 -mr-1 bg-white rounded-full p-1 hidden group-hover:flex"
-                // onClick={() => removeSkill(index)}
-                >
-                  <FontAwesomeIcon
-                    icon={faClose}
-                    className="text-red-600 cursor-pointer"
-                  />
-                </span>
-              </span>
-
-            ))}
           </div>
         </div>
+
+        <div className="flex flex-col">
+          <label className="mb-2 font-medium">Perks and Benefits</label>
+          <div className="flex items-center">
+            <Select
+              isMulti
+              value={selectedPerks}
+              onChange={(values)=>setSelectedPerks(values)}
+              options={perks.map(perk=>({
+                value:perk,
+                label:perk
+              }))}
+              placeholder="Select perk"
+              className='w-60 shadow-md'
+            />
+          </div>
+        </div>
+
+        
 
         <div className="flex flex-col   h-[400px]">
           <label className="mb-2 font-medium">Requirements</label>

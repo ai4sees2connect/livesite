@@ -19,7 +19,7 @@ const Internships = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedInternship, setSelectedInternship] = useState(null);
-  const [selectedProfile,setSelectedProfile] = useState(null);
+  const [selectedProfile, setSelectedProfile] = useState(null);
   const userId = getUserIdFromToken();
   const statesAndUTs = [
     { value: 'All Locations', label: 'All Locations' },
@@ -266,20 +266,20 @@ const Internships = () => {
     "Tourism",
     "Web Development"
   ];
-  
+
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [workType, setWorkType] = useState('');
   const [selectedStipend, setSelectedStipend] = useState(0);
   console.log(workType);
 
-  
+
 
   useEffect(() => {
     const fetchInternships = async () => {
       try {
         console.log('LocationName', selectedLocation);
         console.log('WorkType:', workType);
-        console.log('profile',selectedProfile);
+        console.log('profile', selectedProfile);
 
         let queryParam = '';
         if (workType === 'Work from Home') {
@@ -295,8 +295,8 @@ const Internships = () => {
           queryParam += queryParam ? `&minStipend=${selectedStipend}` : `?minStipend=${selectedStipend}`;
         }
 
-        if(selectedProfile){
-          queryParam += queryParam? `&profile=${selectedProfile.value}` : `?profile=${selectedProfile.value}`;
+        if (selectedProfile) {
+          queryParam += queryParam ? `&profile=${selectedProfile.value}` : `?profile=${selectedProfile.value}`;
         }
 
 
@@ -308,11 +308,11 @@ const Internships = () => {
               const res = await axios.get(`${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`, {
                 responseType: 'blob'
               });
-  
+
               const logoBlob = new Blob([res.data], { type: res.headers['content-type'] });
               const logoUrl = URL.createObjectURL(logoBlob);
               console.log(logoUrl);
-  
+
               return {
                 ...internship,
                 logoUrl
@@ -327,7 +327,7 @@ const Internships = () => {
           }
           return internship;
         }));
-  
+
         setInternships(internshipsWithLogo);
         console.log('internhsipswith logo', internshipsWithLogo);
 
@@ -344,10 +344,11 @@ const Internships = () => {
     };
 
     fetchInternships();
-  }, [userId, workType, selectedLocation, selectedStipend,selectedProfile]);
+  }, [userId, workType, selectedLocation, selectedStipend, selectedProfile]);
 
   const openModal = async (internship) => {
     setSelectedInternship(internship);
+    console.log('selected internship',internship);
     try {
       const response = await axios.put(`${api}/student/internship/${internship._id}/view`);
       // console.log(response.data);
@@ -458,11 +459,11 @@ const Internships = () => {
             <p>Profile</p>
             <Select
               value={selectedProfile}
-              onChange={(values)=>setSelectedProfile(values)}
-              options={jobProfiles.map(job=>(
+              onChange={(values) => setSelectedProfile(values)}
+              options={jobProfiles.map(job => (
                 {
-                  value:job,
-                  label:job
+                  value: job,
+                  label: job
                 }
               ))}
               placeholder="e.g Marketing"
@@ -485,7 +486,7 @@ const Internships = () => {
                 placeholder="Select a location"
                 searchable={true}
                 className='w-full shadow-md'
-                
+
               />
             </div>
 
@@ -500,7 +501,7 @@ const Internships = () => {
             {internships.map((internship) => (
               <div key={internship._id} className="bg-white shadow-md rounded-lg p-6 w-[95%] my-3 mx-auto relative">
                 <h2 className="text-2xl font-semibold mb-2">{internship.internshipName}</h2>
-                
+
 
                 {internship.logoUrl ? (<img src={internship.logoUrl} alt={internship.logoUrl} className='absolute right-4 top-2 w-20 h-20' />) : (<FaBuilding />)}
 
@@ -611,6 +612,18 @@ const Internships = () => {
                       className="text-gray-700 mb-4"
                       dangerouslySetInnerHTML={{ __html: selectedInternship.description }}
                     ></div>
+
+                    <h3 className="text-lg font-medium mb-2">Perks and Benefits</h3>
+                    <div className="flex flex-wrap mb-4">
+                    {selectedInternship.perks.map((perk,index)=>(
+                      <span
+                      key={index}
+                      className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
+                    >
+                      {perk}
+                    </span>
+                    ))}
+                    </div>
 
                   </div>
                 </div>
