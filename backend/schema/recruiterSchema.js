@@ -54,6 +54,9 @@ const recruiterSchema =new mongoose.Schema({
   password: { 
     type: String,
   },
+  companyName:{
+    type:String
+  },
   internships: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Internship',

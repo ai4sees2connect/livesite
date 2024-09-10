@@ -248,6 +248,7 @@ router.get('/:userId/internships', async (req, res) => {
             lastname: recruiter.lastname,
             email: recruiter.email,
             phone: recruiter.phone,
+            companyName:recruiter.companyName
           },
         });
       });

@@ -1,5 +1,5 @@
 import React, { useEffect, useState,useRef } from 'react'
-import { FaBuilding, FaPlus } from 'react-icons/fa';
+import { FaBuilding, FaPlus,FaTimes, FaPen } from 'react-icons/fa';
 import getUserIdFromToken from './auth/authUtilsRecr'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useRecruiter } from './context/recruiterContext'
@@ -19,6 +19,8 @@ const RecProfile = () => {
   const token = localStorage.getItem('token');
   const [logo, setLogo] = useState(null);
   const [logoUrl, setLogoUrl] = useState(null);
+  const [isCompanyEdit,setIsCompanyEdit] =useState(false);
+  const [companyName,setCompanyName] =useState('');
   console.log(recruiter);
 
   useEffect(() => {
@@ -108,6 +110,21 @@ const RecProfile = () => {
     fileInputRef.current.click();
   }
 
+  const handleCompanySave=async()=>{
+  try {
+    if(!companyName){
+      toast.error('Company name cannot be empty');
+     return; 
+    }
+    axios.put(`${api}/recruiter/api/${idFromToken}/add-company`,{companyName:companyName})
+    toast.success('Company added successfully');
+    window.location.reload();
+  } catch (error) {
+    toast.error('Error saving company');
+    console.log(error);
+  }
+  }
+
   const handleDelete = async() => {
     try{
     await axios.delete(`${api}/recruiter/delete-logo/${idFromToken}`);
@@ -124,7 +141,7 @@ const RecProfile = () => {
     console.error('Error deleting logo', error);
   }
   }
-
+  console.log(companyName);
   return (
     !recruiter ? (
       <Spinner />
@@ -145,6 +162,25 @@ const RecProfile = () => {
           </div>
           <h1 className=' text-2xl capitalize  text-gray-600'>{recruiter.firstname} {recruiter.lastname}</h1>
           <h1 className=' text-gray-600 '>{recruiter.email}</h1>
+
+
+          {recruiter.companyName &&
+          <div className='flex items-center space-x-3'>
+          <h1 className='text-gray-600'>{recruiter.companyName}</h1>
+          <FaPen onClick={()=>setIsCompanyEdit(true)} className='w-3 h-3 text-gray-600 hover:cursor-pointer'/>
+          </div>
+          }
+          {!isCompanyEdit && !recruiter.companyName && <button onClick={()=>setIsCompanyEdit(true)} className='text-red-500'>Add Company Name</button>}
+          {isCompanyEdit && 
+          <>
+          <div className='w-1/3 flex space-x-3 items-center'>
+          <input type='text' value={companyName} onChange={(e)=>setCompanyName(e.target.value)} className='border-2 border-gray-400 p-2 w-full text-center' />
+          <FaTimes onClick={()=>{setIsCompanyEdit(false); setCompanyName('')}} className='hover:cursor-pointer w-5 h-5'/>
+            
+          </div>
+          <button onClick={handleCompanySave} className='px-3 py-1 rounded-lg bg-green-300 hover:bg-green-500 my-2'>Save</button>
+          </>
+          }
           <h1 className=' text-gray-600 '>Ph no- {recruiter.phone}</h1>
         </div>
 

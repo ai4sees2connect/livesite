@@ -558,16 +558,19 @@ const Internships = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-40  " onClick={closeModal}></div>
                 <div className="fixed inset-0 flex items-center justify-center z-50">
                   <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-[60%] h-[90%] p-6 relative overflow-auto">
-                    <h2 className="text-2xl font-semibold mb-4">{selectedInternship.internshipName}</h2>
+                    <div className='border-b'>
+                    <h2 className="text-2xl font-semibold mb-4">Applying for {selectedInternship.internshipName}</h2>
                     <button
                       onClick={closeModal}
                       className="absolute top-7 right-4 text-blue-500 hover:text-blue-700 focus:outline-none"
                     >
                       <FaTimes />
                     </button>
-                    <p className="text-gray-600 mb-4">Posted by: {selectedInternship.recruiter.firstname} {selectedInternship.recruiter.lastname}</p>
-                    <p className='text-gray-600 mb-4'>Posted: {TimeAgo(selectedInternship.createdAt)}</p>
-                    <button onClick={() => applyToInternship(selectedInternship._id)} className='absolute bg-blue-300 hover:bg-blue-400 py-2 px-5 rounded-xl right-5 top-[100px]'>Apply</button>
+                    <p className="text-gray-600 mb-4">{selectedInternship.recruiter.companyName}</p>
+                    </div>
+
+                    {/* <p className='text-gray-600 mb-4'>Posted: {TimeAgo(selectedInternship.createdAt)}</p> */}
+                    <button onClick={() => applyToInternship(selectedInternship._id)} className='absolute bg-blue-300 hover:bg-blue-400 py-2 px-5 rounded-xl right-5 top-[130px]'>Apply</button>
 
                     <div className="flex items-center text-gray-700 mb-2">
                       <FaMapMarkerAlt className="mr-2" />

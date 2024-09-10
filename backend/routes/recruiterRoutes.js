@@ -138,7 +138,8 @@ router.get('/details', async (req, res) => {
         lastname:recruiter.lastname,
         email:recruiter.email,
         phone: recruiter.phone,
-        companyLogo:recruiter.companyLogo
+        companyLogo:recruiter.companyLogo,
+        companyName:recruiter.companyName
         
       }
     })
@@ -208,6 +209,19 @@ router.delete('/delete-logo/:recruiterId',async(req,res)=>{
     return res.status(500).send('server error',error);
   }
     
+})
+
+router.put('/api/:recruiterId/add-company',async(req,res)=>{
+  try {
+    const recruiter=await Recruiter.findById(req.params.recruiterId);
+    if(!recruiter)return res.status(404).json({message:"recruiter not found"});
+    recruiter.companyName=req.body.companyName;
+    await recruiter.save();
+    res.status(200).json({message:"Success"});
+
+  } catch (error) {
+    res.status(500).json(error);
+  }
 })
 
 router.get('/api/get-skills',async(req,res)=>{
