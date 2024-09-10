@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Education from './Education'
 import getUserIdFromToken from './auth/authUtils'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -11,6 +11,9 @@ import Skills from './Skills'
 import Portfolio from './Portfolio'
 import axios from 'axios'
 import api from '../common/server_url'
+import Select from 'react-select';
+import { toast } from 'react-toastify'
+import {FaPen} from 'react-icons/fa';
 
 const Profile = () => {
 
@@ -19,9 +22,50 @@ const Profile = () => {
   const navigate = useNavigate();
   const { logout, student } = useStudent();
   const token = localStorage.getItem('token');
-  const [skills,setSkills]=useState([]);
-  const [selectedSkills,setSelectedSkills]=useState([]);
-  
+  const [skills, setSkills] = useState([]);
+  // const [selectedSkills, setSelectedSkills] = useState([]);
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [cityEdit, setCityEdit]=useState(false);
+  const statesAndUTs = [
+    { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
+    { value: 'Arunachal Pradesh', label: 'Arunachal Pradesh' },
+    { value: 'Assam', label: 'Assam' },
+    { value: 'Bihar', label: 'Bihar' },
+    { value: 'Chhattisgarh', label: 'Chhattisgarh' },
+    { value: 'Chennai', label: 'Chennai' },
+    { value: 'Goa', label: 'Goa' },
+    { value: 'Gujarat', label: 'Gujarat' },
+    { value: 'Haryana', label: 'Haryana' },
+    { value: 'Himachal Pradesh', label: 'Himachal Pradesh' },
+    { value: 'Jharkhand', label: 'Jharkhand' },
+    { value: 'Karnataka', label: 'Karnataka' },
+    { value: 'Kerala', label: 'Kerala' },
+    { value: 'Madhya Pradesh', label: 'Madhya Pradesh' },
+    { value: 'Maharashtra', label: 'Maharashtra' },
+    { value: 'Manipur', label: 'Manipur' },
+    { value: 'Meghalaya', label: 'Meghalaya' },
+    { value: 'Mizoram', label: 'Mizoram' },
+    { value: 'Nagaland', label: 'Nagaland' },
+    { value: 'Odisha', label: 'Odisha' },
+    { value: 'Punjab', label: 'Punjab' },
+    { value: 'Rajasthan', label: 'Rajasthan' },
+    { value: 'Sikkim', label: 'Sikkim' },
+    { value: 'Tamil Nadu', label: 'Tamil Nadu' },
+    { value: 'Telangana', label: 'Telangana' },
+    { value: 'Tripura', label: 'Tripura' },
+    { value: 'Uttar Pradesh', label: 'Uttar Pradesh' },
+    { value: 'Uttarakhand', label: 'Uttarakhand' },
+    { value: 'West Bengal', label: 'West Bengal' },
+    { value: 'Andaman and Nicobar Islands', label: 'Andaman and Nicobar Islands' },
+    { value: 'Chandigarh', label: 'Chandigarh' },
+    { value: 'Dadra and Nagar Haveli and Daman and Diu', label: 'Dadra and Nagar Haveli and Daman and Diu' },
+    { value: 'Lakshadweep', label: 'Lakshadweep' },
+    { value: 'Delhi', label: 'Delhi' },
+    { value: 'Puducherry', label: 'Puducherry' },
+    { value: 'Jammu and Kashmir', label: 'Jammu and Kashmir' },
+    { value: 'Ladakh', label: 'Ladakh' }
+  ];
+
   useEffect(() => {
 
     if (!token) {
@@ -36,7 +80,7 @@ const Profile = () => {
       navigate('/student/login');
       return;
     }
-    
+
     const fetchSkills = async () => {
       try {
         const response = await axios.get(`${api}/student/api/get-skills`);
@@ -45,7 +89,7 @@ const Profile = () => {
           value: skill.name  // Map 'name' field to 'value'
         }));
         setSkills(skillsData);
-        console.log(skillsData);
+        // console.log(skillsData);
       } catch (error) {
         console.error('Error fetching skills:', error);
       }
@@ -57,9 +101,22 @@ const Profile = () => {
   }, [userId, idFromToken, token]);
 
 
+console.log(selectedCity);
+
+const handleSave=async()=>{
+  const cityName=selectedCity.value;
+  try {
+    await axios.put(`${api}/student/api/${idFromToken}/save-location`,{ homeLocation: cityName });
+    toast.success('Home Location Updated');
+    window.location.reload();
+
+  } catch (error) {
+    toast.error('Some error occured');
+    console.error('Error saving location:', error);
+  }
+}
 
 
- 
 
   return (
     !student ? (
@@ -67,12 +124,33 @@ const Profile = () => {
     ) : (
       <div className='container mx-auto p-4 mt-[68px] '>
         <div className='border-b '>
-          <h1 className="text-3xl font-bold mb-2 text-center">Profile</h1>
+          <h1 className="text-3xl font-bold mb-2 text-center">Your Profile</h1>
           <h1 className=' text-xl capitalize text-center text-gray-600'>{student.firstname} {student.lastname}</h1>
           <h1 className=' text-gray-600 text-center'>{student.email}</h1>
-        </div>
+          {!student.homeLocation && !cityEdit && <h1 onClick={()=>setCityEdit(true)} className='text-red-500 text-center hover:cursor-pointer'>Add City</h1>}
+          {cityEdit && 
+          <div className='flex justify-center space-x-3 my-2'>
+          <Select
+            options={statesAndUTs}
+            values={selectedCity}
+            onChange={(value)=>setSelectedCity(value)}
+            placeholder="Select a location"
+            searchable={true}
+            className='w-1/3 shadow-md '
 
+          />
+          {selectedCity && <button onClick={handleSave} className='bg-green-300 py-1 px-3 rounded-lg hover:bg-green-500'>Save</button>}
+          <button onClick={()=>{setCityEdit(false);setSelectedCity(null)}} className='bg-red-300 py-1 px-3 rounded-lg hover:bg-red-500'>Close</button>
+          </div>
+          }
+          {! cityEdit && <div className='flex space-x-3 justify-center items-center'>
+          <h1 className='text-center text-gray-600'>{student.homeLocation}</h1>
+          {student.homeLocation && <FaPen onClick={()=>setCityEdit(true)} className='w-3 h-3 hover:cursor-pointer hover:text-blue-400'/>}
+          </div>}
+        </div>
         
+
+
 
         <section className="mb-8">
           <Education />

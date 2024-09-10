@@ -18,6 +18,10 @@ const studentSchema =new mongoose.Schema({
   password: { 
     type: String,
   },
+  homeLocation:{
+    type: String,
+    required:true
+  },
   resume: {
     data: Buffer, // Store the file data as binary
     contentType: String, // Store the MIME type

@@ -178,6 +178,7 @@ router.get('/details', async (req, res) => {
         education:student.education,
         workExperience:student.workExperience,
         certificates:student.certificates,
+        homeLocation:student.homeLocation,
         personalProjects:student.personalProjects,
         skills:student.skills,
         portfolioLink:student.portfolioLink
@@ -190,6 +191,23 @@ router.get('/details', async (req, res) => {
     res.sendStatus(500); // Internal server error
   }
 });
+
+router.put('/api/:studentId/save-location',async(req,res)=>{
+  const {studentId}=req.params;
+  const {homeLocation}=req.body;
+  try {
+    const student =await Student.findById(studentId);
+    if(!student){
+      return res.status(404).json({success:false, message:'Student not found.'})
+    }
+    student.homeLocation =homeLocation;
+    await student.save();
+    return res.status(200).json({ success: true, message: 'Location updated successfully.', student });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Server error.' });
+  }
+})
 
 
 router.get('/resume/:id', async (req, res) => {
