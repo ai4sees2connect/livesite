@@ -5,14 +5,16 @@ import getUserIdFromToken from './auth/authUtils';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import api from '../common/server_url';
+import Select from 'react-select';
 
-const Skills = () => {
+const Skills = ({skillSet}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isClicked,setIsClicked] = useState(false);
   const [skillName, setSkillName] = useState('');
   const [proficiency, setProficiency] = useState('');
   const [skills, setSkills] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
+  const [selectedSkills,setSelectedSkills]=useState([]);
 
   const userId = getUserIdFromToken();
 
@@ -37,14 +39,14 @@ const Skills = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!skillName || !proficiency) {
+    console.log(selectedSkills)
+    if (!selectedSkills.value || !proficiency) {
       toast.error('Please enter all fields');
       return;
     }
 
     const skillData = {
-      skillName,
+      skillName:selectedSkills.value,
       proficiency
     };
 
@@ -86,6 +88,8 @@ const Skills = () => {
     }
   };
 
+
+
   const handleEdit = (index) => {
     const skill = skills[index];
     setIsEditing(true);
@@ -106,13 +110,20 @@ const Skills = () => {
       {isEditing ? (
         <form className="mt-4" onSubmit={handleSubmit}>
           {/* Form Fields for Skills */}
-          <input type="text" value={skillName} onChange={(e) => setSkillName(e.target.value)} placeholder="Skill Name" className="border p-2 mb-2 w-full" />
-
-          <select type="text" value={proficiency} onChange={(e) => setProficiency(e.target.value)} placeholder="Proficiency" className="border p-2 mb-2 w-full" >
-            <option value="">Select proficiency</option>
-            <option value="Begineer">Begineer</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Expert">Expert</option>
+          <Select
+              value={selectedSkills}
+              onChange={(values)=>setSelectedSkills(values)}
+              options={skillSet}
+              placeholder="Select or type skills"
+              className='w-full mb-3 shadow-md'
+            />
+            <select type="text" value={proficiency} onChange={(e)=>setProficiency(e.target.value)} placeholder="Skill Name" className='border p-2 mb-2 w-full shadow-md'>
+              <option value="">Select Proficiency</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Expert">Expert</option>
+              
+              
             </select>
 
           <button type="submit" className="bg-blue-500 text-white px-4 py-2 mt-4">Save</button>

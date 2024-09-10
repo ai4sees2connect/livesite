@@ -9,6 +9,8 @@ import Certificates from './Certificates'
 import PersonalProjects from './PersonalProjects'
 import Skills from './Skills'
 import Portfolio from './Portfolio'
+import axios from 'axios'
+import api from '../common/server_url'
 
 const Profile = () => {
 
@@ -17,6 +19,8 @@ const Profile = () => {
   const navigate = useNavigate();
   const { logout, student } = useStudent();
   const token = localStorage.getItem('token');
+  const [skills,setSkills]=useState([]);
+  const [selectedSkills,setSelectedSkills]=useState([]);
   
   useEffect(() => {
 
@@ -32,8 +36,27 @@ const Profile = () => {
       navigate('/student/login');
       return;
     }
+    
+    const fetchSkills = async () => {
+      try {
+        const response = await axios.get(`${api}/student/api/get-skills`);
+        const skillsData = response.data.map(skill => ({
+          label: skill.name, // Map 'name' field to 'label'
+          value: skill.name  // Map 'name' field to 'value'
+        }));
+        setSkills(skillsData);
+        console.log(skillsData);
+      } catch (error) {
+        console.error('Error fetching skills:', error);
+      }
+    };
+
+    fetchSkills();
+
 
   }, [userId, idFromToken, token]);
+
+
 
 
  
@@ -64,7 +87,7 @@ const Profile = () => {
           <PersonalProjects />
         </section>
         <section className="mb-8">
-          <Skills />
+          <Skills skillSet={skills} />
         </section>
         <section className="mb-8">
           <Portfolio />

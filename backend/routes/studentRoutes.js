@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const {jwtDecode} = require('jwt-decode');
+const Skill = require('../schema/skillsSchema.js');
 // const getUserIdFromToken = require('../auth/auth');
 // const { default: getUserIdFromToken } = require('../../client/src/components/student/auth/authUtils');
 
@@ -213,7 +214,7 @@ router.get('/resume/:id', async (req, res) => {
 
 router.get('/:userId/internships', async (req, res) => {
   try {
-    const { workType, locationName,minStipend } = req.query;
+    const { workType, locationName,minStipend,profile } = req.query;
     // console.log('Received workType:', workType);
     // console.log('Received locationName:', locationName);
     const recruiters = await Recruiter.find().populate('internships');
@@ -229,7 +230,6 @@ router.get('/:userId/internships', async (req, res) => {
             lastname: recruiter.lastname,
             email: recruiter.email,
             phone: recruiter.phone,
-            companyLogo:recruiter.companyLogo
           },
         });
       });
@@ -247,7 +247,10 @@ router.get('/:userId/internships', async (req, res) => {
     if (minStipend) {
       internships = internships.filter(internship => internship.stipend >= parseInt(minStipend));
     }
-    
+
+    if(profile){
+     internships=internships.filter(internship=>internship.jobProfile===profile); 
+    }  
     // console.log('Filtered Internships:', internships);
     
     for (const internship of internships) {
@@ -263,5 +266,14 @@ router.get('/:userId/internships', async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
+router.get('/api/get-skills',async(req,res)=>{
+  try {
+    const skills=await Skill.find();
+    res.status(200).json(skills);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+})
 
 module.exports = router;

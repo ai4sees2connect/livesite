@@ -1,19 +1,24 @@
 .custom-slider .rc-slider-track {
-  background-color: #2563EB; /* Tailwind's blue-600 */
+  background-color: #0952f0; /* Tailwind's blue-600 */
   height: 6px;
+  z-index: -2;
 }
 
 .custom-slider .rc-slider-rail {
   background-color: #E5E7EB; /* Tailwind's gray-200 */
   height: 6px;
+  z-index: -3;
 }
 
 .custom-slider .rc-slider-handle {
-  border: 2px solid #04ce849c; /* Tailwind's blue-600 border */
+  z-index: -1;
+  border: 2px solid #ffffff9c; 
   height: 15px;
   width: 15px;
-  background-color: #FFFFFF;
-  cursor:default;
+  background-color: #8170ef;
+  text-decoration: none;
+  /* cursor:default; */
+
 }
 
 .custom-slider .rc-slider-mark-text {

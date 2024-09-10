@@ -33,6 +33,10 @@ const internshipSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    jobProfile:{
+      type: String,
+      required: true
+    },
     recruiter: {  // Add this field to link to the recruiter who posted the internship
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Recruiter',
@@ -41,7 +45,8 @@ const internshipSchema = new mongoose.Schema(
     views: {
       type: Number,
       default: 0, // Initialize with 0 views
-    },
+    }
+  
     
   },{ timestamps: true });
 

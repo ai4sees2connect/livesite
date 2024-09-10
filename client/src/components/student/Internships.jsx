@@ -19,6 +19,7 @@ const Internships = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedInternship, setSelectedInternship] = useState(null);
+  const [selectedProfile,setSelectedProfile] = useState(null);
   const userId = getUserIdFromToken();
   const statesAndUTs = [
     { value: 'All Locations', label: 'All Locations' },
@@ -60,16 +61,226 @@ const Internships = () => {
     { value: 'Jammu and Kashmir', label: 'Jammu and Kashmir' },
     { value: 'Ladakh', label: 'Ladakh' }
   ];
+  const jobProfiles = [
+    "3D Animation",
+    "Account Management",
+    "Accounting & Auditing",
+    "Acting/Performing Arts",
+    "Administrative Assistant",
+    "Advertising Specialist",
+    "Aerospace Engineering",
+    "AI (Artificial Intelligence)",
+    "Android Development",
+    "Animation Design",
+    "App Developer",
+    "Application Support Engineer",
+    "Architecture",
+    "Art Director",
+    "Asset Management",
+    "Assistant Producer",
+    "Audio Engineer",
+    "Automation Engineer",
+    "Automotive Engineering",
+    "AWS Development",
+    "Back-End Development",
+    "Bank Teller",
+    "Banking Operations",
+    "Big Data Engineer",
+    "Bioinformatics Researcher",
+    "Biomedical Engineering",
+    "Blockchain Development",
+    "Brand Management",
+    "Broadcast Engineering",
+    "Budget Analyst",
+    "Building Inspector",
+    "Business Analyst",
+    "Business Consultant",
+    "Business Development",
+    "Business Intelligence Analyst",
+    "Call Center Agent",
+    "Cartography",
+    "Chemical Engineering",
+    "Civil Engineering",
+    "Claims Adjuster",
+    "Cloud Architect",
+    "Cloud Computing",
+    "Cloud Security Engineer",
+    "Communications Specialist",
+    "Compliance Officer",
+    "Computer Hardware Engineer",
+    "Construction Manager",
+    "Content Creation",
+    "Content Editor",
+    "Content Management",
+    "Content Marketing",
+    "Content Strategist",
+    "Content Writing",
+    "Corporate Law Intern",
+    "Corporate Trainer",
+    "Cost Estimator",
+    "Creative Director",
+    "CRM Development",
+    "Customer Success Manager",
+    "Cybersecurity",
+    "Data Analytics",
+    "Data Architect",
+    "Data Engineering",
+    "Data Entry Clerk",
+    "Data Governance Specialist",
+    "Data Quality Analyst",
+    "Data Science",
+    "Database Administration",
+    "Debt Collection Officer",
+    "Dental Assistant",
+    "Dentist",
+    "Design Engineer",
+    "Desktop Support Technician",
+    "DevOps Engineer",
+    "Digital Illustrator",
+    "Digital Marketing",
+    "Digital Product Designer",
+    "E-Commerce Management",
+    "Electrical Engineering",
+    "Elementary School Teacher",
+    "Embedded Systems Development",
+    "Environmental Engineer",
+    "ERP Development",
+    "Event Coordination",
+    "Event Management",
+    "Exhibition Designer",
+    "Fashion Design",
+    "Fashion Marketing",
+    "Fashion Stylist",
+    "Film Director",
+    "Film Editor",
+    "FinTech Development",
+    "Financial Analyst",
+    "Financial Planner",
+    "Fitness Trainer",
+    "Flutter Development",
+    "Food Technology",
+    "Forensic Scientist",
+    "Front-End Development",
+    "Full-Stack Development",
+    "Fundraising Coordinator",
+    "Game Design",
+    "Game Development",
+    "General Practitioner (Doctor)",
+    "Genetic Counselor",
+    "Geologist",
+    "Graphic Design",
+    "Green Energy Consultant",
+    "Hair Stylist",
+    "Hardware Development",
+    "Healthcare Administration",
+    "Healthcare Management",
+    "Hotel Management",
+    "HR Business Partner",
+    "HR Generalist",
+    "HR Management",
+    "HVAC Engineer",
+    "Illustrator",
+    "Industrial Designer",
+    "Industrial Engineering",
+    "Information Security Analyst",
+    "Information Systems Manager",
+    "Interior Design",
+    "International Trade Specialist",
+    "Investment Banking",
+    "IT Consultant",
+    "IT Security Specialist",
+    "IT Support",
+    "IT Systems Administrator",
+    "Java Development",
+    "Journalism",
+    "Lab Technician",
+    "Language Translation",
+    "Law/Legal Intern",
+    "Litigation Assistant",
+    "Logistics Coordinator",
+    "Machine Learning Engineer",
+    "Maintenance Engineer",
+    "Manufacturing Engineering",
+    "Marine Biologist",
+    "Market Research",
+    "Marketing Analyst",
+    "Marketing Manager",
+    "Materials Engineer",
+    "Mechanical Engineering",
+    "Medical Assistant",
+    "Medical Coding",
+    "Medical Equipment Technician",
+    "Medical Laboratory Scientist",
+    "Medical Research",
+    "Microbiologist",
+    "Mobile App Development (Android)",
+    "Mobile App Development (iOS)",
+    "Motion Graphics Design",
+    "Museum Curator",
+    "Music Producer",
+    "Network Administrator",
+    "Network Engineer",
+    "Nutritionist/Dietician",
+    "Occupational Therapist",
+    "Office Administrator",
+    "Oil and Gas Engineer",
+    "Operations Analyst",
+    "Operations Management",
+    "Packaging Design",
+    "Paralegal",
+    "Patent Analyst",
+    "Payroll Specialist",
+    "Performance Marketing Specialist",
+    "Personal Assistant",
+    "Petroleum Engineer",
+    "Pharmacist",
+    "Photographer",
+    "PHP Development",
+    "Physical Therapist",
+    "Physiotherapist",
+    "Pilates Instructor",
+    "Policy Analyst",
+    "Political Campaign Manager",
+    "Portfolio Manager",
+    "PR (Public Relations) Specialist",
+    "Private Equity Analyst",
+    "Product Design",
+    "Product Management",
+    "Production Assistant",
+    "Production Engineer",
+    "Project Management",
+    "Property Manager",
+    "Python Development",
+    "Quality Assurance (QA)",
+    "Quality Control Analyst",
+    "React Native Development",
+    "Real Estate Development",
+    "Recruiter",
+    "Renewable Energy Engineer",
+    "Research Analyst",
+    "Respiratory Therapist",
+    "Restaurant Manager",
+    "Risk Management Analyst",
+    "Ruby on Rails Development",
+    "Travels",
+    "Tourism",
+    "Web Development"
+  ];
+  
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [workType, setWorkType] = useState('');
   const [selectedStipend, setSelectedStipend] = useState(0);
   console.log(workType);
+
+  
 
   useEffect(() => {
     const fetchInternships = async () => {
       try {
         console.log('LocationName', selectedLocation);
         console.log('WorkType:', workType);
+        console.log('profile',selectedProfile);
+
         let queryParam = '';
         if (workType === 'Work from Home') {
           queryParam = '?workType=Work from Home';
@@ -82,6 +293,10 @@ const Internships = () => {
 
         if (selectedStipend > 0) {
           queryParam += queryParam ? `&minStipend=${selectedStipend}` : `?minStipend=${selectedStipend}`;
+        }
+
+        if(selectedProfile){
+          queryParam += queryParam? `&profile=${selectedProfile.value}` : `?profile=${selectedProfile.value}`;
         }
 
 
@@ -129,7 +344,7 @@ const Internships = () => {
     };
 
     fetchInternships();
-  }, [userId, workType, selectedLocation, selectedStipend]);
+  }, [userId, workType, selectedLocation, selectedStipend,selectedProfile]);
 
   const openModal = async (internship) => {
     setSelectedInternship(internship);
@@ -170,16 +385,13 @@ const Internships = () => {
     setSelectedLocation(null);
     setWorkType('');
     setSelectedStipend(0);
+    setSelectedProfile(null);
   }
 
   const isAlreadyApplied = (internshipId) => {
     return appliedInternships.some((applied) => applied.internship._id === internshipId);
   };
 
-  // const handleStipendChange = (stipend) => {
-  //   setSelectedStipend(stipend);
-
-  // };
   console.log(selectedStipend);
 
 
@@ -197,11 +409,11 @@ const Internships = () => {
 
   return (
 
-    <div className="py-10 px-5 mt-10 relative  bg-gray-100">
+    <div className="py-10 px-5 mt-10 relative min-h-screen bg-gray-100">
       <h1 className="text-3xl font-bold mb-8 mt-8 absolute left-1/2 transform-translate-x-1/2 translate-x-14">{internships.length} Total Internships</h1>
 
       <div className='flex justify-end '>
-        <div className=' w-[20%] mt-12 px-6 h-screen fixed left-28 shadow-xl border-t py-6 overflow-y-hidden bg-white'>
+        <div className=' w-[20%] mt-0 px-6 h-screen fixed left-28 shadow-xl border-t py-6 overflow-y-hidden bg-white'>
           <h1 className='text-center font-extrabold text-xl tracking-widest'>Filters</h1>
 
           <p className='mb-4 mt-6'>Type of Internship:</p>
@@ -242,6 +454,21 @@ const Internships = () => {
               <span className="">Work from Office</span>
             </label>
           </div>
+          <div className='my-4'>
+            <p>Profile</p>
+            <Select
+              value={selectedProfile}
+              onChange={(values)=>setSelectedProfile(values)}
+              options={jobProfiles.map(job=>(
+                {
+                  value:job,
+                  label:job
+                }
+              ))}
+              placeholder="e.g Marketing"
+              className='w-full mb-3 shadow-md'
+            />
+          </div>
 
           <StipendSlider selectedStipend={selectedStipend}
             setSelectedStipend={setSelectedStipend} />
@@ -249,7 +476,7 @@ const Internships = () => {
 
           {
             workType === 'Work from Office' &&
-            <div className='mt-20'>
+            <div className='mt-12'>
               <p className='mt-6 mb-2 font-bold'>Location</p>
               <Select
                 options={statesAndUTs}
@@ -257,7 +484,8 @@ const Internships = () => {
                 onChange={handleChange}
                 placeholder="Select a location"
                 searchable={true}
-                className=''
+                className='w-full shadow-md'
+                
               />
             </div>
 
@@ -274,7 +502,7 @@ const Internships = () => {
                 <h2 className="text-2xl font-semibold mb-2">{internship.internshipName}</h2>
                 
 
-                {internship.logoUrl ? (<img src={internship.logoUrl} alt={internship.logoUrl} className='absolute right-4 top-5 w-20 h-20' />) : (<FaBuilding />)}
+                {internship.logoUrl ? (<img src={internship.logoUrl} alt={internship.logoUrl} className='absolute right-4 top-2 w-20 h-20' />) : (<FaBuilding />)}
 
                 {/* <p className="text-gray-600 mb-4">Posted by: {internship.recruiter.firstname} {internship.recruiter.lastname}</p> */}
                 <p className='text-gray-600 mb-4'>Posted: {TimeAgo(internship.createdAt)}</p>
