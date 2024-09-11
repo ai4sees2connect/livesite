@@ -18,6 +18,7 @@ const RecPosting = () => {
     stipend: '',
     duration: '',
     description: '',
+    assessment:'',
     skills: [],
   });
   // const [Location,setLocation]=useState('');
@@ -257,6 +258,8 @@ const RecPosting = () => {
 
 
   const handleChange = (e) => {
+    console.log(e.target.name);
+    console.log(e.target.value);
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -270,6 +273,14 @@ const RecPosting = () => {
       description: value, // This will capture the HTML content from React Quill
     });
   };
+
+  const handleAssessmentChange=(value)=>{
+    setFormData({
+      ...formData,
+      assessment: value,
+    });
+    console.log(formData.assessment);
+  }
 
   const handleSkillsChange = (selectedOptions) => {
     setSelectedSkills(selectedOptions);
@@ -296,12 +307,13 @@ const RecPosting = () => {
       stipend: formData.stipend,
       duration: formData.duration,
       description: formData.description,
+      assessment:formData.assessment,
       skills: skillSet,
       perks: perksSet,
 
     }
     console.log(postData);
-    if (!postData.internshipName || !postData.internshipType || postData.perks.length==0 || !postData.stipend || !postData.jobProfile || !postData.duration || !postData.numberOfOpenings || !postData.description || postData.skills.length == 0) {
+    if (!postData.internshipName || !postData.internshipType || !postData.assessment || postData.perks.length==0 || !postData.stipend || !postData.jobProfile || !postData.duration || !postData.numberOfOpenings || !postData.description || postData.skills.length == 0) {
       toast.error('Please enter all fields');
       return;
     }
@@ -330,6 +342,7 @@ const RecPosting = () => {
           stipend: '',
           duration: '',
           description: '',
+          assessment:'',
           skills: [],
         });
         // setSkill('');
@@ -484,14 +497,28 @@ console.log(selectedPerks);
 
         
 
-        <div className="flex flex-col   h-[400px]">
+        <div className="flex flex-col  h-[320px]">
           <label className="mb-2 font-medium">Requirements</label>
           <ReactQuill
             value={formData.description}
             onChange={handleDescriptionChange}
             className="p-2 rounded-md h-[200px]"
             theme="snow"
+            placeholder='Enter the requirements....'
 
+          />
+
+        </div>
+
+        <div className="flex flex-col   h-[400px]">
+          <label className="mb-2 font-medium">Assessment Question</label>
+          <input
+            type="text"
+            name="assessment"
+            value={formData.assessment}
+            onChange={handleChange}
+            className="p-2 border border-gray-300 rounded-md shadow-md"
+            placeholder='Enter Question for applicant'
           />
 
         </div>

@@ -13,7 +13,7 @@ const router= express.Router();
 
 router.post('/post/:userId',async(req,res)=>{
   const {userId}=req.params;
-  const {internshipName,internshipType,internLocation,numberOfOpenings,jobProfile,stipend,duration,description,skills,perks}=req.body;
+  const {internshipName,internshipType,internLocation,numberOfOpenings,jobProfile,stipend,duration,description,assessment,skills,perks}=req.body;
   try{
 
   const recruiter=await Recruiter.findById(userId);
@@ -29,6 +29,7 @@ router.post('/post/:userId',async(req,res)=>{
     jobProfile,
     perks,
     description,
+    assessment,
     skills,
     recruiter: userId,
   

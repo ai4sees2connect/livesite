@@ -29,6 +29,10 @@ const internshipSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    assessment:{
+      type:String,
+      required:true
+    },
     perks:{
       type: [String],
       default: []
