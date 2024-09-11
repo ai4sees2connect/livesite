@@ -78,6 +78,17 @@ const studentSchema =new mongoose.Schema({
     appliedAt: {
       type: Date,
       default: Date.now // Automatically stores the date and time of application
+    },
+    assessmentAns:{
+      type: String,
+      default: ''
+    },
+    availability:{
+      type: String,
+      
+    },
+    aboutText:{
+      type: String
     }
   }],
 

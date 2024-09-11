@@ -418,13 +418,29 @@ const Internships = () => {
         toast.error('Please Enter all fields');
         return;
       }
-      const response = await axios.post(`${api}/student/internship/${userId}/apply/${internshipId}`);
+      const formData={
+        availability,
+        aboutText,
+        assessmentAns
+      }
+      const response = await axios.post(`${api}/student/internship/${userId}/apply/${internshipId}`,formData);
       if (response.status === 200) {
         if (response.data.success) {
           toast.success('You have already applied for this Internship');
+          setTimeout(() => {
+            setIsInterestedModalOpen(false);
+          setSelectedInternship(null);
+          window.location.reload();
+          }, 1000);
+          
           return;
         }
         toast.success('Successfully applied to the internship');
+        setTimeout(() => {
+          setIsInterestedModalOpen(false);
+        setSelectedInternship(null);
+        window.location.reload();
+        }, 1000);
       } else {
         toast.error('Failed to apply');
       }

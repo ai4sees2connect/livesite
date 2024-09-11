@@ -2,6 +2,7 @@ const express = require('express');
 const Student=require('../schema/studentSchema');
 const Internship=require('../schema/internshipSchema')
 const dotenv = require('dotenv');
+const { default: mongoose } = require('mongoose');
 
 
 dotenv.config();
@@ -9,15 +10,17 @@ const router= express.Router();
 
 router.post('/:studentId/apply/:internshipId', async (req, res) => {
   const { studentId, internshipId } = req.params;
+  const {availability,aboutText,assessmentAns}=req.body;
 
   try {
+    const internshipObjectId = new mongoose.Types.ObjectId(internshipId);
     const student = await Student.findById(studentId);
     if (!student) {
       return res.status(404).json({ message: 'Student not found' });
     }
 
     const alreadyApplied = student.appliedInternships.some((application) => 
-      application.internship === internshipId
+      application.internship.equals(internshipObjectId)
     );
 
     if (alreadyApplied) {
@@ -25,8 +28,11 @@ router.post('/:studentId/apply/:internshipId', async (req, res) => {
     }
 
     student.appliedInternships.push({
-      internship: internshipId,
-      appliedAt: new Date() // Save the current date and time
+      internship: internshipObjectId,
+      appliedAt: new Date(), // Save the current date and time
+      availability,
+      aboutText,
+      assessmentAns, 
     });
 
     await student.save();
@@ -34,11 +40,13 @@ router.post('/:studentId/apply/:internshipId', async (req, res) => {
     res.status(200).json({ message: 'Successfully applied to internship' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
+    console.log(error);
   }
 });
 
 router.get('/:studentId/applied-internships',async(req,res)=>{
   const {studentId}=req.params;
+  
   
   try {
     const student = await Student.findById(studentId)
