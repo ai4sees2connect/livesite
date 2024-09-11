@@ -16,6 +16,7 @@ const MyApplications = () => {
     const fetchAppliedInternships = async () => {
       try {
         const response = await axios.get(`${api}/student/internship/${userId}/applied-internships`);
+        const sortedInternships = response.data.sort((a, b) => new Date(b.appliedAt) - new Date(a.appliedAt));
         
         // const updatedAppliedInternships = response.data.map(application => ({
         //   internship: application.internship,
@@ -23,7 +24,8 @@ const MyApplications = () => {
         //   appliedAt: application.appliedAt,
         // }));
         // console.log('inside applicants',updatedAppliedInternships);
-        setAppliedInternships(response.data);
+        setAppliedInternships(sortedInternships);
+        console.log(response.data);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching applied internships:', err);
@@ -50,9 +52,9 @@ const MyApplications = () => {
         {appliedInternships.map((applied) => (
           <div key={applied.internship._id} className="bg-white shadow-md rounded-lg p-6 w-[60%] my-3 mx-auto relative">
             <h2 className="text-2xl font-semibold mb-2">{applied.internship.internshipName}</h2>
-            <p className="text-gray-600 mb-4">Posted by: {applied.recruiter.firstname} {applied.recruiter.lastname}</p>
-            <p className='text-gray-600 mb-4'>Posted: {TimeAgo(applied.internship.createdAt)}</p>
-            <p className="text-gray-600 mb-4">Status: Applied</p>
+            <p className="text-gray-600 mb-4">Posted by: {applied.recruiter.companyName}</p>
+            <p className='text-gray-600 mb-4'>Applied {TimeAgo(applied.appliedAt)}</p>
+            <p className="text-gray-600 mb-4">Status: Application sent</p>
           </div>
         ))}
       </div>

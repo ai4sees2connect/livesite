@@ -276,8 +276,8 @@ const Internships = () => {
   const [availability, setAvailability] = useState('Yes! Will join Immediately');
   const [resumeUrl, setResumeUrl] = useState(null);
   const [resumeFilename, setResumeFilename] = useState(null);
-  const [aboutText,setAboutText]=useState('');
-  const [assessmentAns,setAssessmentAns]=useState('');
+  const [aboutText, setAboutText] = useState('');
+  const [assessmentAns, setAssessmentAns] = useState('');
   console.log(workType);
 
 
@@ -414,32 +414,32 @@ const Internships = () => {
 
   const applyToInternship = async (internshipId) => {
     try {
-      if(!availability || !aboutText || !assessmentAns){
+      if (!availability || !aboutText || !assessmentAns) {
         toast.error('Please Enter all fields');
         return;
       }
-      const formData={
+      const formData = {
         availability,
         aboutText,
         assessmentAns
       }
-      const response = await axios.post(`${api}/student/internship/${userId}/apply/${internshipId}`,formData);
+      const response = await axios.post(`${api}/student/internship/${userId}/apply/${internshipId}`, formData);
       if (response.status === 200) {
         if (response.data.success) {
           toast.success('You have already applied for this Internship');
           setTimeout(() => {
             setIsInterestedModalOpen(false);
-          setSelectedInternship(null);
-          window.location.reload();
+            setSelectedInternship(null);
+            window.location.reload();
           }, 1000);
-          
+
           return;
         }
         toast.success('Successfully applied to the internship');
         setTimeout(() => {
           setIsInterestedModalOpen(false);
-        setSelectedInternship(null);
-        window.location.reload();
+          setSelectedInternship(null);
+          window.location.reload();
         }, 1000);
       } else {
         toast.error('Failed to apply');
@@ -621,17 +621,17 @@ const Internships = () => {
                 )}
                 <div className='text-gray-500 my-2'>{internship.studentCount} Applicants</div>
                 {/* <FaBuilding /> */}
-                <button
+                {!isAlreadyApplied(internship._id)? (<button
                   onClick={() => openModal(internship)}
                   className=" w-auto my-2 rounded-md text-blue-500 hover:scale-105 duration-300"
                 >
                   View details
-                </button>
+                </button>):(<button className=' w-auto my-2 rounded-md text-blue-500 hover:scale-105 duration-300'>Check Status</button>)}
 
               </div>
             ))}
 
-            {selectedInternship && (
+            {selectedInternship && !isAlreadyApplied(selectedInternship._id)&& (
               <>
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-40  " onClick={closeModal}></div>
                 <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -723,7 +723,7 @@ const Internships = () => {
 
                     <h2 className="text-2xl font-semibold mb-1">Thank you for showing interest!</h2>
                     <h1 className='text-gray-600 mt-2'>{selectedInternship.recruiter.companyName}</h1>
-                    <h1 className='text-gray-600'>{selectedInternship.internLocation?selectedInternship.internLocation:'Remote'}</h1>
+                    <h1 className='text-gray-600'>{selectedInternship.internLocation ? selectedInternship.internLocation : 'Remote'}</h1>
 
                     <button
                       onClick={closeModal}
@@ -759,7 +759,7 @@ const Internships = () => {
 
                     <div className='about-yourself-box mt-9'>
                       <h1 className='text-xl font-semibold'>Tell us about yourself</h1>
-                      <textarea value={aboutText} onChange={(e)=>setAboutText(e.target.value)} className='my-3 w-[80%] p-2 border-2' placeholder='Mention your skills, your interests, your previous experience in my company, achievements and Why do you want to work with us.' rows={4}></textarea>
+                      <textarea value={aboutText} onChange={(e) => setAboutText(e.target.value)} className='my-3 w-[80%] p-2 border-2' placeholder='Mention your skills, your interests, your previous experience in my company, achievements and Why do you want to work with us.' rows={4}></textarea>
                     </div>
 
                     <div className='availability-check mt-4'>
@@ -787,13 +787,13 @@ const Internships = () => {
                     </div>
 
                     {selectedInternship.assessment &&
-                     <div className='assessment-box mt-4'>
-                      <h1 className='text-xl font-semibold mb-2'>Assessment</h1>
-                      <div className='text-gray-600 mb-2'>Q {selectedInternship.assessment}</div>
-                      <textarea value={assessmentAns} onChange={(e)=>setAssessmentAns(e.target.value)} className='w-[80%] border-2 p-2' rows={4} name="" id="" placeholder='Write your answer here...'></textarea>
-                    </div>}
+                      <div className='assessment-box mt-4'>
+                        <h1 className='text-xl font-semibold mb-2'>Assessment</h1>
+                        <div className='text-gray-600 mb-2'>Q {selectedInternship.assessment}</div>
+                        <textarea value={assessmentAns} onChange={(e) => setAssessmentAns(e.target.value)} className='w-[80%] border-2 p-2' rows={4} name="" id="" placeholder='Write your answer here...'></textarea>
+                      </div>}
 
-                    <button onClick={()=>applyToInternship(selectedInternship._id)} className='bg-blue-400 hover:bg-blue-500 rounded-lg px-3 py-2 mt-7'>Submit</button>
+                    <button onClick={() => applyToInternship(selectedInternship._id)} className='bg-blue-400 hover:bg-blue-500 rounded-lg px-3 py-2 mt-7'>Submit</button>
 
                   </div>
                 </div>

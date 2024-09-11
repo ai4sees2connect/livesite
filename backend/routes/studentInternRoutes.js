@@ -54,7 +54,7 @@ router.get('/:studentId/applied-internships',async(req,res)=>{
         path: 'appliedInternships.internship', // Populate the internships the student applied to
         populate: {
           path: 'recruiter', // Further populate the recruiter details within each internship
-          select: 'firstname lastname email', // Select specific fields of the recruiter
+          select: 'firstname lastname email companyName', // Select specific fields of the recruiter
         },
       });
       if (!student) {
