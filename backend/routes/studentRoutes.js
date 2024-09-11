@@ -181,7 +181,8 @@ router.get('/details', async (req, res) => {
         homeLocation:student.homeLocation,
         personalProjects:student.personalProjects,
         skills:student.skills,
-        portfolioLink:student.portfolioLink
+        portfolioLink:student.portfolioLink,
+        resume:student.resume
 
       }
     });

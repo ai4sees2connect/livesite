@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaMapMarkerAlt, FaMoneyBillWave, FaUsers, FaClipboardList, FaTimes, FaClock, FaCheck, FaBuilding } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaMoneyBillWave, FaUsers, FaClipboardList, FaTimes, FaClock, FaCheck, FaBuilding, FaArrowLeft } from 'react-icons/fa';
 import Spinner from '../common/Spinner';
 import getUserIdFromToken from './auth/authUtils';
 import TimeAgo from '../common/TimeAgo';
@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import Select from 'react-select';
 import CustomRadio from './utils/CustomRadio';
 import StipendSlider from './utils/StipendSlider';
+import { useStudent } from './context/studentContext'
 // import CustomRadio from './utils/CustomRadio';
 
 
@@ -20,6 +21,7 @@ const Internships = () => {
   const [error, setError] = useState(null);
   const [selectedInternship, setSelectedInternship] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState(null);
+  const { student } = useStudent();
   const userId = getUserIdFromToken();
   const statesAndUTs = [
     { value: 'All Locations', label: 'All Locations' },
@@ -270,6 +272,10 @@ const Internships = () => {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [workType, setWorkType] = useState('');
   const [selectedStipend, setSelectedStipend] = useState(0);
+  const [isInterestedModalOpen, setIsInterestedModalOpen] = useState(false);
+  const [availability, setAvailability] = useState('Yes! Will join Immediately');
+  const [resumeUrl, setResumeUrl] = useState(null);
+  const [resumeFilename, setResumeFilename] = useState(null);
   console.log(workType);
 
 
@@ -333,9 +339,8 @@ const Internships = () => {
 
         const appliedResponse = await axios.get(`${api}/student/internship/${userId}/applied-internships`);
         setAppliedInternships(appliedResponse.data);
-        // console.log('response', appliedResponse.data);
-
         setLoading(false);
+
       } catch (err) {
         console.error('Error fetching internships:', err);
         setError('Failed to fetch internships. Please try again later.');
@@ -346,9 +351,44 @@ const Internships = () => {
     fetchInternships();
   }, [userId, workType, selectedLocation, selectedStipend, selectedProfile]);
 
+  useEffect(() => {
+    // Fetch the resume from the backend
+    const fetchResume = async () => {
+      try {
+        const response = await axios.get(`${api}/student/resume/${userId}`, {
+          responseType: 'blob', // Set response type to blob for binary data
+        });
+
+
+        // Create a URL for the blob data
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        setResumeUrl(url);
+        console.log(resumeUrl);
+
+        const contentDisposition = response.headers['content-disposition'];
+        // console.log('contentDisposition:', contentDisposition);
+        // console.log(Object.keys(response.headers));
+        // console.log('response.headers:', response.headers);
+        if (contentDisposition) {
+          console.log('yattttaaa');
+          const matches = /filename="([^"]*)"/.exec(contentDisposition);
+          if (matches) setResumeFilename(matches[1]);
+        }
+
+        // setResumeCreatedAt(createdAt);
+      } catch (error) {
+        console.error('Error fetching resume:', error);
+      }
+    };
+
+    fetchResume();
+  }, [userId]);
+  console.log('this is resume', resumeUrl);
+
+
   const openModal = async (internship) => {
     setSelectedInternship(internship);
-    console.log('selected internship',internship);
+    console.log('selected internship', internship);
     try {
       const response = await axios.put(`${api}/student/internship/${internship._id}/view`);
       // console.log(response.data);
@@ -359,6 +399,15 @@ const Internships = () => {
 
   const closeModal = () => {
     setSelectedInternship(null);
+    setIsInterestedModalOpen(false);
+  };
+
+  const openInterestedModal = () => {
+    setIsInterestedModalOpen(true);
+  };
+
+  const closeInterestedModal = () => {
+    setIsInterestedModalOpen(false);
   };
 
   const applyToInternship = async (internshipId) => {
@@ -392,6 +441,11 @@ const Internships = () => {
   const isAlreadyApplied = (internshipId) => {
     return appliedInternships.some((applied) => applied.internship._id === internshipId);
   };
+
+  const handleRadioChange = (e) => {
+    if (e.target.value === 'Yes') setAvailability('Yes! Will join Immediately');
+    else if (e.target.value === 'No') setAvailability('No! Cannot Join immediately')
+  }
 
   console.log(selectedStipend);
 
@@ -559,18 +613,22 @@ const Internships = () => {
                 <div className="fixed inset-0 flex items-center justify-center z-50">
                   <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-[60%] h-[90%] p-6 relative overflow-auto">
                     <div className='border-b'>
-                    <h2 className="text-2xl font-semibold mb-4">Applying for {selectedInternship.internshipName}</h2>
-                    <button
-                      onClick={closeModal}
-                      className="absolute top-7 right-4 text-blue-500 hover:text-blue-700 focus:outline-none"
-                    >
-                      <FaTimes />
-                    </button>
-                    <p className="text-gray-600 mb-4">{selectedInternship.recruiter.companyName}</p>
+                      <h2 className="text-2xl font-semibold mb-4">Applying for {selectedInternship.internshipName}</h2>
+                      <button
+                        onClick={closeModal}
+                        className="absolute top-7 right-4 text-blue-500 hover:text-blue-700 focus:outline-none"
+                      >
+                        <FaTimes />
+                      </button>
+                      <p className="text-gray-600 mb-4">{selectedInternship.recruiter.companyName}</p>
                     </div>
 
-                    {/* <p className='text-gray-600 mb-4'>Posted: {TimeAgo(selectedInternship.createdAt)}</p> */}
-                    <button onClick={() => applyToInternship(selectedInternship._id)} className='absolute bg-blue-300 hover:bg-blue-400 py-2 px-5 rounded-xl right-5 top-[130px]'>Apply</button>
+                    <button
+                      onClick={openInterestedModal}
+                      className='absolute bg-blue-300 hover:bg-blue-400 py-2 px-5 rounded-xl right-5 top-[130px]'
+                    >
+                      I'm Interested
+                    </button>
 
                     <div className="flex items-center text-gray-700 mb-2">
                       <FaMapMarkerAlt className="mr-2" />
@@ -618,20 +676,97 @@ const Internships = () => {
 
                     <h3 className="text-lg font-medium mb-2">Perks and Benefits</h3>
                     <div className="flex flex-wrap mb-4">
-                    {selectedInternship.perks.map((perk,index)=>(
-                      <span
-                      key={index}
-                      className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
-                    >
-                      {perk}
-                    </span>
-                    ))}
+                      {selectedInternship.perks.map((perk, index) => (
+                        <span
+                          key={index}
+                          className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
+                        >
+                          {perk}
+                        </span>
+                      ))}
                     </div>
 
                   </div>
                 </div>
               </>
             )}
+
+            {isInterestedModalOpen && (<>
+              <div className="fixed inset-0 bg-black bg-opacity-5 z-40" onClick={closeModal}></div>
+              <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-[60%] h-[90%] py-8 px-10 relative overflow-auto flex flex-col space-y-3">
+                  <div className='border-b '>
+
+                    <h2 className="text-2xl font-semibold mb-1">Thank you for showing interest!</h2>
+                    <h1 className='text-gray-700 my-2'>{selectedInternship.recruiter.companyName}</h1>
+
+                    <button
+                      onClick={closeModal}
+                      className="absolute top-7 right-4 text-blue-500 hover:text-blue-700 focus:outline-none"
+                    >
+                      <FaTimes />
+                    </button>
+
+                  </div>
+                  {selectedInternship.internLocation !== '' && student.homeLocation !== selectedInternship.internLocation && (
+                    <h1 className='text-red-500'>This Internship requires Relocation!</h1>
+                  )}
+
+                  <div>
+                    <div className='resume-box mt-4'>
+                      <h1 className='text-xl font-semibold'>Your Resume</h1>
+
+                      <div className='flex space-x-2'>
+                        <h1 className='text-gray-600'>This Resume will be submitted along with you application</h1>
+                        {resumeUrl && (
+                          <a
+                            href={resumeUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className='text-blue-400'
+                            download={resumeFilename}
+                          >
+                            Click to view
+                          </a>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className='about-yourself-box mt-9'>
+                      <h1 className='text-xl font-semibold'>Tell us about yourself</h1>
+                      <textarea className='my-3 w-[80%] p-2 border-2' placeholder='Mention your skills, your interests, your previous experience in my company, achievements and Why do you want to work with us.' rows={4}></textarea>
+                    </div>
+
+                    <div className='availability-check mt-4'>
+                      <h1>Can you join Immediately?</h1>
+                      <div className='flex flex-col text-gray-600 my-2'>
+                        <label >
+                          <input
+                            type="radio"
+                            value="Yes"
+                            checked={availability === 'Yes! Will join Immediately'}
+                            onChange={handleRadioChange}
+                          />
+                          <span className='mx-1'>Yes</span>
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            value="No"
+                            checked={availability === 'No! Cannot Join immediately'}
+                            onChange={handleRadioChange}
+                          />
+                          <span className='mx-1'>No</span>
+                        </label>
+                      </div>
+
+
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </>)}
           </div>
         </div>
       </div>
