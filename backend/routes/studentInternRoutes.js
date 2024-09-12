@@ -61,11 +61,18 @@ router.get('/:studentId/applied-internships',async(req,res)=>{
         return res.status(404).json({ message: 'Student not found' });
       }
 
-      const internships = student.appliedInternships.map(application => ({
+      let internships = student.appliedInternships.map(application => ({
         internship: application.internship, // Internship details
         recruiter: application.internship.recruiter, // Recruiter details
         appliedAt: application.appliedAt, // Applied date
       }));
+
+      for (const internship of internships) {
+        const students = await Student.find({ 'appliedInternships.internship': internship.internship._id });
+        
+        // Add studentCount as a new property to the internship object
+        internship.studentCount = students.length;
+      }
   
     res.status(200).json(internships);
    

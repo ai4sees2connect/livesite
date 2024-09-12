@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import {Link} from 'react-router-dom'
 import axios from 'axios';
 import { FaMapMarkerAlt, FaMoneyBillWave, FaUsers, FaClipboardList, FaTimes, FaClock, FaCheck, FaBuilding, FaArrowLeft } from 'react-icons/fa';
 import Spinner from '../common/Spinner';
@@ -23,6 +24,7 @@ const Internships = () => {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const { student } = useStudent();
   const userId = getUserIdFromToken();
+
   const statesAndUTs = [
     { value: 'All Locations', label: 'All Locations' },
     { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
@@ -472,6 +474,7 @@ const Internships = () => {
   // console.log(selectedStipend);
   // console.log(aboutText);
   console.log(assessmentAns);
+  console.log(userId);
 
 
   if (loading) {
@@ -621,12 +624,12 @@ const Internships = () => {
                 )}
                 <div className='text-gray-500 my-2'>{internship.studentCount} Applicants</div>
                 {/* <FaBuilding /> */}
-                {!isAlreadyApplied(internship._id)? (<button
+                {!isAlreadyApplied(internship._id)? (<button 
                   onClick={() => openModal(internship)}
                   className=" w-auto my-2 rounded-md text-blue-500 hover:scale-105 duration-300"
                 >
                   View details
-                </button>):(<button className=' w-auto my-2 rounded-md text-blue-500 hover:scale-105 duration-300'>Check Status</button>)}
+                </button>):(<Link  to={`/student/myApplications/${userId}`} className=' w-auto my-2 rounded-md text-blue-500 hover:scale-105 duration-300'>Check Status</Link>)}
 
               </div>
             ))}
