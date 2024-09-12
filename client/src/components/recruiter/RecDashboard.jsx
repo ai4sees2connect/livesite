@@ -6,7 +6,7 @@ import api from '../common/server_url'; // Your server URL
 import { FaMapMarkerAlt, FaMoneyBillWave, FaUsers, FaClipboardList, FaTimes, FaClock } from 'react-icons/fa';
 import TimeAgo
   from '../common/TimeAgo';
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 
 
@@ -75,19 +75,19 @@ const RecDashboard = () => {
       <h1 className="text-3xl font-bold text-center mb-8">My Posted Internships</h1>
       <div className="bg-white shadow-md rounded-lg p-6 w-[90%] my-3 mx-auto">
         {/* Column Headings */}
-        <div className="grid grid-cols-5 gap-1 font-semibold mb-2 border-b-2 pb-2 text-center">
-          <div className='w-[290px]'>Post</div>
+        <div className="grid grid-cols-5 gap-4 font-semibold mb-2 border-b-2 pb-2 text-center">
+          <div className='w-[200px] ml-8'>Post</div>
           <div className='w-[90px] ml-40'>Status</div>
-          <div className='w-[80px] mx-auto'>Views</div>
+          <div className='w-[90px] mx-auto'>Total Views</div>
           <div>View Applicants</div>
           <div>View Details</div>
         </div>
         {internships.map((internship) => (
           <div key={internship._id} className="grid grid-cols-5 gap-5 py-2 border-b-2">
-            <div className='text-center mx-0 my-3 w-[290px]'>{internship.internshipName}</div>
+            <div className='text-center ml-8 my-3 w-[200px]'>{internship.internshipName}</div>
             <div className='inline-flex justify-center h-8 my-auto w-[90px] ml-40'>Active<span className=' ml-2 mt-2 w-2 h-2 rounded-full bg-green-500'></span></div>
             <div className='w-[80px] mx-auto text-center my-3'>{internship.views}</div>
-            <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}`} className='text-center my-auto leading-5 w-32 h-6 hover:underline text-blue-500 hover:cursor-pointer mx-auto py-0'>{internship.applicantCount} Applicants</Link>
+            <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}`} className='text-center my-auto rounded-xl bg-blue-400 text-white w-[190px] hover:bg-blue-700 hover:cursor-pointer mx-auto py-1'>View Applications ({internship.applicantCount})</Link>
             <div className='text-center h-8 w-36 mx-auto my-auto'>
               <button onClick={() => openModal(internship)} className="text-blue-500 hover:underline ">View</button>
             </div>
@@ -153,6 +153,18 @@ const RecDashboard = () => {
                   className="text-gray-700 mb-4"
                   dangerouslySetInnerHTML={{ __html: selectedInternship.description }}
                 ></div>
+
+                <h3 className="text-lg font-medium mb-2">Perks</h3>
+                <div className="flex flex-wrap mb-4">
+                  {selectedInternship.perks.map((perk, index) => (
+                    <span
+                      key={index}
+                      className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
+                    >
+                      {perk}
+                    </span>
+                  ))}
+                </div>
 
               </div>
             </div>
