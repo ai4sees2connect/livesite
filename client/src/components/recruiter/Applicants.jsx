@@ -79,15 +79,15 @@ const Applicants = () => {
   }
 
   return (
-    <div className="py-10 px-5 mt-10 bg-gray-100 min-h-screen">
+    <div className="py-10 px-5 mt-10 bg-gray-100 min-h-screen ">
       <h1 className="text-3xl font-bold text-center mb-8">Applicants for {internship.internshipName}</h1>
-      <div className="bg-white shadow-md rounded-lg p-6 w-[90%] my-3 mx-auto">
+      <div className="bg-white shadow-md rounded-lg p-6 w-[70%] my-3 mx-auto">
         {applicants.length === 0 ? (
           <p className="text-center text-gray-500">No applicants for this internship yet.</p>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 ">
             {applicants.map((student) => (
-              <div key={student._id} className="p-4 border rounded-lg shadow-sm bg-gray-50 relative">
+              <div key={student._id} className="p-4 border rounded-lg shadow-sm bg-gray-50 relative ">
                 <h2 className="text-2xl font-semibold mb-2 capitalize">
                   {student.firstname} {student.lastname}
                 </h2>

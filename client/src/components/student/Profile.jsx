@@ -13,7 +13,7 @@ import axios from 'axios'
 import api from '../common/server_url'
 import Select from 'react-select';
 import { toast } from 'react-toastify'
-import {FaPen} from 'react-icons/fa';
+import { FaPen } from 'react-icons/fa';
 
 const Profile = () => {
 
@@ -25,7 +25,22 @@ const Profile = () => {
   const [skills, setSkills] = useState([]);
   // const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
-  const [cityEdit, setCityEdit]=useState(false);
+  const [cityEdit, setCityEdit] = useState(false);
+  const [expEdit, setExpEdit] = useState(null);
+  const [exp, setExp] = useState(null);
+  const nums = [
+    { value: 'fresher', label: 'fresher' },
+    { value: '1', label: '1' },
+    { value: '2', label: '2' },
+    { value: '3', label: '3' },
+    { value: '4', label: '4' },
+    { value: '5', label: '5' },
+    { value: '6', label: '6' },
+    { value: '7', label: '7' },
+    { value: '8', label: '8' },
+    { value: '9', label: '9' },
+    { value: '10', label: '10+' },
+  ]
   const statesAndUTs = [
     { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
     { value: 'Arunachal Pradesh', label: 'Arunachal Pradesh' },
@@ -101,20 +116,43 @@ const Profile = () => {
   }, [userId, idFromToken, token]);
 
 
-console.log(selectedCity);
 
-const handleSave=async()=>{
-  const cityName=selectedCity.value;
-  try {
-    await axios.put(`${api}/student/api/${idFromToken}/save-location`,{ homeLocation: cityName });
-    toast.success('Home Location Updated');
-    window.location.reload();
 
-  } catch (error) {
-    toast.error('Some error occured');
-    console.error('Error saving location:', error);
+
+  const handleSave = async () => {
+    const cityName = selectedCity.value;
+
+    console.log('cityName', cityName);
+    try {
+      await axios.put(`${api}/student/api/${idFromToken}/save-location`, { homeLocation: cityName });
+      toast.success('Home Location Updated');
+      window.location.reload();
+
+    } catch (error) {
+      toast.error('Some error occured');
+      console.error('Error saving location:', error);
+    }
   }
-}
+
+  const handleSaveExp = async () => {
+    const yearsOfExp = exp.value;
+
+    // console.log('cityName',cityName);
+    console.log('yearsOfExp', yearsOfExp);
+    try {
+      await axios.put(`${api}/student/api/${idFromToken}/save-exp`, { yearsOfExp });
+      toast.success('Experience Updated');
+      window.location.reload();
+
+    } catch (error) {
+      toast.error('Some error occured');
+      console.error('Error saving experience:', error);
+    }
+  }
+
+  console.log('this is exp', exp);
+  console.log('this is student', student);
+
 
 
 
@@ -127,28 +165,53 @@ const handleSave=async()=>{
           <h1 className="text-3xl font-bold mb-2 text-center">Your Profile</h1>
           <h1 className=' text-xl capitalize text-center text-gray-600'>{student.firstname} {student.lastname}</h1>
           <h1 className=' text-gray-600 text-center'>{student.email}</h1>
-          {!student.homeLocation && !cityEdit && <h1 onClick={()=>setCityEdit(true)} className='text-red-500 text-center hover:cursor-pointer'>Add City</h1>}
-          {cityEdit && 
-          <div className='flex justify-center space-x-3 my-2'>
-          <Select
-            options={statesAndUTs}
-            values={selectedCity}
-            onChange={(value)=>setSelectedCity(value)}
-            placeholder="Select a location"
-            searchable={true}
-            className='w-1/3 shadow-md '
+          {!student.homeLocation && !cityEdit && <h1 onClick={() => setCityEdit(true)} className='text-red-500 text-center hover:cursor-pointer'>Add City</h1>}
+          {cityEdit &&
+            <div className='flex justify-center space-x-3 my-2'>
+              <Select
+                options={statesAndUTs}
+                values={selectedCity}
+                onChange={(value) => setSelectedCity(value)}
+                placeholder="Select a location"
+                searchable={true}
+                className='w-1/3 shadow-md '
 
-          />
-          {selectedCity && <button onClick={handleSave} className='bg-green-300 py-1 px-3 rounded-lg hover:bg-green-500'>Save</button>}
-          <button onClick={()=>{setCityEdit(false);setSelectedCity(null)}} className='bg-red-300 py-1 px-3 rounded-lg hover:bg-red-500'>Close</button>
-          </div>
+              />
+              {selectedCity && <button onClick={handleSave} className='bg-green-300 py-1 px-3 rounded-lg hover:bg-green-500'>Save</button>}
+              <button onClick={() => { setCityEdit(false); setSelectedCity(null) }} className='bg-red-300 py-1 px-3 rounded-lg hover:bg-red-500'>Close</button>
+            </div>
           }
-          {! cityEdit && <div className='flex space-x-3 justify-center items-center'>
-          <h1 className='text-center text-gray-600'>{student.homeLocation}</h1>
-          {student.homeLocation && <FaPen onClick={()=>setCityEdit(true)} className='w-3 h-3 hover:cursor-pointer hover:text-blue-400'/>}
+          {!cityEdit && <div className='flex space-x-3 justify-center items-center'>
+            <h1 className='text-center text-gray-600'>{student.homeLocation}</h1>
+            {student.homeLocation && <FaPen onClick={() => setCityEdit(true)} className='w-3 h-3 hover:cursor-pointer hover:text-blue-400' />}
           </div>}
+
+          <div className='flex justify-center'>
+            {!expEdit && !student.yearsOfExp && (<h1 onClick={() => setExpEdit(true)} className='text-red-500 text-center hover:cursor-pointer'>Add years of experience</h1>)}
+            {!expEdit && <div className='flex space-x-3 justify-center items-center'>
+              <h1 className='text-gray-600 text-center'>{student.yearsOfExp === 'fresher' ? 'Fresher' : `${student.yearsOfExp} years of Experience`}</h1>
+              {student.yearsOfExp && <FaPen onClick={() => setExpEdit(true)} className='w-3 h-3 hover:cursor-pointer hover:text-blue-400' />}
+            </div>}
+            {expEdit &&
+              <div className='flex justify-center w-full'>
+                <Select
+                  options={nums}
+                  values={exp}
+                  onChange={(value) => setExp(value)}
+                  placeholder="Experience in years"
+                  searchable={true}
+                  className='w-1/3 shadow-md '
+
+                />
+                <button onClick={() => { setExpEdit(false); setExp(null) }} className='bg-red-300 py-1 px-3 rounded-lg hover:bg-red-500 mx-2'>Close</button>
+                {exp && <button onClick={handleSaveExp} className='bg-green-300 py-1 px-3 rounded-lg hover:bg-green-500'>Save</button>}
+              </div>
+            }
+          </div>
+
         </div>
-        
+
+
 
 
 

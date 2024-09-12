@@ -18,6 +18,10 @@ const studentSchema =new mongoose.Schema({
   password: { 
     type: String,
   },
+  yearsOfExp:{
+    type: String,
+    required:true
+  },
   homeLocation:{
     type: String,
     required:true
