@@ -358,6 +358,12 @@ const Applicants = () => {
                   </h2>
                   <h2 className='mb-2'>{student.homeLocation}</h2>
 
+                  {student.appliedInternships.map((appliedInternship) =>
+                    appliedInternship.internship === internship._id ? (
+                      <p key={appliedInternship.internship}>{appliedInternship.availability==='Yes! Will join Immediately'?(<span className='text-green-500'>Immediate Joiner</span>):(<span className='text-red-500'>Not an Immediate Joiner</span>)}</p>
+                    ) : null
+                  )}
+
                   {!isOpen && <button onClick={() => setIsOpen(true)} className='absolute right-3 top-2 underline text-blue-400'>View Profile</button>}
                   {isOpen &&
                     <div className='flex absolute right-3 top-2 space-x-4'>
@@ -400,10 +406,25 @@ const Applicants = () => {
                   {isOpen &&
                     <div className='relative'>
 
-                      {internship.assessment && <div className="mb-2">
-                        <h3 className="font-semibold">Assessment Question</h3>
-                        <p>Q {internship.assessment}</p>
-                      </div>}
+                      {internship.assessment &&
+                        <div className="mb-2">
+                          <h3 className="font-semibold">Assessment Question</h3>
+                          <p>Ques: {internship.assessment}</p>
+                          {student.appliedInternships.map((appliedInternship) =>
+                            appliedInternship.internship === internship._id ? (
+                              <p key={appliedInternship.internship} className='text-gray-600'>Ans: {appliedInternship.assessmentAns}</p>
+                            ) : null
+                          )}
+                        </div>}
+
+                        <div>
+                          <p className='font-semibold'>About the student</p>
+                          {student.appliedInternships.map((appliedInternship) =>
+                            appliedInternship.internship === internship._id ? (
+                              <p key={appliedInternship.internship} className='text-gray-600'> {appliedInternship.aboutText}</p>
+                            ) : null
+                          )}
+                        </div>
 
 
 
