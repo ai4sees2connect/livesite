@@ -28,6 +28,8 @@ const Profile = () => {
   const [cityEdit, setCityEdit] = useState(false);
   const [expEdit, setExpEdit] = useState(null);
   const [exp, setExp] = useState(null);
+  const [genderEdit,setGenderEdit] = useState(false);
+  const [gender, setGender] = useState(null);
   const nums = [
     { value: 'fresher', label: 'fresher' },
     { value: '1', label: '1' },
@@ -150,6 +152,21 @@ const Profile = () => {
     }
   }
 
+  const handleSaveGender=async()=>{
+    const genderData= gender.value;
+    console.log('gender', gender);
+
+    try {
+      await axios.put(`${api}/student/api/${idFromToken}/save-gender`, { genderData });
+      toast.success('gender Updated');
+      window.location.reload();
+
+    } catch (error) {
+      toast.error('Some error occured');
+      console.error('Error gender experience:', error);
+    }
+  }
+
   console.log('this is exp', exp);
   console.log('this is student', student);
 
@@ -205,6 +222,34 @@ const Profile = () => {
                 />
                 <button onClick={() => { setExpEdit(false); setExp(null) }} className='bg-red-300 py-1 px-3 rounded-lg hover:bg-red-500 mx-2'>Close</button>
                 {exp && <button onClick={handleSaveExp} className='bg-green-300 py-1 px-3 rounded-lg hover:bg-green-500'>Save</button>}
+              </div>
+            }
+          </div>
+
+          <div className='flex justify-center'>
+            {!genderEdit && !student.gender && (<h1 onClick={() => setGenderEdit(true)} className='text-red-500 text-center hover:cursor-pointer'>Add your gender</h1>)}
+            {!genderEdit && <div className='flex space-x-3 justify-center items-center'>
+              <h1 className='text-gray-600 text-center'>{student.gender}</h1>
+              {student.gender && <FaPen onClick={() => setGenderEdit(true)} className='w-3 h-3 hover:cursor-pointer hover:text-blue-400' />}
+            </div>}
+            {genderEdit &&
+              <div className='flex justify-center w-full'>
+                <Select
+                  options={[
+                    {value: 'Male', label: 'Male'},
+                    {value:'Female', label: 'Female'},
+                    {value: 'Other',label:'Other'}
+
+                  ]}
+                  values={gender}
+                  onChange={(value) => setGender(value)}
+                  placeholder="select gender"
+                  searchable={true}
+                  className='w-1/3 shadow-md '
+
+                />
+                <button onClick={() => { setGenderEdit(false); setGender(null)}} className='bg-red-300 py-1 px-3 rounded-lg hover:bg-red-500 mx-2'>Close</button>
+                {gender && <button onClick={handleSaveGender} className='bg-green-300 py-1 px-3 rounded-lg hover:bg-green-500'>Save</button>}
               </div>
             }
           </div>

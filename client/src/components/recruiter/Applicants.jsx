@@ -6,6 +6,8 @@ import api from '../common/server_url';
 import { FaTimes } from 'react-icons/fa';
 import Select from 'react-select';
 import ExperienceSlider from './common/ExperienceSlider';
+import MatchingSlider from './common/MatchingSlider';
+import PerformanceSlider from './common/PerformanceSlider';
 
 const Applicants = () => {
   const { recruiterId, internshipId } = useParams(); // Get recruiterId and internshipId from URL
@@ -19,7 +21,64 @@ const Applicants = () => {
   const [locationFilter, setLocationFilter] = useState([]);
   const [expFilter, setExpFilter] = useState(0);
   const [skillsFilter, setSkillsFilter] = useState([]);
-  // const [locationFilter,setLocationFilter]=useState([]);
+  const [eduFilter, setEduFilter] = useState([]);
+  const [selectedMatch, setSelectedMatch] = useState(0);
+  const [selectedGenders, setSelectedGenders] = useState([]);
+  const [selectedGradYears, setSelectedGradYears] = useState([]);
+  const [selectedPer, setSelectedPer] = useState(0);
+  const yearOptions = [
+    { value: '2024', label: '2024' },
+    { value: '2024 & before', label: '2024 & before' },
+    { value: '2023', label: '2023' },
+    { value: '2023 & before', label: '2023 & before' },
+    { value: '2022', label: '2022' },
+    { value: '2022 & before', label: '2022 & before' },
+    { value: '2021', label: '2021' },
+    { value: '2021 & before', label: '2021 & before' },
+    { value: '2020', label: '2020' },
+    { value: '2020 & before', label: '2020 & before' },
+    { value: '2019', label: '2019' },
+    { value: '2019 & before', label: '2019 & before' },
+    { value: '2018', label: '2018' },
+    { value: '2018 & before', label: '2018 & before' },
+    { value: '2017', label: '2017' },
+    { value: '2017 & before', label: '2017 & before' },
+    { value: '2016', label: '2016' },
+    { value: '2016 & before', label: '2016 & before' },
+    { value: '2015', label: '2015' },
+    { value: '2015 & before', label: '2015 & before' },
+    { value: '2014', label: '2014' },
+    { value: '2014 & before', label: '2014 & before' },
+    { value: '2013', label: '2013' },
+    { value: '2013 & before', label: '2013 & before' },
+    { value: '2012', label: '2012' },
+    { value: '2012 & before', label: '2012 & before' },
+    { value: '2011', label: '2011' },
+    { value: '2011 & before', label: '2011 & before' },
+    { value: '2010', label: '2010' },
+    { value: '2010 & before', label: '2010 & before' },
+    { value: '2009', label: '2009' },
+    { value: '2009 & before', label: '2009 & before' },
+    { value: '2008', label: '2008' },
+    { value: '2008 & before', label: '2008 & before' },
+    { value: '2007', label: '2007' },
+    { value: '2007 & before', label: '2007 & before' },
+    { value: '2006', label: '2006' },
+    { value: '2006 & before', label: '2006 & before' },
+    { value: '2005', label: '2005' },
+    { value: '2005 & before', label: '2005 & before' },
+    { value: '2004', label: '2004' },
+    { value: '2004 & before', label: '2004 & before' },
+    { value: '2003', label: '2003' },
+    { value: '2003 & before', label: '2003 & before' },
+    { value: '2002', label: '2002' },
+    { value: '2002 & before', label: '2002 & before' },
+    { value: '2001', label: '2001' },
+    { value: '2001 & before', label: '2001 & before' },
+    { value: '2000', label: '2000' },
+    { value: '2000 & before', label: '2000 & before' },
+  ];
+
   const statesAndUTs = [
     { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
     { value: 'Arunachal Pradesh', label: 'Arunachal Pradesh' },
@@ -59,6 +118,32 @@ const Applicants = () => {
     { value: 'Jammu and Kashmir', label: 'Jammu and Kashmir' },
     { value: 'Ladakh', label: 'Ladakh' }
   ];
+
+  const cgpaToPercentage = (cgpa) => {
+    const cgpaValue = parseFloat(cgpa);
+    return (cgpaValue * 9.5).toFixed(2); // Convert CGPA to percentage
+  };
+
+  const degreeOptions = [
+    { value: 'MBA', label: 'MBA' },
+    { value: 'B.Tech', label: 'B.Tech' },
+    { value: 'PhD', label: 'PhD' },
+    { value: 'M.Tech', label: 'M.Tech' },
+    { value: 'B.Sc', label: 'B.Sc' },
+    { value: 'M.Sc', label: 'M.Sc' },
+    { value: 'BBA', label: 'BBA' },
+    { value: 'B.Com', label: 'B.Com' },
+    { value: 'M.Com', label: 'M.Com' },
+    { value: 'B.Arch', label: 'B.Arch' },
+    { value: 'LLB', label: 'LLB' },
+    { value: 'LLM', label: 'LLM' },
+    { value: 'BCA', label: 'BCA' },
+    { value: 'MCA', label: 'MCA' },
+    { value: 'MBBS', label: 'MBBS' },
+    { value: 'BDS', label: 'BDS' },
+    { value: 'B.Pharm', label: 'B.Pharm' }
+  ];
+  const graduationDegrees = degreeOptions.map(option => option.value);
 
   useEffect(() => {
     const fetchApplicantsAndInternship = async () => {
@@ -146,22 +231,100 @@ const Applicants = () => {
     const matchesExperience = studentExperience >= expFilter;
 
     // Return true if all filters match
-    const matchesSkills = skillsFilter.length === 0 || 
-    skillsFilter.some((selectedSkill) =>
-      student.skills.some((skill) => 
-        skill.skillName.toLowerCase() === selectedSkill.value.toLowerCase()
-      )
-    );
+    const matchesSkills = skillsFilter.length === 0 ||
+      skillsFilter.some((selectedSkill) =>
+        student.skills.some((skill) =>
+          skill.skillName.toLowerCase() === selectedSkill.value.toLowerCase()
+        )
+      );
 
-// Return true if all filters match
-return matchesName && matchesLocation && matchesExperience && matchesSkills;
+    const matchesEducation = eduFilter.length === 0 || // If no education filter is selected, show all applicants
+      eduFilter.some((selectedDegree) =>
+        student.education.some((edu) =>
+          edu.degree.toLowerCase() === selectedDegree.value.toLowerCase()
+        ));
+
+    const matchPercentage = calculateMatchPercentage(student.skills, internship.skills);
+
+    // Matching logic based on selectedMatch value
+    let matchesMatching;
+    if (selectedMatch === 0) {
+      matchesMatching = true; // Return all applicants regardless of match percentage
+    } else if (selectedMatch === 1) {
+      matchesMatching = matchPercentage >= 50; // Return applicants with 50% match or above
+    } else if (selectedMatch === 2) {
+      matchesMatching = matchPercentage >= 80; // Return applicants with 80% match or above
+    }
+
+    const matchesGender = selectedGenders.length === 0 ||
+      selectedGenders.includes(student.gender);
+
+    const matchesGraduationYear = selectedGradYears.length === 0 ||
+      selectedGradYears.some((selectedYear) => {
+        // Find the graduation degree
+        const graduationEducation = student.education.find(edu =>
+          graduationDegrees.includes(edu.degree)
+        );
+        if (!graduationEducation) return false;
+
+        // Check if the graduation year matches the filter
+        const studentGraduationYear = graduationEducation.endYear;
+        // console.log(typeof(studentGraduationYear))
+        return studentGraduationYear === (selectedYear.value) ||
+          selectedYear.value.includes('before') && parseInt(studentGraduationYear) <= parseInt(selectedYear.value.split(' ')[0]);
+      });
+
+    const scoreFilterThreshold = {
+      0: 0,
+      1: 60,
+      2: 70,
+      3: 80,
+      4: 90
+    };
+
+    const performanceThreshold = scoreFilterThreshold[selectedPer];
+
+    const convertScoreToPercentage = (score) => {
+      if (score.endsWith('%')) {
+        return parseFloat(score);
+      } else if (score.includes('CGPA')) {
+        return cgpaToPercentage(score.split(' ')[0]);
+      }
+      return 0; // Default case, assuming other formats are not expected
+    };
+
+    const matchesPerformance = selectedPer === 0 ||
+      student.education.some((edu) => {
+        const degree = edu.degree;
+        const isGraduationDegree = graduationDegrees.includes(degree);
+        if (!isGraduationDegree) return false;
+        const score = edu.score;
+        const percentage = convertScoreToPercentage(score);
+        console.log(percentage);
+        return percentage >= performanceThreshold;
+      });
+
+    // Return true if all filters match
+    return matchesName && matchesLocation && matchesExperience && matchesSkills && matchesEducation && matchesMatching && matchesGender && matchesGraduationYear && matchesPerformance;
   });
+
+  const handleCheckboxChange = (event) => {
+    const value = event.target.value;
+    setSelectedGenders((prev) =>
+      prev.includes(value)
+        ? prev.filter((gender) => gender !== value)
+        : [...prev, value]
+    );
+  };
 
 
 
   // console.log(internship);
   // console.log(filteredApplicants);
-  console.log('expFilter', expFilter);
+  // console.log('this is selectedMatch', selectedMatch);\
+  // console.log('selected year',selectedGradYears)
+  console.log('selected performance', selectedPer);
+  // console.log('Education Filter', eduFilter);
   // console.log(locationFilter);
 
   if (loading) {
@@ -178,7 +341,9 @@ return matchesName && matchesLocation && matchesExperience && matchesSkills;
 
   return (
     <div className="py-10 px-5 mt-10 bg-gray-100 min-h-screen ">
-      <h1 className="text-3xl font-bold text-center mb-8">Applicants for {internship.internshipName}</h1>
+      <h1 className='text-gray-600'>Dashboard -&gt; Application Received</h1>
+      <h1 className="text-3xl font-bold text-center my-5 w-[60%] ml-5 ">Applicants for {internship.internshipName}</h1>
+      <h1 className='text-gray-600 ml-20'>Showing {filteredApplicants.length} results</h1>
       <div className='flex'>
         <div className="bg-white shadow-md rounded-lg p-6 w-[60%] my-3 ml-20">
           {filteredApplicants.length === 0 ? (
@@ -195,10 +360,10 @@ return matchesName && matchesLocation && matchesExperience && matchesSkills;
 
                   {!isOpen && <button onClick={() => setIsOpen(true)} className='absolute right-3 top-2 underline text-blue-400'>View Profile</button>}
                   {isOpen &&
-                    <>
-                      <button onClick={() => setIsOpen(false)} className='absolute right-3 top-2 underline text-blue-400'>Hide Profile</button>
-                      <button className='absolute right-3 top-10 underlin rounded-lg bg-green-200 hover:bg-green-500 px-2 py-1'>Shortlist</button>
-                    </>
+                    <div className='flex absolute right-3 top-2 space-x-4'>
+                      <button onClick={() => setIsOpen(false)} className=' right-3 top-2 underline text-blue-400'>Hide Profile</button>
+                      <button className=' right-3 top-10 underlin rounded-lg bg-green-200 hover:bg-green-500 px-2 py-1'>Shortlist</button>
+                    </div>
                   }
 
 
@@ -235,6 +400,10 @@ return matchesName && matchesLocation && matchesExperience && matchesSkills;
                   {isOpen &&
                     <div className='relative'>
 
+                      {internship.assessment && <div className="mb-2">
+                        <h3 className="font-semibold">Assessment Question</h3>
+                        <p>Q {internship.assessment}</p>
+                      </div>}
 
 
 
@@ -245,7 +414,7 @@ return matchesName && matchesLocation && matchesExperience && matchesSkills;
                         <h3 className="font-semibold">Education:</h3>
                         {student.education.map((edu, index) => (
                           <p key={index} className='text-gray-600'>
-                            {edu.degree} in {edu.fieldOfStudy} from {edu.institution} ({edu.startYear} - {edu.endYear})
+                            {edu.degree} in {edu.fieldOfStudy} from {edu.institution} ({edu.startYear} - {edu.endYear}) ({edu.score})
                           </p>
                         ))}
                       </div>
@@ -317,7 +486,7 @@ return matchesName && matchesLocation && matchesExperience && matchesSkills;
           )}
         </div>
 
-        <div className=' w-[20%] mt-0 px-6 h-screen fixed right-20 shadow-xl border-t py-6 overflow-y-hidden bg-white'>
+        <div className=' w-[25%] mt-0 px-6 h-[75vh] rounded-md border fixed right-12 shadow-xl border-t py-6 overflow-y-scroll bg-white'>
 
           <input
             type="text"
@@ -349,34 +518,88 @@ return matchesName && matchesLocation && matchesExperience && matchesSkills;
             <div>
               <ExperienceSlider expFilter={expFilter} setExpFilter={setExpFilter} />
             </div>
+            <label>
+              Skills
+              <Select
+                isMulti
+                options={skills}
+                values={skillsFilter}
+                onChange={(values) => setSkillsFilter(values)}
+                placeholder="Select the skills"
+                searchable={true}
+                className='w-full shadow-md mb-3'
 
-            <Select
-              isMulti
-              options={skills}
-              values={skillsFilter}
-              onChange={(values) => setSkillsFilter(values)}
-              placeholder="Select the skills"
-              searchable={true}
-              className='w-full shadow-md '
+              /></label>
 
-            />
+            <label>Academic background
+              <Select
+                isMulti
+                options={degreeOptions}
+                values={eduFilter}
+                onChange={(values) => setEduFilter(values)}
+                placeholder="e.g MBA"
+                searchable={true}
+                className='w-full shadow-md '
 
-            <label className="flex items-center space-x-2">
-              <input type="text" placeholder='e.g MBA' />
-              <span className="">Academic Background</span>
+              /></label>
+
+            <div>
+              <MatchingSlider selectedMatch={selectedMatch} setSelectedMatch={setSelectedMatch} />
+            </div>
+
+            <label>Graduation year
+              <Select
+                isMulti
+                options={yearOptions}
+                values={selectedGradYears}
+                onChange={(values) => setSelectedGradYears(values)}
+                placeholder="e.g 2024, 2022"
+                searchable={true}
+                className='w-full shadow-md mt-2 mb-4'
+
+              />
             </label>
 
-            <div>
-              slide for matching
+            <div className='flex space-x-5 mx-auto'>
+              <label className='flex items-center'>
+                <input
+                  type="checkbox"
+                  value="Male"
+                  checked={selectedGenders.includes('Male')}
+                  onChange={handleCheckboxChange}
+                  className='mr-1 w-5 h-5'
+                />
+                Male
+              </label>
+              <label className='flex items-center'>
+                <input
+                  type="checkbox"
+                  value="Female"
+                  checked={selectedGenders.includes('Female')}
+                  onChange={handleCheckboxChange}
+                  className='mr-1 w-5 h-5'
+                />
+                Female
+              </label>
+              <label className='flex items-center'>
+                <input
+                  type="checkbox"
+                  value="Other"
+                  checked={selectedGenders.includes('Other')}
+                  onChange={handleCheckboxChange}
+                  className='mr-1 w-5 h-5'
+                />
+                Other
+              </label>
             </div>
 
             <div>
-              Graduation year
+              <PerformanceSlider selectedPer={selectedPer} setSelectedPer={setSelectedPer} />
             </div>
 
-            <div>
-              Gender
-            </div>
+
+
+
           </div>
 
         </div>

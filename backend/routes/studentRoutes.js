@@ -175,6 +175,7 @@ router.get('/details', async (req, res) => {
         firstname: student.firstname,
         lastname: student.lastname,
         email: student.email,
+        gender: student.gender,
         education:student.education,
         workExperience:student.workExperience,
         certificates:student.certificates,
@@ -222,6 +223,23 @@ router.put('/api/:studentId/save-exp',async(req,res)=>{
     student.yearsOfExp =yearsOfExp;
     await student.save();
     return res.status(200).json({ success: true, message: 'yearsOfExp updated successfully.', student });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Server error.' });
+  }
+})
+
+router.put('/api/:studentId/save-gender',async(req,res)=>{
+  const {studentId}=req.params;
+  const {genderData}=req.body;
+  try {
+    const student =await Student.findById(studentId);
+    if(!student){
+      return res.status(404).json({success:false, message:'Student not found.'})
+    }
+    student.gender =genderData;
+    await student.save();
+    return res.status(200).json({ success: true, message: 'gender updated successfully.', student });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ success: false, message: 'Server error.' });
