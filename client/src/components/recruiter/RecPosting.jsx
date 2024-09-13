@@ -14,11 +14,12 @@ const RecPosting = () => {
     internshipName: '',
     internshipType: '',
     internLocation: '',
+    internshipStartDate: '',
     numberOfOpenings: '',
     stipend: '',
     duration: '',
     description: '',
-    assessment:'',
+    assessment: '',
     skills: [],
   });
   // const [Location,setLocation]=useState('');
@@ -28,8 +29,8 @@ const RecPosting = () => {
   const [selectedSkills, setSelectedSkills] = useState([]);
   const userId = getUserIdFromToken();
   const [formKey, setFormKey] = useState(0);
-  const [selectedProfile,setSelectedProfile] = useState(null);
-  const [selectedPerks,setSelectedPerks] = useState([]);
+  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [selectedPerks, setSelectedPerks] = useState([]);
   const jobProfiles = [
     "3D Animation",
     "Account Management",
@@ -236,7 +237,7 @@ const RecPosting = () => {
     "Web Development"
   ];
 
-  const perks=["Letter of recommendation", "Flexible work hours", "Certificate", "Informal dress code","5 days a week", "Free snacks & beverages", "Job offer"];
+  const perks = ["Letter of recommendation", "Flexible work hours", "Certificate", "Informal dress code", "5 days a week", "Free snacks & beverages", "Job offer"];
 
 
   useEffect(() => {
@@ -274,7 +275,7 @@ const RecPosting = () => {
     });
   };
 
-  const handleAssessmentChange=(value)=>{
+  const handleAssessmentChange = (value) => {
     setFormData({
       ...formData,
       assessment: value,
@@ -287,14 +288,14 @@ const RecPosting = () => {
     console.log('This is a skill set', selectedOptions);
   };
 
-  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const skillSet = selectedSkills.map(skill => {
       return skill.value;
     })
-    const perksSet = selectedPerks.map(perk=>{
+    const perksSet = selectedPerks.map(perk => {
       return perk.value
     });
 
@@ -303,17 +304,17 @@ const RecPosting = () => {
       internshipType: formData.internshipType,
       internLocation: formData.internLocation,
       numberOfOpenings: formData.numberOfOpenings,
-      jobProfile:selectedProfile.value,
+      jobProfile: selectedProfile.value,
       stipend: formData.stipend,
       duration: formData.duration,
       description: formData.description,
-      assessment:formData.assessment,
+      assessment: formData.assessment,
       skills: skillSet,
       perks: perksSet,
 
     }
     console.log(postData);
-    if (!postData.internshipName || !postData.internshipType || !postData.assessment || postData.perks.length==0 || !postData.stipend || !postData.jobProfile || !postData.duration || !postData.numberOfOpenings || !postData.description || postData.skills.length == 0) {
+    if (!postData.internshipName || !postData.internshipType || !postData.assessment || postData.perks.length == 0 || !postData.stipend || !postData.jobProfile || !postData.duration || !postData.numberOfOpenings || !postData.description || postData.skills.length == 0) {
       toast.error('Please enter all fields');
       return;
     }
@@ -342,7 +343,7 @@ const RecPosting = () => {
           stipend: '',
           duration: '',
           description: '',
-          assessment:'',
+          assessment: '',
           skills: [],
         });
         // setSkill('');
@@ -367,171 +368,235 @@ const RecPosting = () => {
       console.error('There was an error posting the internship:', error);
     }
   };
-console.log(selectedProfile)
-console.log(selectedPerks);
+  console.log(selectedProfile)
+  console.log(selectedPerks);
 
   return (
-    <div className="border border-gray-300 mt-24 w-[45%]  mx-auto bg-gray-100 p-6 rounded-lg shadow-lg mb-7 ">
-      <h2 className="text-2xl font-bold mb-6 text-center">Post an Internship</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div>
+      <h2 className="text-4xl font-semibold mb-6 text-center mt-24">Post Internship</h2>
+      <div className="flex flex-col">
 
-        <div className="flex flex-col">
-          {/* <label className="mb-2 font-medium">Internship Name:</label> */}
-          <input
-            type="text"
-            name="internshipName"
-            value={formData.internshipName}
-            onChange={handleChange}
-            className="p-2 border shadow-md border-gray-300 rounded-md"
-            placeholder='Internship Title'
-          />
-        </div>
-
-        <div className="flex flex-col">
-          {/* <label className="mb-2 font-medium">Internship Type:</label> */}
-          <select
-            name="internshipType"
-            value={formData.internshipType}
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded-md shadow-md"
-
-          >
-            <option value="">Type of Internship</option>
-            <option value="Remote">Remote</option>
-            <option value="Office">Office</option>
-          </select>
-        </div>
-
-        {
-          formData.internshipType === 'Office' && <div className='flex flex-col'>
-            <input type="text"
-              name="internLocation"
-              value={formData.internLocation}
+        <div className='border border-gray-300 mt-20 w-[45%] mx-auto  p-6 rounded-lg shadow-lg mb-7 '>
+          <div className="flex flex-col my-5">
+            {/* <label className="mb-2 font-medium">Internship Name:</label> */}
+            <label >Internship Title</label>
+            <input
+              type="text"
+              name="internshipName"
+              value={formData.internshipName}
               onChange={handleChange}
-              className='p-2 border border-gray-300 rounded-md shadow-md'
-              placeholder='Enter Location e.g Delhi or Mumbai' />
+              className="p-2 border shadow-md border-gray-300 rounded-md"
+              placeholder='e.g Angular Development'
+            />
 
           </div>
-        }
-        <div className="flex flex-col">
-          <Select
-            value={selectedProfile}
-            onChange={(values) => setSelectedProfile(values)}
-            options={jobProfiles.map(job => (
-              {
-                value: job,
-                label: job
-              }
-            ))}
-            placeholder="Category of Internship"
-            className='w-full mb-3 shadow-md'
-          />
-        </div>
 
-        <div className="flex flex-col">
-          {/* <label className="mb-2 font-medium"></label> */}
-          <input
-            type="number"
-            name="numberOfOpenings"
-            value={formData.numberOfOpenings}
-            onChange={handleChange}
+          <div className="flex flex-col my-5">
+            <label className="mb-2 font-medium">Skills:</label>
+            <div className="flex items-center">
+              <Select
+                isMulti
+                value={selectedSkills}
+                onChange={handleSkillsChange}
+                options={skills}
+                placeholder="Select or type skills "
+                className='w-60 shadow-md'
+              />
+            </div>
+          </div>
 
-            className="p-2 border border-gray-300 rounded-md shadow-md"
-            placeholder='Number of Openings'
-          />
-        </div>
+          <div className="p-2 my-5">
+            <p className='my-2'>Internship Type</p>
+            <label className=''>
+              <input
+                type="radio"
+                name="internshipType"
+                value="Hybrid"
+                checked={formData.internshipType === "Hybrid"}
+                onChange={handleChange}
+                className='w-4 h-4 mr-1'
+              />
+              <span className=''>Hybrid</span>
+            </label>
 
-        <div className="flex flex-col">
-          {/* <label className="mb-2 font-medium">Stipend</label> */}
-          <input
-            type="number"
-            name="stipend"
-            value={formData.stipend}
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded-md shadow-md"
-            placeholder='Stipend'
-          />
-        </div>
-        <div className="flex flex-col">
-          {/* <label className="mb-2 font-medium">Stipend</label> */}
-          <input
-            type="number"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded-md shadow-md"
-            placeholder='Enter duration in months'
-          />
-        </div>
 
-        <div className="flex flex-col">
-          <label className="mb-2 font-medium">Skills:</label>
-          <div className="flex items-center">
-            <Select
-              isMulti
-              value={selectedSkills}
-              onChange={handleSkillsChange}
-              options={skills}
-              placeholder="Select or type skills "
-              className='w-60 shadow-md'
+            <label className="ml-4">
+              <input
+                type="radio"
+                name="internshipType"
+                value="Remote"
+                checked={formData.internshipType === "Remote"}
+                onChange={handleChange}
+                className='w-4 h-4 mr-1'
+              />
+              Remote
+            </label>
+
+            <label className="ml-4 ">
+              <input
+                type="radio"
+                name="internshipType"
+                value="Office"
+                checked={formData.internshipType === "Office"}
+                onChange={handleChange}
+                className='w-4 h-4 mr-1'
+              />
+              Office
+            </label>
+          </div>
+
+          {
+            (formData.internshipType === 'Office' || formData.internshipType === 'Hybrid') && <div className='flex flex-col my-5'>
+              <input type="text"
+                name="internLocation"
+                value={formData.internLocation}
+                onChange={handleChange}
+                className='p-2 border border-gray-300 rounded-md shadow-md'
+                placeholder='Enter Location e.g Delhi or Mumbai' />
+
+            </div>
+          }
+
+          <div className='flex flex-col my-5 space-y-3'>
+            <p>Internship Start date</p>
+            <div className='flex space-x-16 text-gray-600'>
+              <label className='ml-4 flex items-center'>
+                <input
+                  type="radio"
+                  name="internshipStartDate"
+                  value="Immediately"
+                  checked={formData.internshipStartDate === "Immediately"}
+                  onChange={handleChange}
+                  className='w-4 h-4 mr-1'
+                />
+                Immediately (within next 30 days)
+              </label>
+
+              <label className='ml-4 flex items-center'>
+                <input
+                  type="radio"
+                  name="internshipStartDate"
+                  value="Later"
+                  checked={formData.internshipStartDate === "Later"}
+                  onChange={handleChange}
+                  className='w-4 h-4 mr-1'
+                />
+                Later
+              </label>
+            </div>
+          </div>
+
+          <div className="flex flex-col my-5">
+            <label className="mb-2">No of Openings</label>
+            <input
+              type="number"
+              name="numberOfOpenings"
+              value={formData.numberOfOpenings}
+              onChange={handleChange}
+
+              className="p-2 border border-gray-300 rounded-md shadow-md"
+              placeholder='e.g. 4'
             />
           </div>
-        </div>
 
-        <div className="flex flex-col">
-          <label className="mb-2 font-medium">Perks and Benefits</label>
-          <div className="flex items-center">
-            <Select
-              isMulti
-              value={selectedPerks}
-              onChange={(values)=>setSelectedPerks(values)}
-              options={perks.map(perk=>({
-                value:perk,
-                label:perk
-              }))}
-              placeholder="Select perk"
-              className='w-60 shadow-md'
+          <div className="flex flex-col my-5">
+            <label className='mb-2'>Internship Duration (in months)</label>
+            <input
+              type="number"
+              name="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              className="p-2 border border-gray-300 rounded-md shadow-md"
+              placeholder='e.g. 5'
             />
           </div>
+
+          <div className="flex flex-col my-5">
+            <p className='my-2'>Type of internship</p>
+            <Select
+              value={selectedProfile}
+              onChange={(values) => setSelectedProfile(values)}
+              options={jobProfiles.map(job => (
+                {
+                  value: job,
+                  label: job
+                }
+              ))}
+              placeholder="e.g Web development"
+              className='w-full mb-3 shadow-md'
+            />
+          </div>
+
+          <div className="flex flex-col my-5 h-[320px]">
+            <label className="my-2 ml-2 font-medium">Intern's responsibilities</label>
+            <ReactQuill
+              value={formData.description}
+              onChange={handleDescriptionChange}
+              className="p-2 rounded-md h-[200px]"
+              theme="snow"
+              placeholder='Enter the requirements....'
+
+            />
+          </div>
+
         </div>
 
-        
+        <p className='text-center text-lg font-semibold'>Stipend & Perks</p>
+        <div className='border border-gray-300 w-[45%] mx-auto p-6 rounded-lg shadow-lg mb-7 '>
+          <div className="flex flex-col">
+            <label className="mb-2 font-medium">Perks and Benefits</label>
+            <div className="flex items-center">
+              <Select
+                isMulti
+                value={selectedPerks}
+                onChange={(values) => setSelectedPerks(values)}
+                options={perks.map(perk => ({
+                  value: perk,
+                  label: perk
+                }))}
+                placeholder="Select perk"
+                className='w-60 shadow-md'
+              />
+            </div>
+          </div>
 
-        <div className="flex flex-col  h-[320px]">
-          <label className="mb-2 font-medium">Requirements</label>
-          <ReactQuill
-            value={formData.description}
-            onChange={handleDescriptionChange}
-            className="p-2 rounded-md h-[200px]"
-            theme="snow"
-            placeholder='Enter the requirements....'
+          <div className="flex flex-col">
+            {/* <label className="mb-2 font-medium">Stipend</label> */}
+            <input
+              type="number"
+              name="stipend"
+              value={formData.stipend}
+              onChange={handleChange}
+              className="p-2 border border-gray-300 rounded-md shadow-md"
+              placeholder='Stipend'
+            />
+          </div>
 
-          />
+          <div className="flex flex-col   h-[400px]">
+            <label className="mb-2 font-medium">Assessment Question</label>
+            <input
+              type="text"
+              name="assessment"
+              value={formData.assessment}
+              onChange={handleChange}
+              className="p-2 border border-gray-300 rounded-md shadow-md"
+              placeholder='Enter Question for applicant'
+            />
 
-        </div>
-
-        <div className="flex flex-col   h-[400px]">
-          <label className="mb-2 font-medium">Assessment Question</label>
-          <input
-            type="text"
-            name="assessment"
-            value={formData.assessment}
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded-md shadow-md"
-            placeholder='Enter Question for applicant'
-          />
-
-        </div>
-
-
-
-        <button
-          type="submit"
+          </div>
+          <button
+          onClick={handleSubmit}
           className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
         >
           Post Internship
         </button>
-      </form>
+        </div>
+
+
+
+        
+
+      </div>
     </div>
   );
 };

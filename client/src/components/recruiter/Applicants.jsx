@@ -365,6 +365,7 @@ const Applicants = () => {
                   )}
 
                   {!isOpen && <button onClick={() => setIsOpen(true)} className='absolute right-3 top-2 underline text-blue-400'>View Profile</button>}
+                  
                   {isOpen &&
                     <div className='flex absolute right-3 top-2 space-x-4'>
                       <button onClick={() => setIsOpen(false)} className=' right-3 top-2 underline text-blue-400'>Hide Profile</button>
