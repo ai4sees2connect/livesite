@@ -18,8 +18,23 @@ const internshipSchema = new mongoose.Schema(
       required: true,
     },
     stipend: {
-      type: Number,
+      type: String,
       required: true,
+    },
+    stipendType:{
+      type: String
+    },
+    currency:{
+      type: String
+    },
+    incentiveDescription:{
+      type: String
+    },
+    internshipStartDate:{
+      type: String
+    },
+    ppoCheck:{
+      type: String
     },
     duration:{
       type:Number,
@@ -29,6 +44,7 @@ const internshipSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    
     assessment:{
       type:String,
       required:true

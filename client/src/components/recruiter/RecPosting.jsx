@@ -14,7 +14,11 @@ const RecPosting = () => {
     internshipName: '',
     internshipType: '',
     internLocation: '',
-    internshipStartDate: '',
+    internshipStartQues: '',
+    stipendType: '',
+    incentiveDescription: '',
+    currency: '₹',
+    ppoCheck: '',
     numberOfOpenings: '',
     stipend: '',
     duration: '',
@@ -31,6 +35,7 @@ const RecPosting = () => {
   const [formKey, setFormKey] = useState(0);
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedPerks, setSelectedPerks] = useState([]);
+  const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
   const jobProfiles = [
     "3D Animation",
     "Account Management",
@@ -237,6 +242,47 @@ const RecPosting = () => {
     "Web Development"
   ];
 
+  const statesAndUTs = [
+    { value: 'All Locations', label: 'All Locations' },
+    { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
+    { value: 'Arunachal Pradesh', label: 'Arunachal Pradesh' },
+    { value: 'Assam', label: 'Assam' },
+    { value: 'Bihar', label: 'Bihar' },
+    { value: 'Chhattisgarh', label: 'Chhattisgarh' },
+    { value: 'Chennai', label: 'Chennai' },
+    { value: 'Goa', label: 'Goa' },
+    { value: 'Gujarat', label: 'Gujarat' },
+    { value: 'Haryana', label: 'Haryana' },
+    { value: 'Himachal Pradesh', label: 'Himachal Pradesh' },
+    { value: 'Jharkhand', label: 'Jharkhand' },
+    { value: 'Karnataka', label: 'Karnataka' },
+    { value: 'Kerala', label: 'Kerala' },
+    { value: 'Madhya Pradesh', label: 'Madhya Pradesh' },
+    { value: 'Maharashtra', label: 'Maharashtra' },
+    { value: 'Manipur', label: 'Manipur' },
+    { value: 'Meghalaya', label: 'Meghalaya' },
+    { value: 'Mizoram', label: 'Mizoram' },
+    { value: 'Nagaland', label: 'Nagaland' },
+    { value: 'Odisha', label: 'Odisha' },
+    { value: 'Punjab', label: 'Punjab' },
+    { value: 'Rajasthan', label: 'Rajasthan' },
+    { value: 'Sikkim', label: 'Sikkim' },
+    { value: 'Tamil Nadu', label: 'Tamil Nadu' },
+    { value: 'Telangana', label: 'Telangana' },
+    { value: 'Tripura', label: 'Tripura' },
+    { value: 'Uttar Pradesh', label: 'Uttar Pradesh' },
+    { value: 'Uttarakhand', label: 'Uttarakhand' },
+    { value: 'West Bengal', label: 'West Bengal' },
+    { value: 'Andaman and Nicobar Islands', label: 'Andaman and Nicobar Islands' },
+    { value: 'Chandigarh', label: 'Chandigarh' },
+    { value: 'Dadra and Nagar Haveli and Daman and Diu', label: 'Dadra and Nagar Haveli and Daman and Diu' },
+    { value: 'Lakshadweep', label: 'Lakshadweep' },
+    { value: 'Delhi', label: 'Delhi' },
+    { value: 'Puducherry', label: 'Puducherry' },
+    { value: 'Jammu and Kashmir', label: 'Jammu and Kashmir' },
+    { value: 'Ladakh', label: 'Ladakh' }
+  ];
+
   const perks = ["Letter of recommendation", "Flexible work hours", "Certificate", "Informal dress code", "5 days a week", "Free snacks & beverages", "Job offer"];
 
 
@@ -275,20 +321,11 @@ const RecPosting = () => {
     });
   };
 
-  const handleAssessmentChange = (value) => {
-    setFormData({
-      ...formData,
-      assessment: value,
-    });
-    console.log(formData.assessment);
-  }
 
   const handleSkillsChange = (selectedOptions) => {
     setSelectedSkills(selectedOptions);
     console.log('This is a skill set', selectedOptions);
   };
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -301,20 +338,27 @@ const RecPosting = () => {
 
     const postData = {
       internshipName: formData.internshipName,
+      skills: skillSet,
       internshipType: formData.internshipType,
       internLocation: formData.internLocation,
+      internshipStartQues: formData.internshipStartQues,
       numberOfOpenings: formData.numberOfOpenings,
-      jobProfile: selectedProfile.value,
-      stipend: formData.stipend,
       duration: formData.duration,
+      jobProfile: selectedProfile.value,
       description: formData.description,
-      assessment: formData.assessment,
-      skills: skillSet,
+      stipendType: formData.stipendType,
+      stipend: formData.stipend,
+      currency: formData.currency,
+      incentiveDescription: formData.incentiveDescription,
       perks: perksSet,
+      ppoCheck: formData.ppoCheck,
+      assessment: formData.assessment,
+
+
 
     }
     console.log(postData);
-    if (!postData.internshipName || !postData.internshipType || !postData.assessment || postData.perks.length == 0 || !postData.stipend || !postData.jobProfile || !postData.duration || !postData.numberOfOpenings || !postData.description || postData.skills.length == 0) {
+    if (!postData.internshipName || !postData.internshipType || !postData.internshipStartQues || !postData.stipendType || !postData.ppoCheck || !postData.assessment || postData.perks.length == 0 || !postData.jobProfile || !postData.duration || !postData.numberOfOpenings || !postData.description || postData.skills.length == 0) {
       toast.error('Please enter all fields');
       return;
     }
@@ -322,9 +366,14 @@ const RecPosting = () => {
     if (postData.internshipType === 'Remote') {
       // setFormData({...formData,internshipType: 'Work from Home'})
       postData.internshipType = 'Work from Home';
+      postData.internLocation = '';
     }
     else if (postData.internshipType === 'Office') {
       postData.internshipType = 'Work from Office';
+    }
+
+    else if (postData.internshipType === 'Hybrid') {
+      postData.internshipType = 'Hybrid';
     }
 
     console.log('sending this data', postData)
@@ -335,22 +384,22 @@ const RecPosting = () => {
       if (response.data.success) {
         toast.success('Internship posted successfully');
         console.log('Response:', response.data);
-        setFormData({
-          internshipName: '',
-          internshipType: '',
-          internLocation: '', // Reset internLocation
-          numberOfOpenings: '',
-          stipend: '',
-          duration: '',
-          description: '',
-          assessment: '',
-          skills: [],
-        });
-        // setSkill('');
-        setSelectedProfile(null);
-        setSelectedPerks([]);
-        setFormKey(formKey + 1);
-        console.log(formData);
+        // setFormData({
+        //   internshipName: '',
+        //   internshipType: '',
+        //   internLocation: '', // Reset internLocation
+        //   numberOfOpenings: '',
+        //   stipend: '',
+        //   duration: '',
+        //   description: '',
+        //   assessment: '',
+        //   skills: [],
+        // });
+        // // setSkill('');
+        // setSelectedProfile(null);
+        // setSelectedPerks([]);
+        // setFormKey(formKey + 1);
+        // console.log(formData);
         return;
       }
       else {
@@ -368,24 +417,28 @@ const RecPosting = () => {
       console.error('There was an error posting the internship:', error);
     }
   };
-  console.log(selectedProfile)
-  console.log(selectedPerks);
+  // console.log(selectedProfile)
+  // console.log(selectedPerks);
+  console.log('this is assessment question', formData.assessment);
+  console.log('this is my location',formData.internLocation);
+  console.log('this is my currency',formData.currency);
 
   return (
     <div>
       <h2 className="text-4xl font-semibold mb-6 text-center mt-24">Post Internship</h2>
       <div className="flex flex-col">
 
-        <div className='border border-gray-300 mt-20 w-[45%] mx-auto  p-6 rounded-lg shadow-lg mb-7 '>
+        <p className='text-center text-lg font-semibold mt-5'>Internship Details</p>
+        <div className='border border-gray-300 w-[45%] mx-auto  p-6 rounded-lg shadow-lg mb-7 '>
           <div className="flex flex-col my-5">
             {/* <label className="mb-2 font-medium">Internship Name:</label> */}
-            <label >Internship Title</label>
+            <label className='font-medium'>Internship Title</label>
             <input
               type="text"
               name="internshipName"
               value={formData.internshipName}
               onChange={handleChange}
-              className="p-2 border shadow-md border-gray-300 rounded-md"
+              className="p-2 border text-gray-600 shadow-md border-gray-300 rounded-md"
               placeholder='e.g Angular Development'
             />
 
@@ -406,8 +459,8 @@ const RecPosting = () => {
           </div>
 
           <div className="p-2 my-5">
-            <p className='my-2'>Internship Type</p>
-            <label className=''>
+            <p className='my-2 font-medium'>Internship Type</p>
+            <label >
               <input
                 type="radio"
                 name="internshipType"
@@ -416,23 +469,23 @@ const RecPosting = () => {
                 onChange={handleChange}
                 className='w-4 h-4 mr-1'
               />
-              <span className=''>Hybrid</span>
+              <span className='text-gray-600'>Hybrid</span>
             </label>
 
 
-            <label className="ml-4">
+            <label className="ml-4 text-gray-600">
               <input
                 type="radio"
                 name="internshipType"
                 value="Remote"
                 checked={formData.internshipType === "Remote"}
                 onChange={handleChange}
-                className='w-4 h-4 mr-1'
+                className='w-4 h-4 mr-1 '
               />
               Remote
             </label>
 
-            <label className="ml-4 ">
+            <label className="ml-4 text-gray-600">
               <input
                 type="radio"
                 name="internshipType"
@@ -447,25 +500,35 @@ const RecPosting = () => {
 
           {
             (formData.internshipType === 'Office' || formData.internshipType === 'Hybrid') && <div className='flex flex-col my-5'>
-              <input type="text"
+              {/* <input type="text"
                 name="internLocation"
                 value={formData.internLocation}
                 onChange={handleChange}
                 className='p-2 border border-gray-300 rounded-md shadow-md'
-                placeholder='Enter Location e.g Delhi or Mumbai' />
+                placeholder='Enter Location e.g Delhi or Mumbai' /> */}
+
+              <Select
+                options={statesAndUTs}
+                values={formData.internLocation}
+                onChange={(value)=>setFormData({...formData,internLocation:value.value})}
+                placeholder="Select a location"
+                searchable={true}
+                className='w-full shadow-md'
+
+              />
 
             </div>
           }
 
           <div className='flex flex-col my-5 space-y-3'>
-            <p>Internship Start date</p>
+            <p className='font-medium'>Internship Start date</p>
             <div className='flex space-x-16 text-gray-600'>
               <label className='ml-4 flex items-center'>
                 <input
                   type="radio"
-                  name="internshipStartDate"
+                  name="internshipStartQues"
                   value="Immediately"
-                  checked={formData.internshipStartDate === "Immediately"}
+                  checked={formData.internshipStartQues === "Immediately"}
                   onChange={handleChange}
                   className='w-4 h-4 mr-1'
                 />
@@ -475,9 +538,9 @@ const RecPosting = () => {
               <label className='ml-4 flex items-center'>
                 <input
                   type="radio"
-                  name="internshipStartDate"
+                  name="internshipStartQues"
                   value="Later"
-                  checked={formData.internshipStartDate === "Later"}
+                  checked={formData.internshipStartQues === "Later"}
                   onChange={handleChange}
                   className='w-4 h-4 mr-1'
                 />
@@ -487,7 +550,7 @@ const RecPosting = () => {
           </div>
 
           <div className="flex flex-col my-5">
-            <label className="mb-2">No of Openings</label>
+            <label className="mb-2 font-medium">No of Openings</label>
             <input
               type="number"
               name="numberOfOpenings"
@@ -500,7 +563,7 @@ const RecPosting = () => {
           </div>
 
           <div className="flex flex-col my-5">
-            <label className='mb-2'>Internship Duration (in months)</label>
+            <label className='mb-2 font-medium'>Internship Duration (in months)</label>
             <input
               type="number"
               name="duration"
@@ -512,7 +575,7 @@ const RecPosting = () => {
           </div>
 
           <div className="flex flex-col my-5">
-            <p className='my-2'>Type of internship</p>
+            <p className='my-2 font-medium'>Type of internship</p>
             <Select
               value={selectedProfile}
               onChange={(values) => setSelectedProfile(values)}
@@ -543,7 +606,109 @@ const RecPosting = () => {
 
         <p className='text-center text-lg font-semibold'>Stipend & Perks</p>
         <div className='border border-gray-300 w-[45%] mx-auto p-6 rounded-lg shadow-lg mb-7 '>
-          <div className="flex flex-col">
+
+          <div className="flex flex-col my-4">
+            <label className='mb-2 font-medium'>Stipend</label>
+            <div className="mb-4">
+
+
+              <input
+                type="radio"
+                name="stipendType"
+                value="unpaid"
+                checked={formData.stipendType === "unpaid"}
+                onChange={handleChange}
+                className="mr-1"
+              />
+              <label className="mr-4">
+                Unpaid
+              </label>
+
+
+              <label className="mr-4">
+                <input
+                  type="radio"
+                  name="stipendType"
+                  value="fixed"
+                  checked={formData.stipendType === "fixed"}
+                  onChange={handleChange}
+                  className="mr-1"
+                />
+                Fixed
+              </label>
+              <label className="mr-4">
+                <input
+                  type="radio"
+                  name="stipendType"
+                  value="negotiable"
+                  checked={formData.stipendType === "negotiable"}
+                  onChange={handleChange}
+                  className="mr-1"
+                />
+                Negotiable
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="stipendType"
+                  value="performance-based"
+                  checked={formData.stipendType === "performance-based"}
+                  onChange={handleChange}
+                  className="mr-1"
+                />
+                Performance Based
+              </label>
+            </div>
+
+            {/* Conditionally render Stipend Input based on selected type */}
+            {(formData.stipendType === "fixed" || formData.stipendType === "negotiable" || formData.stipendType === "performance-based") && (
+              <div className="flex items-center mb-4">
+                {/* Currency Selector */}
+                <select
+                  name="currency"
+                  value={formData.currency}
+                  onChange={handleChange}
+                  className="p-1 border border-gray-300 rounded-md shadow-md mr-2"
+                >
+                  <option value="₹">₹ (INR)</option>
+                  <option value="$">$ (USD)</option>
+                  <option value="€">€ (EUR)</option>
+                  <option value="£">£ (GBP)</option>
+                  <option value="¥">¥ (JPY)</option>
+
+                </select>
+
+                {/* Stipend Amount Input */}
+                <input
+                  type="number"
+                  name="stipend"
+                  value={formData.stipend}
+                  onChange={handleChange}
+                  className="p-1 border w-28 border-gray-300 rounded-md shadow-md"
+                  placeholder="e.g 4000"
+                  required
+                /> /month
+              </div>
+            )}
+
+
+            {/* Conditionally render Incentive Description for Performance Based */}
+            {formData.stipendType === "performance-based" && (
+              <div className='flex flex-col my-4'>
+                <label className='font-medium'>Describe your incentive criteria</label>
+              <textarea
+                name="incentiveDescription"
+                value={formData.incentiveDescription}
+                onChange={handleChange}
+                className="p-2 border border-gray-300 rounded-md shadow-md"
+                placeholder="Describe the performance-based incentive"
+              />
+              </div>
+            )}
+          </div>
+
+
+          <div className="flex flex-col mt-4 mb-2">
             <label className="mb-2 font-medium">Perks and Benefits</label>
             <div className="flex items-center">
               <Select
@@ -560,41 +725,75 @@ const RecPosting = () => {
             </div>
           </div>
 
-          <div className="flex flex-col">
-            {/* <label className="mb-2 font-medium">Stipend</label> */}
+          <div className='my-5'>
+            <p>Does this internship comes with pre-placement offer (PPO)</p>
             <input
-              type="number"
-              name="stipend"
-              value={formData.stipend}
+              type="radio"
+              name="ppoCheck"
+              value="yes"
+              checked={formData.ppoCheck === "yes"}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded-md shadow-md"
-              placeholder='Stipend'
-            />
+              className="" /> <label className='mr-5'>Yes</label>
+
+            <input
+              type="radio"
+              name="ppoCheck"
+              value="no"
+              checked={formData.ppoCheck === "no"}
+              onChange={handleChange}
+              className="" /> <label>No</label>
           </div>
 
-          <div className="flex flex-col   h-[400px]">
-            <label className="mb-2 font-medium">Assessment Question</label>
-            <input
-              type="text"
-              name="assessment"
-              value={formData.assessment}
-              onChange={handleChange}
-              className="p-2 border border-gray-300 rounded-md shadow-md"
-              placeholder='Enter Question for applicant'
-            />
+        </div>
 
+        <p className='text-center text-lg font-semibold'>Cover letter, Availability & Assessment Question</p>
+        <div className='border relative border-gray-300 w-[45%] mx-auto p-6 rounded-lg shadow-lg mb-7' >
+          <p className='text-gray-500 my-2'>Cover letter and availability Question will be asked to every Applicant by default. If you wish you may ask a customized question as an assessment</p>
+          <div className='my-2'>
+            <p>Cover Letter</p>
+            <p className='text-gray-500 '>Tell us something about yourself and why should you be hired for this role.</p>
           </div>
+
+          <div className='my-2'>
+            <p>Availability</p>
+            <p className='text-gray-500 '>Can you join Immediately?</p>
+          </div>
+
+          <div className='my-5'>
+            {!isAssessmentOpen ? <button className='text-blue-500 font-semibold' onClick={() => setIsAssessmentOpen(true)}>+ Add Assessment question</button> : <button onClick={() => {
+              setIsAssessmentOpen(false); setFormData({
+                ...formData,
+                assessment: ''
+              });
+            }} className='text-red-500 font-semibold'>- Remove Assessment</button>}
+          </div>
+
+          {isAssessmentOpen &&
+            <div className="flex flex-col h-[200px]">
+              <label className="mb-2 font-medium">Assessment Question</label>
+              <input
+                type="text"
+                name="assessment"
+                value={formData.assessment}
+                onChange={handleChange}
+                className="p-2 border border-gray-300 rounded-md shadow-md"
+                placeholder='Enter Question for applicant'
+              />
+
+            </div>
+          }
+
           <button
-          onClick={handleSubmit}
-          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
-        >
-          Post Internship
-        </button>
+            onClick={handleSubmit}
+            className="w-[20%] absolute bottom-4 right-4 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
+          >
+            Post Internship
+          </button>
         </div>
 
 
 
-        
+
 
       </div>
     </div>
