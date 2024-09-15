@@ -298,6 +298,11 @@ router.get('/:userId/internships', async (req, res) => {
       if (locationName && locationName!=='All Locations') {
         internships = internships.filter(internship => internship.internLocation === locationName);
       }
+    }else if(workType==='Hybrid' || locationName==='All Locations'){
+      internships = internships.filter(internship => internship.internshipType === 'Hybrid');
+      if(locationName && locationName!=='All Locations'){
+        internships = internships.filter(internship => internship.internLocation === locationName);
+      }
     }
 
     if (minStipend) {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import axios from 'axios';
-import { FaMapMarkerAlt, FaMoneyBillWave, FaUsers, FaClipboardList, FaTimes, FaClock, FaCheck, FaBuilding, FaArrowLeft } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaMoneyBillWave, FaUsers, FaClipboardList, FaTimes, FaClock, FaCheck, FaBuilding, FaArrowLeft, FaRunning, FaStar, FaQuestion } from 'react-icons/fa';
 import Spinner from '../common/Spinner';
 import getUserIdFromToken from './auth/authUtils';
 import TimeAgo from '../common/TimeAgo';
@@ -300,6 +300,11 @@ const Internships = () => {
         } else if (workType === 'Work from Office' && !selectedLocation) {
           queryParam = '?workType=Work from Office';
         }
+        else if (workType === 'Hybrid' && selectedLocation) {
+          queryParam = `?workType=Hybrid&locationName=${selectedLocation.value}`;
+        } else if (workType === 'Hybrid' && !selectedLocation) {
+          queryParam = '?workType=Hybrid';
+        }
 
         if (selectedStipend > 0) {
           queryParam += queryParam ? `&minStipend=${selectedStipend}` : `?minStipend=${selectedStipend}`;
@@ -389,6 +394,8 @@ const Internships = () => {
   }, [userId]);
   console.log('this is resume', resumeUrl);
 
+
+  console.log('this is selected location', selectedLocation);
 
   const openModal = async (internship) => {
     setSelectedInternship(internship);
@@ -535,6 +542,18 @@ const Internships = () => {
               />
               <span className="">Work from Office</span>
             </label>
+
+            <label className="flex items-center space-x-2">
+              <input
+                type="radio"
+                name="work-type"
+                value="Hybrid"
+                checked={workType === 'Hybrid'}
+                onChange={(e) => setWorkType(e.target.value)}
+                className="form-radio text-blue-600 h-6 w-6"
+              />
+              <span className="">Hybrid</span>
+            </label>
           </div>
           <div className='my-4'>
             <p>Profile</p>
@@ -557,7 +576,7 @@ const Internships = () => {
 
 
           {
-            workType === 'Work from Office' &&
+            (workType === 'Work from Office' || workType === 'Hybrid') &&
             <div className='mt-12'>
               <p className='mt-6 mb-2 font-bold'>Location</p>
               <Select
@@ -582,59 +601,91 @@ const Internships = () => {
             {internships.map((internship) => (
               <div key={internship._id} className="bg-white shadow-md rounded-lg p-6 w-[95%] my-3 mx-auto relative">
                 <h2 className="text-2xl font-semibold mb-2">{internship.internshipName}</h2>
+                <p className="text-gray-600 mb-4">{internship.recruiter.companyName}</p>
 
 
                 {internship.logoUrl ? (<img src={internship.logoUrl} alt={internship.logoUrl} className='absolute right-4 top-2 w-20 h-20' />) : (<FaBuilding />)}
 
-                {/* <p className="text-gray-600 mb-4">Posted by: {internship.recruiter.firstname} {internship.recruiter.lastname}</p> */}
-                <p className='text-gray-600 mb-4'>Posted: {TimeAgo(internship.createdAt)}</p>
-
-                <div className="flex items-center text-gray-700 mb-2">
-                  <FaMapMarkerAlt className="mr-2" />
-                  <span>{internship.internLocation ? `${internship.internLocation}` : 'Remote'}</span>
-                </div>
-
-                <div className="flex items-center text-gray-700 mb-2">
-                  <FaMoneyBillWave className="mr-2" />
-                  <span>₹ {internship.stipend}</span>
-                </div>
 
 
-                {/* {internship.internLocation &&
-                  <div className="flex items-center text-gray-700 mb-4">
-                    <FaClipboardList className="mr-2" />
-                    <span>{internship.internshipType}</span>
+
+                <div className='flex space-x-7'>
+                  <div className="flex items-center text-gray-700 mb-2">
+                    <FaMapMarkerAlt className="mr-2" />
+                    <span>{internship.internLocation ? `${internship.internLocation}` : 'Remote'}</span>
                   </div>
-                } */}
 
-                {/* <h3 className="text-lg font-medium mb-2">Skills Required:</h3>
-                <div className="flex flex-wrap mb-4">
-                  {internship.skills.map((skill, index) => (
-                    <span
-                      key={index}
-                      className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div> */}
+                  <div className="flex items-center text-gray-700 mb-2">
+                    <FaClock className="mr-2" />
+                    <span>{internship.duration} Months</span>
+                  </div>
+
+                  {internship.stipendType === 'unpaid' &&
+                    <div className="flex items-center text-gray-700 mb-2">
+                      <FaMoneyBillWave className="mr-2" />
+                      <span>Unpaid</span>
+                    </div>
+                  }
+
+                  {internship.stipendType !== 'unpaid' &&
+                    <div className='flex items-center space-x-1'>
+
+                      <div className="flex items-center text-gray-700 mb-2">
+                        <FaMoneyBillWave className="mr-2" />
+                        <span>{internship.currency} {internship.stipend} /month</span>
+                      </div>
+
+
+                      {
+                        internship.stipendType === 'performance-based' &&
+                        <div className='flex items-center mb-2 text-gray-700'>
+                          <span>+ incentives</span>
+                          <div className='relative group '>
+                            <FaQuestion className='border border-black p-1 mx-1 rounded-full hover:cursor-pointer' />
+                            <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
+                             This is a Performance Based internship. {internship.incentiveDescription}
+                            </span>
+                          </div>
+                        </div>
+                      }
+
+
+
+                    </div>
+                  }
+                </div>
+
+
 
                 {isAlreadyApplied(internship._id) && (
                   <p className="text-green-600 inline-flex rounded-xl border border-green-600 px-2 py-1">Applied<FaCheck className='ml-2 mt-1' /></p>
                 )}
-                <div className='text-gray-500 my-2'>{internship.studentCount} Applicants</div>
-                {/* <FaBuilding /> */}
-                {!isAlreadyApplied(internship._id)? (<button 
+                <div className='flex space-x-4 items-center'>
+
+                  <div className={`${internship.studentCount < 20 ? 'text-green-500' : 'text-gray-500'} my-2`}>{internship.studentCount} Applicants</div>
+
+                  {internship.studentCount < 20 && <div className='flex space-x-2 items-center'>
+                    <FaRunning className='text-yellow-500  w-5 h-5' />
+                    <span className='text-gray-500'>Be an early Applicant</span>
+                  </div>}
+
+                  {internship.ppoCheck === 'yes' && <div className='text-gray-500 flex space-x-2 items-center'><FaStar /> <span>Internship with job offer</span></div>}
+
+                </div>
+
+                <p className='text-gray-500 mb-4'>Posted: {TimeAgo(internship.createdAt)}</p>
+
+                {!isAlreadyApplied(internship._id) ? (<button
                   onClick={() => openModal(internship)}
                   className=" w-auto my-2 rounded-md text-blue-500 hover:scale-105 duration-300"
                 >
                   View details
-                </button>):(<Link  to={`/student/myApplications/${userId}`} className=' w-auto my-2 rounded-md text-blue-500 hover:scale-105 duration-300'>Check Status</Link>)}
+                </button>) : (<Link to={`/student/myApplications/${userId}`} className=' w-auto my-2 rounded-md text-blue-500 hover:scale-105 duration-300'>Check Status</Link>)}
 
               </div>
             ))}
 
-            {selectedInternship && !isAlreadyApplied(selectedInternship._id)&& (
+            {selectedInternship && !isAlreadyApplied(selectedInternship._id) && (
               <>
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-40  " onClick={closeModal}></div>
                 <div className="fixed inset-0 flex items-center justify-center z-50">
