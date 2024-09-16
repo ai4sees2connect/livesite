@@ -280,51 +280,82 @@ const Internships = () => {
   const [resumeFilename, setResumeFilename] = useState(null);
   const [aboutText, setAboutText] = useState('');
   const [assessmentAns, setAssessmentAns] = useState('');
+  // const [cachedInternships, setCachedInternships] = useState(null);
   console.log(workType);
 
 
 
   useEffect(() => {
     const fetchInternships = async () => {
+
+      const cachedInternships = localStorage.getItem('cachedInternships');
+      // if (cachedInternships) {
+      //   setInternships(JSON.parse(cachedInternships));
+      //   setLoading(false);
+      //   return;
+      // }
+
       try {
         console.log('LocationName', selectedLocation);
         console.log('WorkType:', workType);
         console.log('profile', selectedProfile);
 
-       
-        const response = await axios.get(`${api}/student/${userId}/internships`);
+
+        // const response = await axios.get(`${api}/student/${userId}/internships`);
+        // const appliedResponse = await axios.get(`${api}/student/internship/${userId}/applied-internships`);
+
+        const [response, appliedResponse] = await Promise.all([
+          axios.get(`${api}/student/${userId}/internships`),
+          axios.get(`${api}/student/internship/${userId}/applied-internships`)
+        ]);
+
+        setAppliedInternships(appliedResponse.data);
         const sortedInternships = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        const internshipsWithLogo = await Promise.all(sortedInternships.map(async (internship) => {
-          if (internship.recruiter && internship.recruiter._id) {
-            try {
-              const res = await axios.get(`${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`, {
-                responseType: 'blob'
-              });
 
-              const logoBlob = new Blob([res.data], { type: res.headers['content-type'] });
-              const logoUrl = URL.createObjectURL(logoBlob);
-              console.log(logoUrl);
 
-              return {
-                ...internship,
-                logoUrl
-              };
-            } catch (error) {
-              console.error('Error fetching logo:', error);
-              return {
-                ...internship,
-                logoUrl: null // Or a default image URL
-              };
+        const internshipsWithLogo = await Promise.all(
+          sortedInternships.map(async (internship) => {
+            if (internship.recruiter && internship.recruiter._id) {
+              try {
+                // Kick off the logo fetch but don't await it here
+                const logoPromise = axios.get(
+                  `${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`,
+                  { responseType: 'blob' }
+                );
+
+                // Once the promise resolves, process the logo
+                const res = await logoPromise;
+                const logoBlob = new Blob([res.data], { type: res.headers['content-type'] });
+                const logoUrl = URL.createObjectURL(logoBlob);
+
+                // Return the internship with the logo URL
+                return {
+                  ...internship,
+                  logoUrl,
+                };
+              } catch (error) {
+                console.error('Error fetching logo:', error);
+
+                // Return internship with a default or null logo URL in case of an error
+                return {
+                  ...internship,
+                  logoUrl: null, // Or use a default image URL here
+                };
+              }
             }
-          }
-          return internship;
-        }));
+
+            // If no recruiter, return the internship as is
+            return internship;
+          })
+        );
+
 
         setInternships(internshipsWithLogo);
+        // localStorage.setItem('cachedInternships', JSON.stringify(internshipsWithLogo));
         console.log('internhsipswith logo', internshipsWithLogo);
 
-        const appliedResponse = await axios.get(`${api}/student/internship/${userId}/applied-internships`);
-        setAppliedInternships(appliedResponse.data);
+
+
         setLoading(false);
 
       } catch (err) {
@@ -375,25 +406,25 @@ const Internships = () => {
   const filteredInternships = internships.filter((internship) => {
     // Matches Work Type
     const matchesWorkType = workType === 'All Internships' || internship.internshipType.toLowerCase() === workType.toLowerCase();
-  
+
     // Matches Job Profile
-    const matchesJobProfile = !selectedProfile || 
+    const matchesJobProfile = !selectedProfile ||
       selectedProfile.some(profile => internship.profile.toLowerCase() === profile.value.toLowerCase());
-  
+
     // Matches Location
-    const matchesLocation = !selectedLocation|| 
+    const matchesLocation = !selectedLocation ||
       selectedLocation.some(location => internship.location.toLowerCase() === location.value.toLowerCase());
-  
+
     // Matches Stipend
     const matchesStipend = selectedStipend === 0 || internship.stipend >= selectedStipend;
-  
+
     // Return true if all filters match
     return matchesWorkType && matchesJobProfile && matchesLocation && matchesStipend;
   });
 
 
   // console.log('this is selected location', selectedLocation);
-  console.log('this is filtered internships',filteredInternships);
+  console.log('this is filtered internships', filteredInternships);
 
   const openModal = async (internship) => {
     setSelectedInternship(internship);
@@ -641,7 +672,7 @@ const Internships = () => {
                           <div className='relative group '>
                             <FaQuestion className='border border-black p-1 mx-1 rounded-full hover:cursor-pointer' />
                             <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
-                             This is a Performance Based internship. {internship.incentiveDescription}
+                              This is a Performance Based internship. {internship.incentiveDescription}
                             </span>
                           </div>
                         </div>
@@ -856,6 +887,7 @@ const Internships = () => {
       </div>
 
     </div>
+                    
   );
 };
 

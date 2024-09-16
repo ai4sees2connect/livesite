@@ -32,7 +32,11 @@ router.post('/:studentId/apply/:internshipId', async (req, res) => {
       appliedAt: new Date(), // Save the current date and time
       availability,
       aboutText,
-      assessmentAns, 
+      assessmentAns,
+      internshipStatus:{
+        status: 'Applied',
+        statusUpdatedAt: new Date()
+      } 
     });
 
     await student.save();

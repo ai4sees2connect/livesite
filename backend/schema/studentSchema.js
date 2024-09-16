@@ -109,6 +109,15 @@ const studentSchema = new mongoose.Schema(
         aboutText: {
           type: String,
         },
+        internshipStatus: {
+          status: {
+            type: String,
+          },
+          statusUpdatedAt: {
+            type: Date,
+            default: Date.now, // Default to the current time when status is first created
+          },
+        },
       },
     ],
   },
