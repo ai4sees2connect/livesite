@@ -269,7 +269,7 @@ router.get('/resume/:id', async (req, res) => {
 
 router.get('/:userId/internships', async (req, res) => {
   try {
-    const { workType, locationName,minStipend,profile } = req.query;
+    // const { workType, locationName,minStipend,profile } = req.query;
     // console.log('Received workType:', workType);
     // console.log('Received locationName:', locationName);
     const recruiters = await Recruiter.find().populate('internships');
@@ -291,27 +291,27 @@ router.get('/:userId/internships', async (req, res) => {
       });
     });
 
-    if(workType==='Work from Home'){
-      internships=internships.filter(internship=>internship.internshipType==='Work from Home');
-    }else if(workType==='Work from Office' || locationName==='All Locations'){
-      internships = internships.filter(internship => internship.internshipType === 'Work from Office');
-      if (locationName && locationName!=='All Locations') {
-        internships = internships.filter(internship => internship.internLocation === locationName);
-      }
-    }else if(workType==='Hybrid' || locationName==='All Locations'){
-      internships = internships.filter(internship => internship.internshipType === 'Hybrid');
-      if(locationName && locationName!=='All Locations'){
-        internships = internships.filter(internship => internship.internLocation === locationName);
-      }
-    }
+    // if(workType==='Work from Home'){
+    //   internships=internships.filter(internship=>internship.internshipType==='Work from Home');
+    // }else if(workType==='Work from Office' || locationName==='All Locations'){
+    //   internships = internships.filter(internship => internship.internshipType === 'Work from Office');
+    //   if (locationName && locationName!=='All Locations') {
+    //     internships = internships.filter(internship => internship.internLocation === locationName);
+    //   }
+    // }else if(workType==='Hybrid' || locationName==='All Locations'){
+    //   internships = internships.filter(internship => internship.internshipType === 'Hybrid');
+    //   if(locationName && locationName!=='All Locations'){
+    //     internships = internships.filter(internship => internship.internLocation === locationName);
+    //   }
+    // }
 
-    if (minStipend) {
-      internships = internships.filter(internship => internship.stipend >= parseInt(minStipend));
-    }
+    // if (minStipend) {
+    //   internships = internships.filter(internship => internship.stipend >= parseInt(minStipend));
+    // }
 
-    if(profile){
-     internships=internships.filter(internship=>internship.jobProfile===profile); 
-    }  
+    // if(profile){
+    //  internships=internships.filter(internship=>internship.jobProfile===profile); 
+    // }  
     // console.log('Filtered Internships:', internships);
     
     for (const internship of internships) {

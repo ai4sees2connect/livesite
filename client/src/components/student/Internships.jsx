@@ -272,7 +272,7 @@ const Internships = () => {
   ];
 
   const [selectedLocation, setSelectedLocation] = useState(null);
-  const [workType, setWorkType] = useState('');
+  const [workType, setWorkType] = useState('All Internships');
   const [selectedStipend, setSelectedStipend] = useState(0);
   const [isInterestedModalOpen, setIsInterestedModalOpen] = useState(false);
   const [availability, setAvailability] = useState('Yes! Will join Immediately');
@@ -291,31 +291,8 @@ const Internships = () => {
         console.log('WorkType:', workType);
         console.log('profile', selectedProfile);
 
-        let queryParam = '';
-        if (workType === 'Work from Home') {
-          queryParam = '?workType=Work from Home';
-          setSelectedLocation(null);
-        } else if (workType === 'Work from Office' && selectedLocation) {
-          queryParam = `?workType=Work from Office&locationName=${selectedLocation.value}`;
-        } else if (workType === 'Work from Office' && !selectedLocation) {
-          queryParam = '?workType=Work from Office';
-        }
-        else if (workType === 'Hybrid' && selectedLocation) {
-          queryParam = `?workType=Hybrid&locationName=${selectedLocation.value}`;
-        } else if (workType === 'Hybrid' && !selectedLocation) {
-          queryParam = '?workType=Hybrid';
-        }
-
-        if (selectedStipend > 0) {
-          queryParam += queryParam ? `&minStipend=${selectedStipend}` : `?minStipend=${selectedStipend}`;
-        }
-
-        if (selectedProfile) {
-          queryParam += queryParam ? `&profile=${selectedProfile.value}` : `?profile=${selectedProfile.value}`;
-        }
-
-
-        const response = await axios.get(`${api}/student/${userId}/internships${queryParam}`);
+       
+        const response = await axios.get(`${api}/student/${userId}/internships`);
         const sortedInternships = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         const internshipsWithLogo = await Promise.all(sortedInternships.map(async (internship) => {
           if (internship.recruiter && internship.recruiter._id) {
@@ -358,8 +335,9 @@ const Internships = () => {
     };
 
     fetchInternships();
-  }, [userId, workType, selectedLocation, selectedStipend, selectedProfile]);
+  }, []);
 
+  //fetching resume in below useEffect
   useEffect(() => {
     // Fetch the resume from the backend
     const fetchResume = async () => {
@@ -394,8 +372,28 @@ const Internships = () => {
   }, [userId]);
   console.log('this is resume', resumeUrl);
 
+  const filteredInternships = internships.filter((internship) => {
+    // Matches Work Type
+    const matchesWorkType = workType === 'All Internships' || internship.internshipType.toLowerCase() === workType.toLowerCase();
+  
+    // Matches Job Profile
+    const matchesJobProfile = !selectedProfile || 
+      selectedProfile.some(profile => internship.profile.toLowerCase() === profile.value.toLowerCase());
+  
+    // Matches Location
+    const matchesLocation = !selectedLocation|| 
+      selectedLocation.some(location => internship.location.toLowerCase() === location.value.toLowerCase());
+  
+    // Matches Stipend
+    const matchesStipend = selectedStipend === 0 || internship.stipend >= selectedStipend;
+  
+    // Return true if all filters match
+    return matchesWorkType && matchesJobProfile && matchesLocation && matchesStipend;
+  });
 
-  console.log('this is selected location', selectedLocation);
+
+  // console.log('this is selected location', selectedLocation);
+  console.log('this is filtered internships',filteredInternships);
 
   const openModal = async (internship) => {
     setSelectedInternship(internship);
@@ -464,7 +462,7 @@ const Internships = () => {
 
   const handleReset = () => {
     setSelectedLocation(null);
-    setWorkType('');
+    setWorkType('All Internships');
     setSelectedStipend(0);
     setSelectedProfile(null);
   }
@@ -499,7 +497,7 @@ const Internships = () => {
   return (
 
     <div className="py-10 px-5 mt-10 relative min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-8 mt-8 absolute left-1/2 transform-translate-x-1/2 translate-x-14">{internships.length} Total Internships</h1>
+      <h1 className="text-3xl font-bold mb-8 mt-8 absolute left-1/2 transform-translate-x-1/2 translate-x-14">{filteredInternships.length} Total Internships</h1>
 
       <div className='flex justify-end '>
         <div className=' w-[20%] mt-0 px-6 h-screen fixed left-28 shadow-xl border-t py-6 overflow-y-hidden bg-white'>
@@ -512,8 +510,8 @@ const Internships = () => {
               <input
                 type="radio"
                 name="work-type"
-                value=""
-                checked={workType === ''}
+                value="All Internships"
+                checked={workType === 'All Internships'}
                 onChange={(e) => setWorkType(e.target.value)}
                 className="form-radio text-blue-600 h-6 w-6 "
               />
@@ -598,7 +596,7 @@ const Internships = () => {
         <div className="w-[60%] mr-32 mt-28 ">
 
           <div className="flex flex-col justify-center bg-gray-100">
-            {internships.map((internship) => (
+            {filteredInternships.map((internship) => (
               <div key={internship._id} className="bg-white shadow-md rounded-lg p-6 w-[95%] my-3 mx-auto relative">
                 <h2 className="text-2xl font-semibold mb-2">{internship.internshipName}</h2>
                 <p className="text-gray-600 mb-4">{internship.recruiter.companyName}</p>
@@ -687,8 +685,8 @@ const Internships = () => {
 
             {selectedInternship && !isAlreadyApplied(selectedInternship._id) && (
               <>
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-40  " onClick={closeModal}></div>
-                <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-40 " onClick={closeModal}></div>
+                <div className="fixed inset-0 flex items-center justify-center z-50 " >
                   <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-[60%] h-[90%] p-6 relative overflow-auto">
                     <div className='border-b'>
                       <h2 className="text-2xl font-semibold mb-4">Applying for {selectedInternship.internshipName}</h2>
@@ -847,7 +845,7 @@ const Internships = () => {
                         <textarea value={assessmentAns} onChange={(e) => setAssessmentAns(e.target.value)} className='w-[80%] border-2 p-2' rows={4} name="" id="" placeholder='Write your answer here...'></textarea>
                       </div>}
 
-                    <button onClick={() => applyToInternship(selectedInternship._id)} className='bg-blue-400 hover:bg-blue-500 rounded-lg px-3 py-2 mt-7'>Submit</button>
+                    <button onClick={() => applyToInternship(selectedInternship._id)} className='bg-blue-400 hover:bg-blue-500 rounded-lg px-3 py-2 mt-7 text-white'>Submit</button>
 
                   </div>
                 </div>
