@@ -69,15 +69,16 @@ const MyApplications = () => {
         </div>
 
         {appliedInternships.map((applied) => (
-          <div key={applied._id} className="flex justify-between gap-3 py-2 border-b h-auto">
+          <div key={applied._id} className="flex justify-between gap-3 py-2 border-b h-auto text-gray-600">
             <div className=' text-center w-[170px]'>{applied.recruiter.companyName}</div>
             <div className='w-[200px] text-center ml-8'>{applied.internship.internshipName}</div>
             <div className='w-[100px] text-center ml-7'>{TimeAgo(applied.appliedAt)}</div>
             <div className='w-[130px] text-center ml-8'>{applied.studentCount}</div>
             <div className="w-[100px] text-center ml-7 flex items-center justify-center"> {/* Fixed width for Status */}
-              <span className='rounded-xl bg-green-200 py-1 px-2'>Applied</span>
+            <span className={`rounded-xl ${applied.internshipStatus.status==='Viewed' && 'text-yellow-400' } 
+            ${applied.internshipStatus.status==='Rejected' && 'text-red-500'} ${applied.internshipStatus.status==='Shortlisted'&& 'text-green-200'} py-1 px-2`}>{applied.internshipStatus.status}</span>
             </div>
-            <div className='w-[100px] text-center ml-8'>
+            <div className='w-[100px] text-center ml-8 mt-3'>
               <button onClick={()=>setSelectedInternship(applied)} className="text-blue-500 hover:underline">View</button>
             </div>
             <div className='w-[140px] text-center ml-8'>20% matched</div>

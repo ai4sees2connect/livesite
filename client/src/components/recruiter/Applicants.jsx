@@ -26,6 +26,8 @@ const Applicants = () => {
   const [selectedGenders, setSelectedGenders] = useState([]);
   const [selectedGradYears, setSelectedGradYears] = useState([]);
   const [selectedPer, setSelectedPer] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState('');
+
   const yearOptions = [
     { value: '2024', label: '2024' },
     { value: '2024 & before', label: '2024 & before' },
@@ -317,6 +319,19 @@ const Applicants = () => {
     );
   };
 
+  const handleViewProfile = async (studentId) => {
+    try {
+      await axios.put(`${api}/student/internship/${studentId}/${internshipId}/viewed`);
+      // Optionally handle success (e.g., show a message or update state)
+      console.log('worked');
+    } catch (error) {
+      console.error('Error updating status:', error);
+      // Optionally handle error (e.g., show an error message)
+    }
+  };
+
+  const leftFilter = ['Application Received', 'Shortlisted', 'Hired', 'Not Interested'];
+
 
 
   // console.log(internship);
@@ -342,10 +357,43 @@ const Applicants = () => {
   return (
     <div className="py-10 px-5 mt-10 bg-gray-100 min-h-screen ">
       <h1 className='text-gray-600'>Dashboard -&gt; Application Received</h1>
-      <h1 className="text-3xl font-bold text-center my-5 w-[60%] ml-5 ">Applicants for {internship.internshipName}</h1>
+      <h1 className="text-3xl font-bold text-center my-5 ml-5 ">Applicants for {internship.internshipName}</h1>
       <h1 className='text-gray-600 ml-20'>Showing {filteredApplicants.length} results</h1>
-      <div className='flex'>
-        <div className="bg-white shadow-md rounded-lg p-6 w-[60%] my-3 ml-20">
+      <div className='flex justify-center'>
+
+        <div className='bg-white shadow-md rounded-lg p-6 left-2 fixed w-[16%] flex flex-col space-y-7'>
+         
+            <div
+              onClick={() => setSelectedStatus('Application Received')} // Click handler
+              className={`flex cursor-pointer justify-between ${selectedStatus === 'Application Received' ? 'text-blue-500 font-semibold' : 'text-gray-800'}`}
+            >
+              <p>Application Received</p> <span>{filteredApplicants.length}</span>
+            </div>
+          
+            <div
+              onClick={() => setSelectedStatus('Shortlisted')} // Click handler
+              className={`flex cursor-pointer justify-between ${selectedStatus === 'Shortlisted' ? 'text-blue-500 font-semibold' : 'text-gray-800'}`}
+            >
+              <p>Shortlisted</p><span>0</span>
+            </div>
+
+            <div
+              onClick={() => setSelectedStatus('Not Interested')} // Click handler
+              className={`flex cursor-pointer justify-between ${selectedStatus === 'Not Interested' ? 'text-blue-500 font-semibold' : 'text-gray-800'}`}
+            >
+              <p>Not Interested</p><span>0</span>
+            </div>
+
+            <div
+              onClick={() => setSelectedStatus('Hired')} // Click handler
+              className={`flex cursor-pointer justify-between ${selectedStatus === 'Hired' ? 'text-blue-500 font-semibold' : 'text-gray-800'}`}
+            >
+              <p>Hired</p><span>0</span>
+            </div>
+          
+
+        </div>
+        <div className="bg-white shadow-md rounded-lg p-6 w-[60%] my-3 mr-24">
           {filteredApplicants.length === 0 ? (
             <p className="text-center text-gray-500">No applicants for this internship yet.</p>
           ) : (
@@ -360,16 +408,16 @@ const Applicants = () => {
 
                   {student.appliedInternships.map((appliedInternship) =>
                     appliedInternship.internship === internship._id ? (
-                      <p key={appliedInternship.internship}>{appliedInternship.availability==='Yes! Will join Immediately'?(<span className='text-green-500'>Immediate Joiner</span>):(<span className='text-red-500'>Not an Immediate Joiner</span>)}</p>
+                      <p key={appliedInternship.internship}>{appliedInternship.availability === 'Yes! Will join Immediately' ? (<span className='text-green-500'>Immediate Joiner</span>) : (<span className='text-red-500'>Not an Immediate Joiner</span>)}</p>
                     ) : null
                   )}
 
-                  {!isOpen && <button onClick={() => setIsOpen(true)} className='absolute right-3 top-2 underline text-blue-400'>View Profile</button>}
-                  
+                  {!isOpen && <button onClick={() => { setIsOpen(true); handleViewProfile(student._id) }} className='absolute right-3 top-2 underline text-blue-400'>View Profile</button>}
+
                   {isOpen &&
                     <div className='flex absolute right-3 top-2 space-x-4'>
                       <button onClick={() => setIsOpen(false)} className=' right-3 top-2 underline text-blue-400'>Hide Profile</button>
-                      <button className=' right-3 top-10 underlin rounded-lg bg-green-200 hover:bg-green-500 px-2 py-1'>Shortlist</button>
+
                     </div>
                   }
 
@@ -418,14 +466,14 @@ const Applicants = () => {
                           )}
                         </div>}
 
-                        <div>
-                          <p className='font-semibold'>About the student</p>
-                          {student.appliedInternships.map((appliedInternship) =>
-                            appliedInternship.internship === internship._id ? (
-                              <p key={appliedInternship.internship} className='text-gray-600'> {appliedInternship.aboutText}</p>
-                            ) : null
-                          )}
-                        </div>
+                      <div>
+                        <p className='font-semibold'>About the student</p>
+                        {student.appliedInternships.map((appliedInternship) =>
+                          appliedInternship.internship === internship._id ? (
+                            <p key={appliedInternship.internship} className='text-gray-600'> {appliedInternship.aboutText}</p>
+                          ) : null
+                        )}
+                      </div>
 
 
 
@@ -497,9 +545,10 @@ const Applicants = () => {
                           Download Resume
                         </a>
                       </div>
-                      {/* <div>
-                        <h3 className="font-semibold">Current Location : <span className='text-gray-600 font-normal'>{student.homeLocation}</span></h3>
-                      </div> */}
+                      <div className='absolute bottom-5 right-5 space-x-4'>
+                        <button className=' rounded-lg font-semibold text-green-600 shadow-md hover:scale-105 duration-300 px-2 py-1'>Shortlist</button>
+                        <button className=' rounded-lg font-semibold text-red-600 shadow-md hover:scale-105 duration-300 px-2 py-1'>Reject</button>
+                      </div>
                     </div>
                   }
                 </div>
@@ -508,7 +557,7 @@ const Applicants = () => {
           )}
         </div>
 
-        <div className=' w-[25%] mt-0 px-6 h-[75vh] rounded-md border fixed right-12 shadow-xl border-t py-6 overflow-y-scroll bg-white'>
+        <div className=' w-[22%] mt-0 px-6 h-[75vh] rounded-md border fixed right-2 shadow-xl border-t py-6 overflow-y-scroll bg-white'>
 
           <input
             type="text"

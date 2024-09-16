@@ -69,6 +69,7 @@ router.get('/:studentId/applied-internships',async(req,res)=>{
         internship: application.internship, // Internship details
         recruiter: application.internship.recruiter, // Recruiter details
         appliedAt: application.appliedAt, // Applied date
+        internshipStatus: application.internshipStatus,
       }));
 
       for (const internship of internships) {
@@ -106,6 +107,28 @@ router.put('/:internshipId/view', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+router.put('/:studentId/:internshipId/viewed',async(req,res)=>{
+  const { studentId, internshipId } = req.params;
+
+  try {
+    // Find the student and update the status of the specific internship
+    const student = await Student.findOneAndUpdate(
+      { _id: studentId, 'appliedInternships.internship': internshipId },
+      { $set: { 'appliedInternships.$.internshipStatus.status': 'Viewed', 'appliedInternships.$.statusUpdatedAt': new Date() } },
+      { new: true }
+    );
+
+    if (!student) {
+      return res.status(404).json({ message: 'Student or internship not found' });
+    }
+
+    res.status(200).json({ message: 'Status updated successfully' });
+  } catch (error) {
+    console.error('Error updating internship status:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+})
 
 
 

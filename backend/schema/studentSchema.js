@@ -112,6 +112,7 @@ const studentSchema = new mongoose.Schema(
         internshipStatus: {
           status: {
             type: String,
+            default: "Applied"
           },
           statusUpdatedAt: {
             type: Date,
