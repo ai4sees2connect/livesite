@@ -76,7 +76,7 @@ const MyApplications = () => {
             <div className='w-[130px] text-center ml-8'>{applied.studentCount}</div>
             <div className="w-[100px] text-center ml-7 flex items-center justify-center"> {/* Fixed width for Status */}
             <span className={`rounded-xl ${applied.internshipStatus.status==='Viewed' && 'text-yellow-400' } 
-            ${applied.internshipStatus.status==='Rejected' && 'text-red-500'} ${applied.internshipStatus.status==='Shortlisted'&& 'text-green-200'} py-1 px-2`}>{applied.internshipStatus.status}</span>
+            ${applied.internshipStatus.status==='Rejected' && 'text-red-500'} ${applied.internshipStatus.status==='Shortlisted'&& 'text-green-600'} py-1 px-2`}>{applied.internshipStatus.status}</span>
             </div>
             <div className='w-[100px] text-center ml-8 mt-3'>
               <button onClick={()=>setSelectedInternship(applied)} className="text-blue-500 hover:underline">View</button>

@@ -85,10 +85,28 @@ router.get('/:recruiterId/applicants/:internshipId', async (req, res) => {
     if (!internship) return res.status(404).json({ message: 'Internship not found' });
 
     // Find students who have applied for this internship
-    const applicants = await Student.find({ 'appliedInternships.internship': internshipId });
+    const applicants = await Student.find({
+      'appliedInternships.internship': internshipId
+    }, {
+      password: 0, // Explicitly exclude the password field
+      updatedAt:0
+
+    });
+
+    const filteredApplicants = applicants.map(applicant => {
+      // Find the specific internship instead of filtering the array
+      const matchedInternship = applicant.appliedInternships.find(
+        internship => internship.internship.toString() === internshipId
+      );
+    
+      return {
+        ...applicant.toObject(),
+        appliedInternships: matchedInternship ? [matchedInternship] : [] // Include only the matched internship or empty array
+      };
+    });
 
     // Return the list of applicants
-    res.status(200).json(applicants);
+    res.status(200).json(filteredApplicants);
   } catch (error) {
     console.error('Error fetching applicants:', error);
     res.status(500).json({ message: 'Server Error' });
