@@ -33,19 +33,20 @@ const RecChatRoom = () => {
     <div className="flex justify-end h-[80vh] border border-black mt-20 mx-8 relative">
       {/* Left Column - Shortlisted Students */}
       <div className="fixed left-10 top-30 w-[30%] bg-gray-100 p-4 overflow-y-auto  h-[70vh]">
-        <h2 className="text-xl font-semibold mb-4">Shortlisted Students</h2>
+      <h2 className="text-xl font-semibold mb-4">Shortlisted Students</h2>
         <ul className="space-y-2">
-          {/* List of students */}
-          <li className="p-2 bg-white rounded shadow cursor-pointer hover:bg-purple-100">
-            Student 1
-          </li>
-          <li className="p-2 bg-white rounded shadow cursor-pointer hover:bg-purple-100">
-            Student 2
-          </li>
-          <li className="p-2 bg-white rounded shadow cursor-pointer hover:bg-purple-100">
-            Student 3
-          </li>
-          {/* Add more students here */}
+          {shortlistedStudents && shortlistedStudents.map((student) => (
+            <li
+              key={student._id}
+              className={`p-2 bg-white rounded shadow cursor-pointer hover:bg-purple-100 ${
+                selectedStudent && selectedStudent._id === student._id ? 'bg-purple-100' : ''
+              }`}
+              onClick={() => setSelectedStudent(student)}
+            >
+              <p className='text-lg'>{student.firstname} {student.lastname}</p>
+              {/* <p>{student.</p> */}
+            </li>
+          ))}
         </ul>
       </div>
 
