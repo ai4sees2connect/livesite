@@ -277,6 +277,7 @@ router.get('/:userId/internships', async (req, res) => {
 
     recruiters.forEach(recruiter => {
       recruiter.internships.forEach(internship => {
+        if(internship.status==='Active'){
         internships.push({
           ...internship._doc,
           recruiter: {
@@ -288,31 +289,10 @@ router.get('/:userId/internships', async (req, res) => {
             companyName:recruiter.companyName
           },
         });
+      }
       });
     });
 
-    // if(workType==='Work from Home'){
-    //   internships=internships.filter(internship=>internship.internshipType==='Work from Home');
-    // }else if(workType==='Work from Office' || locationName==='All Locations'){
-    //   internships = internships.filter(internship => internship.internshipType === 'Work from Office');
-    //   if (locationName && locationName!=='All Locations') {
-    //     internships = internships.filter(internship => internship.internLocation === locationName);
-    //   }
-    // }else if(workType==='Hybrid' || locationName==='All Locations'){
-    //   internships = internships.filter(internship => internship.internshipType === 'Hybrid');
-    //   if(locationName && locationName!=='All Locations'){
-    //     internships = internships.filter(internship => internship.internLocation === locationName);
-    //   }
-    // }
-
-    // if (minStipend) {
-    //   internships = internships.filter(internship => internship.stipend >= parseInt(minStipend));
-    // }
-
-    // if(profile){
-    //  internships=internships.filter(internship=>internship.jobProfile===profile); 
-    // }  
-    // console.log('Filtered Internships:', internships);
     
     for (const internship of internships) {
       const students = await Student.find({ 'appliedInternships.internship': internship._id });

@@ -153,6 +153,19 @@ router.get('/:internshipId/:recruiterId/get-logo',async(req,res)=>{
   }
 })
 
+router.put('/:internshipId/change-status',async(req,res)=>{
+  const {internshipId}=req.params;
+  const {status}=req.body;
+  try {
+    const internship=await Internship.findByIdAndUpdate(internshipId,{status},{new:true});
+    if(!internship) return res.status(404).json({message:'Internship not found'});
+    res.status(200).json({message:"success"});
+  }catch(error){
+    console.error('Error changing internship status:',error);
+    res.status(500).json({message:'Internal server error'});
+  }
+})
+
 
 
 

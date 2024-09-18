@@ -61,11 +61,11 @@ const MyApplications = () => {
         <div className="flex justify-between items-center gap-3 font-semibold mb-2 border-b pb-2 pt-2 rounded-md text-center bg-gray-200">
           <div className="w-[170px] text-center">COMPANY</div>
           <div className="w-[200px] text-center ">PROFILE</div>
-          <div className="w-[100px] text-center">APPLIED ON</div>
+          <div className="w-[100px] text-center">APPLIED</div>
           <div className="w-[130px] text-center">NUMBER OF APPLICANTS</div>
           <div className="w-[100px] text-center">STATUS</div> {/* Set fixed width for Status */}
           <div className="w-[100px] text-center">VIEW DETAILS</div>
-          <div className="w-[140px] text-center">PROFILE MATCH</div>
+          {/* <div className="w-[140px] text-center">PROFILE MATCH</div> */}
         </div>
 
         {appliedInternships.map((applied) => (
@@ -81,7 +81,7 @@ const MyApplications = () => {
             <div className='w-[100px] text-center ml-8 mt-3'>
               <button onClick={()=>setSelectedInternship(applied)} className="text-blue-500 hover:underline">View</button>
             </div>
-            <div className='w-[140px] text-center ml-8'>20% matched</div>
+            {/* <div className='w-[140px] text-center ml-8'>20% matched</div> */}
           </div>
         ))}
       </div>

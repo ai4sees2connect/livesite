@@ -7,6 +7,7 @@ import { FaMapMarkerAlt, FaMoneyBillWave, FaUsers, FaClipboardList, FaTimes, FaC
 import TimeAgo
   from '../common/TimeAgo';
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 
 
@@ -36,6 +37,7 @@ const RecDashboard = () => {
 
         // Update state with internships and their respective applicant counts
         setInternships(internshipsWithApplicants);
+        console.log('internships', internshipsWithApplicants);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching internships:', err);
@@ -58,6 +60,25 @@ const RecDashboard = () => {
     setSelectedInternship(null);
   }
 
+  const updateStatus = async (newStatus, internshipId) => {
+    try {
+      // Make a backend API request to update the status of the internship
+      const response = await axios.put(`${api}/recruiter/internship/${internshipId}/change-status`, { status: newStatus });
+
+      if (response.status === 200) {
+        // Handle success (e.g., update UI or display a success message)
+        console.log('Status updated successfully');
+        toast.success('status updated successfully');
+        window.location.reload();
+
+      }
+    } catch (error) {
+      // Handle error
+      console.error('Error updating status:', error);
+      toast.error('Some error occured');
+    }
+  };
+
   if (loading) {
     return <Spinner />;
   }
@@ -76,7 +97,7 @@ const RecDashboard = () => {
       <div className="bg-white shadow-md rounded-lg p-6 w-[90%] my-3 mx-auto">
         {/* Column Headings */}
         <div className="grid grid-cols-5 gap-4 font-semibold mb-2 border-b-2 pb-2 text-center">
-          <div className='w-[200px] ml-8'>Post</div>
+          <div className='w-[190px] ml-10'>Post</div>
           <div className='w-[90px] ml-40'>Status</div>
           <div className='w-[90px] mx-auto'>Total Views</div>
           <div>View Applicants</div>
@@ -84,8 +105,25 @@ const RecDashboard = () => {
         </div>
         {internships.map((internship) => (
           <div key={internship._id} className="grid grid-cols-5 gap-5 py-2 border-b-2">
-            <div className='text-center ml-8 my-3 w-[200px]'>{internship.internshipName}</div>
-            <div className='inline-flex justify-center h-8 my-auto w-[90px] ml-40'>Active<span className=' ml-2 mt-2 w-2 h-2 rounded-full bg-green-500'></span></div>
+            <div className='text-center ml-10 my-3 w-[190px]'>{internship.internshipName}</div>
+
+            <div className='relative inline-flex justify-center h-8 my-auto w-[90px] ml-40 group'>
+
+              <div className='flex items-center'>
+                <span className={`${internship.status==='On Hold' && 'bg-orange-300'} ${internship.status==='Fulfilled' && 'bg-green-400'} bg-gray-200 rounded-lg px-2 py-1`}>{internship.status}</span>
+                
+              </div>
+
+              <div className='absolute top-[90%] left-0 mt-1 hidden w-32 bg-white border rounded shadow-md group-hover:block z-10'>
+                <ul className='text-gray-700'>
+                  <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer' onClick={() => updateStatus('Active', internship._id)}>Active</li>
+                  <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer' onClick={() => updateStatus('On Hold', internship._id)}>On Hold</li>
+                  <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer' onClick={() => updateStatus('Fulfilled', internship._id)}>Fulfilled</li>
+                </ul>
+              </div>
+
+            </div>
+
             <div className='w-[80px] mx-auto text-center my-3'>{internship.views}</div>
             <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}`} className='text-center my-auto rounded-xl bg-blue-400 text-white w-[190px] hover:bg-blue-700 hover:cursor-pointer mx-auto py-1'>View Applications ({internship.applicantCount})</Link>
             <div className='text-center h-8 w-36 mx-auto my-auto'>
