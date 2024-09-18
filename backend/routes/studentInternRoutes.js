@@ -3,6 +3,7 @@ const Student = require("../schema/studentSchema");
 const Internship = require("../schema/internshipSchema");
 const dotenv = require("dotenv");
 const { default: mongoose } = require("mongoose");
+const ChatRoom = require("../schema/chatRoomSchema");
 
 dotenv.config();
 const router = express.Router();
@@ -140,8 +141,8 @@ router.put("/:studentId/:internshipId/viewed", async (req, res) => {
   }
 });
 
-router.put("/:studentId/:internshipId/shortlist", async (req, res) => {
-  const { studentId, internshipId } = req.params;
+router.put("/:studentId/:internshipId/:recruiterId/shortlist", async (req, res) => {
+  const { studentId, internshipId, recruiterId } = req.params;
   try {
     const student = await Student.findOneAndUpdate(
       { _id: studentId, "appliedInternships.internship": internshipId },
@@ -158,6 +159,23 @@ router.put("/:studentId/:internshipId/shortlist", async (req, res) => {
       return res
         .status(404)
         .json({ message: "Student or internship not found" });
+    }
+
+    let chatRoom = await ChatRoom.findOne({
+      recruiter: recruiterId,
+      student: studentId,
+      internship: internshipId
+    });
+
+    if (!chatRoom) {
+      // Create a new chat room if it doesn't exist
+      chatRoom = new ChatRoom({
+        recruiter: recruiterId,
+        student: studentId,
+        internship: internshipId
+      });
+
+      await chatRoom.save();
     }
 
     res.status(200).json({ message: "Status updated successfully" });

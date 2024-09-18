@@ -83,12 +83,6 @@ const studentSchema = new mongoose.Schema(
         linkUrl: String,
       },
     ],
-    // appliedInternships: [{
-    //     internship: {
-    //       type: mongoose.Schema.Types.ObjectId,
-    //       ref: 'Internship',
-    //     },
-    //   }]
     appliedInternships: [
       {
         internship: {
@@ -97,7 +91,7 @@ const studentSchema = new mongoose.Schema(
         },
         appliedAt: {
           type: Date,
-          default: Date.now, // Automatically stores the date and time of application
+          default: Date.now, 
         },
         assessmentAns: {
           type: String,
@@ -116,7 +110,7 @@ const studentSchema = new mongoose.Schema(
           },
           statusUpdatedAt: {
             type: Date,
-            default: Date.now, // Default to the current time when status is first created
+            default: Date.now, 
           },
         },
       },

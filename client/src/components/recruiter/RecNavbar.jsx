@@ -12,6 +12,7 @@ import {
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRecruiter } from "./context/recruiterContext.js";
+import {FaRegCommentDots} from 'react-icons/fa';
 
 const RecNavbar = () => {
   const navigate=useNavigate();
@@ -41,51 +42,28 @@ const RecNavbar = () => {
           <div className="relative mt-5 group ">
             <a href="#" className=" hover:bg-purple-300 p-5 ">
               Plans and Pricing
-              {/* <span className="ml-1 relative">
-                <FontAwesomeIcon
-                  icon={faCaretDown}
-                  className="group-hover:invisible absolute top-1 left-0 h-4"
-                />
-                <FontAwesomeIcon
-                  icon={faCaretUp}
-                  className="invisible group-hover:visible absolute top-1 left-0 "
-                />
-              </span> */}
             </a>
-
-            {/* <div className="absolute left-0 mt-5 w-48 bg-white shadow-lg border border-gray-200 rounded-md hidden group-hover:block duration-300">
-              <ul className="list-none p-2 m-0">
-                <li className="py-2 px-4 hover:bg-purple-300">
-                  <Link to='/student/locations'>Locations</Link>
-                </li>
-
-                <li className="py-2 px-4 hover:bg-purple-300">
-                  <Link to='/student/category'>Category</Link>
-                </li>
-
-                <li className"py-2 px-4 hover:bg-purple-300">
-                  <Link to='/student/courses'>Courses</Link>
-                </li>
-              </ul>
-            </div> */}
           </div>
 
         
           <Link to={`/recruiter/dashboard/${userId}`} className=" hover:bg-purple-300 p-5">
             My Dashboard
           </Link>
-          <a href={`/recruiter/posting/${userId}`} className=" hover:bg-purple-300 p-5">
+          <Link to={`/recruiter/posting/${userId}`} className=" hover:bg-purple-300 p-5">
             Post Internship
-          </a>
+          </Link>
+          <Link to={`/recruiter/${userId}/chatroom`} className="p-5 group">
+          <FaRegCommentDots className="w-6 h-6"/>
+          <div className="absolute top-[64%] hidden group-hover:block ">Messages</div>
+          </Link>
+
 
           <div className="group px-0 mx-0">
             <div className="p-0 absolute right-7 top-3 border border-black rounded-full h-10 w-10 flex items-center justify-center hover:bg-purple-300  ">
               <FontAwesomeIcon icon={faUser} size="1x" className="w-10" />
-              
-
-            </div>
             
-
+            </div>
+          
             <div className="absolute right-0 top-12 w-48 bg-white shadow-lg border border-gray-200 rounded-md hidden group-hover:block">
               <ul className="list-none p-2 m-0">
                 <li className="py-2 px-4 hover:bg-purple-300">

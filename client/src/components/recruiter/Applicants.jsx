@@ -342,7 +342,7 @@ const Applicants = () => {
 
   const handleShortlistProfile = async (studentId) => {
     try {
-      await axios.put(`${api}/student/internship/${studentId}/${internshipId}/shortlist`);
+      await axios.put(`${api}/student/internship/${studentId}/${internshipId}/${recruiterId}/shortlist`);
       // Optionally handle success (e.g., show a message or update state)
       console.log('worked shortlisting');
       toast.success('Applicant shortlisted');
