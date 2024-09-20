@@ -450,9 +450,11 @@ const Internships = () => {
     setIsInterestedModalOpen(false);
   };
 
+  console.log('this is about text',aboutText);
+
   const applyToInternship = async (internshipId) => {
     try {
-      if (!availability || !aboutText || !assessmentAns) {
+      if (!availability || !aboutText) {
         toast.error('Please Enter all fields');
         return;
       }
