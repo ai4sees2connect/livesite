@@ -62,6 +62,12 @@ const RecChatRoom = () => {
 
   const sendMessage = () => {
     if (newMessage.trim() && socket) {
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        { senderId: recruiterId, message: newMessage },  // Add the message locally for immediate display
+      ]);
+      
       const messageData = {
         senderId: recruiterId,  // or studentId depending on who is sending
         receiverId:selectedStudent._id,
@@ -75,10 +81,7 @@ const RecChatRoom = () => {
 
 
       // Update local chat messages with the new message
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { senderId: recruiterId, message: newMessage },  // Add the message locally for immediate display
-      ]);
+      
 
       // Optionally clear the message input
       setNewMessage('');

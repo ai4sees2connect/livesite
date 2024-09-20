@@ -67,7 +67,7 @@ const initSocket = (server) => {
         await newMessage.save();
 
         // Emit the message to the chat room
-        socket.to(newMessage.chatRoomId).emit("receiveMessage", {
+        io.to(chatRoom._id).emit("receiveMessage", {
           senderId,
           message: newMessage.messageContent,
         });
