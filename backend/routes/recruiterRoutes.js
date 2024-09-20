@@ -275,17 +275,17 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
           internshipIds.some((id) => id.equals(appliedInternship.internship._id)) &&
           appliedInternship.internshipStatus.status === "Shortlisted"
       );
-      console.log(shortlistedInternships);
+      // console.log(shortlistedInternships);
 
       return {
         _id: student._id,
         firstname: student.firstname,
         lastname: student.lastname,
         email: student.email,
-        shortlistedInternships: shortlistedInternships.map((internship) => ({
-          internshipId: internship.internship._id,
-          internshipName: internship.internship.internshipName,
-          statusUpdatedAt: internship.internshipStatus.statusUpdatedAt,
+        shortlistedInternships: shortlistedInternships.map((shortlistedInternship) => ({
+          internshipId: shortlistedInternship.internship._id,
+          internshipName: shortlistedInternship.internship.internshipName,
+          statusUpdatedAt: shortlistedInternship.internshipStatus.statusUpdatedAt,
         })),
       };
     });

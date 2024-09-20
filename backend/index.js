@@ -9,6 +9,8 @@ const recruiterRoutes= require('./routes/recruiterRoutes')
 const studentProfRoutes = require('./routes/studentProfRoutes');
 const recruiterInternRoutes=require('./routes/recruiterInternRoutes')
 const studentInternRoutes = require('./routes/studentInternRoutes');
+const initSocket= require('./socket');
+const http = require('http');
 
 
 const app = express();
@@ -31,12 +33,14 @@ app.get('/',(req,res)=>{
   res.send('Welcome to our Server......')
 })
 
+const server = http.createServer(app);
+initSocket(server);  // Initialize the socket
 
 
 const startServer= async()=>{
   try {
     connection(process.env.MONGO_URI);
-    app.listen(PORT,()=> console.log(`Server has Started on port http://localhost:${PORT}`))
+    server.listen(PORT,()=> console.log(`Server has Started on port http://localhost:${PORT}`))
   } catch (error) {
     console.log(error);
   }

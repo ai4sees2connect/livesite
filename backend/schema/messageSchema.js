@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
-  sender: {
+  senderId: {
     type: mongoose.Schema.Types.Mixed, // This can either be a Recruiter or Student
     required: true
   },
@@ -10,7 +10,7 @@ const messageSchema = new mongoose.Schema({
     enum: ['Recruiter', 'Student'], // To identify the type of sender
     required: true
   },
-  receiver: {
+  receiverId: {
     type: mongoose.Schema.Types.Mixed, // This can either be a Recruiter or Student
     required: true
   },
@@ -31,10 +31,6 @@ const messageSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ChatRoom',
     required: true
-  },
-  isAssignment: {
-    type: Boolean,
-    default: false
   }
 });
 
