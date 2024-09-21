@@ -104,9 +104,9 @@ const Navbar = () => {
               </ul>
             </div>
           </div> */}
-          <a href="/student/chats" className=" hover:bg-purple-300 p-5">
+          <Link to={`/student/${userId}/chats`} className=" hover:bg-purple-300 p-5">
             Messages
-          </a>
+          </Link>
           <a href="/student/alerts" className=" hover:bg-purple-300 p-5">
             Alerts
           </a>

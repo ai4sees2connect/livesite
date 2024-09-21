@@ -212,4 +212,40 @@ router.put("/:studentId/:internshipId/reject", async (req, res) => {
   }
 });
 
+router.get('/:studentId/shortlisted-internships', async (req, res) => {
+  const { studentId } = req.params;
+
+  try {
+    // Find the student and filter for shortlisted internships
+    const student = await Student.findOne(
+      { _id: studentId, 'appliedInternships.internshipStatus.status': 'Shortlisted' }
+    ).populate({
+      path: 'appliedInternships.internship', // Populate the internship field
+      populate: {
+        path: 'recruiter'
+      }
+    }); 
+
+    if (!student) {
+      return res.status(404).json({ message: 'No shortlisted internships found for this student.' });
+    }
+
+    // Send the shortlisted internships details
+    const shortlistedInternships = student.appliedInternships.map(appliedInternship => ({
+      internshipId: appliedInternship.internship._id, 
+      internshipName: appliedInternship.internship.internshipName, // Adjust based on your Internship schema
+      statusUpdatedAt: appliedInternship.internshipStatus.statusUpdatedAt,
+      recruiterId:appliedInternship.internship.recruiter._id,
+      companyName: appliedInternship.internship.recruiter.companyName, 
+
+    }));
+
+    res.json(shortlistedInternships);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error retrieving shortlisted internships.' });
+  }
+});
+
+
 module.exports = router;
