@@ -19,7 +19,7 @@ const RecChatRoom = () => {
     const fetchShortlistedStudents = async () => {
       try {
         const response = await axios.get(`${api}/recruiter/${recruiterId}/fetch-all-shortlisted`);
-        console.log(response.data);
+        // console.log(response.data);
         const students=response.data;
         let flat=students.flatMap(student=>{
           return student.shortlistedInternships.map(shortlisted=>{
@@ -33,7 +33,7 @@ const RecChatRoom = () => {
             }
           })
         })
-        console.log('this is flat',flat);
+        // console.log('this is flat',flat);
         setShortlistedStudents(flat);
       } catch (error) {
         console.error('Error fetching shortlisted students:', error);
@@ -45,8 +45,19 @@ const RecChatRoom = () => {
 
   useEffect(() => {
     // Establish a socket connection when the component mounts
-    const socketConnection = io(api);
+    const socketConnection = io(api,{
+      query: { Type:'Recruiter' },
+    });
     setSocket(socketConnection);
+
+    socketConnection.on('connect', () => {
+      console.log('Connected with ID:', socketConnection.id);
+    });
+
+    socketConnection.on('receiveMessage', (message) => {
+      console.log('Message received by student');
+      setChatMessages((prevMessages) => [...prevMessages, message]);
+    });
 
     // Clean up the connection when the component unmounts
     return () => {
@@ -58,11 +69,11 @@ const RecChatRoom = () => {
     setSelectedStudent(studentId);
     setSelectedInternship(internshipId);
 
-    console.log('this is student id', studentId)
-    console.log('this is internship id', internshipId);
-    console.log('this is recruiter id', recruiterId);
+    // console.log('this is student id', studentId)
+    // console.log('this is internship id', internshipId);
+    // console.log('this is recruiter id', recruiterId);
 
-    socket.emit('joinChatRoom', { recruiterId, studentId, internshipId });
+    socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type:'Recruiter' });
 
 
     socket.on('chatHistory', (messages) => {
@@ -70,14 +81,10 @@ const RecChatRoom = () => {
     });
 
 
-    // Listen for incoming messages in the selected room
-    socket.on('receiveMessageRecruiter', (message) => {
-      setChatMessages((prevMessages) => [...prevMessages, message]);
 
-    });
   };
-  console.log('selected Student', selectedStudent)
-  console.log('selected internship', selectedInternship);
+  // console.log('selected Student', selectedStudent)
+  // console.log('selected internship', selectedInternship);
 
   const sendMessage = () => {
     if (newMessage.trim() && socket) {
@@ -85,15 +92,16 @@ const RecChatRoom = () => {
 
 
       const messageData = {
-        senderId: recruiterId,  // or studentId depending on who is sending
-        receiverId: selectedStudent,
+        recruiterId,  // or studentId depending on who is sending
+        studentId: selectedStudent,
         message: newMessage,
-        internshipId: selectedInternship
+        internshipId: selectedInternship,
+        type:'Recruiter'
       };
       console.log('message Data', messageData);
-
+     
       // Emit the message event to the backend
-      socket.emit('sendMessageRecruiter', messageData);
+      socket.emit('sendMessage', messageData);
 
       setChatMessages((prevMessages) => [
         ...prevMessages,
@@ -145,7 +153,7 @@ const RecChatRoom = () => {
                 key={index}
                 className={`p-2 rounded max-w-md ${msg.senderId === recruiterId ? 'bg-purple-200 self-end' : 'bg-gray-200'}`}
               >
-                <strong>{msg.senderId === recruiterId ? 'Recruiter' : 'Student'}:</strong> {msg.messageContent}
+                <strong>{msg.senderId === recruiterId ? 'You' : 'Student'}:</strong> {msg.messageContent}
               </div>
             ))}
           </div>

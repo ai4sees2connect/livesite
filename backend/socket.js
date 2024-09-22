@@ -11,11 +11,13 @@ const initSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log(`User connected: ${socket.id}`);
+    const Type = socket.handshake.query.Type;
+    console.log(`${Type} connected: ${socket.id}`);
+    console.log(`the user type is ${Type}`);
 
     socket.on(
       "joinChatRoom",
-      async ({ recruiterId, studentId, internshipId }) => {
+      async ({ recruiterId, studentId, internshipId, type }) => {
         try {
           const chatRoom = await createOrGetChatRoom(
             recruiterId,
@@ -26,7 +28,7 @@ const initSocket = (server) => {
           // The user joins the room identified by the chatRoom ID
           socket.join(chatRoom._id.toString());
 
-          console.log(`User ${socket.id} joined chat room ${chatRoom._id}`);
+          console.log(`${type} with socket id: ${socket.id} joined chat room ${chatRoom._id}`);
 
           // Fetch old messages for this chatRoom
           const chatHistory = await Message.find({ chatRoomId: chatRoom._id })
@@ -44,30 +46,42 @@ const initSocket = (server) => {
     );
 
     // Move sendMessageRecruiter listener outside
-    socket.on("sendMessageRecruiter", async (messageData) => {
-      const { senderId, receiverId, message, internshipId } = messageData;
+    socket.on("sendMessage", async (messageData) => {
+      const { recruiterId, studentId, message, internshipId, type } = messageData;
 
       try {
         const chatRoom = await createOrGetChatRoom(
-          senderId,
-          receiverId,
+          recruiterId,
+          studentId,
           internshipId
         );
+
+        let senderId;
+        let receiverId;
+        if(type==='Student'){
+          senderId=studentId;
+          receiverId=recruiterId;
+        }else{
+          senderId=recruiterId;
+          receiverId=studentId;
+        }
 
         const newMessage = new Message({
           chatRoomId: chatRoom._id,
           senderId,
-          senderType: "Recruiter",
+          senderType: `${type==='Student'?'Student':'Recruiter'}`,
           receiverId,
-          receiverType: "Student",
+          receiverType: `${type==='Student'?'Recruiter':'Student'}`,
           messageContent: message,
         });
 
         // Save the message in the database
         await newMessage.save();
+        console.log(`message sent by ${type}`)
+
 
         // Emit the message to the chat room
-        io.to(chatRoom._id).emit("receiveMessageRecruiter",newMessage);
+        io.to(chatRoom._id).emit("receiveMessage",newMessage);
 
       } catch (error) {
         console.error("Error saving message:", error);
@@ -75,7 +89,7 @@ const initSocket = (server) => {
     });
 
     socket.on("disconnect", () => {
-      console.log(`User disconnected: ${socket.id}`);
+      console.log(`${Type} disconnected: ${socket.id}`);
     });
   });
 

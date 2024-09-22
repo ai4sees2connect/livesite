@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import {toast} from 'react-toastify'
 import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
+import { io } from 'socket.io-client';
 
 const Chats = () => {
 
@@ -11,13 +12,34 @@ const Chats = () => {
   const [shortlistedInternships, setShortlistedInternships] = useState([]);
   const [chatMessages,setChatMessages]=useState([]);
   const [newMessage,setNewMessage]=useState('');
+  const [socket, setSocket] = useState(null);
+  const [selectedRecruiter,setSelectedRecruiter] = useState(null);
+  const [selectedInternship,setSelectedInternship]=useState(null);
+
+  useEffect(() => {
+    const socketConnection = io(api,{
+      query:{Type:'Student'}
+    });
+    setSocket(socketConnection);
+
+    socketConnection.on('receiveMessage', (message) => {
+      console.log('Message received by student');
+      setChatMessages((prevMessages) => [...prevMessages, message]);
+    });
+
+    return () => {
+      socketConnection.disconnect();
+    };
+
+  }, [])
+  
 
   useEffect(() => {
     const fetchShortlistedInternships = async () => {
       try {
         const response = await axios.get(`${api}/student/internship/${studentId}/shortlisted-internships`);
         setShortlistedInternships(response.data);
-        console.log(response.data);
+        // console.log(response.data);
         
       } catch (err) {
         toast.success('some error occured');
@@ -28,12 +50,49 @@ const Chats = () => {
     fetchShortlistedInternships();
   }, [studentId]);
 
-  const sendMessage=()=>{
+  const sendMessage = () => {
+    if (newMessage.trim() && socket) {
 
-  }
+
+
+      const messageData = {
+        studentId,  // or studentId depending on who is sending
+        recruiterId: selectedRecruiter,
+        message: newMessage,
+        internshipId: selectedInternship,
+        type:'Student'
+      };
+      console.log('message Data', messageData);
+
+      // Emit the message event to the backend
+      socket.emit('sendMessage', messageData);
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        { senderId: studentId, messageContent: newMessage },  // Add the message locally for immediate display
+      ]);
+
+
+      // Optionally clear the message input
+      setNewMessage('');
+    }
+  };
 
   const handleInternClick=(internshipId,recruiterId)=>{
+    setSelectedRecruiter(recruiterId);
+    setSelectedInternship(internshipId);
 
+    // console.log('this is internship id', internshipId);
+    // console.log('this is recruiter id', recruiterId);
+
+    socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type:'Student' });
+
+
+    socket.on('chatHistory', (messages) => {
+      setChatMessages(messages);  // Update the state with the fetched messages
+    });
+
+    
   }
   return (
     <div className="flex justify-end h-[80vh] border border-black mt-20 mx-8 relative">
@@ -72,7 +131,7 @@ const Chats = () => {
                 key={index}
                 className={`p-2 rounded max-w-md ${msg.senderId === studentId ? 'bg-purple-200 self-end' : 'bg-gray-200'}`}
               >
-                <strong>{msg.senderId === studentId ? 'Recruiter' : 'Student'}:</strong> {msg.messageContent}
+                <strong>{msg.senderId === studentId ? 'You' : 'Recruiter'}:</strong> {msg.messageContent}
               </div>
             ))}
           </div>
