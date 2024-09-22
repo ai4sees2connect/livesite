@@ -56,22 +56,22 @@ const initSocket = (server) => {
           internshipId
         );
 
-        let senderId;
-        let receiverId;
-        if(type==='Student'){
-          senderId=studentId;
-          receiverId=recruiterId;
-        }else{
-          senderId=recruiterId;
-          receiverId=studentId;
-        }
+        // let senderId;
+        // let receiverId;
+        // if(type==='Student'){
+        //   senderId=studentId;
+        //   receiverId=recruiterId;
+        // }else{
+        //   senderId=recruiterId;
+        //   receiverId=studentId;
+        // }
 
         const newMessage = new Message({
           chatRoomId: chatRoom._id,
-          senderId,
-          senderType: `${type==='Student'?'Student':'Recruiter'}`,
-          receiverId,
-          receiverType: `${type==='Student'?'Recruiter':'Student'}`,
+          senderId: type === 'Student' ? studentId : recruiterId,
+          senderType: type,
+          receiverId: type === 'Student' ? recruiterId : studentId,
+          receiverType: type === 'Student' ? 'Recruiter' : 'Student',
           messageContent: message,
         });
 

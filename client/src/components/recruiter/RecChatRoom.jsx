@@ -55,8 +55,9 @@ const RecChatRoom = () => {
     });
 
     socketConnection.on('receiveMessage', (message) => {
-      console.log('Message received by student');
+      console.log('MESSAGE RECEIVED BY STUDENT');
       setChatMessages((prevMessages) => [...prevMessages, message]);
+        window.location.reload();
     });
 
     // Clean up the connection when the component unmounts
@@ -64,6 +65,8 @@ const RecChatRoom = () => {
       socketConnection.disconnect();
     };
   }, []);
+
+ 
 
   const handleStudentClick = (studentId, internshipId) => {
     setSelectedStudent(studentId);
