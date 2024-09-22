@@ -5,6 +5,7 @@ import {toast} from 'react-toastify'
 import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
+import useSocket from '../common/useSocket'
 
 const Chats = () => {
 
@@ -12,12 +13,14 @@ const Chats = () => {
   const [shortlistedInternships, setShortlistedInternships] = useState([]);
   const [chatMessages,setChatMessages]=useState([]);
   const [newMessage,setNewMessage]=useState('');
-  const [socket, setSocket] = useState(null);
+  // const [socket, setSocket] = useState(null);
   const [selectedRecruiter,setSelectedRecruiter] = useState(null);
   const [selectedInternship,setSelectedInternship]=useState(null);
+  const userType='Student'
+  const [socket,setSocket]=useState(null);
 
   useEffect(() => {
-    const socketConnection = io(api,{
+    const socketConnection = io('http://localhost:4000',{
       query:{Type:'Student'}
     });
     setSocket(socketConnection);
@@ -62,10 +65,12 @@ const Chats = () => {
       // Emit the message event to the backend
       socket.emit('sendMessage', messageData);
 
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { senderId: studentId, messageContent: newMessage },  // Add the message locally for immediate display
-      ]);
+      // setChatMessages((prevMessages) => [
+      //   ...prevMessages,
+      //   { senderId: studentId, messageContent: newMessage },  // Add the message locally for immediate display
+      // ]);
+
+      
 
 
       // Optionally clear the message input
@@ -83,13 +88,13 @@ const Chats = () => {
     socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type:'Student' });
 
     socket.on('receiveMessages', (message) => {
-      console.log('Message received by student', message);
+      console.log('Message received by recruiter', message);
       setChatMessages((prevMessages) => [...prevMessages, message]);
     });
 
-
     socket.on('chatHistory', (messages) => {
-      setChatMessages(messages);  // Update the state with the fetched messages
+      console.log('Chat history received', messages);
+      setChatMessages(messages);
     });
 
     

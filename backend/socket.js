@@ -5,8 +5,9 @@ const Message = require("./schema/messageSchema");
 const initSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "*", // Adjust this based on your CORS policy
+      origin: "http://localhost:3000", // Adjust this based on your CORS policy
       methods: ["GET", "POST", "PUT", "DELETE"],
+      credentials: true,
     },
   });
 
@@ -18,6 +19,7 @@ const initSocket = (server) => {
     socket.on(
       "joinChatRoom",
       async ({ recruiterId, studentId, internshipId, type }) => {
+        console.log("joinChatRoom event received:");
         try {
           const chatRoom = await createOrGetChatRoom(
             recruiterId,
@@ -25,21 +27,22 @@ const initSocket = (server) => {
             internshipId
           );
 
+          // console.log("Chat Room:", chatRoom);
+          console.log(socket.rooms);
           // The user joins the room identified by the chatRoom ID
-          socket.join(chatRoom._id);
+          socket.join(chatRoom._id.toString());
+          console.log(socket.rooms);
 
-          console.log(`${type} with socket id: ${socket.id} joined chat room ${chatRoom._id}`);
-          // console.log('this is socket',socket);
+          const clientsInRoom = io.sockets.adapter.rooms.get(
+            "66ec63214ef22a5eefd69ce4"
+          );
+          console.log("no of clients", clientsInRoom);
 
-          // Fetch old messages for this chatRoom
           const chatHistory = await Message.find({ chatRoomId: chatRoom._id })
             .sort({ sentAt: 1 }) // Sort messages by date (oldest to newest)
             .exec();
 
-          // Send the chat history to the client
           socket.emit("chatHistory", chatHistory);
-          // Optionally emit a message or notify the user
-         
         } catch (error) {
           console.error("Error joining chat room:", error);
         }
@@ -48,7 +51,8 @@ const initSocket = (server) => {
 
     // Move sendMessageRecruiter listener outside
     socket.on("sendMessage", async (messageData) => {
-      const { recruiterId, studentId, message, internshipId, type } = messageData;
+      const { recruiterId, studentId, message, internshipId, type } =
+        messageData;
 
       try {
         const chatRoom = await createOrGetChatRoom(
@@ -59,23 +63,23 @@ const initSocket = (server) => {
 
         const newMessage = new Message({
           chatRoomId: chatRoom._id,
-          senderId: type === 'Student' ? studentId : recruiterId,
+          senderId: type === "Student" ? studentId : recruiterId,
           senderType: type,
-          receiverId: type === 'Student' ? recruiterId : studentId,
-          receiverType: type === 'Student' ? 'Recruiter' : 'Student',
+          receiverId: type === "Student" ? recruiterId : studentId,
+          receiverType: type === "Student" ? "Recruiter" : "Student",
           messageContent: message,
         });
 
         // Save the message in the database
         await newMessage.save();
-        console.log(`message sent by ${type}`)
-        console.log('this is chat room id:',chatRoom._id)
-
+        console.log(`message sent by ${type}`);
+        console.log("this is chat room id:", chatRoom._id);
 
         // Emit the message to the chat room
-       
-        io.to(chatRoom._id).emit("receiveMessages",newMessage);
-
+        console.log("before emiting");
+        // io.to('heelo').emit("event");
+        io.to(chatRoom._id.toString()).emit("receiveMessages", newMessage);
+        console.log("after emiting");
       } catch (error) {
         console.error("Error saving message:", error);
       }

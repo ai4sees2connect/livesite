@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import api from '../common/server_url';
 import { io } from 'socket.io-client';
 import TimeAgo from '../common/TimeAgo'
+import useSocket from '../common/useSocket'
 
 const RecChatRoom = () => {
   const { recruiterId } = useParams();  // Recruiter ID from the URL
@@ -12,7 +13,9 @@ const RecChatRoom = () => {
   const [selectedInternship, setSelectedInternship] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [socket, setSocket] = useState(null);
+  // const [socket, setSocket] = useState(null);
+  // const userType='Recruiter'
+  const [socket,setSocket]=useState(null);
 
   useEffect(() => {
     // Fetch the list of shortlisted students when the component mounts
@@ -44,21 +47,17 @@ const RecChatRoom = () => {
   }, [recruiterId]);
 
   useEffect(() => {
-    // Establish a socket connection when the component mounts
     const socketConnection = io(api,{
-      query: { Type:'Recruiter' },
+      query:{Type:'Recruiter'}
     });
     setSocket(socketConnection);
 
-    socketConnection.on('connect', () => {
-      console.log('Connected with ID:', socketConnection.id);
-    });
-
-    // Clean up the connection when the component unmounts
     return () => {
       socketConnection.disconnect();
     };
-  }, []);
+
+  }, [api])
+
 
   
 
@@ -74,24 +73,21 @@ const RecChatRoom = () => {
 
     socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type:'Recruiter' });
 
-    const receiveMessageHandler = (message) => {
-      console.log('Message received by student', message);
+    socket.on('receiveMessages', (message) => {
+      // console.log('Message received by student', message);
+      alert('new message');
       setChatMessages((prevMessages) => [...prevMessages, message]);
-    };
+    });
 
-    const chatHistoryHandler = (messages) => {
-      console.log('history updated');
-      setChatMessages(messages); // Update the state with the fetched messages
-    };
+    socket.on('chatHistory', (messages) => {
+      console.log('Chat history received', messages);
+      setChatMessages(messages);
+    });
 
-    socket.on('receiveMessages', receiveMessageHandler);
-    socket.on('chatHistory', chatHistoryHandler);
+    socket.on('testMessage', (data) => {
+      console.log('Received test message:', data.msg);
+    });
 
-    // Clean up the listeners when a new student is clicked
-    return () => {
-      socket.off('receiveMessages', receiveMessageHandler);
-      socket.off('chatHistory', chatHistoryHandler);
-    };
 
 
   };
