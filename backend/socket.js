@@ -6,7 +6,7 @@ const initSocket = (server) => {
   const io = new Server(server, {
     cors: {
       origin: "*", // Adjust this based on your CORS policy
-      methods: ["GET", "POST"],
+      methods: ["GET", "POST", "PUT", "DELETE"],
     },
   });
 
@@ -26,9 +26,10 @@ const initSocket = (server) => {
           );
 
           // The user joins the room identified by the chatRoom ID
-          socket.join(chatRoom._id.toString());
+          socket.join(chatRoom._id);
 
           console.log(`${type} with socket id: ${socket.id} joined chat room ${chatRoom._id}`);
+          // console.log('this is socket',socket);
 
           // Fetch old messages for this chatRoom
           const chatHistory = await Message.find({ chatRoomId: chatRoom._id })
@@ -38,7 +39,7 @@ const initSocket = (server) => {
           // Send the chat history to the client
           socket.emit("chatHistory", chatHistory);
           // Optionally emit a message or notify the user
-          socket.emit("chatRoomJoined", { chatRoomId: chatRoom._id });
+         
         } catch (error) {
           console.error("Error joining chat room:", error);
         }
@@ -56,16 +57,6 @@ const initSocket = (server) => {
           internshipId
         );
 
-        // let senderId;
-        // let receiverId;
-        // if(type==='Student'){
-        //   senderId=studentId;
-        //   receiverId=recruiterId;
-        // }else{
-        //   senderId=recruiterId;
-        //   receiverId=studentId;
-        // }
-
         const newMessage = new Message({
           chatRoomId: chatRoom._id,
           senderId: type === 'Student' ? studentId : recruiterId,
@@ -78,10 +69,12 @@ const initSocket = (server) => {
         // Save the message in the database
         await newMessage.save();
         console.log(`message sent by ${type}`)
+        console.log('this is chat room id:',chatRoom._id)
 
 
         // Emit the message to the chat room
-        io.to(chatRoom._id).emit("receiveMessage",newMessage);
+       
+        io.to(chatRoom._id).emit("receiveMessages",newMessage);
 
       } catch (error) {
         console.error("Error saving message:", error);

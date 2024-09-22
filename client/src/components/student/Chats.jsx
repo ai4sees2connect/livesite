@@ -22,11 +22,6 @@ const Chats = () => {
     });
     setSocket(socketConnection);
 
-    socketConnection.on('receiveMessage', (message) => {
-      console.log('Message received by student');
-      setChatMessages((prevMessages) => [...prevMessages, message]);
-    });
-
     return () => {
       socketConnection.disconnect();
     };
@@ -86,6 +81,11 @@ const Chats = () => {
     // console.log('this is recruiter id', recruiterId);
 
     socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type:'Student' });
+
+    socket.on('receiveMessages', (message) => {
+      console.log('Message received by student', message);
+      setChatMessages((prevMessages) => [...prevMessages, message]);
+    });
 
 
     socket.on('chatHistory', (messages) => {

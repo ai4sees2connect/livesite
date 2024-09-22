@@ -54,17 +54,13 @@ const RecChatRoom = () => {
       console.log('Connected with ID:', socketConnection.id);
     });
 
-    socketConnection.on('receiveMessage', (message) => {
-      console.log('MESSAGE RECEIVED BY STUDENT');
-      setChatMessages((prevMessages) => [...prevMessages, message]);
-        window.location.reload();
-    });
-
     // Clean up the connection when the component unmounts
     return () => {
       socketConnection.disconnect();
     };
   }, []);
+
+  
 
  
 
@@ -78,21 +74,31 @@ const RecChatRoom = () => {
 
     socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type:'Recruiter' });
 
+    const receiveMessageHandler = (message) => {
+      console.log('Message received by student', message);
+      setChatMessages((prevMessages) => [...prevMessages, message]);
+    };
 
-    socket.on('chatHistory', (messages) => {
-      setChatMessages(messages);  // Update the state with the fetched messages
-    });
+    const chatHistoryHandler = (messages) => {
+      console.log('history updated');
+      setChatMessages(messages); // Update the state with the fetched messages
+    };
 
+    socket.on('receiveMessages', receiveMessageHandler);
+    socket.on('chatHistory', chatHistoryHandler);
+
+    // Clean up the listeners when a new student is clicked
+    return () => {
+      socket.off('receiveMessages', receiveMessageHandler);
+      socket.off('chatHistory', chatHistoryHandler);
+    };
 
 
   };
-  // console.log('selected Student', selectedStudent)
-  // console.log('selected internship', selectedInternship);
+ 
 
   const sendMessage = () => {
     if (newMessage.trim() && socket) {
-
-
 
       const messageData = {
         recruiterId,  // or studentId depending on who is sending
@@ -106,6 +112,8 @@ const RecChatRoom = () => {
       // Emit the message event to the backend
       socket.emit('sendMessage', messageData);
 
+      
+
       setChatMessages((prevMessages) => [
         ...prevMessages,
         { senderId: recruiterId, messageContent: newMessage },  // Add the message locally for immediate display
@@ -116,7 +124,7 @@ const RecChatRoom = () => {
       setNewMessage('');
     }
   };
-  console.log('these are messages', chatMessages);
+  // console.log('these are messages', chatMessages);
   console.log('this is the message sent', newMessage);
 
   return (
