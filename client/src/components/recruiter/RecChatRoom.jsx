@@ -4,59 +4,92 @@ import { useParams } from 'react-router-dom';
 import api from '../common/server_url';
 import { io } from 'socket.io-client';
 import TimeAgo from '../common/TimeAgo'
-import useSocket from '../common/useSocket'
+
 
 const RecChatRoom = () => {
-  const { recruiterId } = useParams();  // Recruiter ID from the URL
+  const { recruiterId } = useParams(); 
   const [shortlistedStudents, setShortlistedStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [selectedInternship, setSelectedInternship] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  // const [socket, setSocket] = useState(null);
-  // const userType='Recruiter'
+
   const [socket,setSocket]=useState(null);
 
+
   useEffect(() => {
-    // Fetch the list of shortlisted students when the component mounts
+    const socketConnection = io(api,
+      {
+      query:{userType:'Recruiter',userId:recruiterId}
+    }
+  );
+    setSocket(socketConnection);
+
+    socketConnection.on('studentsActive', ({ userId, isActive }) => {
+      console.log('listening to all active students');
+      setShortlistedStudents(prevStudents =>
+        prevStudents.map(student =>{
+          console.log(isActive);
+          return student.studentId === userId ? { ...student, isActive } : student
+        }
+        )
+      );
+
+    });
+
+    return () => {
+      socketConnection.off('studentsActive');
+
+      socketConnection.disconnect();
+    };
+
+  }, [recruiterId])
+
+
+
+  useEffect(() => {
+
     const fetchShortlistedStudents = async () => {
+     
       try {
+        // Fetch the list of shortlisted students
         const response = await axios.get(`${api}/recruiter/${recruiterId}/fetch-all-shortlisted`);
-        // console.log(response.data);
-        const students=response.data;
-        let flat=students.flatMap(student=>{
-          return student.shortlistedInternships.map(shortlisted=>{
-            return{
-              internshipId:shortlisted.internshipId,
-              internshipName:shortlisted.internshipName,
-              statusUpdatedAt:shortlisted.statusUpdatedAt,
-              studentId: student._id,
-              firstname:student.firstname,
-              lastname:student.lastname,
-            }
-          })
-        })
-        // console.log('this is flat',flat);
+        const students = response.data;
+        
+        // Flatten the list of students with their internships
+        let flat = students.flatMap((student) => {
+          return student.shortlistedInternships.map((shortlisted) => ({
+            internshipId: shortlisted.internshipId,
+            internshipName: shortlisted.internshipName,
+            statusUpdatedAt: shortlisted.statusUpdatedAt,
+            studentId: student._id,
+            firstname: student.firstname,
+            lastname: student.lastname,
+          }));
+        });
+  
+        // Set the flattened student list in state
         setShortlistedStudents(flat);
+  
+       
       } catch (error) {
         console.error('Error fetching shortlisted students:', error);
       }
     };
-
+  
     fetchShortlistedStudents();
-  }, [recruiterId]);
+  
+    // Cleanup function to remove socket listener and disconnect on unmount
+    
+  }, [recruiterId, api]);
+  
+  
+
+
 
   useEffect(() => {
-    const socketConnection = io(api,{
-      query:{Type:'Recruiter'}
-    });
-    setSocket(socketConnection);
-
-    return () => {
-      socketConnection.disconnect();
-    };
-
-  }, [api])
+    console.log('Updated shortlistedStudents:', shortlistedStudents);
+  }, [shortlistedStudents]);
 
 
   
@@ -67,15 +100,12 @@ const RecChatRoom = () => {
     setSelectedStudent(studentId);
     setSelectedInternship(internshipId);
 
-    // console.log('this is student id', studentId)
-    // console.log('this is internship id', internshipId);
-    // console.log('this is recruiter id', recruiterId);
 
     socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type:'Recruiter' });
 
     socket.on('receiveMessages', (message) => {
-      // console.log('Message received by student', message);
-      alert('new message');
+      console.log('Message received by student', message);
+      // alert('new message');
       setChatMessages((prevMessages) => [...prevMessages, message]);
     });
 
@@ -137,12 +167,14 @@ const RecChatRoom = () => {
                 onClick={() => handleStudentClick(student.studentId, student.internshipId)}
               >
                 <div className="flex-grow">
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    {student.firstname} {student.lastname}
+                  <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                    <span>{student.firstname} {student.lastname}</span>
+                    {student.isActive && (<div className='ml-2 bg-green-500 rounded-full w-3 h-3'> </div>)}
                   </h3>
                   <p className="text-sm text-gray-600">{student.internshipName}</p>
                   <p>{TimeAgo(student.statusUpdatedAt)}</p>
-                  <p>{student.statusUpdatedAt}</p>
+                  {/* <p>{student.statusUpdatedAt}</p> */}
+                  <p>{student.isActive?'Hellow':'hi'}</p>
                 </div>
               </div>
             
@@ -152,7 +184,11 @@ const RecChatRoom = () => {
 
       {/* Right Column - Chat Interface */}
       <div className="w-[65%] p-4 flex flex-col">
-        <div className="flex-grow bg-white p-4 border rounded-lg shadow-lg overflow-y-auto">
+      <div className='w-full h-[10%]'>
+          <p>Chatting with student</p>
+          </div>
+        <div className="flex-grow bg-white mt-4 p-4 border border-black rounded-lg shadow-lg overflow-y-auto">
+          
           {/* Chat messages */}
           <div className="flex flex-col space-y-4">
             {chatMessages.map((msg, index) => (

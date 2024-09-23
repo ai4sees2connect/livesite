@@ -5,16 +5,61 @@ const Message = require("./schema/messageSchema");
 const initSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000", // Adjust this based on your CORS policy
+      origin: "*", // Adjust this based on your CORS policy
       methods: ["GET", "POST", "PUT", "DELETE"],
       credentials: true,
     },
   });
 
+  const onlineStudents = new Set(); // To store active student IDs
+  const onlineRecruiters = new Set(); // To store active recruiter IDs
+
   io.on("connection", (socket) => {
-    const Type = socket.handshake.query.Type;
-    console.log(`${Type} connected: ${socket.id}`);
-    console.log(`the user type is ${Type}`);
+    const { userId, userType } = socket.handshake.query;
+    console.log(`${userType} connected: ${socket.id}`);
+    console.log(`the user type is ${userType}`);
+
+    if (userType === "Student") {
+      // Add student to the active list
+      onlineStudents.add(userId);
+
+      // Notify recruiters about the student's active status
+      io.emit("studentsActive", { userId, isActive: true });
+
+     
+
+      socket.on('disconnect', () => {
+        console.log(`${userType} disconnected`)
+        onlineStudents.delete(userId);
+        io.emit('studentsActive', { userId, isActive: false });
+      });
+
+
+    } else if (userType === "Recruiter") {
+      // Add recruiter to the active list
+      onlineRecruiters.add(userId);
+
+      // Optionally notify students about recruiter active status (if needed)
+      io.emit("recruitersActive", { userId, isActive: true });
+
+      // socket.on('requestStudentsStatus', () => {
+      //   const studentsStatus = Array.from(onlineStudents).map(id => ({
+      //     studentId: id,
+      //     isActive: true, // Assuming they're active; adjust as necessary
+      //   }));
+      //   socket.emit('studentsStatus', studentsStatus); // Send current status to recruiter
+      // });
+
+
+      socket.on('disconnect', () => {
+        console.log(`${userType} disconnected`)
+        onlineRecruiters.delete(userId);
+        io.emit('recruitersActive', { userId, isActive: false });
+      });
+    }
+
+    console.log("list of students active", onlineStudents);
+    console.log("list of recruiters active", onlineRecruiters);
 
     socket.on(
       "joinChatRoom",
@@ -85,9 +130,17 @@ const initSocket = (server) => {
       }
     });
 
-    socket.on("disconnect", () => {
-      console.log(`${Type} disconnected: ${socket.id}`);
-    });
+    // socket.on("disconnect", () => {
+    //   console.log(`${userType} disconnected: ${socket.id}`);
+
+    //   if (userType === "Student") {
+    //     onlineStudents.delete(userId);
+    //     io.emit("studentsActive", { userId, isActive: false });
+    //   } else if (userType === "Recruiter") {
+    //     onlineRecruiters.delete(userId);
+    //     io.emit("recruitersActive", { userId, isActive: false });
+    //   }
+    // });
   });
 
   return io;

@@ -236,7 +236,11 @@ router.get('/:studentId/shortlisted-internships', async (req, res) => {
       internshipName: appliedInternship.internship.internshipName, // Adjust based on your Internship schema
       statusUpdatedAt: appliedInternship.internshipStatus.statusUpdatedAt,
       recruiterId:appliedInternship.internship.recruiter._id,
-      companyName: appliedInternship.internship.recruiter.companyName, 
+      recruiterFirstName:appliedInternship.internship.recruiter.firstname,
+      recruiterLastName:appliedInternship.internship.recruiter.lastname,
+      companyName: appliedInternship.internship.recruiter.companyName,
+      isActive:false
+
 
     }));
 
