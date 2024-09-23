@@ -26,6 +26,11 @@ const initSocket = (server) => {
       // Notify recruiters about the student's active status
       io.emit("studentsActive", { userId, isActive: true });
 
+      const recruitersStatus = Array.from(onlineRecruiters).map(id => ({
+        recruiterId: id
+      }));
+      socket.emit("recruitersStatus", recruitersStatus);
+
      
 
       socket.on('disconnect', () => {
@@ -42,14 +47,11 @@ const initSocket = (server) => {
       // Optionally notify students about recruiter active status (if needed)
       io.emit("recruitersActive", { userId, isActive: true });
 
-      // socket.on('requestStudentsStatus', () => {
-      //   const studentsStatus = Array.from(onlineStudents).map(id => ({
-      //     studentId: id,
-      //     isActive: true, // Assuming they're active; adjust as necessary
-      //   }));
-      //   socket.emit('studentsStatus', studentsStatus); // Send current status to recruiter
-      // });
+      const studentsStatus = Array.from(onlineStudents).map(id => ({
+        studentId: id
+      }));
 
+      socket.emit('studentsStatus', studentsStatus);
 
       socket.on('disconnect', () => {
         console.log(`${userType} disconnected`)

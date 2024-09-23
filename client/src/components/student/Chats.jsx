@@ -18,12 +18,62 @@ const Chats = () => {
   const [selectedInternship, setSelectedInternship] = useState(null);
 
   const [socket, setSocket] = useState(null);
+  const [isLoading, setIsLoading]=useState(true);
+
 
   useEffect(() => {
+    const fetchShortlistedInternships = async () => {
+      try {
+        const response = await axios.get(`${api}/student/internship/${studentId}/shortlisted-internships`);
+        setShortlistedInternships(response.data);
+        console.log('this is on initial fetching',response.data);
+
+      } catch (err) {
+        toast.success('some error occured');
+
+      }
+    };
+
+    fetchShortlistedInternships();
+    
+  }, [studentId]);
+
+
+  useEffect(() => {
+    if(!isLoading){
     const socketConnection = io(api, {
       query: { userType: 'Student', userId: studentId }
     });
     setSocket(socketConnection);
+    console.log('socket connection established from student side');
+
+    socketConnection.on('recruitersStatus', (recruiters) => {
+      if(shortlistedInternships){
+        console.log('yes interns to haii',recruiters);
+        console.log('theeeeeseee',shortlistedInternships.length);
+      }
+      setShortlistedInternships(prevInterns => 
+        prevInterns.map(intern => {
+          // Find the matching recruiter in the recruiters array
+          const matchingRecruiter = recruiters.find(rec => rec.recruiterId === intern.recruiterId);
+          console.log('Intern recruiterId:', intern.recruiterId);
+          console.log('Matching recruiter:', matchingRecruiter);
+          
+          // If a match is found, update the isActive status
+          if (matchingRecruiter && intern.isActive!==true) {
+            console.log('Updating isActive for recruiterId:', intern.recruiterId);
+            return {
+              ...intern,
+              isActive: true, // Set the active status
+            };
+          }
+          
+          console.log('not changing any thing');
+          return intern;
+        })
+      );
+      // setShortlistedRecruiters(recruiters);
+    });
 
     socketConnection.on('recruitersActive', ({ userId, isActive }) => {
       console.log('listening to all active recruiters')
@@ -33,35 +83,20 @@ const Chats = () => {
       }
       )
     })
-
+  
     return () => {
-      socketConnection.off('recruitersActive');
-
       socketConnection.disconnect();
-    };
-
-  }, [studentId])
+    }}
+  }, [studentId,isLoading]);
 
   useEffect(() => {
+    if(shortlistedInternships.length > 0){
     console.log('Updated shortlistedInternships:', shortlistedInternships);
+    setIsLoading(false);
+    console.log('loading status:',isLoading);
+    }
   }, [shortlistedInternships]);
-
-
-  useEffect(() => {
-    const fetchShortlistedInternships = async () => {
-      try {
-        const response = await axios.get(`${api}/student/internship/${studentId}/shortlisted-internships`);
-        setShortlistedInternships(response.data);
-        console.log(response.data);
-
-      } catch (err) {
-        toast.success('some error occured');
-
-      }
-    };
-
-    fetchShortlistedInternships();
-  }, [studentId]);
+ 
 
   const sendMessage = () => {
     if (newMessage.trim() && socket) {

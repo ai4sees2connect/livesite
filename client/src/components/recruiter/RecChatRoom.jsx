@@ -15,15 +15,33 @@ const RecChatRoom = () => {
   const [newMessage, setNewMessage] = useState('');
 
   const [socket,setSocket]=useState(null);
+  const [isLoading, setIsLoading]=useState(true);
 
 
   useEffect(() => {
+    if(!isLoading){
     const socketConnection = io(api,
       {
       query:{userType:'Recruiter',userId:recruiterId}
     }
   );
     setSocket(socketConnection);
+
+    socketConnection.on('studentsStatus', (students) => {
+      console.log('Received active students:', students);
+     setShortlistedStudents(prevStudents=>
+      prevStudents.map(student=>{
+        const matched=students.find(s=> s.studentId===student.studentId);
+        if(matched){
+          return {
+            ...student,
+            isActive:true
+          }
+        }
+        return student;
+      })
+     )
+    });
 
     socketConnection.on('studentsActive', ({ userId, isActive }) => {
       console.log('listening to all active students');
@@ -42,8 +60,9 @@ const RecChatRoom = () => {
 
       socketConnection.disconnect();
     };
+  }
 
-  }, [recruiterId])
+  }, [recruiterId,isLoading])
 
 
 
@@ -85,10 +104,12 @@ const RecChatRoom = () => {
   
   
 
-
-
   useEffect(() => {
+    if(shortlistedStudents.length > 0){
     console.log('Updated shortlistedStudents:', shortlistedStudents);
+    setIsLoading(false);
+    console.log('loading status:',isLoading);
+    }
   }, [shortlistedStudents]);
 
 
