@@ -65,31 +65,36 @@ const initSocket = (server) => {
 
     socket.on(
       "joinChatRoom",
-      async ({ recruiterId, studentId, internshipId, type }) => {
-        console.log("joinChatRoom event received:");
+      async ({ recruiterId, studentId, internshipId,type }) => {
+        
         try {
           const chatRoom = await createOrGetChatRoom(
             recruiterId,
             studentId,
             internshipId
           );
+          const roomId = chatRoom._id.toString();
 
           // console.log("Chat Room:", chatRoom);
-          console.log(socket.rooms);
-          // The user joins the room identified by the chatRoom ID
-          socket.join(chatRoom._id.toString());
-          console.log(socket.rooms);
+          // console.log(socket.rooms);
+          console.log(`joinChatRoom event received for internship with id:${internshipId}`);
+          socket.join(roomId);
+          console.log(`${type}: joined a room with id:${roomId}`);
 
-          const clientsInRoom = io.sockets.adapter.rooms.get(
-            "66ec63214ef22a5eefd69ce4"
-          );
-          console.log("no of clients", clientsInRoom);
+          // const clientsInRoom = io.sockets.adapter.rooms.get(
+          //   "66ec63214ef22a5eefd69ce4"
+          // );
+          // console.log("no of clients", clientsInRoom);
 
           const chatHistory = await Message.find({ chatRoomId: chatRoom._id })
             .sort({ sentAt: 1 }) // Sort messages by date (oldest to newest)
             .exec();
+            
 
-          socket.emit("chatHistory", chatHistory);
+            const receiverId= type==='Recruiter'? studentId : recruiterId
+            // console.log(' chatHistory',chatHistory);
+
+            socket.emit(`chatHistory_${receiverId}_${internshipId}`, chatHistory);
         } catch (error) {
           console.error("Error joining chat room:", error);
         }
@@ -126,6 +131,7 @@ const initSocket = (server) => {
         console.log("before emiting");
         // io.to('heelo').emit("event");
         socket.to(chatRoom._id.toString()).emit("receiveMessages", newMessage);
+
         console.log("after emiting");
       } catch (error) {
         console.error("Error saving message:", error);

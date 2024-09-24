@@ -13,6 +13,7 @@ const Chats = () => {
   const [shortlistedInternships, setShortlistedInternships] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [chatHistories, setChatHistories] = useState({});
 
   const [selectedRecruiter, setSelectedRecruiter] = useState(null);
   const [selectedInternship, setSelectedInternship] = useState(null);
@@ -28,6 +29,8 @@ const Chats = () => {
         const response = await axios.get(`${api}/student/internship/${studentId}/shortlisted-internships`);
         setShortlistedInternships(response.data);
         console.log('this is on initial fetching',response.data);
+
+        
 
       } catch (err) {
         toast.success('some error occured');

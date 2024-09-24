@@ -13,6 +13,7 @@ const RecChatRoom = () => {
   const [selectedInternship, setSelectedInternship] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [chatHistories, setChatHistories] = useState({});
 
   const [socket,setSocket]=useState(null);
   const [isLoading, setIsLoading]=useState(true);
@@ -92,6 +93,38 @@ const RecChatRoom = () => {
         setShortlistedStudents(flat)
         console.log('students fetched',flat);
 
+        if (flat.length > 0 && socket) {
+          flat.forEach((student,index) => {
+            const { studentId, internshipId } = student;
+            console.log(studentId, internshipId);
+
+            // Emit joinChatRoom for each student
+            socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type: 'Recruiter' });
+
+            // Listen for chat history for each student
+            socket.on(`chatHistory_${studentId}_${internshipId}`, (messages) => {
+              // console.log(`Chat history for student: ${index}`, messages);
+
+
+              // Store chat history for each student
+              setChatHistories((prevHistories) => ({
+                ...prevHistories,
+                [`${studentId}_${internshipId}`]: messages, // Store history for each student using their studentId as key
+              }));
+            });
+
+            // Listen for real-time messages for each student
+            socket.on(`receiveMessages`, (message) => {
+              console.log(`New message from student ${studentId}:`, message);
+
+              // Store real-time messages for each student
+              setChatMessages((prevMessages) => ({
+                ...prevMessages,
+                [studentId]: [...(prevMessages[studentId] || []), message],
+              }));
+            });
+          });
+        }
       
 
 
@@ -104,13 +137,14 @@ const RecChatRoom = () => {
   
     // Cleanup function to remove socket listener and disconnect on unmount
     
-  }, [recruiterId, api]);
+  }, [socket]);
+
+  console.log('this is histories',chatHistories);
+  console.log('this is studentid and internshipid',selectedStudent,selectedInternship);
+
 
   
-  
-  
-  
-
+//this s for selecting first student on page render
   useEffect(() => {
     if(shortlistedStudents.length > 0){
     console.log('Updated shortlistedStudents:', shortlistedStudents);
@@ -128,50 +162,43 @@ const RecChatRoom = () => {
     }
   }, [shortlistedStudents,socket]);
 
+//this is to auto scroll messages to the bottom
   useEffect(() => {
     const scrollToBottom=()=>{
       chatEndRef.current?.scrollIntoView({ behavior:'smooth' });
     }
     scrollToBottom();
-  }, [chatMessages]);
+  }, [chatHistories]);
 
-  
-  // useEffect(() => {
-  //   // Automatically call handleStudentClick when the component mounts
-    
-  // }, []);
  
-
   const handleStudentClick = (studentId, internshipId) => {
     setSelectedStudent(studentId);
     setSelectedInternship(internshipId);
 
 
-    socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type:'Recruiter' });
+    // socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type:'Recruiter' });
 
-    socket.on('receiveMessages', (message) => {
-      console.log('Message received by student', message);
-      // alert('new message');
-      setChatMessages((prevMessages) => [...prevMessages, message]);
-    });
+    // socket.on('receiveMessages', (message) => {
+    //   console.log('Message received by student', message);
+    //   // alert('new message');
+    //   setChatMessages((prevMessages) => [...prevMessages, message]);
+    // });
 
-    socket.on('chatHistory', (messages) => {
-      console.log('Chat history received', messages);
-      setChatMessages(messages);
-    });
+    // socket.on('chatHistory', (messages) => {
+    //   console.log('Chat history received', messages);
+    //   setChatMessages(messages);
+    // });
 
-    socket.on('testMessage', (data) => {
-      console.log('Received test message:', data.msg);
-    });
-
-
+    // socket.on('testMessage', (data) => {
+    //   console.log('Received test message:', data.msg);
+    // });
 
   };
  
 
   const sendMessage = () => {
     if (newMessage.trim() && socket) {
-
+      
       const messageData = {
         recruiterId,  // or studentId depending on who is sending
         studentId: selectedStudent,
@@ -186,10 +213,13 @@ const RecChatRoom = () => {
 
       
 
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { senderId: recruiterId, messageContent: newMessage },  // Add the message locally for immediate display
-      ]);
+      setChatHistories((prevHistories) => ({
+        ...prevHistories,
+        [`${messageData.studentId}_${messageData.internshipId}`]: [
+          ...(prevHistories[`${messageData.studentId}_${messageData.internshipId}`] || []),  // Get existing messages or an empty array
+          { senderId: recruiterId, messageContent: newMessage }, // Add the new message
+        ],
+      }));
 
 
       // Optionally clear the message input
@@ -237,7 +267,7 @@ const RecChatRoom = () => {
           
           {/* Chat messages */}
           <div className="flex flex-col space-y-4">
-            {chatMessages.map((msg, index) => (
+            {chatHistories[`${selectedStudent}_${selectedInternship}`]?.map((msg, index) => (
               <div
                 key={index}
                 className={`p-2 rounded max-w-md ${msg.senderId === recruiterId ? 'bg-purple-200 self-end' : 'bg-gray-200'}`}
