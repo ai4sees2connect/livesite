@@ -101,8 +101,8 @@ const Chats = () => {
               // Store real-time messages for each student
               setChatHistories((prevHistories) => ({
                 ...prevHistories,
-                [`${studentId}_${internshipId}`]: [
-                  ...(prevHistories[`${studentId}_${internshipId}`] || []), // Preserve previous history
+                [`${recruiterId}_${internshipId}`]: [
+                  ...(prevHistories[`${recruiterId}_${internshipId}`] || []), // Preserve previous history
                   message, // Add the new real-time message
                 ],
               }));
@@ -211,10 +211,13 @@ const Chats = () => {
       // Emit the message event to the backend
       socket.emit('sendMessage', messageData);
 
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        { senderId: studentId, messageContent: newMessage },  // Add the message locally for immediate display
-      ]);
+      setChatHistories((prevHistories) => ({
+        ...prevHistories,
+        [`${messageData.recruiterId}_${messageData.internshipId}`]: [
+          ...(prevHistories[`${messageData.recruiterId}_${messageData.internshipId}`] || []),  // Get existing messages or an empty array
+          { senderId: studentId, messageContent: newMessage }, // Add the new message
+        ],
+      }));
 
 
 
@@ -227,24 +230,15 @@ const Chats = () => {
   const handleInternClick = (internshipId, recruiterId) => {
     setSelectedRecruiter(recruiterId);
     setSelectedInternship(internshipId);
-
-    // console.log('this is internship id', internshipId);
-    // console.log('this is recruiter id', recruiterId);
-
-    socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type: 'Student' });
-
-    socket.on('receiveMessages', (message) => {
-      console.log('Message received by recruiter', message);
-      setChatMessages((prevMessages) => [...prevMessages, message]);
-    });
-
-    socket.on('chatHistory', (messages) => {
-      console.log('Chat history received', messages);
-      setChatMessages(messages);
-    });
-
-
   }
+
+  useEffect(() => {
+    const scrollToBottom=()=>{
+      chatEndRef.current?.scrollIntoView({ behavior:'smooth' });
+    }
+    scrollToBottom();
+  }, [chatHistories]);
+
   return (
     <div className="flex justify-end h-[80vh] border border-black mt-20 mx-8 relative">
       {/* Left Column - Shortlisted Students */}

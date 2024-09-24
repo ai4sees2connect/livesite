@@ -129,8 +129,9 @@ const initSocket = (server) => {
 
         // Emit the message to the chat room
         console.log("before emiting");
-        // io.to('heelo').emit("event");
-        socket.to(chatRoom._id.toString()).emit("receiveMessages", newMessage);
+
+        const receiverId= type==='Recruiter'? recruiterId : studentId
+        socket.to(chatRoom._id.toString()).emit(`receiveMessages_${receiverId}_${internshipId}`, newMessage);
 
         console.log("after emiting");
       } catch (error) {

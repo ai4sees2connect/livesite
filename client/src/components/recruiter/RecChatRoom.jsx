@@ -224,25 +224,6 @@ const RecChatRoom = () => {
   const handleStudentClick = (studentId, internshipId) => {
     setSelectedStudent(studentId);
     setSelectedInternship(internshipId);
-
-
-    // socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type:'Recruiter' });
-
-    // socket.on('receiveMessages', (message) => {
-    //   console.log('Message received by student', message);
-    //   // alert('new message');
-    //   setChatMessages((prevMessages) => [...prevMessages, message]);
-    // });
-
-    // socket.on('chatHistory', (messages) => {
-    //   console.log('Chat history received', messages);
-    //   setChatMessages(messages);
-    // });
-
-    // socket.on('testMessage', (data) => {
-    //   console.log('Received test message:', data.msg);
-    // });
-
   };
  
 
