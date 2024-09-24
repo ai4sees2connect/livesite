@@ -93,10 +93,13 @@ const Chats = () => {
   useEffect(() => {
     if(shortlistedInternships.length > 0){
     console.log('Updated shortlistedInternships:', shortlistedInternships);
+    if (socket) {
+    handleInternClick(shortlistedInternships[0].internshipId,shortlistedInternships[0].recruiterId);
+    }
     setIsLoading(false);
     console.log('loading status:',isLoading);
     }
-  }, [shortlistedInternships]);
+  }, [shortlistedInternships,socket]);
 
   useEffect(() => {
     const scrollToBottom=()=>{

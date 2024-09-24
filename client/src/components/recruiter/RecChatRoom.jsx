@@ -89,9 +89,12 @@ const RecChatRoom = () => {
         });
   
         // Set the flattened student list in state
-        setShortlistedStudents(flat);
-  
-       
+        setShortlistedStudents(flat)
+        console.log('students fetched',flat);
+
+      
+
+
       } catch (error) {
         console.error('Error fetching shortlisted students:', error);
       }
@@ -102,16 +105,28 @@ const RecChatRoom = () => {
     // Cleanup function to remove socket listener and disconnect on unmount
     
   }, [recruiterId, api]);
+
+  
+  
   
   
 
   useEffect(() => {
     if(shortlistedStudents.length > 0){
     console.log('Updated shortlistedStudents:', shortlistedStudents);
+
+    if (socket) {
+      console.log('First student:', shortlistedStudents[0].internshipId, shortlistedStudents[0].studentId);
+      // Trigger handleStudentClick with the first student
+      handleStudentClick(shortlistedStudents[0].studentId, shortlistedStudents[0].internshipId);
+    } else {
+      console.error('No students found.');
+    }
+
     setIsLoading(false);
     console.log('loading status:',isLoading);
     }
-  }, [shortlistedStudents]);
+  }, [shortlistedStudents,socket]);
 
   useEffect(() => {
     const scrollToBottom=()=>{
@@ -121,7 +136,10 @@ const RecChatRoom = () => {
   }, [chatMessages]);
 
   
-
+  // useEffect(() => {
+  //   // Automatically call handleStudentClick when the component mounts
+    
+  // }, []);
  
 
   const handleStudentClick = (studentId, internshipId) => {
@@ -191,6 +209,7 @@ const RecChatRoom = () => {
       
               <div
                 key={`${student.studentId}-${student.internshipId}`}
+                
                 className="student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4 border border-gray-200 hover:cursor-pointer hover:border-blue-300 hover:scale-105 duration-300"
                 onClick={() => handleStudentClick(student.studentId, student.internshipId)}
               >
@@ -201,6 +220,7 @@ const RecChatRoom = () => {
                   </h3>
                   <p className="text-sm text-gray-600">{student.internshipName}</p>
                   <p>{TimeAgo(student.statusUpdatedAt)}</p>
+                 
                 </div>
               </div>
             
