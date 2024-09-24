@@ -14,6 +14,10 @@ const RecChatRoom = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [chatHistories, setChatHistories] = useState({});
+  const [firstName,setFirstName]=useState('');
+  const [lastName,setLastName]=useState('');
+  const [internshipName,setInternshipName]=useState('');
+  const [activeStatus,setActiveStatus]=useState(false);
 
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -203,6 +207,8 @@ const RecChatRoom = () => {
         console.log('First student:', shortlistedStudents[0].internshipId, shortlistedStudents[0].studentId);
         // Trigger handleStudentClick with the first student
         handleStudentClick(shortlistedStudents[0].studentId, shortlistedStudents[0].internshipId);
+        handleInfoSetter(shortlistedStudents[0].firstname,shortlistedStudents[0].lastname,shortlistedStudents[0].internshipName, shortlistedStudents[0].isActive);
+        console.log('this is the active status of first student:', shortlistedStudents[0].isActive)
       } else {
         console.error('No students found.');
       }
@@ -225,6 +231,14 @@ const RecChatRoom = () => {
     setSelectedStudent(studentId);
     setSelectedInternship(internshipId);
   };
+
+  const handleInfoSetter=(firstname, lastname, internshipName,isActive)=>{
+    setFirstName(firstname);
+    setLastName(lastname);
+    setInternshipName(internshipName);
+    setActiveStatus(isActive)
+    
+  }
 
 
   const sendMessage = () => {
@@ -277,7 +291,7 @@ const RecChatRoom = () => {
   };
 
   return (
-    <div className="flex justify-end h-[80vh] border border-black mt-20 mx-8 relative">
+    <div className="flex justify-end h-[80vh] border border-black mt-20 relative w-[100%]">
       {/* Left Column - Shortlisted Students */}
       <div className="fixed left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[70vh]">
         <h2 className="text-xl font-semibold mb-4">Shortlisted Students</h2>
@@ -300,7 +314,7 @@ const RecChatRoom = () => {
               <div
                 key={`${studentId}-${internshipId}`}
                 className="student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4 border border-gray-200 hover:cursor-pointer hover:border-blue-300 hover:scale-105 duration-300"
-                onClick={() => handleStudentClick(studentId, internshipId)}
+                onClick={() => {handleStudentClick(studentId, internshipId); handleInfoSetter( firstname, lastname, internshipName,isActive)}}
               >
                 <div className="flex-grow">
                   <div className="text-lg font-semibold text-gray-800 flex items-center relative">
@@ -324,20 +338,23 @@ const RecChatRoom = () => {
       </div>
 
       {/* Right Column - Chat Interface */}
-      <div className="w-[65%] p-4 flex flex-col">
-        <div className='w-full h-[10%]'>
-          <p>Chatting with student</p>
+      <div className="w-[65%] p-4 flex flex-col border mx-3 border-black">
+        <div className='w-full h-[10%]  mb-2'>
+            <p className='font-semibold capitalize text-2xl'>{firstName} {lastName} {activeStatus&& <span className='text-sm text-green-500'>online</span>}</p>
+            <p>{internshipName}</p>
         </div>
-        <div className="flex-grow bg-white mt-4 p-4 border border-black rounded-lg shadow-lg overflow-y-auto">
+        <div className="flex-grow bg-white mt-4 p-4 rounded-lg shadow-lg overflow-y-auto border-2">
 
           {/* Chat messages */}
           <div className="flex flex-col space-y-4">
             {chatHistories[`${selectedStudent}_${selectedInternship}`]?.map((msg, index) => (
               <div
                 key={index}
-                className={`p-2 rounded max-w-md ${msg.senderId === recruiterId ? 'bg-blue-300 self-end' : 'bg-gray-200'}`}
+                className={`p-2 rounded inline-block ${msg.senderId === recruiterId ? 'bg-blue-400 self-end text-right' : 'bg-gray-200'}  max-w-max break-words`}
               >
-                <strong>{msg.senderId === recruiterId ? 'You' : 'Student'}:</strong> {msg.messageContent}
+               <p>{msg.messageContent}</p>
+                <p className={`text-xs font-semibold text-right ${msg.senderId === recruiterId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
+                
               </div>
             ))}
             <div ref={chatEndRef} />

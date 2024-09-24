@@ -18,6 +18,11 @@ const Chats = () => {
   const [selectedRecruiter, setSelectedRecruiter] = useState(null);
   const [selectedInternship, setSelectedInternship] = useState(null);
 
+  const [companyName,setCompanyName]=useState('');
+ 
+  const [internshipName,setInternshipName]=useState('');
+  const [activeStatus,setActiveStatus]=useState(false);
+
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const chatEndRef = useRef(null);
@@ -180,6 +185,7 @@ const Chats = () => {
       console.log('Updated shortlistedInternships:', shortlistedInternships);
       if (socket) {
         handleInternClick(shortlistedInternships[0].internshipId, shortlistedInternships[0].recruiterId);
+        handleInfoSetter(shortlistedInternships[0].companyName,shortlistedInternships[0].internshipName, shortlistedInternships[0].isActive);
       }
       setIsLoading(false);
       console.log('loading status:', isLoading);
@@ -257,8 +263,15 @@ const Chats = () => {
     }
   };
 
+  const handleInfoSetter=(companyName, internshipName,isActive)=>{
+    setCompanyName(companyName);
+    setInternshipName(internshipName);
+    setActiveStatus(isActive)
+    console.log('running');
+  }
+
   return (
-    <div className="flex justify-end h-[80vh] border border-black mt-20 mx-8 relative">
+    <div className="flex justify-end h-[80vh] border w-[100%] border-black mt-20 relative">
       {/* Left Column - Shortlisted Students */}
       <div className="fixed left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[70vh]">
         <h2 className="text-xl font-semibold mb-4">Shortlisted Internships</h2>
@@ -277,7 +290,7 @@ const Chats = () => {
               <div
                 key={`${internshipId}`}
                 className="student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4 border border-gray-200 hover:cursor-pointer hover:border-blue-300 hover:scale-105 duration-300"
-                onClick={() => handleInternClick(internshipId, recruiterId)}
+                onClick={() => {handleInternClick(internshipId, recruiterId); handleInfoSetter(companyName,internshipName,isActive)}}
               >
                 <div className="flex-grow">
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center relative">
@@ -303,16 +316,23 @@ const Chats = () => {
       </div>
 
       {/* Right Column - Chat Interface */}
-      <div className="w-[65%] p-4 flex flex-col">
-        <div className="flex-grow bg-white p-4 border rounded-lg shadow-lg overflow-y-auto">
+      <div className="w-[65%] p-4 flex flex-col mx-3">
+
+      <div className='w-full h-[10%]  mb-2'>
+            <p className='font-semibold capitalize text-2xl'>{companyName} {activeStatus&& <span className='text-sm text-green-500'>online</span>}</p>
+            <p>{internshipName}</p>
+        </div>
+
+        <div className="flex-grow bg-white p-4 border rounded-lg shadow-lg overflow-y-auto border-2">
           {/* Chat messages */}
           <div className="flex flex-col space-y-4 overflow-y-auto">
             {chatHistories[`${selectedRecruiter}_${selectedInternship}`]?.map((msg, index) => (
               <div
                 key={index}
-                className={`p-2 rounded max-w-md ${msg.senderId === studentId ? 'bg-blue-300 self-end' : 'bg-gray-200'}`}
+                className={`p-2 rounded max-w-md ${msg.senderId === studentId ? 'bg-blue-400 self-end' : 'bg-gray-200'} max-w-max break-words`}
               >
-                <strong>{msg.senderId === studentId ? 'You' : 'Recruiter'}:</strong> {msg.messageContent}
+                  <p>{msg.messageContent}</p>
+                  <p className={`text-xs font-semibold text-right ${msg.senderId === studentId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
               </div>
             ))}
             <div ref={chatEndRef} />
