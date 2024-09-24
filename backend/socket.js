@@ -93,7 +93,7 @@ const initSocket = (server) => {
 
             const receiverId= type==='Recruiter'? studentId : recruiterId
             // console.log(' chatHistory',chatHistory);
-
+            console.log(`emiting history to ${type}`);
             socket.emit(`chatHistory_${receiverId}_${internshipId}`, chatHistory);
         } catch (error) {
           console.error("Error joining chat room:", error);

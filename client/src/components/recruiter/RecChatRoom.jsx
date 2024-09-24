@@ -20,51 +20,51 @@ const RecChatRoom = () => {
   const chatEndRef = useRef(null);
 
 
-  useEffect(() => {
-    if(!isLoading){
-    const socketConnection = io(api,
-      {
-      query:{userType:'Recruiter',userId:recruiterId}
-    }
-  );
-    setSocket(socketConnection);
+  // useEffect(() => {
+  //   if(!isLoading){
+  //   const socketConnection = io(api,
+  //     {
+  //     query:{userType:'Recruiter',userId:recruiterId}
+  //   }
+  // );
+  //   setSocket(socketConnection);
 
-    socketConnection.on('studentsStatus', (students) => {
-      console.log('Received active students:', students);
-     setShortlistedStudents(prevStudents=>
-      prevStudents.map(student=>{
-        const matched=students.find(s=> s.studentId===student.studentId);
-        if(matched){
-          return {
-            ...student,
-            isActive:true
-          }
-        }
-        return student;
-      })
-     )
-    });
+  //   socketConnection.on('studentsStatus', (students) => {
+  //     console.log('Received active students:', students);
+  //    setShortlistedStudents(prevStudents=>
+  //     prevStudents.map(student=>{
+  //       const matched=students.find(s=> s.studentId===student.studentId);
+  //       if(matched){
+  //         return {
+  //           ...student,
+  //           isActive:true
+  //         }
+  //       }
+  //       return student;
+  //     })
+  //    )
+  //   });
 
-    socketConnection.on('studentsActive', ({ userId, isActive }) => {
-      console.log('listening to all active students');
-      setShortlistedStudents(prevStudents =>
-        prevStudents.map(student =>{
-          console.log(isActive);
-          return student.studentId === userId ? { ...student, isActive } : student
-        }
-        )
-      );
+  //   socketConnection.on('studentsActive', ({ userId, isActive }) => {
+  //     console.log('listening to all active students');
+  //     setShortlistedStudents(prevStudents =>
+  //       prevStudents.map(student =>{
+  //         console.log(isActive);
+  //         return student.studentId === userId ? { ...student, isActive } : student
+  //       }
+  //       )
+  //     );
 
-    });
+  //   });
 
-    return () => {
-      socketConnection.off('studentsActive');
+  //   return () => {
+  //     socketConnection.off('studentsActive');
 
-      socketConnection.disconnect();
-    };
-  }
+  //     socketConnection.disconnect();
+  //   };
+  // }
 
-  }, [recruiterId,isLoading])
+  // }, [recruiterId,isLoading])
 
 
 
@@ -91,38 +91,81 @@ const RecChatRoom = () => {
   
         // Set the flattened student list in state
         setShortlistedStudents(flat)
-        console.log('students fetched',flat);
+        setIsLoading(false);
+        console.log('students fetchedddddddddddddddddd',flat);
+        console.log('hello');
 
-        if (flat.length > 0 && socket) {
+
+        const socketConnection = io(api,
+          {
+          query:{userType:'Recruiter',userId:recruiterId}
+        }
+      );
+      setSocket(socketConnection);
+
+        socketConnection.on('studentsStatus', (students) => {
+          console.log('Received active students:', students);
+         setShortlistedStudents(prevStudents=>
+          prevStudents.map(student=>{
+            const matched=students.find(s=> s.studentId===student.studentId);
+            if(matched){
+              return {
+                ...student,
+                isActive:true
+              }
+            }
+            return student;
+          })
+         )
+        });
+
+
+        socketConnection.on('studentsActive', ({ userId, isActive }) => {
+          console.log('listening to all active students');
+          setShortlistedStudents(prevStudents =>
+            prevStudents.map(student =>{
+              console.log(isActive);
+              return student.studentId === userId ? { ...student, isActive } : student
+            }
+            )
+          );
+    
+        });
+
+
+
+        if (flat.length > 0) {
           flat.forEach((student,index) => {
             const { studentId, internshipId } = student;
             console.log(studentId, internshipId);
 
             // Emit joinChatRoom for each student
-            socket.emit('joinChatRoom', { recruiterId, studentId, internshipId, type: 'Recruiter' });
+            socketConnection.emit('joinChatRoom', { recruiterId, studentId, internshipId, type: 'Recruiter' });
 
-            // Listen for chat history for each student
-            socket.on(`chatHistory_${studentId}_${internshipId}`, (messages) => {
-              // console.log(`Chat history for student: ${index}`, messages);
-
-
-              // Store chat history for each student
+            const chatHistoryEvent = `chatHistory_${studentId}_${internshipId}`;
+            socketConnection.on(chatHistoryEvent, (messages) => {
+         
               setChatHistories((prevHistories) => ({
                 ...prevHistories,
                 [`${studentId}_${internshipId}`]: messages, // Store history for each student using their studentId as key
               }));
             });
 
-            // Listen for real-time messages for each student
-            socket.on(`receiveMessages`, (message) => {
-              console.log(`New message from student ${studentId}:`, message);
+            const receiveMessageEvent = `receiveMessages_${studentId}_${internshipId}`;
+            socketConnection.on(receiveMessageEvent, (message) => {
+              console.log(`New message from student ${message.senderId}:`, message);
 
               // Store real-time messages for each student
-              setChatMessages((prevMessages) => ({
-                ...prevMessages,
-                [studentId]: [...(prevMessages[studentId] || []), message],
+              setChatHistories((prevHistories) => ({
+                ...prevHistories,
+                [`${studentId}_${internshipId}`]: [
+                  ...(prevHistories[`${studentId}_${internshipId}`] || []), // Preserve previous history
+                  message, // Add the new real-time message
+                ],
               }));
             });
+
+
           });
         }
       
@@ -135,9 +178,16 @@ const RecChatRoom = () => {
   
     fetchShortlistedStudents();
   
-    // Cleanup function to remove socket listener and disconnect on unmount
-    
-  }, [socket]);
+    // return () => {
+    //   shortlistedStudents.forEach(({ studentId, internshipId }) => {
+    //     const chatHistoryEvent = `chatHistory_${studentId}_${internshipId}`;
+    //     const receiveMessageEvent = `receiveMessages_${studentId}_${internshipId}`;
+    //     socketConnection.off(chatHistoryEvent);
+    //     socketConnection.off(receiveMessageEvent);
+    //   });
+    // };
+   
+  }, []);
 
   console.log('this is histories',chatHistories);
   console.log('this is studentid and internshipid',selectedStudent,selectedInternship);

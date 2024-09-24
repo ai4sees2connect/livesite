@@ -27,8 +27,90 @@ const Chats = () => {
     const fetchShortlistedInternships = async () => {
       try {
         const response = await axios.get(`${api}/student/internship/${studentId}/shortlisted-internships`);
-        setShortlistedInternships(response.data);
+        const result=response.data;
+        setShortlistedInternships(result);
         console.log('this is on initial fetching',response.data);
+
+
+
+        const socketConnection = io(api, {
+          query: { userType: 'Student', userId: studentId }
+        });
+        setSocket(socketConnection);
+        console.log('socket connection established from student side');
+
+        socketConnection.on('recruitersStatus', (recruiters) => {
+          if(shortlistedInternships){
+            console.log('yes interns to haii',recruiters);
+            console.log('theeeeeseee',shortlistedInternships.length);
+          }
+          setShortlistedInternships(prevInterns => 
+            prevInterns.map(intern => {
+              // Find the matching recruiter in the recruiters array
+              const matchingRecruiter = recruiters.find(rec => rec.recruiterId === intern.recruiterId);
+              console.log('Intern recruiterId:', intern.recruiterId);
+              console.log('Matching recruiter:', matchingRecruiter);
+              
+              // If a match is found, update the isActive status
+              if (matchingRecruiter && intern.isActive!==true) {
+                console.log('Updating isActive for recruiterId:', intern.recruiterId);
+                return {
+                  ...intern,
+                  isActive: true, // Set the active status
+                };
+              }
+              
+              console.log('not changing any thing');
+              return intern;
+            })
+          );
+          // setShortlistedRecruiters(recruiters);
+        });
+    
+        socketConnection.on('recruitersActive', ({ userId, isActive }) => {
+          console.log('listening to all active recruiters')
+          setShortlistedInternships(prevInterns => {
+            console.log(isActive);
+            return prevInterns.map(intern => intern.recruiterId === userId ? { ...intern, isActive } : intern)
+          }
+          )
+        })
+
+
+        if (result.length > 0) {
+          result.forEach((intern,index) => {
+            const { recruiterId, internshipId } = intern;
+            console.log(recruiterId, internshipId);
+
+            // Emit joinChatRoom for each student
+            socketConnection.emit('joinChatRoom', { recruiterId, studentId, internshipId, type: 'Student' });
+
+            const chatHistoryEvent = `chatHistory_${recruiterId}_${internshipId}`;
+            socketConnection.on(chatHistoryEvent, (messages) => {
+         
+              setChatHistories((prevHistories) => ({
+                ...prevHistories,
+                [`${recruiterId}_${internshipId}`]: messages, // Store history for each student using their studentId as key
+              }));
+            });
+
+            const receiveMessageEvent = `receiveMessages_${recruiterId}_${internshipId}`;
+            socketConnection.on(receiveMessageEvent, (message) => {
+              console.log(`New message from recruiter ${message.senderId}:`, message);
+
+              // Store real-time messages for each student
+              setChatHistories((prevHistories) => ({
+                ...prevHistories,
+                [`${studentId}_${internshipId}`]: [
+                  ...(prevHistories[`${studentId}_${internshipId}`] || []), // Preserve previous history
+                  message, // Add the new real-time message
+                ],
+              }));
+            });
+
+
+          });
+        }
 
         
 
@@ -43,55 +125,55 @@ const Chats = () => {
   }, [studentId]);
 
 
-  useEffect(() => {
-    if(!isLoading){
-    const socketConnection = io(api, {
-      query: { userType: 'Student', userId: studentId }
-    });
-    setSocket(socketConnection);
-    console.log('socket connection established from student side');
+  // useEffect(() => {
+  //   if(!isLoading){
+  //   const socketConnection = io(api, {
+  //     query: { userType: 'Student', userId: studentId }
+  //   });
+  //   setSocket(socketConnection);
+  //   console.log('socket connection established from student side');
 
-    socketConnection.on('recruitersStatus', (recruiters) => {
-      if(shortlistedInternships){
-        console.log('yes interns to haii',recruiters);
-        console.log('theeeeeseee',shortlistedInternships.length);
-      }
-      setShortlistedInternships(prevInterns => 
-        prevInterns.map(intern => {
-          // Find the matching recruiter in the recruiters array
-          const matchingRecruiter = recruiters.find(rec => rec.recruiterId === intern.recruiterId);
-          console.log('Intern recruiterId:', intern.recruiterId);
-          console.log('Matching recruiter:', matchingRecruiter);
+  //   socketConnection.on('recruitersStatus', (recruiters) => {
+  //     if(shortlistedInternships){
+  //       console.log('yes interns to haii',recruiters);
+  //       console.log('theeeeeseee',shortlistedInternships.length);
+  //     }
+  //     setShortlistedInternships(prevInterns => 
+  //       prevInterns.map(intern => {
+  //         // Find the matching recruiter in the recruiters array
+  //         const matchingRecruiter = recruiters.find(rec => rec.recruiterId === intern.recruiterId);
+  //         console.log('Intern recruiterId:', intern.recruiterId);
+  //         console.log('Matching recruiter:', matchingRecruiter);
           
-          // If a match is found, update the isActive status
-          if (matchingRecruiter && intern.isActive!==true) {
-            console.log('Updating isActive for recruiterId:', intern.recruiterId);
-            return {
-              ...intern,
-              isActive: true, // Set the active status
-            };
-          }
+  //         // If a match is found, update the isActive status
+  //         if (matchingRecruiter && intern.isActive!==true) {
+  //           console.log('Updating isActive for recruiterId:', intern.recruiterId);
+  //           return {
+  //             ...intern,
+  //             isActive: true, // Set the active status
+  //           };
+  //         }
           
-          console.log('not changing any thing');
-          return intern;
-        })
-      );
-      // setShortlistedRecruiters(recruiters);
-    });
+  //         console.log('not changing any thing');
+  //         return intern;
+  //       })
+  //     );
+  //     // setShortlistedRecruiters(recruiters);
+  //   });
 
-    socketConnection.on('recruitersActive', ({ userId, isActive }) => {
-      console.log('listening to all active recruiters')
-      setShortlistedInternships(prevInterns => {
-        console.log(isActive);
-        return prevInterns.map(intern => intern.recruiterId === userId ? { ...intern, isActive } : intern)
-      }
-      )
-    })
+  //   socketConnection.on('recruitersActive', ({ userId, isActive }) => {
+  //     console.log('listening to all active recruiters')
+  //     setShortlistedInternships(prevInterns => {
+  //       console.log(isActive);
+  //       return prevInterns.map(intern => intern.recruiterId === userId ? { ...intern, isActive } : intern)
+  //     }
+  //     )
+  //   })
   
-    return () => {
-      socketConnection.disconnect();
-    }}
-  }, [studentId,isLoading]);
+  //   return () => {
+  //     socketConnection.disconnect();
+  //   }}
+  // }, [studentId,isLoading]);
 
   useEffect(() => {
     if(shortlistedInternships.length > 0){
@@ -196,7 +278,7 @@ const Chats = () => {
         <div className="flex-grow bg-white p-4 border rounded-lg shadow-lg overflow-y-auto">
           {/* Chat messages */}
           <div className="flex flex-col space-y-4 overflow-y-auto">
-            {chatMessages.map((msg, index) => (
+          {chatHistories[`${selectedRecruiter}_${selectedInternship}`]?.map((msg, index) => (
               <div
                 key={index}
                 className={`p-2 rounded max-w-md ${msg.senderId === studentId ? 'bg-purple-200 self-end' : 'bg-gray-200'}`}
