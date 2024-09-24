@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect,useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify'
 import api from '../common/server_url';
@@ -19,7 +19,7 @@ const Chats = () => {
   const [selectedInternship, setSelectedInternship] = useState(null);
 
   const [socket, setSocket] = useState(null);
-  const [isLoading, setIsLoading]=useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const chatEndRef = useRef(null);
 
 
@@ -27,9 +27,9 @@ const Chats = () => {
     const fetchShortlistedInternships = async () => {
       try {
         const response = await axios.get(`${api}/student/internship/${studentId}/shortlisted-internships`);
-        const result=response.data;
+        const result = response.data;
         setShortlistedInternships(result);
-        console.log('this is on initial fetching',response.data);
+        console.log('this is on initial fetching', response.data);
 
 
 
@@ -40,33 +40,33 @@ const Chats = () => {
         console.log('socket connection established from student side');
 
         socketConnection.on('recruitersStatus', (recruiters) => {
-          if(shortlistedInternships){
-            console.log('yes interns to haii',recruiters);
-            console.log('theeeeeseee',shortlistedInternships.length);
+          if (shortlistedInternships) {
+            console.log('yes interns to haii', recruiters);
+            console.log('theeeeeseee', shortlistedInternships.length);
           }
-          setShortlistedInternships(prevInterns => 
+          setShortlistedInternships(prevInterns =>
             prevInterns.map(intern => {
               // Find the matching recruiter in the recruiters array
               const matchingRecruiter = recruiters.find(rec => rec.recruiterId === intern.recruiterId);
               console.log('Intern recruiterId:', intern.recruiterId);
               console.log('Matching recruiter:', matchingRecruiter);
-              
+
               // If a match is found, update the isActive status
-              if (matchingRecruiter && intern.isActive!==true) {
+              if (matchingRecruiter && intern.isActive !== true) {
                 console.log('Updating isActive for recruiterId:', intern.recruiterId);
                 return {
                   ...intern,
                   isActive: true, // Set the active status
                 };
               }
-              
+
               console.log('not changing any thing');
               return intern;
             })
           );
           // setShortlistedRecruiters(recruiters);
         });
-    
+
         socketConnection.on('recruitersActive', ({ userId, isActive }) => {
           console.log('listening to all active recruiters')
           setShortlistedInternships(prevInterns => {
@@ -78,7 +78,7 @@ const Chats = () => {
 
 
         if (result.length > 0) {
-          result.forEach((intern,index) => {
+          result.forEach((intern, index) => {
             const { recruiterId, internshipId } = intern;
             console.log(recruiterId, internshipId);
 
@@ -87,7 +87,7 @@ const Chats = () => {
 
             const chatHistoryEvent = `chatHistory_${recruiterId}_${internshipId}`;
             socketConnection.on(chatHistoryEvent, (messages) => {
-         
+
               setChatHistories((prevHistories) => ({
                 ...prevHistories,
                 [`${recruiterId}_${internshipId}`]: messages, // Store history for each student using their studentId as key
@@ -112,7 +112,7 @@ const Chats = () => {
           });
         }
 
-        
+
 
       } catch (err) {
         toast.success('some error occured');
@@ -121,7 +121,7 @@ const Chats = () => {
     };
 
     fetchShortlistedInternships();
-    
+
   }, [studentId]);
 
 
@@ -144,7 +144,7 @@ const Chats = () => {
   //         const matchingRecruiter = recruiters.find(rec => rec.recruiterId === intern.recruiterId);
   //         console.log('Intern recruiterId:', intern.recruiterId);
   //         console.log('Matching recruiter:', matchingRecruiter);
-          
+
   //         // If a match is found, update the isActive status
   //         if (matchingRecruiter && intern.isActive!==true) {
   //           console.log('Updating isActive for recruiterId:', intern.recruiterId);
@@ -153,7 +153,7 @@ const Chats = () => {
   //             isActive: true, // Set the active status
   //           };
   //         }
-          
+
   //         console.log('not changing any thing');
   //         return intern;
   //       })
@@ -169,30 +169,30 @@ const Chats = () => {
   //     }
   //     )
   //   })
-  
+
   //   return () => {
   //     socketConnection.disconnect();
   //   }}
   // }, [studentId,isLoading]);
 
   useEffect(() => {
-    if(shortlistedInternships.length > 0){
-    console.log('Updated shortlistedInternships:', shortlistedInternships);
-    if (socket) {
-    handleInternClick(shortlistedInternships[0].internshipId,shortlistedInternships[0].recruiterId);
+    if (shortlistedInternships.length > 0) {
+      console.log('Updated shortlistedInternships:', shortlistedInternships);
+      if (socket) {
+        handleInternClick(shortlistedInternships[0].internshipId, shortlistedInternships[0].recruiterId);
+      }
+      setIsLoading(false);
+      console.log('loading status:', isLoading);
     }
-    setIsLoading(false);
-    console.log('loading status:',isLoading);
-    }
-  }, [shortlistedInternships,socket]);
+  }, [shortlistedInternships, socket]);
 
   useEffect(() => {
-    const scrollToBottom=()=>{
-      chatEndRef.current?.scrollIntoView({ behavior:'smooth' });
+    const scrollToBottom = () => {
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
     scrollToBottom();
   }, [chatMessages]);
- 
+
 
   const sendMessage = () => {
     if (newMessage.trim() && socket) {
@@ -215,7 +215,7 @@ const Chats = () => {
         ...prevHistories,
         [`${messageData.recruiterId}_${messageData.internshipId}`]: [
           ...(prevHistories[`${messageData.recruiterId}_${messageData.internshipId}`] || []),  // Get existing messages or an empty array
-          { senderId: studentId, messageContent: newMessage }, // Add the new message
+          { senderId: studentId, messageContent: newMessage, sentAt: new Date() }, // Add the new message
         ],
       }));
 
@@ -233,11 +233,29 @@ const Chats = () => {
   }
 
   useEffect(() => {
-    const scrollToBottom=()=>{
-      chatEndRef.current?.scrollIntoView({ behavior:'smooth' });
+    const scrollToBottom = () => {
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
     scrollToBottom();
   }, [chatHistories]);
+
+  const formatSentAt = (sentAt) => {
+    const messageDate = new Date(sentAt);
+    const today = new Date();
+
+    const isSameDay =
+      messageDate.getDate() === today.getDate() &&
+      messageDate.getMonth() === today.getMonth() &&
+      messageDate.getFullYear() === today.getFullYear();
+
+    if (isSameDay) {
+      // Format time as hh:mm AM/PM
+      return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    } else {
+      // Format date as dd/mm/yyyy
+      return messageDate.toLocaleDateString('en-GB');
+    }
+  };
 
   return (
     <div className="flex justify-end h-[80vh] border border-black mt-20 mx-8 relative">
@@ -245,25 +263,42 @@ const Chats = () => {
       <div className="fixed left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[70vh]">
         <h2 className="text-xl font-semibold mb-4">Shortlisted Internships</h2>
         <ul className="space-y-2">
-          {shortlistedInternships.map((intern) =>
+          {shortlistedInternships.map((intern) => {
+            const { internshipId, recruiterId, companyName, internshipName, statusUpdatedAt, isActive } = intern;
 
-            <div
-              key={`${intern.internshipId}`}
-              className="student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4 border border-gray-200 hover:cursor-pointer hover:border-blue-300 hover:scale-105 duration-300"
-              onClick={() => handleInternClick(intern.internshipId, intern.recruiterId)}
-            >
-              <div className="flex-grow">
-                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-                  <span>{intern.companyName}</span>
-                  {intern.isActive && (<div className='ml-2 bg-green-500 rounded-full w-3 h-3'> </div>)}
-                </h3>
-                <p className="text-sm text-gray-600">{intern.internshipName}</p>
-                <p>{TimeAgo(intern.statusUpdatedAt)}</p>
+            // Construct the chat key for retrieving messages from chatHistories
+            const chatKey = `${recruiterId}_${internshipId}`;
+            const chatHistory = chatHistories[chatKey] || [];
+
+            // Get the most recent message
+            const lastMessage = chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
+
+            return (
+              <div
+                key={`${internshipId}`}
+                className="student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4 border border-gray-200 hover:cursor-pointer hover:border-blue-300 hover:scale-105 duration-300"
+                onClick={() => handleInternClick(internshipId, recruiterId)}
+              >
+                <div className="flex-grow">
+                  <h3 className="text-lg font-semibold text-gray-800 flex items-center relative">
+                    <span>{companyName}</span>
+                    {isActive && (<div className='ml-2 bg-green-500 rounded-full w-2 h-2'></div>)}
+                    {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
+                  </h3>
+                  <p className="text-sm text-gray-600">{internshipName}</p>
                 
-              </div>
-            </div>
 
-          )}
+                  {/* Display the most recent message */}
+                  {lastMessage &&<p className="text-sm text-gray-800 mt-2">
+                     <span className='font-semibold'>{lastMessage.senderId===studentId?'You:  ':''}</span>
+                     {lastMessage ? lastMessage.messageContent : "No messages exchanged yet"}
+                  </p>}
+
+        
+                </div>
+              </div>
+            );
+          })}
         </ul>
       </div>
 
@@ -272,10 +307,10 @@ const Chats = () => {
         <div className="flex-grow bg-white p-4 border rounded-lg shadow-lg overflow-y-auto">
           {/* Chat messages */}
           <div className="flex flex-col space-y-4 overflow-y-auto">
-          {chatHistories[`${selectedRecruiter}_${selectedInternship}`]?.map((msg, index) => (
+            {chatHistories[`${selectedRecruiter}_${selectedInternship}`]?.map((msg, index) => (
               <div
                 key={index}
-                className={`p-2 rounded max-w-md ${msg.senderId === studentId ? 'bg-purple-200 self-end' : 'bg-gray-200'}`}
+                className={`p-2 rounded max-w-md ${msg.senderId === studentId ? 'bg-blue-300 self-end' : 'bg-gray-200'}`}
               >
                 <strong>{msg.senderId === studentId ? 'You' : 'Recruiter'}:</strong> {msg.messageContent}
               </div>
