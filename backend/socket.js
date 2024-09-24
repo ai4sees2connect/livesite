@@ -125,24 +125,12 @@ const initSocket = (server) => {
         // Emit the message to the chat room
         console.log("before emiting");
         // io.to('heelo').emit("event");
-        io.to(chatRoom._id.toString()).emit("receiveMessages", newMessage);
+        socket.to(chatRoom._id.toString()).emit("receiveMessages", newMessage);
         console.log("after emiting");
       } catch (error) {
         console.error("Error saving message:", error);
       }
     });
-
-    // socket.on("disconnect", () => {
-    //   console.log(`${userType} disconnected: ${socket.id}`);
-
-    //   if (userType === "Student") {
-    //     onlineStudents.delete(userId);
-    //     io.emit("studentsActive", { userId, isActive: false });
-    //   } else if (userType === "Recruiter") {
-    //     onlineRecruiters.delete(userId);
-    //     io.emit("recruitersActive", { userId, isActive: false });
-    //   }
-    // });
   });
 
   return io;

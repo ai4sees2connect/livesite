@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import api from '../common/server_url';
@@ -16,6 +16,7 @@ const RecChatRoom = () => {
 
   const [socket,setSocket]=useState(null);
   const [isLoading, setIsLoading]=useState(true);
+  const chatEndRef = useRef(null);
 
 
   useEffect(() => {
@@ -112,6 +113,12 @@ const RecChatRoom = () => {
     }
   }, [shortlistedStudents]);
 
+  useEffect(() => {
+    const scrollToBottom=()=>{
+      chatEndRef.current?.scrollIntoView({ behavior:'smooth' });
+    }
+    scrollToBottom();
+  }, [chatMessages]);
 
   
 
@@ -194,8 +201,6 @@ const RecChatRoom = () => {
                   </h3>
                   <p className="text-sm text-gray-600">{student.internshipName}</p>
                   <p>{TimeAgo(student.statusUpdatedAt)}</p>
-                  {/* <p>{student.statusUpdatedAt}</p> */}
-                  <p>{student.isActive?'Hellow':'hi'}</p>
                 </div>
               </div>
             
@@ -220,6 +225,7 @@ const RecChatRoom = () => {
                 <strong>{msg.senderId === recruiterId ? 'You' : 'Student'}:</strong> {msg.messageContent}
               </div>
             ))}
+            <div ref={chatEndRef} />
           </div>
         </div>
 

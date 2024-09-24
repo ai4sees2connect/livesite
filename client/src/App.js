@@ -43,9 +43,9 @@ function App() {
       { !location.pathname.endsWith('/signup') && !location.pathname.endsWith('/login') && location.pathname !== '/' && location.pathname.startsWith('/student')&&  <Navbar />}
       { !location.pathname.endsWith('/signup') && !location.pathname.endsWith('/login') && location.pathname !== '/' && location.pathname.startsWith('/recruiter')&&  <RecNavbar />}
       <Routes>
-        <Route path="/" element={<Main />} />
+        {/* <Route path="/" element={<Main />} /> */}
         {/* <Route path="/spinner" element={<Spinner />} /> */}
-        <Route path="/student/signup" element={<Signup />} />
+        <Route path="/" element={<Signup />} />
         <Route path="/student/login" element={<Login />} />
         <Route path="/student/dashboard/:userId" element={<Home />} />
         <Route path="/student/resume/:userId" element={<Resume />} />

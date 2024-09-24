@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useRef } from 'react'
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify'
 import api from '../common/server_url';
@@ -19,6 +19,7 @@ const Chats = () => {
 
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading]=useState(true);
+  const chatEndRef = useRef(null);
 
 
   useEffect(() => {
@@ -96,6 +97,13 @@ const Chats = () => {
     console.log('loading status:',isLoading);
     }
   }, [shortlistedInternships]);
+
+  useEffect(() => {
+    const scrollToBottom=()=>{
+      chatEndRef.current?.scrollIntoView({ behavior:'smooth' });
+    }
+    scrollToBottom();
+  }, [chatMessages]);
  
 
   const sendMessage = () => {
@@ -115,10 +123,10 @@ const Chats = () => {
       // Emit the message event to the backend
       socket.emit('sendMessage', messageData);
 
-      // setChatMessages((prevMessages) => [
-      //   ...prevMessages,
-      //   { senderId: studentId, messageContent: newMessage },  // Add the message locally for immediate display
-      // ]);
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        { senderId: studentId, messageContent: newMessage },  // Add the message locally for immediate display
+      ]);
 
 
 
@@ -169,8 +177,7 @@ const Chats = () => {
                 </h3>
                 <p className="text-sm text-gray-600">{intern.internshipName}</p>
                 <p>{TimeAgo(intern.statusUpdatedAt)}</p>
-                <p>{intern.statusUpdatedAt}</p>
-                <p>{intern.isActive}</p>
+                
               </div>
             </div>
 
@@ -182,7 +189,7 @@ const Chats = () => {
       <div className="w-[65%] p-4 flex flex-col">
         <div className="flex-grow bg-white p-4 border rounded-lg shadow-lg overflow-y-auto">
           {/* Chat messages */}
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col space-y-4 overflow-y-auto">
             {chatMessages.map((msg, index) => (
               <div
                 key={index}
@@ -191,6 +198,7 @@ const Chats = () => {
                 <strong>{msg.senderId === studentId ? 'You' : 'Recruiter'}:</strong> {msg.messageContent}
               </div>
             ))}
+            <div ref={chatEndRef} />
           </div>
         </div>
 

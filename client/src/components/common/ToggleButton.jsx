@@ -20,7 +20,7 @@ const ToggleButton = ({type,auth}) => {
     }
     if(type==='recruiter' && auth==='signup'){
       setSelected('student');
-      navigate('/student/signup')
+      navigate('/')
     }
    
   };
