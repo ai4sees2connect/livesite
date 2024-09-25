@@ -18,10 +18,10 @@ const Chats = () => {
   const [selectedRecruiter, setSelectedRecruiter] = useState(null);
   const [selectedInternship, setSelectedInternship] = useState(null);
 
-  const [companyName,setCompanyName]=useState('');
- 
-  const [internshipName,setInternshipName]=useState('');
-  const [activeStatus,setActiveStatus]=useState(false);
+  const [companyName, setCompanyName] = useState('');
+
+  const [internshipName, setInternshipName] = useState('');
+  const [activeStatus, setActiveStatus] = useState(false);
 
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -185,7 +185,7 @@ const Chats = () => {
       console.log('Updated shortlistedInternships:', shortlistedInternships);
       if (socket) {
         handleInternClick(shortlistedInternships[0].internshipId, shortlistedInternships[0].recruiterId);
-        handleInfoSetter(shortlistedInternships[0].companyName,shortlistedInternships[0].internshipName, shortlistedInternships[0].isActive);
+        handleInfoSetter(shortlistedInternships[0].companyName, shortlistedInternships[0].internshipName, shortlistedInternships[0].isActive);
       }
       setIsLoading(false);
       console.log('loading status:', isLoading);
@@ -263,15 +263,23 @@ const Chats = () => {
     }
   };
 
-  const handleInfoSetter=(companyName, internshipName,isActive)=>{
+  const handleInfoSetter = (companyName, internshipName, isActive) => {
     setCompanyName(companyName);
     setInternshipName(internshipName);
     setActiveStatus(isActive)
     console.log('running');
   }
 
+  const displayDate = (currentDate) => {
+    if (currentDate.toDateString() === new Date().toDateString()) {
+      return 'Today';
+    } else {
+      return `${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'long' })} `;
+    }
+  };
+
   return (
-    <div className="flex justify-end h-[80vh] border w-[100%] border-black mt-20 relative">
+    <div className="flex justify-end h-[80vh]  w-[100%]  mt-20 relative">
       {/* Left Column - Shortlisted Students */}
       <div className="fixed left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[70vh]">
         <h2 className="text-xl font-semibold mb-4">Shortlisted Internships</h2>
@@ -290,7 +298,7 @@ const Chats = () => {
               <div
                 key={`${internshipId}`}
                 className="student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4 border border-gray-200 hover:cursor-pointer hover:border-blue-300 hover:scale-105 duration-300"
-                onClick={() => {handleInternClick(internshipId, recruiterId); handleInfoSetter(companyName,internshipName,isActive)}}
+                onClick={() => { handleInternClick(internshipId, recruiterId); handleInfoSetter(companyName, internshipName, isActive) }}
               >
                 <div className="flex-grow">
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center relative">
@@ -299,15 +307,15 @@ const Chats = () => {
                     {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
                   </h3>
                   <p className="text-sm text-gray-600">{internshipName}</p>
-                
+
 
                   {/* Display the most recent message */}
-                  {lastMessage &&<p className="text-sm text-gray-800 mt-2">
-                     <span className='font-semibold'>{lastMessage.senderId===studentId?'You:  ':''}</span>
-                     {lastMessage ? lastMessage.messageContent : "No messages exchanged yet"}
+                  {lastMessage && <p className="text-sm text-gray-800 mt-2">
+                    <span className='font-semibold text-blue-400'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
+                    {lastMessage ? (lastMessage.messageContent.slice(0, 50) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                   </p>}
 
-        
+
                 </div>
               </div>
             );
@@ -318,23 +326,41 @@ const Chats = () => {
       {/* Right Column - Chat Interface */}
       <div className="w-[65%] p-4 flex flex-col mx-3">
 
-      <div className='w-full h-[10%]  mb-2'>
-            <p className='font-semibold capitalize text-2xl'>{companyName} {activeStatus&& <span className='text-sm text-green-500'>online</span>}</p>
-            <p>{internshipName}</p>
+        <div className='w-full h-[10%]  mb-2'>
+          <p className='font-semibold capitalize text-2xl'>{companyName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
+          <p>{internshipName}</p>
         </div>
 
-        <div className="flex-grow bg-white p-4 border rounded-lg shadow-lg overflow-y-auto border-2">
+        <div className="flex-grow  mt-4 bg-white p-4 rounded-lg shadow-lg overflow-y-auto border-2">
           {/* Chat messages */}
           <div className="flex flex-col space-y-4 overflow-y-auto">
-            {chatHistories[`${selectedRecruiter}_${selectedInternship}`]?.map((msg, index) => (
-              <div
-                key={index}
-                className={`p-2 rounded max-w-md ${msg.senderId === studentId ? 'bg-blue-400 self-end' : 'bg-gray-200'} max-w-max break-words`}
-              >
-                  <p>{msg.messageContent}</p>
+            {chatHistories[`${selectedRecruiter}_${selectedInternship}`]?.map((msg, index, arr) => {
+
+const currentDate = new Date(msg.sentAt);
+              const previousDate = index > 0 ? new Date(arr[index - 1].sentAt) : null;
+              const isSameDay = previousDate && currentDate.toDateString() === previousDate.toDateString();
+
+              return (
+
+                <React.Fragment key={index}>
+
+                  {!isSameDay && (
+                    <div className="text-center text-gray-500 text-sm my-2 font-semibold">
+                      {displayDate(currentDate)}
+                    </div>
+                  )}
+
+                <div
+                  key={index}
+                  className={`p-2 rounded max-w-md ${msg.senderId === studentId ? 'bg-blue-400 self-end text-white' : 'bg-gray-100'} `}
+                  style={{ maxWidth: 'fit-content' }}
+                >
+                  <p className='max-w-[400px]'>{msg.messageContent}</p>
                   <p className={`text-xs font-semibold text-right ${msg.senderId === studentId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
-              </div>
-            ))}
+                </div>
+                </React.Fragment>
+              )
+            })}
             <div ref={chatEndRef} />
           </div>
         </div>
