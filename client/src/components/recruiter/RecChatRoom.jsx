@@ -22,6 +22,7 @@ const RecChatRoom = () => {
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const chatEndRef = useRef(null);
+ 
 
 
   // useEffect(() => {
@@ -157,7 +158,7 @@ const RecChatRoom = () => {
 
             const receiveMessageEvent = `receiveMessages_${studentId}_${internshipId}`;
             socketConnection.on(receiveMessageEvent, (message) => {
-              // console.log(`New message from student ${message.senderId}:`, message);
+              console.log(`New message from student ${message.senderId}:`, message);
 
               // Store real-time messages for each student
               setChatHistories((prevHistories) => ({
@@ -167,6 +168,7 @@ const RecChatRoom = () => {
                   message, // Add the new real-time message
                 ],
               }));
+
             });
 
 
@@ -218,17 +220,21 @@ const RecChatRoom = () => {
     }
   }, [shortlistedStudents, socket]);
 
-  //this is to auto scroll messages to the bottom
+ 
+
   useEffect(() => {
     const scrollToBottom = () => {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      
     }
     scrollToBottom();
-  }, [chatHistories]);
+  }, [chatHistories,selectedInternship]);
+
 
 
   const handleStudentClick = (studentId, internshipId) => {
     setSelectedStudent(studentId);
+    
     setSelectedInternship(internshipId);
   };
 
@@ -297,6 +303,7 @@ const RecChatRoom = () => {
       return `${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'long' })} `;
     }
   };
+  // console.log('status of chat view',isChatViewed);
 
   return (
     <div className="flex justify-end h-[80vh]  mt-20 relative w-[100%]">
@@ -315,7 +322,9 @@ const RecChatRoom = () => {
 
             // Get the most recent message
             const lastMessage = chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
-            console.log(lastMessage)
+            console.log('this is last message',lastMessage)
+           
+
 
 
             return (
@@ -335,9 +344,12 @@ const RecChatRoom = () => {
                   {/* Display the most recent message */}
                   {lastMessage && <p className="text-sm text-gray-800 mt-2">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === recruiterId ? 'You:  ' : ''}</span>
+                    <div >
                     {lastMessage ? (lastMessage.messageContent.slice(0, 50) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
+                    </div>
 
                   </p>}
+                 
                 </div>
               </div>
             );
@@ -371,11 +383,11 @@ const RecChatRoom = () => {
                     </div>
                   )}
 
-                  <div
+                  <div 
                     className={`p-2 rounded inline-block ${msg.senderId === recruiterId ? 'bg-blue-400 self-end text-right  text-white ' : 'bg-gray-100 '} `}
                     style={{ maxWidth: 'fit-content' }}
                   >
-                    <p className='max-w-[400px]'>{msg.messageContent}</p>
+                    <p className='max-w-[400px] min-w-[40px]'>{msg.messageContent}</p>
                     <p className={`text-xs font-semibold text-right ${msg.senderId === recruiterId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
 
                   </div>
@@ -395,8 +407,8 @@ const RecChatRoom = () => {
             className="w-full p-2 border-2 rounded-lg"
             placeholder="Type a message..."
           />
-          <button
-            className="bg-blue-500 text-white border px-9 py-1 rounded-lg"
+          <button disabled={newMessage===''? true:false}
+            className={`bg-blue-500 text-white border px-9 py-1 rounded-lg ${newMessage==='' && 'bg-gray-300'}`}
             onClick={sendMessage}
           >
             Send

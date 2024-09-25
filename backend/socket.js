@@ -26,20 +26,16 @@ const initSocket = (server) => {
       // Notify recruiters about the student's active status
       io.emit("studentsActive", { userId, isActive: true });
 
-      const recruitersStatus = Array.from(onlineRecruiters).map(id => ({
-        recruiterId: id
+      const recruitersStatus = Array.from(onlineRecruiters).map((id) => ({
+        recruiterId: id,
       }));
       socket.emit("recruitersStatus", recruitersStatus);
 
-     
-
-      socket.on('disconnect', () => {
-        console.log(`${userType} disconnected`)
+      socket.on("disconnect", () => {
+        console.log(`${userType} disconnected`);
         onlineStudents.delete(userId);
-        io.emit('studentsActive', { userId, isActive: false });
+        io.emit("studentsActive", { userId, isActive: false });
       });
-
-
     } else if (userType === "Recruiter") {
       // Add recruiter to the active list
       onlineRecruiters.add(userId);
@@ -47,16 +43,16 @@ const initSocket = (server) => {
       // Optionally notify students about recruiter active status (if needed)
       io.emit("recruitersActive", { userId, isActive: true });
 
-      const studentsStatus = Array.from(onlineStudents).map(id => ({
-        studentId: id
+      const studentsStatus = Array.from(onlineStudents).map((id) => ({
+        studentId: id,
       }));
 
-      socket.emit('studentsStatus', studentsStatus);
+      socket.emit("studentsStatus", studentsStatus);
 
-      socket.on('disconnect', () => {
-        console.log(`${userType} disconnected`)
+      socket.on("disconnect", () => {
+        console.log(`${userType} disconnected`);
         onlineRecruiters.delete(userId);
-        io.emit('recruitersActive', { userId, isActive: false });
+        io.emit("recruitersActive", { userId, isActive: false });
       });
     }
 
@@ -65,8 +61,7 @@ const initSocket = (server) => {
 
     socket.on(
       "joinChatRoom",
-      async ({ recruiterId, studentId, internshipId,type }) => {
-        
+      async ({ recruiterId, studentId, internshipId, type }) => {
         try {
           const chatRoom = await createOrGetChatRoom(
             recruiterId,
@@ -77,7 +72,9 @@ const initSocket = (server) => {
 
           // console.log("Chat Room:", chatRoom);
           // console.log(socket.rooms);
-          console.log(`joinChatRoom event received for internship with id:${internshipId}`);
+          console.log(
+            `joinChatRoom event received for internship with id:${internshipId}`
+          );
           socket.join(roomId);
           console.log(`${type}: joined a room with id:${roomId}`);
 
@@ -89,12 +86,16 @@ const initSocket = (server) => {
           const chatHistory = await Message.find({ chatRoomId: chatRoom._id })
             .sort({ sentAt: 1 }) // Sort messages by date (oldest to newest)
             .exec();
-            
 
-            const receiverId= type==='Recruiter'? studentId : recruiterId
-            // console.log(' chatHistory',chatHistory);
-            console.log(`emiting history to ${type}`);
-            socket.emit(`chatHistory_${receiverId}_${internshipId}`, chatHistory);
+            const chatHistoryWithInternshipId = chatHistory.map(message => ({
+              ...message.toObject(), // Converts each message to a plain object
+              internshipId,          // Attach the internshipId field
+            }));
+
+          const receiverId = type === "Recruiter" ? studentId : recruiterId;
+          // console.log(' chatHistory',chatHistory);
+          console.log(`emiting history to ${type}`);
+          socket.emit(`chatHistory_${receiverId}_${internshipId}`, chatHistoryWithInternshipId);
         } catch (error) {
           console.error("Error joining chat room:", error);
         }
@@ -127,11 +128,18 @@ const initSocket = (server) => {
         console.log(`message sent by ${type}`);
         console.log("this is chat room id:", chatRoom._id);
 
+        const messageWithInternshipId = {
+          ...newMessage.toObject(), // Converts Mongoose model to a plain object
+          internshipId,            // Attach the internshipId field
+        };
+
         // Emit the message to the chat room
         console.log("before emiting");
 
-        const receiverId= type==='Recruiter'? recruiterId : studentId
-        socket.to(chatRoom._id.toString()).emit(`receiveMessages_${receiverId}_${internshipId}`, newMessage);
+        const receiverId = type === "Recruiter" ? recruiterId : studentId;
+        socket
+          .to(chatRoom._id.toString())
+          .emit(`receiveMessages_${receiverId}_${internshipId}`, messageWithInternshipId);
 
         console.log("after emiting");
       } catch (error) {
