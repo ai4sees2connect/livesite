@@ -11,7 +11,6 @@ const RecChatRoom = () => {
   const [shortlistedStudents, setShortlistedStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [selectedInternship, setSelectedInternship] = useState(null);
-  const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [chatHistories, setChatHistories] = useState({});
   const [firstName, setFirstName] = useState('');
@@ -22,56 +21,9 @@ const RecChatRoom = () => {
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const chatEndRef = useRef(null);
+  const [latestMessages, setLatestMessages] = useState({}); // Track latest messages for each student and internship
+  // const [isAtBottom, setIsAtBottom] = useState(false);
  
-
-
-  // useEffect(() => {
-  //   if(!isLoading){
-  //   const socketConnection = io(api,
-  //     {
-  //     query:{userType:'Recruiter',userId:recruiterId}
-  //   }
-  // );
-  //   setSocket(socketConnection);
-
-  //   socketConnection.on('studentsStatus', (students) => {
-  //     console.log('Received active students:', students);
-  //    setShortlistedStudents(prevStudents=>
-  //     prevStudents.map(student=>{
-  //       const matched=students.find(s=> s.studentId===student.studentId);
-  //       if(matched){
-  //         return {
-  //           ...student,
-  //           isActive:true
-  //         }
-  //       }
-  //       return student;
-  //     })
-  //    )
-  //   });
-
-  //   socketConnection.on('studentsActive', ({ userId, isActive }) => {
-  //     console.log('listening to all active students');
-  //     setShortlistedStudents(prevStudents =>
-  //       prevStudents.map(student =>{
-  //         console.log(isActive);
-  //         return student.studentId === userId ? { ...student, isActive } : student
-  //       }
-  //       )
-  //     );
-
-  //   });
-
-  //   return () => {
-  //     socketConnection.off('studentsActive');
-
-  //     socketConnection.disconnect();
-  //   };
-  // }
-
-  // }, [recruiterId,isLoading])
-
-
 
   useEffect(() => {
 
@@ -168,6 +120,13 @@ const RecChatRoom = () => {
                   message, // Add the new real-time message
                 ],
               }));
+              // setIsAtBottom(false);
+              setLatestMessages((prev) => ({
+                ...prev,
+                [`${message.senderId}_${message.internshipId}`]: true,
+              }));
+
+              console.log('value set for new messsage');
 
             });
 
@@ -183,24 +142,9 @@ const RecChatRoom = () => {
     };
 
     fetchShortlistedStudents();
-
-    // return () => {
-    //   shortlistedStudents.forEach(({ studentId, internshipId }) => {
-    //     const chatHistoryEvent = `chatHistory_${studentId}_${internshipId}`;
-    //     const receiveMessageEvent = `receiveMessages_${studentId}_${internshipId}`;
-    //     socketConnection.off(chatHistoryEvent);
-    //     socketConnection.off(receiveMessageEvent);
-    //   });
-    // };
-
-  }, []);
-
-  console.log('this is histories', chatHistories);
-  console.log('this is studentid and internshipid', selectedStudent, selectedInternship);
+  }, [recruiterId]);
 
 
-
-  //this s for selecting first student on page render
   useEffect(() => {
     if (shortlistedStudents.length > 0) {
       console.log('Updated shortlistedStudents:', shortlistedStudents);
@@ -210,7 +154,7 @@ const RecChatRoom = () => {
         // Trigger handleStudentClick with the first student
         handleStudentClick(shortlistedStudents[0].studentId, shortlistedStudents[0].internshipId);
         handleInfoSetter(shortlistedStudents[0].firstname, shortlistedStudents[0].lastname, shortlistedStudents[0].internshipName, shortlistedStudents[0].isActive);
-        console.log('this is the active status of first student:', shortlistedStudents[0].isActive)
+        setIsLoading(false);
       } else {
         console.error('No students found.');
       }
@@ -220,22 +164,31 @@ const RecChatRoom = () => {
     }
   }, [shortlistedStudents, socket]);
 
- 
-
   useEffect(() => {
     const scrollToBottom = () => {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      
+       setLatestMessages((prev) => ({
+      ...prev,
+      [`${selectedStudent}_${selectedInternship}`]: false,
+    }));
+    
     }
-    scrollToBottom();
-  }, [chatHistories,selectedInternship]);
+    const timer = setTimeout(scrollToBottom, 500);
+
+    return () => clearTimeout(timer);
+  }, [selectedInternship,selectedStudent]);
+
+ 
+console.log(`this is selectedStudent: ${selectedStudent} and this is selectedinternship: ${selectedInternship}`);
+
+
 
 
 
   const handleStudentClick = (studentId, internshipId) => {
     setSelectedStudent(studentId);
-    
     setSelectedInternship(internshipId);
+
   };
 
   const handleInfoSetter = (firstname, lastname, internshipName, isActive) => {
@@ -322,7 +275,7 @@ const RecChatRoom = () => {
 
             // Get the most recent message
             const lastMessage = chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
-            console.log('this is last message',lastMessage)
+           
            
 
 
@@ -330,7 +283,7 @@ const RecChatRoom = () => {
             return (
               <div
                 key={`${studentId}-${internshipId}`}
-                className="student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4 border border-gray-200 hover:cursor-pointer hover:border-blue-300 hover:scale-105 duration-300"
+                className={`student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship===internshipId && 'border-blue-500  '} hover:scale-105 duration-300`}
                 onClick={() => { handleStudentClick(studentId, internshipId); handleInfoSetter(firstname, lastname, internshipName, isActive) }}
               >
                 <div className="flex-grow">
@@ -340,6 +293,9 @@ const RecChatRoom = () => {
                     {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
                   </div>
                   <p className="text-sm text-gray-500">{internshipName}</p>
+                  {latestMessages[`${studentId}_${internshipId}`] &&(
+                  <div className="text-green-500">New</div>
+                )}
 
                   {/* Display the most recent message */}
                   {lastMessage && <p className="text-sm text-gray-800 mt-2">

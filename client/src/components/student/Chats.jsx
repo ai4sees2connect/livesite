@@ -26,6 +26,7 @@ const Chats = () => {
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const chatEndRef = useRef(null);
+  const [latestMessages, setLatestMessages] = useState({});
 
 
   useEffect(() => {
@@ -111,6 +112,12 @@ const Chats = () => {
                   message, // Add the new real-time message
                 ],
               }));
+
+              setLatestMessages((prev) => ({
+                ...prev,
+                [`${message.senderId}_${message.internshipId}`]: true,
+              }));
+
             });
 
 
@@ -195,9 +202,16 @@ const Chats = () => {
   useEffect(() => {
     const scrollToBottom = () => {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+       setLatestMessages((prev) => ({
+      ...prev,
+      [`${selectedRecruiter}_${selectedInternship}`]: false,
+    }));
+    
     }
-    scrollToBottom();
-  }, [chatMessages]);
+    const timer = setTimeout(scrollToBottom, 500);
+
+    return () => clearTimeout(timer);
+  }, [selectedInternship,selectedRecruiter]);
 
 
   const sendMessage = () => {
@@ -296,8 +310,8 @@ const Chats = () => {
 
             return (
               <div
-                key={`${internshipId}`}
-                className="student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4 border border-gray-200 hover:cursor-pointer hover:border-blue-300 hover:scale-105 duration-300"
+              key={`${recruiterId}-${internshipId}`}
+              className={`student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship===internshipId && 'border-blue-500  '} hover:scale-105 duration-300`}
                 onClick={() => { handleInternClick(internshipId, recruiterId); handleInfoSetter(companyName, internshipName, isActive) }}
               >
                 <div className="flex-grow">
