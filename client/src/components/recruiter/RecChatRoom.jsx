@@ -233,20 +233,9 @@ const RecChatRoom = () => {
 
   const formatSentAt = (sentAt) => {
     const messageDate = new Date(sentAt);
-    const today = new Date();
-
-    const isSameDay =
-      messageDate.getDate() === today.getDate() &&
-      messageDate.getMonth() === today.getMonth() &&
-      messageDate.getFullYear() === today.getFullYear();
-
-    if (isSameDay) {
-      // Format time as hh:mm AM/PM
-      return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-    } else {
-      // Format date as dd/mm/yyyy
-      return messageDate.toLocaleDateString('en-GB');
-    }
+  
+    // Format time as hh:mm AM/PM
+    return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   };
 
   const displayDate = (currentDate) => {

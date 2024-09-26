@@ -261,20 +261,9 @@ const Chats = () => {
 
   const formatSentAt = (sentAt) => {
     const messageDate = new Date(sentAt);
-    const today = new Date();
-
-    const isSameDay =
-      messageDate.getDate() === today.getDate() &&
-      messageDate.getMonth() === today.getMonth() &&
-      messageDate.getFullYear() === today.getFullYear();
-
-    if (isSameDay) {
-      // Format time as hh:mm AM/PM
-      return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-    } else {
-      // Format date as dd/mm/yyyy
-      return messageDate.toLocaleDateString('en-GB');
-    }
+  
+    // Format time as hh:mm AM/PM
+    return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   };
 
   const handleInfoSetter = (companyName, internshipName, isActive) => {
@@ -330,7 +319,7 @@ const Chats = () => {
                   {lastMessage && <p className="text-sm text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
                     <span className={`${latestMessages[`${recruiterId}_${internshipId}`]?'text-blue-500 font-semibold':'text-gray-600'} text-md`}>
-                    {lastMessage ? (lastMessage.messageContent.slice(0, 50) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
+                    {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
                   </p>}
 
