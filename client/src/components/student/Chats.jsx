@@ -321,12 +321,17 @@ const Chats = () => {
                     {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
                   </h3>
                   <p className="text-sm text-gray-600">{internshipName}</p>
+                  {latestMessages[`${recruiterId}_${internshipId}`] && (
+                    <div className="text-blue-500 font-semibold text-xs">New mesage</div>
+                  )}
 
 
                   {/* Display the most recent message */}
-                  {lastMessage && <p className="text-sm text-gray-800 mt-2">
+                  {lastMessage && <p className="text-sm text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
+                    <span className={`${latestMessages[`${recruiterId}_${internshipId}`]?'text-blue-500 font-semibold':'text-gray-600'} text-md`}>
                     {lastMessage ? (lastMessage.messageContent.slice(0, 50) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
+                    </span>
                   </p>}
 
 
@@ -366,7 +371,7 @@ const currentDate = new Date(msg.sentAt);
 
                 <div
                   key={index}
-                  className={`p-2 rounded max-w-md ${msg.senderId === studentId ? 'bg-blue-400 self-end text-white' : 'bg-gray-100'} `}
+                  className={`p-2 rounded  inline-block break-words  ${msg.senderId === studentId ? 'bg-blue-400 self-end text-white' : 'bg-gray-100'} `}
                   style={{ maxWidth: 'fit-content' }}
                 >
                   <p className='max-w-[400px]'>{msg.messageContent}</p>

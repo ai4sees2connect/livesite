@@ -23,7 +23,7 @@ const RecChatRoom = () => {
   const chatEndRef = useRef(null);
   const [latestMessages, setLatestMessages] = useState({}); // Track latest messages for each student and internship
   // const [isAtBottom, setIsAtBottom] = useState(false);
- 
+
 
   useEffect(() => {
 
@@ -167,19 +167,19 @@ const RecChatRoom = () => {
   useEffect(() => {
     const scrollToBottom = () => {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-       setLatestMessages((prev) => ({
-      ...prev,
-      [`${selectedStudent}_${selectedInternship}`]: false,
-    }));
-    
+      setLatestMessages((prev) => ({
+        ...prev,
+        [`${selectedStudent}_${selectedInternship}`]: false,
+      }));
+
     }
     const timer = setTimeout(scrollToBottom, 500);
 
     return () => clearTimeout(timer);
-  }, [selectedInternship,selectedStudent]);
+  }, [selectedInternship, selectedStudent]);
 
- 
-console.log(`this is selectedStudent: ${selectedStudent} and this is selectedinternship: ${selectedInternship}`);
+
+  console.log(`this is selectedStudent: ${selectedStudent} and this is selectedinternship: ${selectedInternship}`);
 
 
 
@@ -275,15 +275,15 @@ console.log(`this is selectedStudent: ${selectedStudent} and this is selectedint
 
             // Get the most recent message
             const lastMessage = chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
-           
-           
+
+
 
 
 
             return (
               <div
                 key={`${studentId}-${internshipId}`}
-                className={`student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship===internshipId && 'border-blue-500  '} hover:scale-105 duration-300`}
+                className={`student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship === internshipId && 'border-blue-500  '} hover:scale-105 duration-300`}
                 onClick={() => { handleStudentClick(studentId, internshipId); handleInfoSetter(firstname, lastname, internshipName, isActive) }}
               >
                 <div className="flex-grow">
@@ -293,19 +293,19 @@ console.log(`this is selectedStudent: ${selectedStudent} and this is selectedint
                     {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
                   </div>
                   <p className="text-sm text-gray-500">{internshipName}</p>
-                  {latestMessages[`${studentId}_${internshipId}`] &&(
-                  <div className="text-green-500">New</div>
-                )}
+                  {latestMessages[`${studentId}_${internshipId}`] && (
+                    <div className="text-blue-500 font-semibold text-xs">New mesage</div>
+                  )}
 
                   {/* Display the most recent message */}
-                  {lastMessage && <p className="text-sm text-gray-800 mt-2">
+                  {lastMessage && <p className="text-md text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === recruiterId ? 'You:  ' : ''}</span>
-                    <div >
-                    {lastMessage ? (lastMessage.messageContent.slice(0, 50) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
-                    </div>
+                    <span className={`${latestMessages[`${studentId}_${internshipId}`]? 'text-blue-500 font-semibold':'text-gray-500'} text-md`}>
+                    {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
+                    </span>
 
                   </p>}
-                 
+
                 </div>
               </div>
             );
@@ -339,11 +339,11 @@ console.log(`this is selectedStudent: ${selectedStudent} and this is selectedint
                     </div>
                   )}
 
-                  <div 
-                    className={`p-2 rounded inline-block ${msg.senderId === recruiterId ? 'bg-blue-400 self-end text-right  text-white ' : 'bg-gray-100 '} `}
+                  <div
+                    className={`py-2 px-3 rounded inline-block break-words ${msg.senderId === recruiterId ? 'bg-blue-400 self-end text-right  text-white ' : 'bg-gray-100 '} `}
                     style={{ maxWidth: 'fit-content' }}
                   >
-                    <p className='max-w-[400px] min-w-[40px]'>{msg.messageContent}</p>
+                    <p className='max-w-[400px] min-w-[70px]'>{msg.messageContent}</p>
                     <p className={`text-xs font-semibold text-right ${msg.senderId === recruiterId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
 
                   </div>
@@ -363,8 +363,8 @@ console.log(`this is selectedStudent: ${selectedStudent} and this is selectedint
             className="w-full p-2 border-2 rounded-lg"
             placeholder="Type a message..."
           />
-          <button disabled={newMessage===''? true:false}
-            className={`bg-blue-500 text-white border px-9 py-1 rounded-lg ${newMessage==='' && 'bg-gray-300'}`}
+          <button disabled={newMessage === '' ? true : false}
+            className={`bg-blue-500 text-white border px-9 py-1 rounded-lg ${newMessage === '' && 'bg-gray-300'}`}
             onClick={sendMessage}
           >
             Send
