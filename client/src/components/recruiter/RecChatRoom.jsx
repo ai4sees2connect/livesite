@@ -48,6 +48,7 @@ const RecChatRoom = () => {
 
         // Set the flattened student list in state
         setShortlistedStudents(flat)
+        // sortAndSetShortlistedStudents();
         setIsLoading(false);
         console.log('students fetchedddddddddddddddddd', flat);
         console.log('hello');
@@ -144,6 +145,8 @@ const RecChatRoom = () => {
     fetchShortlistedStudents();
   }, [recruiterId]);
 
+  console.log('chat histories',chatHistories)
+
 
   useEffect(() => {
     if (shortlistedStudents.length > 0) {
@@ -162,7 +165,7 @@ const RecChatRoom = () => {
       setIsLoading(false);
       console.log('loading status:', isLoading);
     }
-  }, [shortlistedStudents, socket]);
+  }, [socket]);
 
   useEffect(() => {
     const scrollToBottom = () => {
@@ -245,7 +248,44 @@ const RecChatRoom = () => {
       return `${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'long' })} `;
     }
   };
-  // console.log('status of chat view',isChatViewed);
+
+  const getLastMessageTimestamp = (chatKey, chatHistories) => {
+    const messages = chatHistories[chatKey] || [];
+
+    if (messages.length === 0) return new Date(0); // Return earliest date if no messages
+
+    // Find the message with the latest sentAt timestamp
+    const lastMessage =messages[messages.length - 1] 
+
+    return new Date(lastMessage.sentAt); // Return the latest sentAt timestamp
+};
+
+const sortShortlistedStudentsByLastMessage = (shortlistedStudents, chatHistories) => {
+  return shortlistedStudents.sort((a, b) => {
+      // Get the last message timestamps for each student-internship pair
+      const timestampA = getLastMessageTimestamp(`${a.studentId}_${a.internshipId}`, chatHistories);
+      const timestampB = getLastMessageTimestamp(`${b.studentId}_${b.internshipId}`, chatHistories);
+
+      // Sort by descending order of timestamps (latest messages at the top)
+      return timestampB - timestampA;
+  });
+};
+
+const sortAndSetShortlistedStudents = () => {
+  setShortlistedStudents(prevShortlistedStudents => {
+    // console.log('sorting running..................');
+      const sortedShortlistedStudents = sortShortlistedStudentsByLastMessage(prevShortlistedStudents, chatHistories);
+      return [...sortedShortlistedStudents];
+  });
+};
+
+useEffect(() => {
+  sortAndSetShortlistedStudents();
+     
+}, [chatHistories]);
+
+
+
 
   return (
     <div className="flex justify-end h-[80vh]  mt-20 relative w-[100%]">

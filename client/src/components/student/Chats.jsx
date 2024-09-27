@@ -5,13 +5,15 @@ import { toast } from 'react-toastify'
 import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 
 const Chats = () => {
 
   const { studentId } = useParams();
   const [shortlistedInternships, setShortlistedInternships] = useState([]);
-  const [chatMessages, setChatMessages] = useState([]);
+  // const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [chatHistories, setChatHistories] = useState({});
 
@@ -27,6 +29,8 @@ const Chats = () => {
   const [isLoading, setIsLoading] = useState(true);
   const chatEndRef = useRef(null);
   const [latestMessages, setLatestMessages] = useState({});
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [totalUnread,setTotalUnread]=useState(0);
 
 
   useEffect(() => {
@@ -117,7 +121,7 @@ const Chats = () => {
                 ...prev,
                 [`${message.senderId}_${message.internshipId}`]: true,
               }));
-
+              
             });
 
 
@@ -197,7 +201,7 @@ const Chats = () => {
       setIsLoading(false);
       console.log('loading status:', isLoading);
     }
-  }, [shortlistedInternships, socket]);
+  }, [ socket]);
 
   useEffect(() => {
     const scrollToBottom = () => {
@@ -281,13 +285,78 @@ const Chats = () => {
     }
   };
 
+  const getLastMessageTimestamp = (chatKey, chatHistories) => {
+    const messages = chatHistories[chatKey] || [];
+
+    if (messages.length === 0) return new Date(0); // Return earliest date if no messages
+
+    // Find the message with the latest sentAt timestamp
+    const lastMessage =messages[messages.length - 1] 
+
+    return new Date(lastMessage.sentAt); // Return the latest sentAt timestamp
+};
+
+const sortShortlistedInternshipsByLastMessage = (shortlistedInternships, chatHistories) => {
+  return shortlistedInternships.sort((a, b) => {
+      // Get the last message timestamps for each student-internship pair
+      const timestampA = getLastMessageTimestamp(`${a.recruiterId}_${a.internshipId}`, chatHistories);
+      const timestampB = getLastMessageTimestamp(`${b.recruiterId}_${b.internshipId}`, chatHistories);
+
+      // Sort by descending order of timestamps (latest messages at the top)
+      return timestampB - timestampA;
+  });
+};
+
+const sortAndSetShortlistedStudents = () => {
+  setShortlistedInternships(prevShortlistedInternships => {
+    // console.log('sorting running..................');
+      const sortedShortlistedInternships = sortShortlistedInternshipsByLastMessage(prevShortlistedInternships, chatHistories);
+      return [...sortedShortlistedInternships];
+  });
+};
+
+useEffect(() => {
+  sortAndSetShortlistedStudents();
+     
+}, [chatHistories]);
+
+
+const handleFilterChange = (filter) => {
+  setActiveFilter(filter);
+};
+
+const filteredInternships=shortlistedInternships.filter(internship=>{
+ 
+  if(activeFilter==='all') return true;
+  else {
+    const key = `${internship.recruiterId}_${internship.internshipId}`; 
+    return latestMessages[key] === true; 
+  }
+})
+
+
+
   return (
     <div className="flex justify-end h-[80vh]  w-[100%]  mt-20 relative">
       {/* Left Column - Shortlisted Students */}
-      <div className="fixed left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[70vh]">
+      <div className="fixed flex flex-col items-center border border-black left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[70vh]">
         <h2 className="text-xl font-semibold mb-4">Shortlisted Internships</h2>
-        <ul className="space-y-2">
-          {shortlistedInternships.map((intern) => {
+        <div className=" inline-block space-x-4  border-2 rounded-full  mb-4">
+            <button
+                className={`py-2 px-3 rounded-full ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+                onClick={() => handleFilterChange('all')}
+            >
+                All Messages
+            </button>
+            <button
+                className={`py-2 px-4 rounded-full ${activeFilter === 'unread' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+                 onClick={() => handleFilterChange('unread')}
+            >
+                Unread(0)
+            </button>
+        </div>
+        <ul className=" w-[80%] space-y-2">
+          {filteredInternships.map((intern) => {
             const { internshipId, recruiterId, companyName, internshipName, statusUpdatedAt, isActive } = intern;
 
             // Construct the chat key for retrieving messages from chatHistories
@@ -300,7 +369,7 @@ const Chats = () => {
             return (
               <div
               key={`${recruiterId}-${internshipId}`}
-              className={`student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship===internshipId && 'border-blue-500  '} hover:scale-105 duration-300`}
+              className={`student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship===internshipId && 'border-blue-500  '} hover:scale-105 duration-300 w-full`}
                 onClick={() => { handleInternClick(internshipId, recruiterId); handleInfoSetter(companyName, internshipName, isActive) }}
               >
                 <div className="flex-grow">

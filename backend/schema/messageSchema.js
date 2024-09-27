@@ -31,6 +31,10 @@ const messageSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ChatRoom',
     required: true
+  },
+  seenStatus: {
+    type: Boolean,
+    default: false,
   }
 });
 
