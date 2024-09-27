@@ -30,7 +30,7 @@ const Chats = () => {
   const chatEndRef = useRef(null);
   const [latestMessages, setLatestMessages] = useState({});
   const [activeFilter, setActiveFilter] = useState('all');
-  const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({}); 
+  const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({});
 
 
   useEffect(() => {
@@ -110,7 +110,7 @@ const Chats = () => {
                   ...prevStatus,
                   [`${recruiterId}_${internshipId}`]: lastMessage.seenStatus,
                 }));
-                console.log('status of last message',lastMessage.seenStatus)
+                console.log('status of last message', lastMessage.seenStatus)
               }
 
             });
@@ -132,7 +132,7 @@ const Chats = () => {
                 ...prev,
                 [`${message.senderId}_${message.internshipId}`]: message.seenStatus,
               }));
-              
+
             });
 
 
@@ -212,19 +212,19 @@ const Chats = () => {
       setIsLoading(false);
       console.log('loading status:', isLoading);
     }
-  }, [ socket]);
+  }, [socket]);
 
   useEffect(() => {
     const scrollToBottom = () => {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 
-      
+
 
     }
     const timer = setTimeout(scrollToBottom, 500);
 
     return () => clearTimeout(timer);
-  }, [selectedInternship, selectedRecruiter,socket]);
+  }, [selectedInternship, selectedRecruiter, socket]);
 
 
   const sendMessage = () => {
@@ -268,14 +268,14 @@ const Chats = () => {
       studentId,
       internshipId,
       recruiterId, // Assuming recruiterId is available in scope
-      type:'Student'
+      type: 'Student'
     });
 
     socket.on('messageSeenUpdate', ({ studentId, internshipId, recruiterId, type }) => {
       // Construct the key based on the type of user (Recruiter or Student)
       let key;
       if (type === 'Student') {
-        key = `${recruiterId}_${internshipId}`; 
+        key = `${recruiterId}_${internshipId}`;
 
         setLatestMessagesSeenStatus((prev) => ({
           ...prev,
@@ -284,7 +284,7 @@ const Chats = () => {
       }
       else {
         socket.off('messageSeenUpdate')
-      } 
+      }
     });
   }
 
@@ -297,7 +297,7 @@ const Chats = () => {
 
   const formatSentAt = (sentAt) => {
     const messageDate = new Date(sentAt);
-  
+
     // Format time as hh:mm AM/PM
     return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   };
@@ -323,48 +323,48 @@ const Chats = () => {
     if (messages.length === 0) return new Date(0); // Return earliest date if no messages
 
     // Find the message with the latest sentAt timestamp
-    const lastMessage =messages[messages.length - 1] 
+    const lastMessage = messages[messages.length - 1]
 
     return new Date(lastMessage.sentAt); // Return the latest sentAt timestamp
-};
+  };
 
-const sortShortlistedInternshipsByLastMessage = (shortlistedInternships, chatHistories) => {
-  return shortlistedInternships.sort((a, b) => {
+  const sortShortlistedInternshipsByLastMessage = (shortlistedInternships, chatHistories) => {
+    return shortlistedInternships.sort((a, b) => {
       // Get the last message timestamps for each student-internship pair
       const timestampA = getLastMessageTimestamp(`${a.recruiterId}_${a.internshipId}`, chatHistories);
       const timestampB = getLastMessageTimestamp(`${b.recruiterId}_${b.internshipId}`, chatHistories);
 
       // Sort by descending order of timestamps (latest messages at the top)
       return timestampB - timestampA;
-  });
-};
+    });
+  };
 
-const sortAndSetShortlistedStudents = () => {
-  setShortlistedInternships(prevShortlistedInternships => {
-    // console.log('sorting running..................');
+  const sortAndSetShortlistedStudents = () => {
+    setShortlistedInternships(prevShortlistedInternships => {
+      // console.log('sorting running..................');
       const sortedShortlistedInternships = sortShortlistedInternshipsByLastMessage(prevShortlistedInternships, chatHistories);
       return [...sortedShortlistedInternships];
-  });
-};
+    });
+  };
 
-useEffect(() => {
-  sortAndSetShortlistedStudents();
-     
-}, [chatHistories]);
+  useEffect(() => {
+    sortAndSetShortlistedStudents();
+
+  }, [chatHistories]);
 
 
-const handleFilterChange = (filter) => {
-  setActiveFilter(filter);
-};
+  const handleFilterChange = (filter) => {
+    setActiveFilter(filter);
+  };
 
-const filteredInternships=shortlistedInternships.filter(internship=>{
- 
-  if(activeFilter==='all') return true;
-  else {
-    const key = `${internship.recruiterId}_${internship.internshipId}`; 
-    return latestMessages[key] === true; 
-  }
-})
+  const filteredInternships = shortlistedInternships.filter(internship => {
+
+    if (activeFilter === 'all') return true;
+    else {
+      const key = `${internship.recruiterId}_${internship.internshipId}`;
+      return latestMessages[key] === true;
+    }
+  })
 
 
 
@@ -374,18 +374,18 @@ const filteredInternships=shortlistedInternships.filter(internship=>{
       <div className="fixed flex flex-col items-center border border-black left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[70vh]">
         <h2 className="text-xl font-semibold mb-4">Shortlisted Internships</h2>
         <div className=" inline-block space-x-4  border-2 rounded-full  mb-4">
-            <button
-                className={`py-2 px-3 rounded-full ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
-                onClick={() => handleFilterChange('all')}
-            >
-                All Messages
-            </button>
-            <button
-                className={`py-2 px-4 rounded-full ${activeFilter === 'unread' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
-                 onClick={() => handleFilterChange('unread')}
-            >
-                Unread(0)
-            </button>
+          <button
+            className={`py-2 px-3 rounded-full ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            onClick={() => handleFilterChange('all')}
+          >
+            All Messages
+          </button>
+          <button
+            className={`py-2 px-4 rounded-full ${activeFilter === 'unread' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            onClick={() => handleFilterChange('unread')}
+          >
+            Unread(0)
+          </button>
         </div>
         <ul className=" w-[80%] space-y-2">
           {filteredInternships.map((intern) => {
@@ -400,8 +400,8 @@ const filteredInternships=shortlistedInternships.filter(internship=>{
 
             return (
               <div
-              key={`${recruiterId}-${internshipId}`}
-              className={`student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship===internshipId && 'border-blue-500  '} hover:scale-105 duration-300 w-full`}
+                key={`${recruiterId}-${internshipId}`}
+                className={`student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship === internshipId && 'border-blue-500  '} hover:scale-105 duration-300 w-full`}
                 onClick={() => { handleInternClick(internshipId, recruiterId); handleInfoSetter(companyName, internshipName, isActive) }}
               >
                 <div className="flex-grow">
@@ -419,8 +419,8 @@ const filteredInternships=shortlistedInternships.filter(internship=>{
                   {/* Display the most recent message */}
                   {lastMessage && <p className="text-sm text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
-                    <span className={`${!latestMessagesSeenStatus[`${recruiterId}_${internshipId}`]?'text-blue-500 font-semibold':'text-gray-600'} text-md`}>
-                    {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
+                    <span className={`${!latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-600'} text-md`}>
+                      {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
                   </p>}
 
@@ -445,7 +445,7 @@ const filteredInternships=shortlistedInternships.filter(internship=>{
           <div className="flex flex-col space-y-4 overflow-y-auto">
             {chatHistories[`${selectedRecruiter}_${selectedInternship}`]?.map((msg, index, arr) => {
 
-const currentDate = new Date(msg.sentAt);
+              const currentDate = new Date(msg.sentAt);
               const previousDate = index > 0 ? new Date(arr[index - 1].sentAt) : null;
               const isSameDay = previousDate && currentDate.toDateString() === previousDate.toDateString();
 
@@ -459,14 +459,14 @@ const currentDate = new Date(msg.sentAt);
                     </div>
                   )}
 
-                <div
-                  key={index}
-                  className={`p-2 rounded  inline-block break-words  ${msg.senderId === studentId ? 'bg-blue-400 self-end text-white' : 'bg-gray-100'} `}
-                  style={{ maxWidth: 'fit-content' }}
-                >
-                  <p className='max-w-[400px]'>{msg.messageContent}</p>
-                  <p className={`text-xs font-semibold text-right ${msg.senderId === studentId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
-                </div>
+                  <div
+                    key={index}
+                    className={`p-2 rounded  inline-block break-words  ${msg.senderId === studentId ? 'bg-blue-400 self-end text-white' : 'bg-gray-100'} `}
+                    style={{ maxWidth: 'fit-content' }}
+                  >
+                    <p className='max-w-[400px]'>{msg.messageContent}</p>
+                    <p className={`text-xs font-semibold text-right ${msg.senderId === studentId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
+                  </div>
                 </React.Fragment>
               )
             })}

@@ -21,7 +21,7 @@ const RecChatRoom = () => {
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const chatEndRef = useRef(null);
-  const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({}); 
+  const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({});
 
 
   useEffect(() => {
@@ -114,11 +114,11 @@ const RecChatRoom = () => {
                   ...prevStatus,
                   [`${studentId}_${internshipId}`]: lastMessage.seenStatus,
                 }));
-                console.log('status of last message',lastMessage.seenStatus)
+                console.log('status of last message', lastMessage.seenStatus)
               }
-              
 
-              
+
+
             });
 
             const receiveMessageEvent = `receiveMessages_${studentId}_${internshipId}`;
@@ -138,7 +138,7 @@ const RecChatRoom = () => {
                 ...prev,
                 [`${message.senderId}_${message.internshipId}`]: message.seenStatus,
               }));
-              
+
 
               // console.log('value set for new messsage');
 
@@ -158,8 +158,8 @@ const RecChatRoom = () => {
     fetchShortlistedStudents();
   }, [recruiterId]);
 
-  console.log('seen status',latestMessagesSeenStatus);
- 
+  console.log('seen status', latestMessagesSeenStatus);
+
 
 
   useEffect(() => {
@@ -185,13 +185,13 @@ const RecChatRoom = () => {
     const scrollToBottom = () => {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 
-      
+
 
     }
     const timer = setTimeout(scrollToBottom, 500);
 
     return () => clearTimeout(timer);
-  }, [selectedInternship, selectedStudent,socket]);
+  }, [selectedInternship, selectedStudent, socket]);
 
 
   console.log(`this is selectedStudent: ${selectedStudent} and this is selectedinternship: ${selectedInternship}`);
@@ -208,7 +208,7 @@ const RecChatRoom = () => {
       studentId,
       internshipId,
       recruiterId, // Assuming recruiterId is available in scope
-      type:'Recruiter'
+      type: 'Recruiter'
     });
 
     console.log('emitinggggggggggggggg.............');
@@ -217,7 +217,7 @@ const RecChatRoom = () => {
       // Construct the key based on the type of user (Recruiter or Student)
       let key;
       if (type === 'Recruiter') {
-        key = `${studentId}_${internshipId}`; 
+        key = `${studentId}_${internshipId}`;
 
         setLatestMessagesSeenStatus((prev) => ({
           ...prev,
@@ -226,10 +226,8 @@ const RecChatRoom = () => {
       }
       else {
         socket.off('messageSeenUpdate')
-      } 
+      }
     });
-
-
 
   };
 
@@ -275,7 +273,7 @@ const RecChatRoom = () => {
 
   const formatSentAt = (sentAt) => {
     const messageDate = new Date(sentAt);
-  
+
     // Format time as hh:mm AM/PM
     return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   };
@@ -294,34 +292,34 @@ const RecChatRoom = () => {
     if (messages.length === 0) return new Date(0); // Return earliest date if no messages
 
     // Find the message with the latest sentAt timestamp
-    const lastMessage =messages[messages.length - 1] 
+    const lastMessage = messages[messages.length - 1]
 
     return new Date(lastMessage.sentAt); // Return the latest sentAt timestamp
-};
+  };
 
-const sortShortlistedStudentsByLastMessage = (shortlistedStudents, chatHistories) => {
-  return shortlistedStudents.sort((a, b) => {
+  const sortShortlistedStudentsByLastMessage = (shortlistedStudents, chatHistories) => {
+    return shortlistedStudents.sort((a, b) => {
       // Get the last message timestamps for each student-internship pair
       const timestampA = getLastMessageTimestamp(`${a.studentId}_${a.internshipId}`, chatHistories);
       const timestampB = getLastMessageTimestamp(`${b.studentId}_${b.internshipId}`, chatHistories);
 
       // Sort by descending order of timestamps (latest messages at the top)
       return timestampB - timestampA;
-  });
-};
+    });
+  };
 
-const sortAndSetShortlistedStudents = () => {
-  setShortlistedStudents(prevShortlistedStudents => {
-    // console.log('sorting running..................');
+  const sortAndSetShortlistedStudents = () => {
+    setShortlistedStudents(prevShortlistedStudents => {
+      // console.log('sorting running..................');
       const sortedShortlistedStudents = sortShortlistedStudentsByLastMessage(prevShortlistedStudents, chatHistories);
       return [...sortedShortlistedStudents];
-  });
-};
+    });
+  };
 
-useEffect(() => {
-  sortAndSetShortlistedStudents();
-     
-}, [chatHistories]);
+  useEffect(() => {
+    sortAndSetShortlistedStudents();
+
+  }, [chatHistories]);
 
 
 
@@ -368,8 +366,8 @@ useEffect(() => {
                   {/* Display the most recent message */}
                   {lastMessage && <p className="text-md text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === recruiterId ? 'You:  ' : ''}</span>
-                    <span className={`${!latestMessagesSeenStatus[`${studentId}_${internshipId}`]? 'text-blue-500 font-semibold':'text-gray-500'} text-md`}>
-                    {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
+                    <span className={`${!latestMessagesSeenStatus[`${studentId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-500'} text-md`}>
+                      {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
 
                   </p>}
@@ -413,7 +411,7 @@ useEffect(() => {
                   >
                     <p className='max-w-[400px] min-w-[70px]'>{msg.messageContent}</p>
                     <p className={`text-xs font-semibold text-right ${msg.senderId === recruiterId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
-                    <p>{!msg.seenStatus && 'unseen'}</p>
+                    <p>{msg.senderId === recruiterId && msg.seenStatus && 'Seen'}</p>
 
                   </div>
                 </React.Fragment>
