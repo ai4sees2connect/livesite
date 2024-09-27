@@ -28,9 +28,10 @@ const Chats = () => {
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const chatEndRef = useRef(null);
-  const [latestMessages, setLatestMessages] = useState({});
+  // const [latestMessages, setLatestMessages] = useState({});
   const [activeFilter, setActiveFilter] = useState('all');
   const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({});
+  // const [unreadCount,setUnreadCount]=useState(0);
 
 
   useEffect(() => {
@@ -357,15 +358,26 @@ const Chats = () => {
     setActiveFilter(filter);
   };
 
-  const filteredInternships = shortlistedInternships.filter(internship => {
-
-    if (activeFilter === 'all') return true;
-    else {
-      const key = `${internship.recruiterId}_${internship.internshipId}`;
-      return latestMessages[key] === true;
+  const { filteredInternships, unreadCount } = shortlistedInternships.reduce((acc, internship) => {
+    const key = `${internship.recruiterId}_${internship.internshipId}`;
+  
+    // Add to filtered internships based on the active filter
+    if (activeFilter === 'all') {
+      acc.filteredInternships.push(internship); // Add all internships
+    } else if (latestMessagesSeenStatus[key] === false) {
+      acc.filteredInternships.push(internship); // Add to filtered list if unread
     }
-  })
+  
+    // Count unread messages regardless of the active filter
+    if (latestMessagesSeenStatus[key] === false) {
+      acc.unreadCount += 1; // Increment the unread count
+    }
+  
+    return acc; // Return the accumulator
+  }, { filteredInternships: [], unreadCount: 0 });
 
+
+console.log(unreadCount);
 
 
   return (
@@ -384,7 +396,7 @@ const Chats = () => {
             className={`py-2 px-4 rounded-full ${activeFilter === 'unread' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
             onClick={() => handleFilterChange('unread')}
           >
-            Unread(0)
+            Unread({`${unreadCount}`})
           </button>
         </div>
         <ul className=" w-[80%] space-y-2">
@@ -411,7 +423,7 @@ const Chats = () => {
                     {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
                   </h3>
                   <p className="text-sm text-gray-600">{internshipName}</p>
-                  {!latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] && (
+                  {lastMessage && !latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] && lastMessage.senderId!==studentId && (
                     <div className="text-blue-500 font-semibold text-xs">New mesage</div>
                   )}
 
@@ -419,7 +431,7 @@ const Chats = () => {
                   {/* Display the most recent message */}
                   {lastMessage && <p className="text-sm text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
-                    <span className={`${!latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-600'} text-md`}>
+                    <span className={`${lastMessage.senderId!==studentId &&!latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-500'} text-md`}>
                       {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
                   </p>}

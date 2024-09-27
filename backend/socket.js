@@ -88,66 +88,76 @@ const initSocket = (server) => {
             .sort({ sentAt: 1 }) // Sort messages by date (oldest to newest)
             .exec();
 
-            const chatHistoryWithInternshipId = chatHistory.map(message => ({
-              ...message.toObject(), // Converts each message to a plain object
-              internshipId,          // Attach the internshipId field
-            }));
+          const chatHistoryWithInternshipId = chatHistory.map((message) => ({
+            ...message.toObject(), // Converts each message to a plain object
+            internshipId, // Attach the internshipId field
+          }));
 
           const receiverId = type === "Recruiter" ? studentId : recruiterId;
           // console.log(' chatHistory',chatHistory);
           console.log(`emiting history to ${type}`);
-          socket.emit(`chatHistory_${receiverId}_${internshipId}`, chatHistoryWithInternshipId);
+          socket.emit(
+            `chatHistory_${receiverId}_${internshipId}`,
+            chatHistoryWithInternshipId
+          );
         } catch (error) {
           console.error("Error joining chat room:", error);
         }
       }
     );
 
-    socket.on('markLastMessageAsSeen', async ({ studentId, internshipId, recruiterId, type }) => {
-      try {
-        let senderId, receiverId;
-    
-        // Determine sender and receiver based on the user type
-        if (type === 'Recruiter') {
-          senderId = studentId;  // If recruiter, student is the sender
-          receiverId = recruiterId;  // Recruiter is the receiver
-        } else if (type === 'Student') {
-          senderId = recruiterId;  // If student, recruiter is the sender
-          receiverId = studentId;  // Student is the receiver
-        } else {
-          throw new Error('Invalid user type');
-        }
+    socket.on(
+      "markLastMessageAsSeen",
+      async ({ studentId, internshipId, recruiterId, type }) => {
+        try {
+          let senderId, receiverId;
 
-        const chatRoom = await createOrGetChatRoom(
-          recruiterId,
-          studentId,
-          internshipId
-        );
-        
-    
-        // Find the last message in the conversation for the given internship
-        const lastMessage = await Message.findOne({
-          senderId,
-          receiverId,
-          chatRoomId:new mongoose.Types.ObjectId(chatRoom._id),
-          
-        }).sort({ sentAt: -1 }); // Sort by sentAt to get the latest message
-    
-        if (lastMessage) {
-          // Update the seenStatus of the last message to true
-          lastMessage.seenStatus = true;
-          await lastMessage.save();
-          console.log('status updated for this message', lastMessage.messageContent);
-    
-          // Optionally, emit an event back to confirm the update
-          socket.emit('messageSeenUpdate', { studentId, internshipId, recruiterId, type });
+          // Determine sender and receiver based on the user type
+          if (type === "Recruiter") {
+            senderId = studentId; // If recruiter, student is the sender
+            receiverId = recruiterId; // Recruiter is the receiver
+          } else if (type === "Student") {
+            senderId = recruiterId; // If student, recruiter is the sender
+            receiverId = studentId; // Student is the receiver
+          } else {
+            throw new Error("Invalid user type");
+          }
+
+          const chatRoom = await createOrGetChatRoom(
+            recruiterId,
+            studentId,
+            internshipId
+          );
+
+          // Find the last message in the conversation for the given internship
+          const lastMessage = await Message.findOne({
+            senderId,
+            receiverId,
+            chatRoomId: new mongoose.Types.ObjectId(chatRoom._id),
+          }).sort({ sentAt: -1 }); // Sort by sentAt to get the latest message
+
+          if (lastMessage) {
+            // Update the seenStatus of the last message to true
+            lastMessage.seenStatus = true;
+            await lastMessage.save();
+            console.log(
+              "status updated for this message",
+              lastMessage.messageContent
+            );
+
+            // Optionally, emit an event back to confirm the update
+            socket.emit("messageSeenUpdate", {
+              studentId,
+              internshipId,
+              recruiterId,
+              type,
+            });
+          }
+        } catch (error) {
+          console.error("Error marking message as seen:", error);
         }
-       
-      } catch (error) {
-        console.error('Error marking message as seen:', error);
       }
-    });
-    
+    );
 
     // Move sendMessageRecruiter listener outside
     socket.on("sendMessage", async (messageData) => {
@@ -177,7 +187,7 @@ const initSocket = (server) => {
 
         const messageWithInternshipId = {
           ...newMessage.toObject(), // Converts Mongoose model to a plain object
-          internshipId,            // Attach the internshipId field
+          internshipId, // Attach the internshipId field
         };
 
         // Emit the message to the chat room
@@ -186,7 +196,10 @@ const initSocket = (server) => {
         const receiverId = type === "Recruiter" ? recruiterId : studentId;
         socket
           .to(chatRoom._id.toString())
-          .emit(`receiveMessages_${receiverId}_${internshipId}`, messageWithInternshipId);
+          .emit(
+            `receiveMessages_${receiverId}_${internshipId}`,
+            messageWithInternshipId
+          );
 
         console.log("after emiting");
       } catch (error) {

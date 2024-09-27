@@ -17,7 +17,7 @@ const RecChatRoom = () => {
   const [lastName, setLastName] = useState('');
   const [internshipName, setInternshipName] = useState('');
   const [activeStatus, setActiveStatus] = useState(false);
-
+  const [activeFilter, setActiveFilter] = useState('all');
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const chatEndRef = useRef(null);
@@ -319,18 +319,56 @@ const RecChatRoom = () => {
   useEffect(() => {
     sortAndSetShortlistedStudents();
 
-  }, [chatHistories]);
+  }, [chatHistories])
 
+  const { filteredStudents, unreadCount } = shortlistedStudents.reduce((acc, student) => {
+    const key = `${student.studentId}_${student.internshipId}`;
+  
+    // Add to filtered internships based on the active filter
+    if (activeFilter === 'all') {
+      acc.filteredStudents.push(student); // Add all internships
+    } else if (latestMessagesSeenStatus[key] === false) {
+      acc.filteredStudents.push(student); // Add to filtered list if unread
+    }
+  
+    // Count unread messages regardless of the active filter
+    if (latestMessagesSeenStatus[key] === false) {
+      acc.unreadCount += 1; // Increment the unread count
+    }
+  
+    return acc; // Return the accumulator
+  }, { filteredStudents: [], unreadCount: 0 });
+
+  
+  const handleFilterChange = (filter) => {
+    setActiveFilter(filter);
+  };
+  
 
 
 
   return (
     <div className="flex justify-end h-[80vh]  mt-20 relative w-[100%]">
       {/* Left Column - Shortlisted Students */}
-      <div className="fixed left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[70vh]">
+      <div className="fixed flex flex-col items-center left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[70vh]">
         <h2 className="text-xl font-semibold mb-4">Shortlisted Students</h2>
-        <ul className="space-y-2">
-          {shortlistedStudents.map((student) => {
+        <div className=" inline-block space-x-4  border-2 rounded-full  mb-4">
+          <button
+            className={`py-2 px-3 rounded-full ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            onClick={() => handleFilterChange('all')}
+          >
+            All Messages
+          </button>
+          <button
+            className={`py-2 px-4 rounded-full ${activeFilter === 'unread' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            onClick={() => handleFilterChange('unread')}
+          >
+            Unread({`${unreadCount}`})
+          </button>
+        </div>
+
+        <ul className="w-[80%] space-y-2">
+          {filteredStudents.map((student) => {
             const { studentId, internshipId, firstname, lastname, internshipName, statusUpdatedAt, isActive } = student;
 
             // Construct the chat key for retrieving messages from chatHistories
@@ -349,7 +387,7 @@ const RecChatRoom = () => {
             return (
               <div
                 key={`${studentId}-${internshipId}`}
-                className={`student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship === internshipId && 'border-blue-500  '} hover:scale-105 duration-300`}
+                className={`student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship === internshipId && 'border-blue-500  '} hover:scale-105 duration-300 w-full`}
                 onClick={() => { handleStudentClick(studentId, internshipId); handleInfoSetter(firstname, lastname, internshipName, isActive) }}
               >
                 <div className="flex-grow">
@@ -359,14 +397,14 @@ const RecChatRoom = () => {
                     {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
                   </div>
                   <p className="text-sm text-gray-500">{internshipName}</p>
-                  {!latestMessagesSeenStatus[`${studentId}_${internshipId}`] && (
+                  {lastMessage && !latestMessagesSeenStatus[`${studentId}_${internshipId}`] && lastMessage.senderId!==recruiterId && (
                     <div className="text-blue-500 font-semibold text-xs">New mesage</div>
                   )}
 
                   {/* Display the most recent message */}
                   {lastMessage && <p className="text-md text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === recruiterId ? 'You:  ' : ''}</span>
-                    <span className={`${!latestMessagesSeenStatus[`${studentId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-500'} text-md`}>
+                    <span className={`${lastMessage.senderId!==recruiterId &&!latestMessagesSeenStatus[`${studentId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-500'} text-md`}>
                       {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
 
