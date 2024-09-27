@@ -1,6 +1,7 @@
 const { Server } = require("socket.io");
 const createOrGetChatRoom = require("./utils/chatRoomCreation");
 const Message = require("./schema/messageSchema");
+const mongoose = require("mongoose");
 
 const initSocket = (server) => {
   const io = new Server(server, {
@@ -101,6 +102,52 @@ const initSocket = (server) => {
         }
       }
     );
+
+    socket.on('markLastMessageAsSeen', async ({ studentId, internshipId, recruiterId, type }) => {
+      try {
+        let senderId, receiverId;
+    
+        // Determine sender and receiver based on the user type
+        if (type === 'Recruiter') {
+          senderId = studentId;  // If recruiter, student is the sender
+          receiverId = recruiterId;  // Recruiter is the receiver
+        } else if (type === 'Student') {
+          senderId = recruiterId;  // If student, recruiter is the sender
+          receiverId = studentId;  // Student is the receiver
+        } else {
+          throw new Error('Invalid user type');
+        }
+
+        const chatRoom = await createOrGetChatRoom(
+          recruiterId,
+          studentId,
+          internshipId
+        );
+        
+    
+        // Find the last message in the conversation for the given internship
+        const lastMessage = await Message.findOne({
+          senderId,
+          receiverId,
+          chatRoomId:new mongoose.Types.ObjectId(chatRoom._id),
+          
+        }).sort({ sentAt: -1 }); // Sort by sentAt to get the latest message
+    
+        if (lastMessage) {
+          // Update the seenStatus of the last message to true
+          lastMessage.seenStatus = true;
+          await lastMessage.save();
+          console.log('status updated for this message', lastMessage.messageContent);
+    
+          // Optionally, emit an event back to confirm the update
+          socket.emit('messageSeenUpdate', { studentId, internshipId, recruiterId, type });
+        }
+       
+      } catch (error) {
+        console.error('Error marking message as seen:', error);
+      }
+    });
+    
 
     // Move sendMessageRecruiter listener outside
     socket.on("sendMessage", async (messageData) => {

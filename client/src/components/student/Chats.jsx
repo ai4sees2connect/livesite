@@ -30,7 +30,7 @@ const Chats = () => {
   const chatEndRef = useRef(null);
   const [latestMessages, setLatestMessages] = useState({});
   const [activeFilter, setActiveFilter] = useState('all');
-  const [totalUnread,setTotalUnread]=useState(0);
+  const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({}); 
 
 
   useEffect(() => {
@@ -102,6 +102,17 @@ const Chats = () => {
                 ...prevHistories,
                 [`${recruiterId}_${internshipId}`]: messages, // Store history for each student using their studentId as key
               }));
+
+              const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
+
+              if (lastMessage) {
+                setLatestMessagesSeenStatus((prevStatus) => ({
+                  ...prevStatus,
+                  [`${recruiterId}_${internshipId}`]: lastMessage.seenStatus,
+                }));
+                console.log('status of last message',lastMessage.seenStatus)
+              }
+
             });
 
             const receiveMessageEvent = `receiveMessages_${recruiterId}_${internshipId}`;
@@ -117,9 +128,9 @@ const Chats = () => {
                 ],
               }));
 
-              setLatestMessages((prev) => ({
+              setLatestMessagesSeenStatus((prev) => ({
                 ...prev,
-                [`${message.senderId}_${message.internshipId}`]: true,
+                [`${message.senderId}_${message.internshipId}`]: message.seenStatus,
               }));
               
             });
@@ -206,16 +217,14 @@ const Chats = () => {
   useEffect(() => {
     const scrollToBottom = () => {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-       setLatestMessages((prev) => ({
-      ...prev,
-      [`${selectedRecruiter}_${selectedInternship}`]: false,
-    }));
-    
+
+      
+
     }
     const timer = setTimeout(scrollToBottom, 500);
 
     return () => clearTimeout(timer);
-  }, [selectedInternship,selectedRecruiter]);
+  }, [selectedInternship, selectedRecruiter,socket]);
 
 
   const sendMessage = () => {
@@ -254,6 +263,29 @@ const Chats = () => {
   const handleInternClick = (internshipId, recruiterId) => {
     setSelectedRecruiter(recruiterId);
     setSelectedInternship(internshipId);
+
+    socket.emit('markLastMessageAsSeen', {
+      studentId,
+      internshipId,
+      recruiterId, // Assuming recruiterId is available in scope
+      type:'Student'
+    });
+
+    socket.on('messageSeenUpdate', ({ studentId, internshipId, recruiterId, type }) => {
+      // Construct the key based on the type of user (Recruiter or Student)
+      let key;
+      if (type === 'Student') {
+        key = `${recruiterId}_${internshipId}`; 
+
+        setLatestMessagesSeenStatus((prev) => ({
+          ...prev,
+          [key]: true, // Mark this chat as seen
+        }));
+      }
+      else {
+        socket.off('messageSeenUpdate')
+      } 
+    });
   }
 
   useEffect(() => {
@@ -379,7 +411,7 @@ const filteredInternships=shortlistedInternships.filter(internship=>{
                     {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
                   </h3>
                   <p className="text-sm text-gray-600">{internshipName}</p>
-                  {latestMessages[`${recruiterId}_${internshipId}`] && (
+                  {!latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] && (
                     <div className="text-blue-500 font-semibold text-xs">New mesage</div>
                   )}
 
@@ -387,7 +419,7 @@ const filteredInternships=shortlistedInternships.filter(internship=>{
                   {/* Display the most recent message */}
                   {lastMessage && <p className="text-sm text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
-                    <span className={`${latestMessages[`${recruiterId}_${internshipId}`]?'text-blue-500 font-semibold':'text-gray-600'} text-md`}>
+                    <span className={`${!latestMessagesSeenStatus[`${recruiterId}_${internshipId}`]?'text-blue-500 font-semibold':'text-gray-600'} text-md`}>
                     {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
                   </p>}

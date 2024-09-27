@@ -21,8 +21,7 @@ const RecChatRoom = () => {
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const chatEndRef = useRef(null);
-  const [latestMessages, setLatestMessages] = useState({}); // Track latest messages for each student and internship
-  // const [isAtBottom, setIsAtBottom] = useState(false);
+  const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({}); 
 
 
   useEffect(() => {
@@ -107,6 +106,19 @@ const RecChatRoom = () => {
                 ...prevHistories,
                 [`${studentId}_${internshipId}`]: messages, // Store history for each student using their studentId as key
               }));
+
+              const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
+
+              if (lastMessage) {
+                setLatestMessagesSeenStatus((prevStatus) => ({
+                  ...prevStatus,
+                  [`${studentId}_${internshipId}`]: lastMessage.seenStatus,
+                }));
+                console.log('status of last message',lastMessage.seenStatus)
+              }
+              
+
+              
             });
 
             const receiveMessageEvent = `receiveMessages_${studentId}_${internshipId}`;
@@ -122,12 +134,13 @@ const RecChatRoom = () => {
                 ],
               }));
               // setIsAtBottom(false);
-              setLatestMessages((prev) => ({
+              setLatestMessagesSeenStatus((prev) => ({
                 ...prev,
-                [`${message.senderId}_${message.internshipId}`]: true,
+                [`${message.senderId}_${message.internshipId}`]: message.seenStatus,
               }));
+              
 
-              console.log('value set for new messsage');
+              // console.log('value set for new messsage');
 
             });
 
@@ -145,7 +158,8 @@ const RecChatRoom = () => {
     fetchShortlistedStudents();
   }, [recruiterId]);
 
-  console.log('chat histories',chatHistories)
+  console.log('seen status',latestMessagesSeenStatus);
+ 
 
 
   useEffect(() => {
@@ -170,16 +184,14 @@ const RecChatRoom = () => {
   useEffect(() => {
     const scrollToBottom = () => {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      setLatestMessages((prev) => ({
-        ...prev,
-        [`${selectedStudent}_${selectedInternship}`]: false,
-      }));
+
+      
 
     }
     const timer = setTimeout(scrollToBottom, 500);
 
     return () => clearTimeout(timer);
-  }, [selectedInternship, selectedStudent]);
+  }, [selectedInternship, selectedStudent,socket]);
 
 
   console.log(`this is selectedStudent: ${selectedStudent} and this is selectedinternship: ${selectedInternship}`);
@@ -191,6 +203,33 @@ const RecChatRoom = () => {
   const handleStudentClick = (studentId, internshipId) => {
     setSelectedStudent(studentId);
     setSelectedInternship(internshipId);
+
+    socket.emit('markLastMessageAsSeen', {
+      studentId,
+      internshipId,
+      recruiterId, // Assuming recruiterId is available in scope
+      type:'Recruiter'
+    });
+
+    console.log('emitinggggggggggggggg.............');
+
+    socket.on('messageSeenUpdate', ({ studentId, internshipId, recruiterId, type }) => {
+      // Construct the key based on the type of user (Recruiter or Student)
+      let key;
+      if (type === 'Recruiter') {
+        key = `${studentId}_${internshipId}`; 
+
+        setLatestMessagesSeenStatus((prev) => ({
+          ...prev,
+          [key]: true, // Mark this chat as seen
+        }));
+      }
+      else {
+        socket.off('messageSeenUpdate')
+      } 
+    });
+
+
 
   };
 
@@ -322,14 +361,14 @@ useEffect(() => {
                     {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
                   </div>
                   <p className="text-sm text-gray-500">{internshipName}</p>
-                  {latestMessages[`${studentId}_${internshipId}`] && (
+                  {!latestMessagesSeenStatus[`${studentId}_${internshipId}`] && (
                     <div className="text-blue-500 font-semibold text-xs">New mesage</div>
                   )}
 
                   {/* Display the most recent message */}
                   {lastMessage && <p className="text-md text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === recruiterId ? 'You:  ' : ''}</span>
-                    <span className={`${latestMessages[`${studentId}_${internshipId}`]? 'text-blue-500 font-semibold':'text-gray-500'} text-md`}>
+                    <span className={`${!latestMessagesSeenStatus[`${studentId}_${internshipId}`]? 'text-blue-500 font-semibold':'text-gray-500'} text-md`}>
                     {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
 
@@ -374,6 +413,7 @@ useEffect(() => {
                   >
                     <p className='max-w-[400px] min-w-[70px]'>{msg.messageContent}</p>
                     <p className={`text-xs font-semibold text-right ${msg.senderId === recruiterId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
+                    <p>{!msg.seenStatus && 'unseen'}</p>
 
                   </div>
                 </React.Fragment>
