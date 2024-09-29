@@ -186,6 +186,39 @@ router.get('/:recruiterId/get-all-internships',async(req,res)=>{
  }
 })
 
+router.get('/:studentId/:internshipId/application-details', async (req, res) => {
+  const { studentId, internshipId } = req.params;
+
+  try {
+    // Find the student by studentId
+    const student = await Student.findOne({ _id: studentId }).select('-password -updatedAt'); // Exclude password and updatedAt fields
+
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found.' });
+    }
+
+    // Find the specific internship applied by the student
+    const appliedInternship = student.appliedInternships.find(
+      (internship) => internship.internship.toString() === internshipId
+    );
+
+    if (!appliedInternship) {
+      return res.status(404).json({ message: 'Internship not found in applied internships.' });
+    }
+
+    // Return the student profile along with the specific applied internship details
+    const studentProfile = {
+      ...student.toObject(),
+      appliedInternships: [appliedInternship], // Only return the internship that matches
+    };
+
+    res.status(200).json(studentProfile);
+  } catch (error) {
+    console.error('Error fetching student details:', error);
+    res.status(500).json({ message: 'Server error, please try again later.' });
+  }
+});
+
 
 
 

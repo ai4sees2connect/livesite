@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import api from '../common/server_url';
 import { io } from 'socket.io-client';
 import TimeAgo from '../common/TimeAgo'
@@ -11,7 +11,7 @@ import 'react-dropdown/style.css';
 // import Select from 'react-select';
 // import select from './utils/select.css'
 import './utils/Styles.css'
-import {FaSearch} from 'react-icons/fa';
+import { FaSearch, FaNewspaper ,FaCaretRight } from 'react-icons/fa';
 
 const RecChatRoom = () => {
   const { recruiterId } = useParams();
@@ -31,7 +31,7 @@ const RecChatRoom = () => {
   const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({});
   const [internshipOptions, setInternshipOptions] = useState([]);
   const [selectedInternFilter, setSelectedInternFilter] = useState('All');
-  const [searchName,setSearchName]=useState('');
+  const [searchName, setSearchName] = useState('');
 
 
 
@@ -378,8 +378,8 @@ const RecChatRoom = () => {
     return acc; // Return the accumulator
   }, { filteredStudents: [], unreadCount: 0 });
 
-  const extraFilteredStudents=filteredStudents.filter(student=>{
-    const matchingIntern= selectedInternFilter==='All' || student.internshipId===selectedInternFilter
+  const extraFilteredStudents = filteredStudents.filter(student => {
+    const matchingIntern = selectedInternFilter === 'All' || student.internshipId === selectedInternFilter
     const matchesName = `${student.firstname} ${student.lastname}`.toLowerCase().includes(searchName.toLowerCase());
 
     return matchingIntern && matchesName
@@ -406,22 +406,22 @@ const RecChatRoom = () => {
         <h2 className="text-xl font-semibold mb-4">Messages from all internships</h2>
 
         <div className='flex flex-col justify-center w-full'>
-         
+
           <div className='mx-auto p-2 rounded-lg w-full'>
             <Dropdown
               options={internshipOptions}
               onChange={handleSelectChange}
               placeholder="Select an internship"
               className="w-full text-sm font-semibold"
-               controlClassName="custom-control"
-                menuClassName="custom-menu"
+              controlClassName="custom-control"
+              menuClassName="custom-menu"
             />
           </div>
         </div>
 
         <div className='flex items-center space-x-7 mx-auto p-2 rounded-lg w-full text-sm'>
-          
-        <input
+
+          <input
             type="text"
             placeholder="&#128269; Search by name... "
             value={searchName}
@@ -500,7 +500,11 @@ const RecChatRoom = () => {
       <div className="w-[65%] p-4 flex flex-col  mx-3 ">
         <div className='w-full h-[10%]  mb-2'>
           <p className='font-semibold capitalize text-2xl'>{firstName} {lastName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
-          <p>{internshipName}</p>
+          <div className='flex space-x-5'>
+            <p>{internshipName}</p>
+            <Link to={`/recruiter/${selectedInternship}/application-details/${selectedStudent}`} target="_blank"
+              rel="noopener noreferrer" className='flex items-center space-x-4 text-blue-500 font-semibold'>View application<FaCaretRight className='mt-1 mx-1'/></Link>
+          </div>
         </div>
         <div className="flex-grow bg-white mt-4 p-4 rounded-lg shadow-lg overflow-y-auto border-2">
 
