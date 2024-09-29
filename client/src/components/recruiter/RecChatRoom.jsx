@@ -11,6 +11,7 @@ import 'react-dropdown/style.css';
 // import Select from 'react-select';
 // import select from './utils/select.css'
 import './utils/Styles.css'
+import {FaSearch} from 'react-icons/fa';
 
 const RecChatRoom = () => {
   const { recruiterId } = useParams();
@@ -30,6 +31,7 @@ const RecChatRoom = () => {
   const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({});
   const [internshipOptions, setInternshipOptions] = useState([]);
   const [selectedInternFilter, setSelectedInternFilter] = useState('All');
+  const [searchName,setSearchName]=useState('');
 
 
 
@@ -377,8 +379,10 @@ const RecChatRoom = () => {
   }, { filteredStudents: [], unreadCount: 0 });
 
   const extraFilteredStudents=filteredStudents.filter(student=>{
-    if(selectedInternFilter==='All') return true;
-    else if(student.internshipId===selectedInternFilter) return student.internshipId===selectedInternFilter
+    const matchingIntern= selectedInternFilter==='All' || student.internshipId===selectedInternFilter
+    const matchesName = `${student.firstname} ${student.lastname}`.toLowerCase().includes(searchName.toLowerCase());
+
+    return matchingIntern && matchesName
   })
 
 
@@ -398,12 +402,12 @@ const RecChatRoom = () => {
   return (
     <div className="flex justify-end h-[80vh]  mt-20 relative w-[100%]">
       {/* Left Column - Shortlisted Students */}
-      <div className="fixed flex flex-col items-center left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[70vh]">
-        <h2 className="text-xl font-semibold mb-4">Shortlisted Students</h2>
+      <div className="fixed flex flex-col items-center left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[80vh]">
+        <h2 className="text-xl font-semibold mb-4">Messages from all internships</h2>
 
-        <div className='flex flex-col justify-center w-full border border-black my-2'>
-          <h1 className='text-center'>Select an Internship</h1>
-          <div className='mx-auto border border-black p-4 rounded-lg w-full'>
+        <div className='flex flex-col justify-center w-full'>
+         
+          <div className='mx-auto p-2 rounded-lg w-full'>
             <Dropdown
               options={internshipOptions}
               onChange={handleSelectChange}
@@ -413,6 +417,17 @@ const RecChatRoom = () => {
                 menuClassName="custom-menu"
             />
           </div>
+        </div>
+
+        <div className='flex items-center space-x-7 mx-auto p-2 rounded-lg w-full text-sm'>
+          
+        <input
+            type="text"
+            placeholder="&#128269; Search by name... "
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            className="border p-2 rounded mb-4 w-full"
+          />
         </div>
 
         <div className=" inline-block space-x-4  border-2 rounded-full  mb-4">
