@@ -5,13 +5,14 @@ import api from '../common/server_url';
 import Spinner from '../common/Spinner';
 // import { useRecruiter } from './context/recruiterContext';
 import getUserIdFromToken from './auth/authUtilsRecr';
+import TimeAgo from '../common/TimeAgo'
 
 const ApplicationDetails = () => {
   const { studentId, internshipId } = useParams(); // Get studentId and internshipId from URL
   const [studentDetails, setStudentDetails] = useState(null);
   const [internshipDetails, setInternshipDetails] = useState(null);
   // const {recruiter}=useRecruiter();
-  const recruiterId=getUserIdFromToken();
+  const recruiterId = getUserIdFromToken();
   console.log(recruiterId);
 
   useEffect(() => {
@@ -23,9 +24,9 @@ const ApplicationDetails = () => {
         setStudentDetails(response.data);
         console.log(response.data);
 
-        const secondResponse=await axios.get(`${api}/recruiter/internship/${recruiterId}/getDetails/${internshipId}`)
+        const secondResponse = await axios.get(`${api}/recruiter/internship/${recruiterId}/getDetails/${internshipId}`)
         setInternshipDetails(secondResponse.data);
-        
+
       } catch (error) {
         console.error('Error fetching application details:', error);
       }
@@ -82,36 +83,41 @@ const ApplicationDetails = () => {
   } = studentDetails;
 
   const { aboutText, appliedAt, assessmentAns, availability, } = studentDetails.appliedInternships[0]
-  const {assessment}=internshipDetails;
+  const { assessment } = internshipDetails;
 
   return (
     <>
-      <h1 className='mt-20 text-gray-600'>Dashboard &gt; Applications(shortlisted) &gt; {firstname} {lastname}</h1>
-      <h1 className="text-2xl font-semibold mt-6 mx-auto w-[70%]">Application Details</h1>
+      <h1 className='mt-20 text-gray-600 mx-auto w-[70%] font-[500] capitalize'>Dashboard &gt; Applications Received &gt; {internshipDetails.internshipName} &gt; {firstname} {lastname}</h1>
+      <h1 className="text-2xl font-semibold mt-6 mx-auto w-[70%] text-gray-700">Application for {internshipDetails.internshipName}</h1>
       <div className="">
 
 
         <div className='border border-gray-300 mt-5 mx-auto p-6 w-[70%] rounded-lg shadow-md '>
           <div className="mb-4">
-            <div className='flex justify-between'>
-            <p className="capitalize text-2xl font-bold">{`${firstname} ${lastname}`}</p>
-            <div className="mb-2">
-                    <p className={`font-semibold ${calculateMatchPercentage(skills, internshipDetails.skills) < 20
-                      ? 'text-red-500'
-                      : calculateMatchPercentage(skills, internshipDetails.skills) >= 20 &&
-                        calculateMatchPercentage(skills, internshipDetails.skills) <= 60
-                        ? 'text-orange-300'
-                        : calculateMatchPercentage(skills, internshipDetails.skills) > 60 &&
-                          calculateMatchPercentage(skills, internshipDetails.skills) <= 90
-                          ? 'text-yellow-500'
-                          : 'text-green-500'
-                      }`}>
-                      {calculateMatchPercentage(skills, internshipDetails.skills)}% Matched
-                    </p>
-                  </div>
-            </div>
+          <div className="mb-2 flex justify-between relative">
+            
+                <div className={`font-semibold rounded-md p-2 w-full ${calculateMatchPercentage(skills, internshipDetails.skills) < 20
+                  ? 'text-red-500 bg-gradient-to-r from-red-100 to-white'
+                  : calculateMatchPercentage(skills, internshipDetails.skills) >= 20 &&
+                    calculateMatchPercentage(skills, internshipDetails.skills) <= 60
+                    ? 'text-orange-300 bg-gradient-to-r from-orange-100 to-white'
+                    : calculateMatchPercentage(skills, internshipDetails.skills) > 60 &&
+                      calculateMatchPercentage(skills, internshipDetails.skills) <= 90
+                      ? 'text-yellow-600 bg-gradient-to-r from-yellow-100 to-white'
+                      : 'text-green-500 bg-gradient-to-r from-green-100 to-white'
+                  }`}>
+                  {calculateMatchPercentage(skills, internshipDetails.skills)}% Matched
+                </div>
+                <div className='z-10 absolute right-3 top-2 text-gray-600 text-sm font-[500]'>
+                  Applied {TimeAgo(appliedAt)}
+                </div>
+                
+              </div>
+
+              <p className="capitalize text-2xl font-bold">{`${firstname} ${lastname}`}</p>
+
             <p className='text-gray-600'>{homeLocation} ({availability === 'Yes! Will join Immediately' ? 'can join immediately' : 'not an immediate joiner'})</p>
-            <p className='text-gray-600'>{yearsOfExp}</p>
+            <p className='text-gray-600'>Exp: {yearsOfExp}</p>
           </div>
 
           <div className="mb-4">
@@ -149,7 +155,7 @@ const ApplicationDetails = () => {
 
         </div>
         <h1 className='w-[70%] mx-auto mt-8 text-2xl font-semibold'>Profile</h1>
-        <div className='border border-gray-300  mx-auto p-6 w-[70%] rounded-lg shadow-md '>
+        <div className='border border-gray-300  mx-auto p-6 w-[70%] rounded-lg shadow-md mb-10 '>
 
           {/* Education Details */}
 
@@ -207,29 +213,29 @@ const ApplicationDetails = () => {
           {/* Resume */}
           {resume && resume.filename && (
             <>
-             <p className="text-lg font-medium">Resume:</p>
-            <div className="mb-6">
-              <a
-                href={`data:${resume.contentType};base64,${resume.data}`}
-                download={resume.filename}
-                className=" text-blue-500 px-4 py-2 hover:underline transition-all"
-              >
-                Download Resume
-              </a>
-            </div>
+              <p className="text-lg font-medium">Resume:</p>
+              <div className="mb-6">
+                <a
+                  href={`data:${resume.contentType};base64,${resume.data}`}
+                  download={resume.filename}
+                  className=" text-blue-500 px-4 py-2 hover:underline transition-all"
+                >
+                  Download Resume
+                </a>
+              </div>
             </>
           )}
 
           <div className="mb-4">
-          <p className="text-lg font-medium">Email:</p>
-          <p className="text-gray-700">{email}</p>
-        </div>
+            <p className="text-lg font-medium">Email:</p>
+            <p className="text-gray-700">{email}</p>
+          </div>
 
         </div>
 
-        
 
-       
+
+
       </div>
     </>
   );
