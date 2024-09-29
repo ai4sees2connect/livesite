@@ -5,6 +5,7 @@ const Internship=require('../schema/internshipSchema');
 const Student=require('../schema/studentSchema')
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 const {jwtDecode} = require('jwt-decode');
 
@@ -164,6 +165,25 @@ router.put('/:internshipId/change-status',async(req,res)=>{
     console.error('Error changing internship status:',error);
     res.status(500).json({message:'Internal server error'});
   }
+})
+
+router.get('/:recruiterId/get-all-internships',async(req,res)=>{
+ const {recruiterId}=req.params;
+ try {
+  const recruiterObjectId = new mongoose.Types.ObjectId(recruiterId);
+  const internships = await Internship.find({ recruiter:recruiterObjectId }).select('_id internshipName createdAt');;
+
+  if (internships.length === 0) {
+    return res.status(404).json({ message: 'No internships found for this recruiter.' });
+  }
+  // console.log(internships);
+  res.status(200).json(internships);
+ } catch (error) {
+
+  console.error('Error fetching internships:', error.message, error.stack);
+  res.status(500).json({ message: 'Server error, please try again later.' });
+  
+ }
 })
 
 

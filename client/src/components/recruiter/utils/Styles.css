@@ -1,0 +1,30 @@
+.custom-menu .Dropdown-option {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.custom-menu .Dropdown-option:hover {
+  background-color: rgb(234,252,255); /* Change background on hover */
+  color:#0B90DE
+}
+
+.custom-menu .Dropdown-option--is-selected {
+  background-color: #e0e0e0; /* Change background for selected option */
+  font-weight: bold;
+  
+}
+
+/* In custom-dropdown.css */
+.custom-control {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  background-color: rgb(255, 255, 255);
+}
+
+.custom-menu {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 200px; /* Set max height */
+  overflow-y: auto; /* Enable scrolling */
+}
