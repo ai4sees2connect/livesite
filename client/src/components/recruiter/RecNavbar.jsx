@@ -40,21 +40,21 @@ const RecNavbar = () => {
         <div className="flex space-x-8">
           {/* Links starts from here */}
           <div className="relative mt-5 group ">
-            <a href="#" className=" hover:bg-purple-300 p-5 ">
+            <a href="#" className=" hover:text-blue-500 p-5 ">
               Plans and Pricing
             </a>
           </div>
 
         
-          <Link to={`/recruiter/dashboard/${userId}`} className=" hover:bg-purple-300 p-5">
+          <Link to={`/recruiter/dashboard/${userId}`} className=" hover:text-blue-500 p-5">
             My Dashboard
           </Link>
-          <Link to={`/recruiter/posting/${userId}`} className=" hover:bg-purple-300 p-5">
+          <Link to={`/recruiter/posting/${userId}`} className=" hover:text-blue-500 p-5">
             Post Internship
           </Link>
           <Link to={`/recruiter/${userId}/chatroom`} className="p-5 group">
-          <FaRegCommentDots className="w-6 h-6"/>
-          <div className="absolute top-[64%] hidden group-hover:block ">Messages</div>
+          <FaRegCommentDots className="w-6 h-6 hover:text-blue-500"/>
+          {/* <div className="absolute top-[64%] hidden group-hover:block ">Messages</div> */}
           </Link>
 
 

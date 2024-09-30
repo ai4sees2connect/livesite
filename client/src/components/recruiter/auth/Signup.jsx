@@ -34,7 +34,7 @@ function Signup() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      navigate(`/recruiter/home/${userId}`);
+      navigate(`/recruiter/dashboard/${userId}`);
     }
   }, [userId]);
 
@@ -76,7 +76,7 @@ function Signup() {
       localStorage.setItem('token', response.data.token); // Store token if needed
       const userId=  getUserIdFromToken();
       console.log(response.data.token);
-      navigate(`/recruiter/home/${userId}`);
+      navigate(`/recruiter/dashboard/${userId}`);
     } catch (error) {
       // Handle error
       toast.error(error.response.data.message);
@@ -105,7 +105,7 @@ function Signup() {
         const token=response.data.token;
         localStorage.setItem('token',token);
         const userId=  getUserIdFromToken();
-        navigate(`/recruiter/home/${userId}`);
+        navigate(`/recruiter/dashboard/${userId}`);
       } else {
         toast.error('Something went wrong')
       }

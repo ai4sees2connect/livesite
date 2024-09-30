@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Spinner from '../common/Spinner';
 import api from '../common/server_url';
@@ -456,7 +456,7 @@ const Applicants = () => {
                   {student.appliedInternships[0].internshipStatus.status==='Shortlisted'&& <h2 className='font-semibold absolute right-3 top-2  text-green-500'>Shortlisted</h2> }
                   {student.appliedInternships[0].internshipStatus.status==='Rejected'&& <h2 className=' absolute right-3 top-2  text-red-500'>Rejected</h2> }
 
-                  {student.appliedInternships[0].internshipStatus.status==='Shortlisted' && <button className='text-blue-400 font-semibold underline absolute right-3 top-10'>View messages</button>}
+                  {student.appliedInternships[0].internshipStatus.status==='Shortlisted' && <Link to={`/recruiter/${recruiterId}/chatroom`} className='text-blue-400 font-semibold underline absolute right-3 top-10'>View messages</Link>}
 
                   {isOpen &&
                     <div className='flex absolute right-3 top-2 space-x-4'>

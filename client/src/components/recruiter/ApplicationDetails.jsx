@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import api from '../common/server_url';
 import Spinner from '../common/Spinner';
@@ -87,7 +87,7 @@ const ApplicationDetails = () => {
 
   return (
     <>
-      <h1 className='mt-20 text-gray-600 mx-auto w-[70%] font-[500] capitalize'>Dashboard &gt; Applications Received &gt; {internshipDetails.internshipName} &gt; {firstname} {lastname}</h1>
+      <h1 className='mt-20 text-gray-600 mx-auto w-[70%] font-[500] capitalize'>Dashboard &gt; Applications Received &gt; <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internshipId}`}>{internshipDetails.internshipName}</Link> &gt; {firstname} {lastname}</h1>
       <h1 className="text-2xl font-semibold mt-6 mx-auto w-[70%] text-gray-700">Application for {internshipDetails.internshipName}</h1>
       <div className="">
 

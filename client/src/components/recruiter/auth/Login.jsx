@@ -32,7 +32,7 @@ function Login() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      navigate(`/recruiter/home/${userId}`);
+      navigate(`/recruiter/dashboard/${userId}`);
       return;
     }
   }, [navigate,userId]);
@@ -57,7 +57,7 @@ function Login() {
       localStorage.setItem('token', response.data.token);
       login();
       const userId= getUserIdFromToken();
-      navigate(`/recruiter/home/${userId}`); 
+      navigate(`/recruiter/dashboard/${userId}`); 
     } catch (error) {
       // Handle error
       toast.error(error.response.data.message || 'Login failed');
@@ -90,7 +90,7 @@ function Login() {
         localStorage.setItem('token',token);
         login();
         const userId=  getUserIdFromToken();
-        navigate(`/recruiter/home/${userId}`);
+        navigate(`/recruiter/dashboard/${userId}`);
       } else {
         toast.error('Error handling Google sign-in on the server');
       }
