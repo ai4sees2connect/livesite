@@ -48,7 +48,21 @@ const messageSchema = new mongoose.Schema({
     deadline: {
       type: Date,
     } 
-  }
+  },
+  submissionDetails: {
+    // New field for assignment submission details
+    submittedFiles: [
+      {
+        fileName: { type: String },
+        fileUrl: { type: String },
+        fileSize: { type: Number },
+        fileType: { type: String },
+      },
+    ],
+    submissionLink: { type: String },
+    additionalInfo: { type: String },
+    submittedAt: { type: Date, default: Date.now },
+  },
 });
 
 const Message = mongoose.model("Message", messageSchema);

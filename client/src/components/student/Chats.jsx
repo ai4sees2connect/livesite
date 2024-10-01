@@ -6,6 +6,7 @@ import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
 import SubmitAssignment from './SubmitAssignment';
+import {FaCheckCircle} from 'react-icons/fa'
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -388,12 +389,48 @@ const Chats = () => {
     setPopupOpen(false);
   };
 
-  const handleAssignmentSubmit = (submissionData) => {
-    // Handle submission logic, e.g., emitting socket event
-    console.log('Submitted Assignment:', submissionData);
+  const handleAssignmentSubmit = async (submissionData) => {
+    const { files, link, additionalInfo, msgId } = submissionData;
 
-    // Emit data via socket
-    socket.emit('submitAssignment', submissionData);
+    const submissionPayload = {
+      msgId, // The ID of the original assignment message sent by the recruiter
+      files, // The array of uploaded files
+      link, // The assignment submission link
+      additionalInfo // Additional info about the submission
+    };
+
+    console.log(submissionPayload);
+
+    socket.emit('sendMessage', submissionPayload);
+
+    setChatHistories((prevHistories) => {
+      const newMessage = {
+        senderId: studentId,
+        messageContent: "Assignment submission", // You might want to adjust this based on your needs
+        sentAt: new Date(),
+        isAssignment: true, // Indicate this is an assignment submission
+        submissionDetails: {
+          submittedFiles: files.map(file => ({
+            fileName: file.fileName,
+            fileSize: (file.fileSize / 1024).toFixed(2) + ' KB', // Convert to KB with 2 decimal places
+            fileUrl: file.fileUrl || '', // Assuming you have a URL for the uploaded file
+          })),
+          submissionLink: link,
+          additionalInfo: additionalInfo || '',
+        },
+        originalAssignmentId: msgId // Store the ID of the original assignment for reference
+      };
+
+      console.log(newMessage);
+
+      return {
+        ...prevHistories,
+        [`${selectedRecruiter}_${selectedInternship}`]: [
+          ...(prevHistories[`${selectedRecruiter}_${selectedInternship}`] || []), // Get existing messages or an empty array
+          newMessage, // Add the new message
+        ],
+      };
+    });
 
     // Close the popup
     closeAssignmentPopup();
@@ -481,6 +518,7 @@ const Chats = () => {
               const currentDate = new Date(msg.sentAt);
               const previousDate = index > 0 ? new Date(arr[index - 1].sentAt) : null;
               const isSameDay = previousDate && currentDate.toDateString() === previousDate.toDateString();
+              // console.log('this is selected message',msg);
 
               return (
 
@@ -505,26 +543,78 @@ const Chats = () => {
 
                   }
 
-                  {msg.isAssignment &&
-                    <div className=' break-words rounded-full w-fit max-w-max' >
-                      <h1 className='bg-blue-200 px-2 py-1 rounded-t-lg'>Assignment received</h1>
-                      <div className={`py-2 px-3  inline-block  bg-gray-100 `} >
-                        <p className='max-w-[400px] min-w-[150px]'>{msg.assignmentDetails.description}</p>
-                        <p className=' font-semibold'>Submission deadline:{new Date(msg.assignmentDetails.deadline).toLocaleDateString('en-GB')}</p>
-                        <button onClick={openAssignmentPopup} className='bg-blue-500 rounded-lg px-2 py-1 mt-8 text-sm text-white'>Submit assignment</button>
+                  {msg.isAssignment && msg.senderId === selectedRecruiter &&
+                    <>
+                      <div className=' break-words rounded-full w-fit max-w-max' >
+                        <h1 className='bg-blue-200 px-2 py-1 rounded-t-lg'>Assignment received</h1>
+                        <div className={`py-2 px-3  inline-block  bg-gray-100 `} >
+                          <p className='max-w-[400px] min-w-[150px]'>{msg.assignmentDetails.description}</p>
+                          <p className=' font-semibold'>Submission deadline: {new Date(msg.assignmentDetails.deadline).toLocaleDateString('en-GB')}</p>
+                          <button onClick={openAssignmentPopup} className='bg-blue-500 rounded-lg px-2 py-1 mt-8 text-sm text-white'>Submit assignment</button>
 
-                        <p className={`text-xs font-semibold text-right text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
+                          <p className={`text-xs font-semibold text-right text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
 
 
+                        </div>
                       </div>
-                    </div>
+
+                      <SubmitAssignment
+                        isOpen={isPopupOpen}
+                        onClose={closeAssignmentPopup}
+                        onSubmit={handleAssignmentSubmit}
+                        msgId={msg._id}
+                        recruiterId={msg.senderId}
+                      />
+                    </>
                   }
-                  
-                  <SubmitAssignment
-                    isOpen={isPopupOpen}
-                    onClose={closeAssignmentPopup}
-                    onSubmit={handleAssignmentSubmit}
-                  />
+
+                  {
+                    msg.isAssignment && msg.senderId === studentId && (
+                      <div className=' break-words rounded-full w-fit max-w-max self-end'>
+                        <div className='flex space-x-2'>
+                        <FaCheckCircle/>
+                        <h1 className='bg-[rgb(189,243,255)] px-2 py-1 rounded-t-lg'>Assignment Submitted</h1>
+                        </div>
+                        <div className={`py-2 px-3 inline-block bg-[rgb(234,252,255)]`}>
+                          {/* List of submitted files */}
+                          <div className='flex flex-wrap'>
+                            {msg.submissionDetails.submittedFiles.map((file, index) => (
+                              <div key={index} className='w-full flex justify-between py-1 bg-[rgb(189,243,255)]'>
+                                <span>{file.fileName}</span>
+                                <span>{file.fileSize}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Submission link */}
+                          {msg.submissionDetails.submissionLink && (
+                            <p className='mt-2'>
+                              <a
+                                href={msg.submissionDetails.submissionLink}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                className='text-blue-600 underline'
+                              >
+                                View Submission
+                              </a>
+                            </p>
+                          )}
+
+                          {/* Additional Information */}
+                          {msg.submissionDetails.additionalInfo && (
+                            <p className='mt-2'>{msg.submissionDetails.additionalInfo}</p>
+                          )}
+
+                          <p className='text-xs font-semibold text-right text-gray-500'>
+                            {formatSentAt(msg.sentAt)}
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  }
+
+
+
 
                 </React.Fragment>
               )

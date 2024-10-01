@@ -258,6 +258,34 @@ const initSocket = (server) => {
       }
     });
 
+    socket.on('submitAssignment', async (submissionPayload) => {
+      const { assignmentId, studentId, recruiterId,internshipId, submittedFiles, submissionLink, additionalInfo } = submissionPayload;
+      
+      try {
+        const chatRoom = await createOrGetChatRoom(recruiterId, studentId, internshipId);
+
+        // Save the assignment submission to the database
+        const newSubmission = new AssignmentSubmission({
+          assignmentId,
+          studentId,
+          files,
+          submissionLink,
+          additionalInfo,
+          submittedAt: new Date(),
+        });
+  
+        await newSubmission.save();
+  
+        // Optionally notify the recruiter about the new submission
+        io.to(chatRoom._id.toString()).emit('newAssignmentSubmission', { assignmentId, studentId });
+        
+        console.log('Assignment submitted successfully:', newSubmission);
+      } catch (error) {
+        console.error('Error submitting assignment:', error.message);
+        // You might want to handle errors here, but without a response callback, you may want to log it.
+      }
+    });
+
     
   });
 

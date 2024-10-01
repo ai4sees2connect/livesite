@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const {jwtDecode} = require('jwt-decode');
 const Skill = require('../schema/skillsSchema.js');
+const File = require('../schema/fileSchema.js');
 // const getUserIdFromToken = require('../auth/auth');
 // const { default: getUserIdFromToken } = require('../../client/src/components/student/auth/authUtils');
 
@@ -316,5 +317,54 @@ router.get('/api/get-skills',async(req,res)=>{
     res.status(500).json({ message: error.message });
   }
 })
+
+router.post('/file-to-url', upload.single('file'),async(req,res)=>{
+  try {
+    const { originalname, mimetype, buffer } = req.file;
+
+    // Create a new file document
+    const newFile = new File({
+      fileName: originalname,
+      contentType: mimetype,
+      data: buffer,
+    });
+
+    // Save the file to MongoDB
+    await newFile.save();
+
+    // Send back the URL (you can generate a URL based on your application's routing)
+    const fileUrl = `http://localhost:4000/files/${newFile._id}`;
+    res.json({ fileUrl, fileId:newFile._id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'File upload failed' });
+  }
+})
+
+router.get('/get-file/:id', async (req, res) => {
+  try {
+    const fileId = req.params.id;
+
+    // Find the file in MongoDB by its ID
+    const file = await File.findById(fileId);
+
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    // Set the correct content type for the file
+    res.set({
+      'Content-Type': file.fileType, // Set the MIME type to the original file's type
+      'Content-Disposition': `attachment; filename="${file.fileName}"`, // Optional: force download
+    });
+
+    // Send the file data (buffer)
+    res.send(file.fileData);
+  } catch (error) {
+    console.error('Error retrieving file:', error);
+    res.status(500).json({ message: 'Error retrieving file' });
+  }
+});
+
 
 module.exports = router;
