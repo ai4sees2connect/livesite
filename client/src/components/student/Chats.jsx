@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
+import SubmitAssignment from './SubmitAssignment';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -31,7 +32,7 @@ const Chats = () => {
   // const [latestMessages, setLatestMessages] = useState({});
   const [activeFilter, setActiveFilter] = useState('all');
   const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({});
-  // const [unreadCount,setUnreadCount]=useState(0);
+  const [isPopupOpen, setPopupOpen] = useState(false);
 
 
   useEffect(() => {
@@ -360,24 +361,44 @@ const Chats = () => {
 
   const { filteredInternships, unreadCount } = shortlistedInternships.reduce((acc, internship) => {
     const key = `${internship.recruiterId}_${internship.internshipId}`;
-  
+
     // Add to filtered internships based on the active filter
     if (activeFilter === 'all') {
       acc.filteredInternships.push(internship); // Add all internships
     } else if (latestMessagesSeenStatus[key] === false) {
       acc.filteredInternships.push(internship); // Add to filtered list if unread
     }
-  
+
     // Count unread messages regardless of the active filter
     if (latestMessagesSeenStatus[key] === false) {
       acc.unreadCount += 1; // Increment the unread count
     }
-  
+
     return acc; // Return the accumulator
   }, { filteredInternships: [], unreadCount: 0 });
 
 
-console.log(unreadCount);
+  console.log(unreadCount);
+
+  const openAssignmentPopup = () => {
+    setPopupOpen(true);
+  };
+
+  const closeAssignmentPopup = () => {
+    setPopupOpen(false);
+  };
+
+  const handleAssignmentSubmit = (submissionData) => {
+    // Handle submission logic, e.g., emitting socket event
+    console.log('Submitted Assignment:', submissionData);
+
+    // Emit data via socket
+    socket.emit('submitAssignment', submissionData);
+
+    // Close the popup
+    closeAssignmentPopup();
+  };
+
 
 
   return (
@@ -423,7 +444,7 @@ console.log(unreadCount);
                     {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
                   </h3>
                   <p className="text-sm text-gray-600">{internshipName}</p>
-                  {lastMessage && !latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] && lastMessage.senderId!==studentId && (
+                  {lastMessage && !latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] && lastMessage.senderId !== studentId && (
                     <div className="text-blue-500 font-semibold text-xs">New mesage</div>
                   )}
 
@@ -431,7 +452,7 @@ console.log(unreadCount);
                   {/* Display the most recent message */}
                   {lastMessage && <p className="text-sm text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
-                    <span className={`${lastMessage.senderId!==studentId &&!latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-500'} text-md`}>
+                    <span className={`${lastMessage.senderId !== studentId && !latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-500'} text-md`}>
                       {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
                   </p>}
@@ -471,14 +492,40 @@ console.log(unreadCount);
                     </div>
                   )}
 
-                  <div
-                    key={index}
-                    className={`p-2 rounded  inline-block break-words  ${msg.senderId === studentId ? 'bg-blue-400 self-end text-white' : 'bg-gray-100'} `}
-                    style={{ maxWidth: 'fit-content' }}
-                  >
-                    <p className='max-w-[400px]'>{msg.messageContent}</p>
-                    <p className={`text-xs font-semibold text-right ${msg.senderId === studentId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
-                  </div>
+                  {!msg.isAssignment &&
+
+                    <div
+                      key={index}
+                      className={`p-2 rounded  inline-block break-words  ${msg.senderId === studentId ? 'bg-blue-400 self-end text-white' : 'bg-gray-100'} `}
+                      style={{ maxWidth: 'fit-content' }}
+                    >
+                      <p className='max-w-[400px]'>{msg.messageContent}</p>
+                      <p className={`text-xs font-semibold text-right ${msg.senderId === studentId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
+                    </div>
+
+                  }
+
+                  {msg.isAssignment &&
+                    <div className=' break-words rounded-full w-fit max-w-max' >
+                      <h1 className='bg-blue-200 px-2 py-1 rounded-t-lg'>Assignment received</h1>
+                      <div className={`py-2 px-3  inline-block  bg-gray-100 `} >
+                        <p className='max-w-[400px] min-w-[150px]'>{msg.assignmentDetails.description}</p>
+                        <p className=' font-semibold'>Submission deadline:{new Date(msg.assignmentDetails.deadline).toLocaleDateString('en-GB')}</p>
+                        <button onClick={openAssignmentPopup} className='bg-blue-500 rounded-lg px-2 py-1 mt-8 text-sm text-white'>Submit assignment</button>
+
+                        <p className={`text-xs font-semibold text-right text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
+
+
+                      </div>
+                    </div>
+                  }
+                  
+                  <SubmitAssignment
+                    isOpen={isPopupOpen}
+                    onClose={closeAssignmentPopup}
+                    onSubmit={handleAssignmentSubmit}
+                  />
+
                 </React.Fragment>
               )
             })}

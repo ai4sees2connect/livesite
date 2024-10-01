@@ -193,7 +193,8 @@ const initSocket = (server) => {
         // Emit the message to the chat room
         console.log("before emiting");
 
-        const receiverId = type === "Recruiter" ? recruiterId : studentId;
+        //now emit the message to other user type, i.e if recruiter is sender then trigger receiveMessages_recruiterId_internshipId event inside student component
+        const receiverId = type === "Recruiter" ?  recruiterId: studentId
         socket
           .to(chatRoom._id.toString())
           .emit(
@@ -206,6 +207,58 @@ const initSocket = (server) => {
         console.error("Error saving message:", error);
       }
     });
+
+    socket.on("sendAssignment", async (assignmentData) => {
+      const { recruiterId, studentId, internshipId, assignmentDetails, type } =
+        assignmentData;
+    
+      try {
+        // Get or create the chat room for the given recruiter, student, and internship
+        const chatRoom = await createOrGetChatRoom(recruiterId, studentId, internshipId);
+    
+        // Create a new message with assignment details
+        const newAssignment = new Message({
+          chatRoomId: chatRoom._id,
+          senderId: recruiterId,  // The sender is the recruiter
+          senderType: "Recruiter",
+          receiverId: studentId,  // The receiver is the student
+          receiverType: "Student",
+          messageContent: '',  // No normal message content for assignments
+          isAssignment: true,  // Flag to indicate this is an assignment
+          assignmentDetails: {
+            description: assignmentDetails.description,
+            deadline: assignmentDetails.deadline,
+          },
+        });
+    
+        // Save the assignment message in the database
+        await newAssignment.save();
+        console.log(`Assignment sent by Recruiter`);
+    
+        const messageWithInternshipId = {
+          ...newAssignment.toObject(),  // Converts Mongoose model to a plain object
+          internshipId,  // Attach the internshipId field
+        };
+    
+        // Emit the assignment using the same `receiveMessages` event
+        console.log("before emitting message with assignment");
+    
+        // Emit the message (assignment) to the student using the same event
+        const receiverId = recruiterId;  // For this case, student is always the receiver
+        socket
+          .to(chatRoom._id.toString())
+          .emit(
+            `receiveMessages_${receiverId}_${internshipId}`,
+            messageWithInternshipId
+          );
+    
+        console.log("after emitting message with assignment");
+      } catch (error) {
+        console.error("Error sending assignment:", error);
+      }
+    });
+
+    
   });
 
   return io;
