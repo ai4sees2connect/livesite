@@ -56,8 +56,7 @@ const SubmitAssignment = ({ isOpen, onClose, onSubmit,msgId }) => {
           'Content-Type': 'multipart/form-data', // Important for file uploads
         },
       });
-      alert('Files uploaded succesfully')
-      
+      console.log('this is the new file',response.data);
       return response.data; 
       
     } catch (error) {

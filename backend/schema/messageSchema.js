@@ -55,12 +55,13 @@ const messageSchema = new mongoose.Schema({
       {
         fileName: { type: String },
         fileUrl: { type: String },
-        fileSize: { type: Number },
-        fileType: { type: String },
+        fileSize: { type: String },
+        fileId: { type: String },
       },
     ],
     submissionLink: { type: String },
     additionalInfo: { type: String },
+    originalAssignmentId:{type:String},
     submittedAt: { type: Date, default: Date.now },
   },
 });

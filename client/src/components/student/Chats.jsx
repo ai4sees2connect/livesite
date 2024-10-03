@@ -6,7 +6,7 @@ import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
 import SubmitAssignment from './SubmitAssignment';
-import {FaCheckCircle} from 'react-icons/fa'
+import { FaCheckCircle, FaFileDownload, FaPaperclip } from 'react-icons/fa'
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -362,7 +362,7 @@ const Chats = () => {
 
   const { filteredInternships, unreadCount } = shortlistedInternships.reduce((acc, internship) => {
     const key = `${internship.recruiterId}_${internship.internshipId}`;
-
+    
     // Add to filtered internships based on the active filter
     if (activeFilter === 'all') {
       acc.filteredInternships.push(internship); // Add all internships
@@ -396,12 +396,13 @@ const Chats = () => {
       msgId, // The ID of the original assignment message sent by the recruiter
       files, // The array of uploaded files
       link, // The assignment submission link
-      additionalInfo // Additional info about the submission
+      additionalInfo, // Additional info about the submission
+      internshipId: selectedInternship
     };
 
     console.log(submissionPayload);
 
-    socket.emit('sendMessage', submissionPayload);
+    socket.emit('submitAssignment', submissionPayload);
 
     setChatHistories((prevHistories) => {
       const newMessage = {
@@ -417,8 +418,9 @@ const Chats = () => {
           })),
           submissionLink: link,
           additionalInfo: additionalInfo || '',
+          originalAssignmentId: msgId // Store the ID of the original assignment for reference
         },
-        originalAssignmentId: msgId // Store the ID of the original assignment for reference
+
       };
 
       console.log(newMessage);
@@ -436,7 +438,34 @@ const Chats = () => {
     closeAssignmentPopup();
   };
 
+  const downloadFile = async (fileId, fileName) => {
+    console.log('this is file id', fileId);
+    try {
+      // Fetch the file from the backend using axios
+      const response = await axios.get(`${api}/student/get-file/${fileId}`, {
+        responseType: 'blob', // Important: tell axios to handle the response as a Blob (binary data)
+      });
+  
+      // Create a Blob from the response data
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+  
+      // Create a temporary anchor element to trigger the download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;  // Use the original file name
+      document.body.appendChild(a);  // Append it to the DOM
+      a.click();  // Trigger the download
+      a.remove();  // Remove the anchor after download
+  
+      // Clean up the temporary URL
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading the file:', error);
+    }
+  };
 
+
+  console.log('these are chat histories', chatHistories);
 
   return (
     <div className="flex justify-end h-[80vh]  w-[100%]  mt-20 relative">
@@ -546,11 +575,14 @@ const Chats = () => {
                   {msg.isAssignment && msg.senderId === selectedRecruiter &&
                     <>
                       <div className=' break-words rounded-full w-fit max-w-max' >
-                        <h1 className='bg-blue-200 px-2 py-1 rounded-t-lg'>Assignment received</h1>
+                      <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
+                          <FaCheckCircle className='absolute top-4 left-4 text-white' />
+                          <h1 className='ml-8 text-white font-bold'>Assignment Received</h1>
+                        </div>
                         <div className={`py-2 px-3  inline-block  bg-gray-100 `} >
                           <p className='max-w-[400px] min-w-[150px]'>{msg.assignmentDetails.description}</p>
                           <p className=' font-semibold'>Submission deadline: {new Date(msg.assignmentDetails.deadline).toLocaleDateString('en-GB')}</p>
-                          <button onClick={openAssignmentPopup} className='bg-blue-500 rounded-lg px-2 py-1 mt-8 text-sm text-white'>Submit assignment</button>
+                          <button onClick={openAssignmentPopup} className='bg-blue-400 rounded-lg px-3 py-2 mt-8 text-sm text-white font-bold'>Submit assignment</button>
 
                           <p className={`text-xs font-semibold text-right text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
 
@@ -570,42 +602,45 @@ const Chats = () => {
 
                   {
                     msg.isAssignment && msg.senderId === studentId && (
-                      <div className=' break-words rounded-full w-fit max-w-max self-end'>
-                        <div className='flex space-x-2'>
-                        <FaCheckCircle/>
-                        <h1 className='bg-[rgb(189,243,255)] px-2 py-1 rounded-t-lg'>Assignment Submitted</h1>
+                      <div className='flex flex-col self-end items-end break-words max-w-[600px]'>
+                        <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
+                          <FaCheckCircle className='absolute top-4 left-4 text-white' />
+                          <h1 className='ml-8 text-white font-bold'>Assignment Submitted</h1>
                         </div>
-                        <div className={`py-2 px-3 inline-block bg-[rgb(234,252,255)]`}>
+                        <div className='bg-blue-100 p-4 rounded-b-lg shadow-lg w-full'>
                           {/* List of submitted files */}
-                          <div className='flex flex-wrap'>
+                          <div className='flex flex-col space-y-3 items-end'>
                             {msg.submissionDetails.submittedFiles.map((file, index) => (
-                              <div key={index} className='w-full flex justify-between py-1 bg-[rgb(189,243,255)]'>
-                                <span>{file.fileName}</span>
-                                <span>{file.fileSize}</span>
+
+
+                              <div key={index} className='flex justify-end items-center space-x-4 w-full py-1 border-b border-gray-400'>
+                                <span className='text-gray-600 hover:cursor-pointer hover:scale-105 duration-300'  onClick={() => downloadFile(file.fileId, file.fileName)}>
+                                  
+                                    <FaFileDownload />
+                                  
+                                </span>
+                                <span className='font-semibold'>{file.fileName}</span>
+                                <span className='text-gray-500'>{file.fileSize}</span>
                               </div>
+
                             ))}
                           </div>
 
                           {/* Submission link */}
                           {msg.submissionDetails.submissionLink && (
-                            <p className='mt-2'>
-                              <a
-                                href={msg.submissionDetails.submissionLink}
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                className='text-blue-600 underline'
-                              >
-                                View Submission
-                              </a>
-                            </p>
+                            <a href={msg.submissionDetails.submissionLink} target='_blank' className='mt-3 flex items-center space-x-4 justify-end border-b border-gray-400 font-semibold'>
+
+                              <FaPaperclip className='mx-2' />{msg.submissionDetails.submissionLink}
+
+                            </a>
                           )}
 
                           {/* Additional Information */}
                           {msg.submissionDetails.additionalInfo && (
-                            <p className='mt-2'>{msg.submissionDetails.additionalInfo}</p>
+                            <p className='mt-3 text-right text-gray-700'>{msg.submissionDetails.additionalInfo}</p>
                           )}
 
-                          <p className='text-xs font-semibold text-right text-gray-500'>
+                          <p className='text-xs font-semibold text-right text-gray-500 mt-2'>
                             {formatSentAt(msg.sentAt)}
                           </p>
                         </div>

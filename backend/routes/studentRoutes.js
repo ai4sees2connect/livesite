@@ -343,23 +343,27 @@ router.post('/file-to-url', upload.single('file'),async(req,res)=>{
 
 router.get('/get-file/:id', async (req, res) => {
   try {
-    const fileId = req.params.id;
+    const {id} = req.params;
 
     // Find the file in MongoDB by its ID
-    const file = await File.findById(fileId);
+    const file = await File.findById(id);
 
     if (!file) {
       return res.status(404).json({ message: 'File not found' });
     }
+    console.log('File data size:', file.data.length);
 
     // Set the correct content type for the file
     res.set({
-      'Content-Type': file.fileType, // Set the MIME type to the original file's type
+      'Content-Type': file.contentType, // Set the MIME type to the original file's type
       'Content-Disposition': `attachment; filename="${file.fileName}"`, // Optional: force download
+      'Content-Length': file.data.length,
+      'Access-Control-Expose-Headers':'Content-Disposition'
     });
+    // res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
 
     // Send the file data (buffer)
-    res.send(file.fileData);
+    res.send(file.data);
   } catch (error) {
     console.error('Error retrieving file:', error);
     res.status(500).json({ message: 'Error retrieving file' });

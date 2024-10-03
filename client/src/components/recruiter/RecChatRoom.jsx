@@ -11,7 +11,7 @@ import 'react-dropdown/style.css';
 // import Select from 'react-select';
 // import select from './utils/select.css'
 import './utils/Styles.css'
-import { FaSearch, FaNewspaper ,FaCaretRight } from 'react-icons/fa';
+import { FaSearch, FaNewspaper ,FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip } from 'react-icons/fa';
 import RecAssignment from './RecAssignment';
 
 const RecChatRoom = () => {
@@ -441,6 +441,34 @@ const RecChatRoom = () => {
     setShowAssignmentModal(!showAssignmentModal); // Toggles modal visibility
   };
 
+
+  const downloadFile = async (fileId, fileName) => {
+    console.log('this is file id', fileId);
+    try {
+      // Fetch the file from the backend using axios
+      const response = await axios.get(`${api}/student/get-file/${fileId}`, {
+        responseType: 'blob', // Important: tell axios to handle the response as a Blob (binary data)
+      });
+  
+      // Create a Blob from the response data
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+  
+      // Create a temporary anchor element to trigger the download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;  // Use the original file name
+      document.body.appendChild(a);  // Append it to the DOM
+      a.click();  // Trigger the download
+      a.remove();  // Remove the anchor after download
+  
+      // Clean up the temporary URL
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading the file:', error);
+    }
+  };
+
+
   console.log('these are all chats',chatHistories);
 
   return (
@@ -582,9 +610,12 @@ const RecChatRoom = () => {
                     {/* <p>{msg.senderId === recruiterId && msg.seenStatus && 'Seen'}</p> */}
 
                   </div>}
-                  {msg.isAssignment &&
+                  {msg.isAssignment && msg.senderId===recruiterId &&
                     <div className=' break-words rounded-fullbg-blue-400 self-end text-right  text-white' >
-                      <h1 className='bg-blue-400 px-2 py-1 rounded-t-lg'>Assignment sent</h1>
+                      <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
+                          <FaCheckCircle className='absolute top-4 left-4 text-white' />
+                          <h1 className='ml-8 text-white font-bold'>Assignment Sent</h1>
+                        </div>
                       <div className={`py-2 px-3  inline-block text-black bg-gray-100 `} >
                         <p className='max-w-[400px] min-w-[150px]'>{msg.assignmentDetails.description}</p>
                         <p className='text-blue-500'>Deadline- {new Date(msg.assignmentDetails.deadline).toLocaleDateString('en-GB')}</p>
@@ -594,6 +625,54 @@ const RecChatRoom = () => {
 
                       </div>
                     </div>
+                  }
+
+{
+                    msg.isAssignment && msg.senderId === selectedStudent && (
+                      <div className='flex flex-col break-words max-w-[600px]'>
+                        <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
+                          <FaCheckCircle className='absolute top-4 left-4 text-white' />
+                          <h1 className='ml-8 text-white font-bold'>Assignment Received</h1>
+                        </div>
+                        <div className='bg-blue-100 p-4 rounded-b-lg shadow-lg w-full'>
+                          {/* List of submitted files */}
+                          <div className='flex flex-col space-y-3 items-end'>
+                            {msg.submissionDetails.submittedFiles.map((file, index) => (
+
+
+                              <div key={index} className='flex justify-end items-center space-x-4 w-full py-1 border-b border-gray-400'>
+                                <span className='text-gray-600 hover:cursor-pointer hover:scale-105 duration-300'  onClick={() => downloadFile(file.fileId, file.fileName)}>
+                                  
+                                    <FaFileDownload />
+                                  
+                                </span>
+                                <span className='font-semibold'>{file.fileName}</span>
+                                <span className='text-gray-500'>{file.fileSize}</span>
+                              </div>
+
+                            ))}
+                          </div>
+
+                          {/* Submission link */}
+                          {msg.submissionDetails.submissionLink && (
+                            <a href={msg.submissionDetails.submissionLink} target='_blank' className='mt-3 flex items-center space-x-4 justify-end border-b border-gray-400 font-semibold'>
+
+                              <FaPaperclip className='mx-2' />{msg.submissionDetails.submissionLink}
+
+                            </a>
+                          )}
+
+                          {/* Additional Information */}
+                          {msg.submissionDetails.additionalInfo && (
+                            <p className='mt-3 text-right text-gray-700'>{msg.submissionDetails.additionalInfo}</p>
+                          )}
+
+                          <p className='text-xs font-semibold text-right text-gray-500 mt-2'>
+                            {formatSentAt(msg.sentAt)}
+                          </p>
+                        </div>
+                      </div>
+                    )
                   }
                 </React.Fragment>
               )

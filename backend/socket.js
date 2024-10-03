@@ -258,31 +258,56 @@ const initSocket = (server) => {
       }
     });
 
-    socket.on('submitAssignment', async (submissionPayload) => {
-      const { assignmentId, studentId, recruiterId,internshipId, submittedFiles, submissionLink, additionalInfo } = submissionPayload;
-      
+    socket.on('submitAssignment', async (submissionData) => {
       try {
-        const chatRoom = await createOrGetChatRoom(recruiterId, studentId, internshipId);
+        const { msgId, files, link, additionalInfo, internshipId } = submissionData;
 
-        // Save the assignment submission to the database
-        const newSubmission = new AssignmentSubmission({
-          assignmentId,
-          studentId,
-          files,
-          submissionLink,
-          additionalInfo,
-          submittedAt: new Date(),
-        });
-  
-        await newSubmission.save();
-  
-        // Optionally notify the recruiter about the new submission
-        io.to(chatRoom._id.toString()).emit('newAssignmentSubmission', { assignmentId, studentId });
+        const originalMessage = await Message.findById(msgId);
+        if(!originalMessage){
+          console.error("originalMessage not found");
+          return;
+        }
         
-        console.log('Assignment submitted successfully:', newSubmission);
-      } catch (error) {
-        console.error('Error submitting assignment:', error.message);
-        // You might want to handle errors here, but without a response callback, you may want to log it.
+        // Process and map file details from the submissionData
+        const submittedFiles = files.map(file => ({
+          fileName: file.fileName,
+          fileSize: (file.fileSize / 1024).toFixed(2) + ' KB', // Already have the file size
+          fileUrl: file.fileUrl, // Use the file URL from your file upload response
+          fileId: file.fileId, // Store the fileId for future reference
+        }));
+    
+        // Create a new message for the assignment submission
+        const newSubmission = new Message({
+          senderId: originalMessage.receiverId, // Assuming userId is attached to the socket
+          senderType:'Student',
+          receiverId: originalMessage.senderId, 
+          receiverType:'Recruiter',
+          chatRoomId: originalMessage.chatRoomId, // The ID of the original assignment message
+          messageContent: 'Assignment submission',
+          isAssignment: true,
+          submissionDetails: {
+            submittedFiles, // Array of submitted files with URLs and IDs
+            submissionLink: link, // URL link provided by the student
+            additionalInfo: additionalInfo || '', // Additional submission information
+            originalAssignmentId: msgId // Reference to the original assignment
+          }
+        });
+    
+        // Save the message to the database
+        await newSubmission.save();
+
+        const submissionWithInternshipId = {
+          ...newSubmission.toObject(),  // Converts Mongoose model to a plain object
+          internshipId,  // Attach the internshipId field
+        };
+    
+        const receiverId = originalMessage.receiverId;
+        // Emit the new message to the chat room so that the frontend can update
+        socket.to(originalMessage.chatRoomId.toString()).emit(`receiveMessages_${receiverId}_${internshipId}`, submissionWithInternshipId);
+    
+      } catch (err) {
+        console.error('Error submitting assignment:', err);
+        socket.emit('error', { message: 'Failed to submit assignment.' });
       }
     });
 
