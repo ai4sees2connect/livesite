@@ -130,20 +130,25 @@ const initSocket = (server) => {
           );
 
           // Find the last message in the conversation for the given internship
-          const lastMessage = await Message.findOne({
+          const unseenMessages  = await Message.find({
             senderId,
             receiverId,
             chatRoomId: new mongoose.Types.ObjectId(chatRoom._id),
-          }).sort({ sentAt: -1 }); // Sort by sentAt to get the latest message
+            seenStatus: false,
+          }); // Sort by sentAt to get the latest message
 
-          if (lastMessage) {
-            // Update the seenStatus of the last message to true
-            lastMessage.seenStatus = true;
-            await lastMessage.save();
-            console.log(
-              "status updated for this message",
-              lastMessage.messageContent
-            );
+          if (unseenMessages.length > 0) {
+            // Update the seenStatus of all unseen messages to true
+            for (const message of unseenMessages) {
+              message.seenStatus = true;
+              await message.save();
+              console.log(
+                "status updated for this message",
+                message.messageContent
+              );
+            }
+
+          
 
             // Optionally, emit an event back to confirm the update
             socket.emit("messageSeenUpdate", {

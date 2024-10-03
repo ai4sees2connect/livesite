@@ -11,8 +11,9 @@ import 'react-dropdown/style.css';
 // import Select from 'react-select';
 // import select from './utils/select.css'
 import './utils/Styles.css'
-import { FaSearch, FaNewspaper ,FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip } from 'react-icons/fa';
+import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip } from 'react-icons/fa';
 import RecAssignment from './RecAssignment';
+import { MdDoneAll } from 'react-icons/md';
 
 const RecChatRoom = () => {
   const { recruiterId } = useParams();
@@ -326,7 +327,7 @@ const RecChatRoom = () => {
         },
       };
 
-      console.log('assignment data',assignmentData);
+      console.log('assignment data', assignmentData);
       socket.emit('sendAssignment', assignmentData);
 
       setChatHistories((prevHistories) => ({
@@ -449,10 +450,10 @@ const RecChatRoom = () => {
       const response = await axios.get(`${api}/student/get-file/${fileId}`, {
         responseType: 'blob', // Important: tell axios to handle the response as a Blob (binary data)
       });
-  
+
       // Create a Blob from the response data
       const url = window.URL.createObjectURL(new Blob([response.data]));
-  
+
       // Create a temporary anchor element to trigger the download
       const a = document.createElement('a');
       a.href = url;
@@ -460,7 +461,7 @@ const RecChatRoom = () => {
       document.body.appendChild(a);  // Append it to the DOM
       a.click();  // Trigger the download
       a.remove();  // Remove the anchor after download
-  
+
       // Clean up the temporary URL
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -469,7 +470,7 @@ const RecChatRoom = () => {
   };
 
 
-  console.log('these are all chats',chatHistories);
+  console.log('these are all chats', chatHistories);
 
   return (
     <div className="flex justify-end h-[80vh]  mt-20 relative w-[100%]">
@@ -555,7 +556,7 @@ const RecChatRoom = () => {
                   {lastMessage && <p className="text-md text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === recruiterId ? 'You:  ' : ''}</span>
                     <span className={`${lastMessage.senderId !== recruiterId && !latestMessagesSeenStatus[`${studentId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-500'} text-md`}>
-                      {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
+                      {lastMessage ? (lastMessage.messageContent.slice(0, 30) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
 
                   </p>}
@@ -569,17 +570,17 @@ const RecChatRoom = () => {
       </div>
 
       {/* Right Column - Chat Interface */}
-      <div className="w-[65%] p-4 flex flex-col  mx-3 ">
+      <div className="w-[65%] p-4 flex flex-col  mx-3 h-[84vh]">
         <div className='w-full h-[10%]  mb-2'>
           <p className='font-semibold capitalize text-2xl'>{firstName} {lastName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
           <div className='flex space-x-5 relative'>
             <p>{internshipName}</p>
             <Link to={`/recruiter/${selectedInternship}/application-details/${selectedStudent}`} target="_blank"
-              rel="noopener noreferrer" className='flex items-center space-x-4 text-blue-500 font-semibold'>View application<FaCaretRight className='mt-1 mx-1'/></Link>
-              <div className='space-x-4 absolute right-5 font-semibold'>
-                <button className='bg-green-300 text-white rounded-lg px-4 py-1 hover:scale-105 duration-300 hover:bg-green-500'>Hire</button>
-                <button className='bg-red-300 text-white rounded-lg px-2 py-1 hover:scale-105 duration-300 hover:bg-red-500'>Reject</button>
-              </div>
+              rel="noopener noreferrer" className='flex items-center space-x-4 text-blue-500 font-semibold'>View application<FaCaretRight className='mt-1 mx-1' /></Link>
+            <div className='space-x-4 absolute right-5 font-semibold'>
+              <button className='bg-green-300 text-white rounded-lg px-4 py-1 hover:scale-105 duration-300 hover:bg-green-500'>Hire</button>
+              <button className='bg-red-300 text-white rounded-lg px-2 py-1 hover:scale-105 duration-300 hover:bg-red-500'>Reject</button>
+            </div>
           </div>
         </div>
         <div className="flex-grow bg-white mt-4 p-4 rounded-lg shadow-lg overflow-y-auto border-2">
@@ -602,32 +603,39 @@ const RecChatRoom = () => {
                   )}
 
                   {!msg.isAssignment && <div
-                    className={`py-2 px-3 rounded inline-block break-words ${msg.senderId === recruiterId ? 'bg-blue-400 self-end text-right  text-white ' : 'bg-gray-100 '} `}
+                    className={`py-2 px-3 rounded inline-block break-words ${msg.senderId === recruiterId ? 'bg-[#DBEAFE] self-end text-right  ' : 'bg-gray-100 '} `}
                     style={{ maxWidth: 'fit-content' }}
                   >
                     <p className='max-w-[400px] min-w-[70px]'>{msg.messageContent}</p>
-                    <p className={`text-xs font-semibold text-right ${msg.senderId === recruiterId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
+                    <p className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right  text-gray-500`}>
+                      <span>{formatSentAt(msg.sentAt)}</span>
+                      {msg.senderId === recruiterId && <span><MdDoneAll className={`w-5 h-5 ${msg.seenStatus && 'text-blue-500'}`} /></span>}
+                    </p>
                     {/* <p>{msg.senderId === recruiterId && msg.seenStatus && 'Seen'}</p> */}
 
                   </div>}
-                  {msg.isAssignment && msg.senderId===recruiterId &&
+
+                  {msg.isAssignment && msg.senderId === recruiterId &&
                     <div className=' break-words rounded-fullbg-blue-400 self-end text-right  text-white' >
                       <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
-                          <FaCheckCircle className='absolute top-4 left-4 text-white' />
-                          <h1 className='ml-8 text-white font-bold'>Assignment Sent</h1>
-                        </div>
+                        <FaCheckCircle className='absolute top-4 left-4 text-white' />
+                        <h1 className='ml-8 text-white font-bold'>Assignment Sent</h1>
+                      </div>
                       <div className={`py-2 px-3  inline-block text-black bg-gray-100 `} >
                         <p className='max-w-[400px] min-w-[150px]'>{msg.assignmentDetails.description}</p>
-                        <p className='text-blue-500'>Deadline- {new Date(msg.assignmentDetails.deadline).toLocaleDateString('en-GB')}</p>
+                        <p className='text-blue-500 font-semibold mt-5'>Deadline- {new Date(msg.assignmentDetails.deadline).toLocaleDateString('en-GB')}</p>
 
-                        <p className={`text-xs font-semibold text-right text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
-                        
+                        <p className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right  text-gray-500`}>
+                          <span>{formatSentAt(msg.sentAt)}</span>
+                          {msg.senderId === recruiterId && <span><MdDoneAll className={`w-5 h-5 ${msg.seenStatus && 'text-blue-500'}`} /></span>}
+                        </p>
+
 
                       </div>
                     </div>
                   }
 
-{
+                  {
                     msg.isAssignment && msg.senderId === selectedStudent && (
                       <div className='flex flex-col break-words max-w-[600px]'>
                         <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
@@ -641,10 +649,10 @@ const RecChatRoom = () => {
 
 
                               <div key={index} className='flex justify-end items-center space-x-4 w-full py-1 border-b border-gray-400'>
-                                <span className='text-gray-600 hover:cursor-pointer hover:scale-105 duration-300'  onClick={() => downloadFile(file.fileId, file.fileName)}>
-                                  
-                                    <FaFileDownload />
-                                  
+                                <span className='text-gray-600 hover:cursor-pointer hover:scale-105 duration-300' onClick={() => downloadFile(file.fileId, file.fileName)}>
+
+                                  <FaFileDownload />
+
                                 </span>
                                 <span className='font-semibold'>{file.fileName}</span>
                                 <span className='text-gray-500'>{file.fileSize}</span>
@@ -683,36 +691,36 @@ const RecChatRoom = () => {
 
         {/* Chat input */}
         <div className="mt-4 flex flex-col space-y-4">
-        <button
-        onClick={toggleAssignmentModal}
-        className="bg-red-500 text-white w-[20%] px-2 py-1 rounded-lg hover:scale-105 duration-300"
-      >
-        Send Assignment
-      </button>
-
-      {showAssignmentModal && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[50%] h-[60%]">
-            <RecAssignment onClose={toggleAssignmentModal} sendAssignment={sendAssignment} /> {/* Pass onClose to hide modal */}
-          </div>
-        </div>
-      )}
-
-
-      <div className='flex space-x-5'>
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            className="w-full p-2 border-2 rounded-lg"
-            placeholder="Type a message..."
-          />
-          <button disabled={newMessage === '' ? true : false}
-            className={`bg-blue-500 text-white border px-9 py-1 rounded-lg ${newMessage === '' && 'bg-gray-300'}`}
-            onClick={sendMessage}
+          <button
+            onClick={toggleAssignmentModal}
+            className="bg-red-500 text-white w-[20%] px-2 py-1 rounded-lg hover:scale-105 duration-300"
           >
-            Send
+            Send Assignment
           </button>
+
+          {showAssignmentModal && (
+            <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[50%] h-[60%]">
+                <RecAssignment onClose={toggleAssignmentModal} sendAssignment={sendAssignment} /> {/* Pass onClose to hide modal */}
+              </div>
+            </div>
+          )}
+
+
+          <div className='flex space-x-5'>
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              className="w-full p-2 border-2 rounded-lg"
+              placeholder="Type a message..."
+            />
+            <button disabled={newMessage === '' ? true : false}
+              className={`bg-blue-500 text-white border px-9 py-1 rounded-lg ${newMessage === '' && 'bg-gray-300'}`}
+              onClick={sendMessage}
+            >
+              Send
+            </button>
           </div>
         </div>
       </div>

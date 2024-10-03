@@ -6,7 +6,8 @@ import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
 import SubmitAssignment from './SubmitAssignment';
-import { FaCheckCircle, FaFileDownload, FaPaperclip } from 'react-icons/fa'
+import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCheckDouble, } from 'react-icons/fa'
+import { MdDoneAll } from 'react-icons/md';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -274,6 +275,8 @@ const Chats = () => {
       type: 'Student'
     });
 
+
+
     socket.on('messageSeenUpdate', ({ studentId, internshipId, recruiterId, type }) => {
       // Construct the key based on the type of user (Recruiter or Student)
       let key;
@@ -362,7 +365,7 @@ const Chats = () => {
 
   const { filteredInternships, unreadCount } = shortlistedInternships.reduce((acc, internship) => {
     const key = `${internship.recruiterId}_${internship.internshipId}`;
-    
+
     // Add to filtered internships based on the active filter
     if (activeFilter === 'all') {
       acc.filteredInternships.push(internship); // Add all internships
@@ -423,7 +426,7 @@ const Chats = () => {
 
       };
 
-      console.log(newMessage);
+      // console.log(newMessage);
 
       return {
         ...prevHistories,
@@ -445,10 +448,10 @@ const Chats = () => {
       const response = await axios.get(`${api}/student/get-file/${fileId}`, {
         responseType: 'blob', // Important: tell axios to handle the response as a Blob (binary data)
       });
-  
+
       // Create a Blob from the response data
       const url = window.URL.createObjectURL(new Blob([response.data]));
-  
+
       // Create a temporary anchor element to trigger the download
       const a = document.createElement('a');
       a.href = url;
@@ -456,7 +459,7 @@ const Chats = () => {
       document.body.appendChild(a);  // Append it to the DOM
       a.click();  // Trigger the download
       a.remove();  // Remove the anchor after download
-  
+
       // Clean up the temporary URL
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -470,7 +473,7 @@ const Chats = () => {
   return (
     <div className="flex justify-end h-[80vh]  w-[100%]  mt-20 relative">
       {/* Left Column - Shortlisted Students */}
-      <div className="fixed flex flex-col items-center border border-black left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[70vh]">
+      <div className="fixed flex flex-col items-center left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[80vh]">
         <h2 className="text-xl font-semibold mb-4">Shortlisted Internships</h2>
         <div className=" inline-block space-x-4  border-2 rounded-full  mb-4">
           <button
@@ -519,7 +522,7 @@ const Chats = () => {
                   {lastMessage && <p className="text-sm text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
                     <span className={`${lastMessage.senderId !== studentId && !latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-500'} text-md`}>
-                      {lastMessage ? (lastMessage.messageContent.slice(0, 40) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
+                      {lastMessage ? (lastMessage.messageContent.slice(0, 30) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
                   </p>}
 
@@ -532,7 +535,7 @@ const Chats = () => {
       </div>
 
       {/* Right Column - Chat Interface */}
-      <div className="w-[65%] p-4 flex flex-col mx-3">
+      <div className="w-[65%] p-4 flex flex-col mx-3 h-[84vh]">
 
         <div className='w-full h-[10%]  mb-2'>
           <p className='font-semibold capitalize text-2xl'>{companyName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
@@ -563,11 +566,14 @@ const Chats = () => {
 
                     <div
                       key={index}
-                      className={`p-2 rounded  inline-block break-words  ${msg.senderId === studentId ? 'bg-blue-400 self-end text-white' : 'bg-gray-100'} `}
+                      className={`p-2 rounded  inline-block break-words  ${msg.senderId === studentId ? 'bg-[#DBEAFE] self-end text-right' : 'bg-gray-100'} `}
                       style={{ maxWidth: 'fit-content' }}
                     >
                       <p className='max-w-[400px]'>{msg.messageContent}</p>
-                      <p className={`text-xs font-semibold text-right ${msg.senderId === studentId && 'text-white'} text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
+                      <p className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right text-gray-500`}>
+                        <span>{formatSentAt(msg.sentAt)}</span>
+                        {msg.senderId === studentId && <span><MdDoneAll className={`w-5 h-5 ${msg.seenStatus && 'text-blue-500'}`} /></span>}
+                      </p>
                     </div>
 
                   }
@@ -575,16 +581,19 @@ const Chats = () => {
                   {msg.isAssignment && msg.senderId === selectedRecruiter &&
                     <>
                       <div className=' break-words rounded-full w-fit max-w-max' >
-                      <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
+                        <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
                           <FaCheckCircle className='absolute top-4 left-4 text-white' />
                           <h1 className='ml-8 text-white font-bold'>Assignment Received</h1>
                         </div>
                         <div className={`py-2 px-3  inline-block  bg-gray-100 `} >
                           <p className='max-w-[400px] min-w-[150px]'>{msg.assignmentDetails.description}</p>
-                          <p className=' font-semibold'>Submission deadline: {new Date(msg.assignmentDetails.deadline).toLocaleDateString('en-GB')}</p>
+                          <p className=' font-semibold mt-5 text-red-500'>Submission deadline: {new Date(msg.assignmentDetails.deadline).toLocaleDateString('en-GB')}</p>
                           <button onClick={openAssignmentPopup} className='bg-blue-400 rounded-lg px-3 py-2 mt-8 text-sm text-white font-bold'>Submit assignment</button>
 
-                          <p className={`text-xs font-semibold text-right text-gray-500`}>{formatSentAt(msg.sentAt)}</p>
+                          <p className={`text-xs font-semibold text-right text-gray-500`}>
+                            {formatSentAt(msg.sentAt)}
+                          
+                          </p>
 
 
                         </div>
@@ -614,10 +623,10 @@ const Chats = () => {
 
 
                               <div key={index} className='flex justify-end items-center space-x-4 w-full py-1 border-b border-gray-400'>
-                                <span className='text-gray-600 hover:cursor-pointer hover:scale-105 duration-300'  onClick={() => downloadFile(file.fileId, file.fileName)}>
-                                  
-                                    <FaFileDownload />
-                                  
+                                <span className='text-gray-600 hover:cursor-pointer hover:scale-105 duration-300' onClick={() => downloadFile(file.fileId, file.fileName)}>
+
+                                  <FaFileDownload />
+
                                 </span>
                                 <span className='font-semibold'>{file.fileName}</span>
                                 <span className='text-gray-500'>{file.fileSize}</span>
@@ -640,9 +649,10 @@ const Chats = () => {
                             <p className='mt-3 text-right text-gray-700'>{msg.submissionDetails.additionalInfo}</p>
                           )}
 
-                          <p className='text-xs font-semibold text-right text-gray-500 mt-2'>
-                            {formatSentAt(msg.sentAt)}
-                          </p>
+                          <div className='flex space-x-2 items-center justify-end text-xs font-semibold text-right text-gray-500 mt-2 '>
+                            <span>{formatSentAt(msg.sentAt)}</span>
+                            {msg.senderId === studentId && <span><MdDoneAll className={`w-5 h-5 ${msg.seenStatus && 'text-blue-500'}`} /></span>}
+                          </div>
                         </div>
                       </div>
                     )
