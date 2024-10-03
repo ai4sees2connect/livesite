@@ -6,7 +6,7 @@ import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
 import SubmitAssignment from './SubmitAssignment';
-import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCheckDouble, } from 'react-icons/fa'
+import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots,FaEllipsisV } from 'react-icons/fa'
 import { MdDoneAll } from 'react-icons/md';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -35,6 +35,7 @@ const Chats = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({});
   const [isPopupOpen, setPopupOpen] = useState(false);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
 
   useEffect(() => {
@@ -535,14 +536,24 @@ const Chats = () => {
       </div>
 
       {/* Right Column - Chat Interface */}
-      <div className="w-[65%] p-4 flex flex-col mx-3 h-[84vh]">
+      <div className="w-[59%] p-4 flex flex-col mx-3 h-[84vh] mr-32 ">
 
-        <div className='w-full h-[10%]  mb-2'>
+        <div className='w-full h-[10%]  relative border-b shadow-md'>
           <p className='font-semibold capitalize text-2xl'>{companyName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
           <p>{internshipName}</p>
+          <div className='absolute right-10 top-7 hover:cursor-pointer' onClick={()=>setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV/></div>
         </div>
+        
+        {isOptionsOpen && (
+        <div className='absolute right-0 top-16 bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500]'>
+          <div className='hover:text-blue-400 p-2 cursor-pointer' >Mark as important</div>
+          <div className='hover:text-blue-400 p-2 cursor-pointer'>View internship details</div>
+          <div className='hover:text-blue-400 p-2 cursor-pointer'>Review application</div>
+          <div className='hover:text-blue-400 p-2 cursor-pointer'>Block chat</div>
+        </div>
+      )}
 
-        <div className="flex-grow  mt-4 bg-white p-4 rounded-lg shadow-lg overflow-y-auto border-2">
+        <div className="flex-grow mt-0 bg-white p-4 rounded-lg shadow-lg overflow-y-auto border-2">
           {/* Chat messages */}
           <div className="flex flex-col space-y-4 overflow-y-auto">
             {chatHistories[`${selectedRecruiter}_${selectedInternship}`]?.map((msg, index, arr) => {
