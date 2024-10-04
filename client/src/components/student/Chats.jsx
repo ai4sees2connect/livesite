@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, } from 'react'
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify'
 import api from '../common/server_url';
@@ -8,6 +8,7 @@ import { io } from 'socket.io-client';
 import SubmitAssignment from './SubmitAssignment';
 import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots,FaEllipsisV, FaStar } from 'react-icons/fa'
 import { MdDoneAll } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -36,6 +37,7 @@ const Chats = () => {
   const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({});
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const navigate= useNavigate();
  
 
 
@@ -520,6 +522,10 @@ const Chats = () => {
 
   }
 
+  const handleViewDetails=()=>{
+    navigate(`/student/myApplications/${studentId}`)
+  }
+
 
   console.log('these are chat histories', chatHistories);
 
@@ -600,15 +606,14 @@ const Chats = () => {
         <div className='w-full h-[10%]  relative border-b shadow-md'>
           <p className='font-semibold capitalize text-2xl'>{companyName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
           <p>{internshipName}</p>
-          <div className='absolute right-10 top-7 hover:cursor-pointer' onClick={()=>setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV/></div>
+          <div className='absolute right-10 top-7 hover:cursor-pointer hover:text-blue-400' onClick={()=>setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV/></div>
         </div>
         
         {isOptionsOpen && (
         <div className='absolute right-5 top-[70px] bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10'>
           <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleMarkAsImportant}>Mark as important</div>
           {shortlistedInternships.map(intern=> intern.internshipId===selectedInternship && intern.importantForStudent) && (<div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleRemoveImportant}>Remove from important</div>)}
-          <div className='hover:text-blue-400 p-2 cursor-pointer' >View internship details</div>
-          <div className='hover:text-blue-400 p-2 cursor-pointer'>Review application</div>
+          <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleViewDetails}>View internship details</div>
           <div className='hover:text-blue-400 p-2 cursor-pointer'>Block chat</div>
         </div>
       )}

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import api from '../common/server_url';
 import { io } from 'socket.io-client';
 import TimeAgo from '../common/TimeAgo'
@@ -37,6 +37,7 @@ const RecChatRoom = () => {
   const [searchName, setSearchName] = useState('');
   const [showAssignmentModal, setShowAssignmentModal] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const navigate= useNavigate();
 
 
 
@@ -522,6 +523,11 @@ const RecChatRoom = () => {
 
   }
 
+  const handleViewDetails=()=>{
+    setIsOptionsOpen(false);
+    navigate(`/recruiter/${selectedInternship}/application-details/${selectedStudent}`)
+  }
+
 
   console.log('these are all chats', chatHistories);
 
@@ -647,8 +653,8 @@ const RecChatRoom = () => {
                 <div className='absolute right-0 top-[48px] bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10'>
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleMarkAsImportant}>Mark as important</div>
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleRemoveImportant}>Remove from important</div>
-                  <div className='hover:text-blue-400 p-2 cursor-pointer'>View internship details</div>
-                  <div className='hover:text-blue-400 p-2 cursor-pointer'>Review application</div>
+                  <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleViewDetails}>Review application</div>
+                  
                   <div className='hover:text-blue-400 p-2 cursor-pointer'>Block chat</div>
                 </div>
               )}
