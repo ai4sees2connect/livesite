@@ -6,7 +6,7 @@ import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
 import SubmitAssignment from './SubmitAssignment';
-import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots,FaEllipsisV, FaStar, FaBolt } from 'react-icons/fa'
+import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots,FaEllipsisV, FaStar, FaBolt,FaExclamation } from 'react-icons/fa'
 import { MdDoneAll } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -526,6 +526,23 @@ const Chats = () => {
     navigate(`/student/myApplications/${studentId}`)
   }
 
+  useEffect(() => {
+    if(socket){
+    socket.on("studentStatusChangedAck",({studentStatus,recruiterId,internshipId})=>{
+    setShortlistedInternships.map(prevInterns=>{
+      prevInterns.map(intern=>{
+        if(intern.internshipId===internshipId){
+          return{...intern,studentStatus}
+        }else{
+          return intern
+        }
+      })
+    })
+    })
+  }
+  }, [socket])
+  
+
 
   console.log('these are chat histories', chatHistories);
 
@@ -595,7 +612,17 @@ const Chats = () => {
                   {studentStatus==='inTouch'&& 
                   <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-blue-100 rounded-md '>
                     <span>In-touch</span>
-                    <span><FaBolt className='w-3 h-3 text-blue-400 mt-1'/></span>
+                    <span><FaBolt className='w-3 h-3 text-blue-400 '/></span>
+                  </div>}
+                  {studentStatus==='notHired'&& 
+                  <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-yellow-100 rounded-md '>
+                    <span>Not selected</span>
+                    <span><FaExclamation className='w-3 h-3 text-yellow-400 '/></span>
+                  </div>}
+                  {studentStatus==='Hired'&& 
+                  <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-green-100 rounded-md '>
+                    <span>Hired</span>
+                    <span><FaBolt className='w-3 h-3 text-green-400'/></span>
                   </div>}
 
 

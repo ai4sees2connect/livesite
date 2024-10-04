@@ -11,7 +11,7 @@ import 'react-dropdown/style.css';
 // import Select from 'react-select';
 // import select from './utils/select.css'
 import './utils/Styles.css'
-import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip, FaStar, FaEllipsisV, FaBolt, FaClock } from 'react-icons/fa';
+import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip, FaStar, FaEllipsisV, FaBolt, FaClock, FaTimes } from 'react-icons/fa';
 import RecAssignment from './RecAssignment';
 import { MdDoneAll } from 'react-icons/md';
 import { toast } from 'react-toastify';
@@ -529,6 +529,26 @@ const RecChatRoom = () => {
     navigate(`/recruiter/${selectedInternship}/application-details/${selectedStudent}`)
   }
 
+  const handleStatusChange=(value)=>{
+    let valueToChange;
+    if(value==='Hire'){
+      valueToChange='Hired'
+    }else{
+      valueToChange='notHired'
+    }
+    socket.emit('studentStatusChanged',{valueToChange,studentId:selectedStudent, recruiterId,internshipId:selectedInternship});
+
+    setShortlistedStudents((prevStudents) =>
+      prevStudents.map((student) => {
+        if (student.internshipId === selectedInternship){
+          return {...student,studentStatus:valueToChange}
+        }else{
+          return student
+        }
+      }
+      ))
+  }
+
 
   console.log('these are all chats', chatHistories);
 
@@ -635,6 +655,18 @@ const RecChatRoom = () => {
                     <span><FaClock className='w-3 h-3 text-gray-500'/></span>
                   </div>}
 
+                  {studentStatus==='notHired'&& 
+                  <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm border rounded-md bg-red-100'>
+                    <span>Rejected</span>
+                    <span><FaTimes className='w-3 h-3 text-red-400'/></span>
+                  </div>}
+
+                  {studentStatus==='Hired'&& 
+                  <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm border rounded-md bg-green-100'>
+                    <span>Hired</span>
+                    <span><FaBolt className='w-3 h-3 text-green-400'/></span>
+                  </div>}
+
                 </div>
               </div>
             );
@@ -652,8 +684,11 @@ const RecChatRoom = () => {
             <Link to={`/recruiter/${selectedInternship}/application-details/${selectedStudent}`} target="_blank"
               rel="noopener noreferrer" className='flex items-center space-x-4 text-blue-500 font-semibold'>View application<FaCaretRight className='mt-1 mx-1' /></Link>
             <div className='space-x-4 absolute right-5 font-semibold'>
-              <button className='bg-green-400 text-white rounded-lg px-4 py-1 hover:scale-105 duration-300 hover:bg-green-500'>Hire</button>
-              <button className='bg-red-400 text-white rounded-lg px-2 py-1 hover:scale-105 duration-300 hover:bg-red-500'>Reject</button>
+
+              <button className='bg-green-400 text-white rounded-lg px-4 py-1 hover:scale-105 duration-300 hover:bg-green-500' onClick={()=>handleStatusChange('Hire')}>Hire</button>
+
+              <button className='bg-red-400 text-white rounded-lg px-2 py-1 hover:scale-105 duration-300 hover:bg-red-500' onClick={()=>handleStatusChange('Reject')}>Reject</button>
+
               <button className='hover:cursor-pointer' onClick={() => setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV /></button>
 
               {isOptionsOpen && (

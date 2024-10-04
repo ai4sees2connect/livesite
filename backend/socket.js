@@ -235,6 +235,32 @@ const initSocket = (server) => {
       }
     });
 
+    socket.on("studentStatusChanged",async({studentId, recruiterId,internshipId, valueToChange})=>{
+      try {
+        
+        const chatRoomFromFunc = await createOrGetChatRoom(
+          recruiterId,
+          studentId,
+          internshipId
+        );
+
+        if (!chatRoomFromFunc) {
+          throw new Error("Chat room not found");
+        }
+
+        const chatRoom = await ChatRoom.findByIdAndUpdate(
+          chatRoomFromFunc._id,
+          { $set: {studentStatus:valueToChange}},
+          { new: true }
+        );
+
+        socket.to( chatRoomFromFunc._id.toString()).emit("studentStatusChangedAck",{studentStatus:valueToChange,recruiterId,internshipId})
+
+      } catch (error) {
+        
+      }
+    })
+
     // Move sendMessageRecruiter listener outside
     socket.on("sendMessage", async (messageData) => {
       const { recruiterId, studentId, message, internshipId, type } =
