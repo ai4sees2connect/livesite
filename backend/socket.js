@@ -2,6 +2,7 @@ const { Server } = require("socket.io");
 const createOrGetChatRoom = require("./utils/chatRoomCreation");
 const Message = require("./schema/messageSchema");
 const mongoose = require("mongoose");
+const ChatRoom = require("./schema/chatRoomSchema");
 
 const initSocket = (server) => {
   const io = new Server(server, {
@@ -161,6 +162,78 @@ const initSocket = (server) => {
         }
       }
     );
+
+    socket.on("markAsImportant", async ({ studentId, recruiterId,internshipId, type }) => {
+      try {
+        // Determine the field to update based on the user type
+        let updateField;
+    
+        if (type === "Student") {
+          updateField = { "importantForStudent": true };
+        } else if (type === "Recruiter") {
+          updateField = { "importantForRecruiter": true };
+        } else {
+          throw new Error("Invalid user type");
+        }
+    
+        // Update the chat room to mark it as important for the respective user
+        const chatRoomFromFunc = await createOrGetChatRoom(
+          recruiterId,
+          studentId,
+          internshipId
+        );
+    
+        if (!chatRoomFromFunc) {
+          throw new Error("Chat room not found");
+        }
+        
+        const chatRoom = await ChatRoom.findByIdAndUpdate(
+          chatRoomFromFunc._id,
+          { $set: updateField },
+          { new: true }
+        );
+      
+      } catch (error) {
+        console.error("Error marking chat room as important:", error);
+        socket.emit("error", { message: "Failed to mark chat room as important" });
+      }
+    });
+
+    socket.on("removeAsImportant", async ({ studentId, recruiterId,internshipId, type }) => {
+      try {
+        // Determine the field to update based on the user type
+        let updateField;
+    
+        if (type === "Student") {
+          updateField = { "importantForStudent": false };
+        } else if (type === "Recruiter") {
+          updateField = { "importantForRecruiter": false };
+        } else {
+          throw new Error("Invalid user type");
+        }
+    
+        // Update the chat room to mark it as important for the respective user
+        const chatRoomFromFunc = await createOrGetChatRoom(
+          recruiterId,
+          studentId,
+          internshipId
+        );
+    
+        if (!chatRoomFromFunc) {
+          throw new Error("Chat room not found");
+        }
+        
+        const chatRoom = await ChatRoom.findByIdAndUpdate(
+          chatRoomFromFunc._id,
+          { $set: updateField },
+          { new: true }
+        );
+      
+      } catch (error) {
+        console.error("Error marking chat room as important:", error);
+        socket.emit("error", { message: "Failed to mark chat room as important" });
+      }
+    });
 
     // Move sendMessageRecruiter listener outside
     socket.on("sendMessage", async (messageData) => {

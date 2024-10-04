@@ -8,6 +8,7 @@ const multer = require("multer");
 
 const { jwtDecode } = require("jwt-decode");
 const Student = require("../schema/studentSchema");
+const ChatRoom = require("../schema/chatRoomSchema");
 
 dotenv.config();
 const router = express.Router();
@@ -264,6 +265,12 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
       select: "internshipName", // Fields to select from the Internship schema
     });
 
+    const chatRooms = await ChatRoom.find({
+      recruiter: recruiterId,
+      internship: { $in: internshipIds },
+      student: { $in: shortlistedStudents.map((student) => student._id) },
+    }).select("student internship importantForRecruiter");
+
     // console.log(shortlistedStudents[0].appliedInternships);
 
     const formattedStudents = shortlistedStudents.map((student) => {
@@ -282,11 +289,21 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
         firstname: student.firstname,
         lastname: student.lastname,
         email: student.email,
-        shortlistedInternships: shortlistedInternships.map((shortlistedInternship) => ({
-          internshipId: shortlistedInternship.internship._id,
-          internshipName: shortlistedInternship.internship.internshipName,
-          statusUpdatedAt: shortlistedInternship.internshipStatus.statusUpdatedAt,
-        })),
+        shortlistedInternships: shortlistedInternships.map((shortlistedInternship) => {
+
+          const chatRoom = chatRooms.find(
+            (room) =>
+              room.student.equals(student._id) &&
+              room.internship.equals(shortlistedInternship.internship._id)
+          );
+
+          return {
+            internshipId: shortlistedInternship.internship._id,
+            internshipName: shortlistedInternship.internship.internshipName,
+            statusUpdatedAt: shortlistedInternship.internshipStatus.statusUpdatedAt,
+            importantForRecruiter: chatRoom ? chatRoom.importantForRecruiter : false, // Default to false if no chatRoom is found
+          };
+        }),
       };
     });
 

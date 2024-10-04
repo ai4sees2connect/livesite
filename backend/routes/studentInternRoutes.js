@@ -231,18 +231,32 @@ router.get('/:studentId/shortlisted-internships', async (req, res) => {
     }
 
     // Send the shortlisted internships details
-    const shortlistedInternships = student.appliedInternships.map(appliedInternship => ({
-      internshipId: appliedInternship.internship._id, 
-      internshipName: appliedInternship.internship.internshipName, // Adjust based on your Internship schema
-      statusUpdatedAt: appliedInternship.internshipStatus.statusUpdatedAt,
-      recruiterId:appliedInternship.internship.recruiter._id,
-      recruiterFirstName:appliedInternship.internship.recruiter.firstname,
-      recruiterLastName:appliedInternship.internship.recruiter.lastname,
-      companyName: appliedInternship.internship.recruiter.companyName,
-      isActive:false
+    const shortlistedInternships = await Promise.all(
+      student.appliedInternships.map(async appliedInternship => {
+        const { internship, internshipStatus } = appliedInternship;
 
-
-    }));
+        // Find the chat room between this student, recruiter, and internship
+        const chatRoom = await ChatRoom.findOne({
+          student: studentId,
+          recruiter: internship.recruiter._id,
+          internship: internship._id
+        }).select('importantForStudent importantForRecruiter'); // Select only the fields we need
+        
+        if(!chatRoom) console.log('not found')
+        return {
+          internshipId: internship._id,
+          internshipName: internship.internshipName, // Adjust based on your Internship schema
+          statusUpdatedAt: internshipStatus.statusUpdatedAt,
+          recruiterId: internship.recruiter._id,
+          recruiterFirstName: internship.recruiter.firstname,
+          recruiterLastName: internship.recruiter.lastname,
+          companyName: internship.recruiter.companyName,
+          isActive: false,
+          importantForStudent: chatRoom ? chatRoom.importantForStudent : false, // Check if it's important for the student
+          importantForRecruiter: chatRoom ? chatRoom.importantForRecruiter : false // Check if it's important for the recruiter
+        };
+      })
+    );
 
     res.json(shortlistedInternships);
   } catch (error) {

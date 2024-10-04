@@ -11,9 +11,10 @@ import 'react-dropdown/style.css';
 // import Select from 'react-select';
 // import select from './utils/select.css'
 import './utils/Styles.css'
-import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip } from 'react-icons/fa';
+import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip, FaStar, FaEllipsisV } from 'react-icons/fa';
 import RecAssignment from './RecAssignment';
 import { MdDoneAll } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 const RecChatRoom = () => {
   const { recruiterId } = useParams();
@@ -35,6 +36,7 @@ const RecChatRoom = () => {
   const [selectedInternFilter, setSelectedInternFilter] = useState('All');
   const [searchName, setSearchName] = useState('');
   const [showAssignmentModal, setShowAssignmentModal] = useState(false);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
 
 
@@ -84,6 +86,7 @@ const RecChatRoom = () => {
             studentId: student._id,
             firstname: student.firstname,
             lastname: student.lastname,
+            importantForRecruiter:shortlisted.importantForRecruiter
           }));
         });
 
@@ -221,7 +224,7 @@ const RecChatRoom = () => {
       setIsLoading(false);
       console.log('loading status:', isLoading);
     }
-  }, [socket]);
+  }, [socket, shortlistedStudents]);
 
   useEffect(() => {
     const scrollToBottom = () => {
@@ -405,8 +408,10 @@ const RecChatRoom = () => {
     // Add to filtered internships based on the active filter
     if (activeFilter === 'all') {
       acc.filteredStudents.push(student); // Add all internships
-    } else if (latestMessagesSeenStatus[key] === false) {
+    } else if (activeFilter === 'unread' && latestMessagesSeenStatus[key] === false) {
       acc.filteredStudents.push(student); // Add to filtered list if unread
+    } else if (activeFilter === 'important' && student.importantForRecruiter) {
+      acc.filteredStudents.push(student);
     }
 
     // Count unread messages regardless of the active filter
@@ -469,6 +474,54 @@ const RecChatRoom = () => {
     }
   };
 
+  const handleMarkAsImportant = () => {
+
+    // Emit socket event to mark the chat room as important for the current user
+    socket.emit("markAsImportant", {
+      recruiterId,
+      internshipId: selectedInternship, // Pass the ID of the logged-in user
+      studentId: selectedStudent,
+      type: 'Recruiter', // 'Student' or 'Recruiter'
+    });
+    setIsOptionsOpen(false);
+
+    toast.success("Added to important");
+
+    setShortlistedStudents((prevStudents) =>
+      prevStudents.map((student) => {
+        if (student.internshipId === selectedInternship) {
+          // Mark as important for the student in the frontend
+          return { ...student, importantForRecruiter: true };
+        }
+        return student;
+      })
+    );
+
+  };
+
+  const handleRemoveImportant = () => {
+    socket.emit("removeAsImportant", {
+      recruiterId,
+      internshipId: selectedInternship, // Pass the ID of the logged-in user
+      studentId: selectedStudent,
+      type: 'Recruiter', // 'Student' or 'Recruiter'
+    });
+    setIsOptionsOpen(false);
+
+    toast.success("Removed from important");
+
+    setShortlistedStudents((prevStudents) =>
+      prevStudents.map((student) => {
+        if (student.internshipId === selectedInternship) {
+          // Mark as important for the student in the frontend
+          return { ...student, importantForRecruiter: false };
+        }
+        return student;
+      })
+    );
+
+  }
+
 
   console.log('these are all chats', chatHistories);
 
@@ -516,6 +569,14 @@ const RecChatRoom = () => {
           >
             Unread({`${unreadCount}`})
           </button>
+
+          <button
+            className={`py-2 px-3 rounded-full ${activeFilter === 'important' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            onClick={() => handleFilterChange('important')}
+          >
+            Important
+          </button>
+
         </div>
 
         <ul className="w-[80%] space-y-2">
@@ -543,7 +604,7 @@ const RecChatRoom = () => {
               >
                 <div className="flex-grow">
                   <div className="text-lg font-semibold text-gray-800 flex items-center relative">
-                    <span className='capitalize'>{firstname} {lastname}</span>
+                    <span className='capitalize flex items-center'>{student.importantForRecruiter && <FaStar className='mr-2 text-yellow-400' />}{firstname} {lastname}</span>
                     {isActive && (<div className='ml-2 bg-green-500 rounded-full w-2 h-2'></div>)}
                     {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
                   </div>
@@ -578,8 +639,19 @@ const RecChatRoom = () => {
             <Link to={`/recruiter/${selectedInternship}/application-details/${selectedStudent}`} target="_blank"
               rel="noopener noreferrer" className='flex items-center space-x-4 text-blue-500 font-semibold'>View application<FaCaretRight className='mt-1 mx-1' /></Link>
             <div className='space-x-4 absolute right-5 font-semibold'>
-              <button className='bg-green-300 text-white rounded-lg px-4 py-1 hover:scale-105 duration-300 hover:bg-green-500'>Hire</button>
-              <button className='bg-red-300 text-white rounded-lg px-2 py-1 hover:scale-105 duration-300 hover:bg-red-500'>Reject</button>
+              <button className='bg-green-400 text-white rounded-lg px-4 py-1 hover:scale-105 duration-300 hover:bg-green-500'>Hire</button>
+              <button className='bg-red-400 text-white rounded-lg px-2 py-1 hover:scale-105 duration-300 hover:bg-red-500'>Reject</button>
+              <button className='hover:cursor-pointer' onClick={() => setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV /></button>
+
+              {isOptionsOpen && (
+                <div className='absolute right-0 top-[48px] bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10'>
+                  <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleMarkAsImportant}>Mark as important</div>
+                  <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleRemoveImportant}>Remove from important</div>
+                  <div className='hover:text-blue-400 p-2 cursor-pointer'>View internship details</div>
+                  <div className='hover:text-blue-400 p-2 cursor-pointer'>Review application</div>
+                  <div className='hover:text-blue-400 p-2 cursor-pointer'>Block chat</div>
+                </div>
+              )}
             </div>
           </div>
         </div>

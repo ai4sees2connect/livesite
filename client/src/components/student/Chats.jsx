@@ -6,7 +6,7 @@ import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
 import SubmitAssignment from './SubmitAssignment';
-import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots,FaEllipsisV } from 'react-icons/fa'
+import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots,FaEllipsisV, FaStar } from 'react-icons/fa'
 import { MdDoneAll } from 'react-icons/md';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -36,6 +36,7 @@ const Chats = () => {
   const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({});
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+ 
 
 
   useEffect(() => {
@@ -217,7 +218,7 @@ const Chats = () => {
       setIsLoading(false);
       console.log('loading status:', isLoading);
     }
-  }, [socket]);
+  }, [socket,shortlistedInternships]);
 
   useEffect(() => {
     const scrollToBottom = () => {
@@ -370,8 +371,10 @@ const Chats = () => {
     // Add to filtered internships based on the active filter
     if (activeFilter === 'all') {
       acc.filteredInternships.push(internship); // Add all internships
-    } else if (latestMessagesSeenStatus[key] === false) {
+    } else if (activeFilter ==='unread' && latestMessagesSeenStatus[key] === false) {
       acc.filteredInternships.push(internship); // Add to filtered list if unread
+    }else if(activeFilter==='important' && internship.importantForStudent){
+      acc.filteredInternships.push(internship); 
     }
 
     // Count unread messages regardless of the active filter
@@ -384,6 +387,7 @@ const Chats = () => {
 
 
   console.log(unreadCount);
+  console.log('these are filtered',filteredInternships);
 
   const openAssignmentPopup = () => {
     setPopupOpen(true);
@@ -468,6 +472,54 @@ const Chats = () => {
     }
   };
 
+  const handleMarkAsImportant = () => {
+
+    // Emit socket event to mark the chat room as important for the current user
+    socket.emit("markAsImportant", {
+      recruiterId:selectedRecruiter,
+      internshipId:selectedInternship, // Pass the ID of the logged-in user
+      studentId,
+      type: 'Student', // 'Student' or 'Recruiter'
+    });
+    setIsOptionsOpen(false);
+
+    toast.success("Added to important");
+
+    setShortlistedInternships((prevInternships) =>
+      prevInternships.map((internship) => {
+        if (internship.internshipId === selectedInternship) {
+          // Mark as important for the student in the frontend
+          return { ...internship, importantForStudent: true };
+        }
+        return internship;
+      })
+    );
+
+  };
+
+  const handleRemoveImportant=()=>{
+    socket.emit("removeAsImportant", {
+      recruiterId:selectedRecruiter,
+      internshipId:selectedInternship, // Pass the ID of the logged-in user
+      studentId,
+      type: 'Student', // 'Student' or 'Recruiter'
+    });
+
+    setIsOptionsOpen(false);
+    toast.success("Removed to important");
+    
+    setShortlistedInternships((prevInternships) =>
+      prevInternships.map((internship) => {
+        if (internship.internshipId === selectedInternship) {
+          // Mark as important for the student in the frontend
+          return { ...internship, importantForStudent: false };
+        }
+        return internship;
+      })
+    );
+
+  }
+
 
   console.log('these are chat histories', chatHistories);
 
@@ -489,6 +541,13 @@ const Chats = () => {
           >
             Unread({`${unreadCount}`})
           </button>
+
+          <button
+            className={`py-2 px-3 rounded-full ${activeFilter === 'important' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            onClick={() => handleFilterChange('important')}
+          >
+            Important
+          </button>
         </div>
         <ul className=" w-[80%] space-y-2">
           {filteredInternships.map((intern) => {
@@ -498,7 +557,7 @@ const Chats = () => {
             const chatKey = `${recruiterId}_${internshipId}`;
             const chatHistory = chatHistories[chatKey] || [];
 
-            // Get the most recent message
+            console.log('isActive status of intern',isActive);
             const lastMessage = chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
 
             return (
@@ -509,7 +568,7 @@ const Chats = () => {
               >
                 <div className="flex-grow">
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center relative">
-                    <span>{companyName}</span>
+                    <span className='flex items-center'>{intern.importantForStudent && <FaStar className='mr-2 text-yellow-400'/>}{companyName}</span>
                     {isActive && (<div className='ml-2 bg-green-500 rounded-full w-2 h-2'></div>)}
                     {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
                   </h3>
@@ -545,9 +604,10 @@ const Chats = () => {
         </div>
         
         {isOptionsOpen && (
-        <div className='absolute right-0 top-16 bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500]'>
-          <div className='hover:text-blue-400 p-2 cursor-pointer' >Mark as important</div>
-          <div className='hover:text-blue-400 p-2 cursor-pointer'>View internship details</div>
+        <div className='absolute right-5 top-[70px] bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10'>
+          <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleMarkAsImportant}>Mark as important</div>
+          {shortlistedInternships.map(intern=> intern.internshipId===selectedInternship && intern.importantForStudent) && (<div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleRemoveImportant}>Remove from important</div>)}
+          <div className='hover:text-blue-400 p-2 cursor-pointer' >View internship details</div>
           <div className='hover:text-blue-400 p-2 cursor-pointer'>Review application</div>
           <div className='hover:text-blue-400 p-2 cursor-pointer'>Block chat</div>
         </div>

@@ -16,6 +16,9 @@ const chatRoomSchema = new mongoose.Schema({
     ref: 'Internship',
     required: true
   },
+  importantForStudent: { type: Boolean, default: false },
+  
+  importantForRecruiter: { type: Boolean, default: false },
   createdAt: {
     type: Date,
     default: Date.now
