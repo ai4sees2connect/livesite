@@ -11,7 +11,7 @@ import 'react-dropdown/style.css';
 // import Select from 'react-select';
 // import select from './utils/select.css'
 import './utils/Styles.css'
-import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip, FaStar, FaEllipsisV } from 'react-icons/fa';
+import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip, FaStar, FaEllipsisV, FaBolt, FaClock } from 'react-icons/fa';
 import RecAssignment from './RecAssignment';
 import { MdDoneAll } from 'react-icons/md';
 import { toast } from 'react-toastify';
@@ -37,7 +37,7 @@ const RecChatRoom = () => {
   const [searchName, setSearchName] = useState('');
   const [showAssignmentModal, setShowAssignmentModal] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const navigate= useNavigate();
+  const navigate = useNavigate();
 
 
 
@@ -87,7 +87,8 @@ const RecChatRoom = () => {
             studentId: student._id,
             firstname: student.firstname,
             lastname: student.lastname,
-            importantForRecruiter:shortlisted.importantForRecruiter
+            studentStatus: shortlisted.studentStatus,
+            importantForRecruiter: shortlisted.importantForRecruiter
           }));
         });
 
@@ -523,7 +524,7 @@ const RecChatRoom = () => {
 
   }
 
-  const handleViewDetails=()=>{
+  const handleViewDetails = () => {
     setIsOptionsOpen(false);
     navigate(`/recruiter/${selectedInternship}/application-details/${selectedStudent}`)
   }
@@ -587,7 +588,7 @@ const RecChatRoom = () => {
 
         <ul className="w-[80%] space-y-2">
           {extraFilteredStudents.map((student) => {
-            const { studentId, internshipId, firstname, lastname, internshipName, statusUpdatedAt, isActive } = student;
+            const { studentId, internshipId, firstname, lastname, internshipName, statusUpdatedAt, isActive, studentStatus } = student;
 
             // Construct the chat key for retrieving messages from chatHistories
 
@@ -628,6 +629,12 @@ const RecChatRoom = () => {
 
                   </p>}
 
+                  {studentStatus==='inTouch'&& 
+                  <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm border rounded-md '>
+                    <span>Pending decision</span>
+                    <span><FaClock className='w-3 h-3 text-gray-500'/></span>
+                  </div>}
+
                 </div>
               </div>
             );
@@ -654,7 +661,7 @@ const RecChatRoom = () => {
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleMarkAsImportant}>Mark as important</div>
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleRemoveImportant}>Remove from important</div>
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleViewDetails}>Review application</div>
-                  
+
                   <div className='hover:text-blue-400 p-2 cursor-pointer'>Block chat</div>
                 </div>
               )}

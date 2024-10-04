@@ -6,7 +6,7 @@ import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
 import SubmitAssignment from './SubmitAssignment';
-import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots,FaEllipsisV, FaStar } from 'react-icons/fa'
+import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots,FaEllipsisV, FaStar, FaBolt } from 'react-icons/fa'
 import { MdDoneAll } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -557,7 +557,7 @@ const Chats = () => {
         </div>
         <ul className=" w-[80%] space-y-2">
           {filteredInternships.map((intern) => {
-            const { internshipId, recruiterId, companyName, internshipName, statusUpdatedAt, isActive } = intern;
+            const { internshipId, recruiterId, companyName, internshipName, statusUpdatedAt, isActive,studentStatus } = intern;
 
             // Construct the chat key for retrieving messages from chatHistories
             const chatKey = `${recruiterId}_${internshipId}`;
@@ -591,6 +591,12 @@ const Chats = () => {
                       {lastMessage ? (lastMessage.messageContent.slice(0, 30) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
                   </p>}
+
+                  {studentStatus==='inTouch'&& 
+                  <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-blue-100 rounded-md '>
+                    <span>In-touch</span>
+                    <span><FaBolt className='w-3 h-3 text-blue-400 mt-1'/></span>
+                  </div>}
 
 
                 </div>

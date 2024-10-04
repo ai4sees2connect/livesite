@@ -19,6 +19,12 @@ const chatRoomSchema = new mongoose.Schema({
   importantForStudent: { type: Boolean, default: false },
   
   importantForRecruiter: { type: Boolean, default: false },
+
+  studentStatus:{
+    type: String,
+    enum: ['inTouch', 'notHired', 'Hired'],
+    default: 'inTouch'
+  },
   createdAt: {
     type: Date,
     default: Date.now

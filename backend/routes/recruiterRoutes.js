@@ -269,7 +269,7 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
       recruiter: recruiterId,
       internship: { $in: internshipIds },
       student: { $in: shortlistedStudents.map((student) => student._id) },
-    }).select("student internship importantForRecruiter");
+    }).select("student internship importantForRecruiter studentStatus");
 
     // console.log(shortlistedStudents[0].appliedInternships);
 
@@ -301,7 +301,8 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
             internshipId: shortlistedInternship.internship._id,
             internshipName: shortlistedInternship.internship.internshipName,
             statusUpdatedAt: shortlistedInternship.internshipStatus.statusUpdatedAt,
-            importantForRecruiter: chatRoom ? chatRoom.importantForRecruiter : false, // Default to false if no chatRoom is found
+            importantForRecruiter: chatRoom ? chatRoom.importantForRecruiter : false,
+            studentStatus:chatRoom.studentStatus // Default to false if no chatRoom is found
           };
         }),
       };

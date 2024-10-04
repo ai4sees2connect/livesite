@@ -240,7 +240,7 @@ router.get('/:studentId/shortlisted-internships', async (req, res) => {
           student: studentId,
           recruiter: internship.recruiter._id,
           internship: internship._id
-        }).select('importantForStudent importantForRecruiter'); // Select only the fields we need
+        }).select('importantForStudent importantForRecruiter studentStatus'); // Select only the fields we need
         
         if(!chatRoom) console.log('not found')
         return {
@@ -253,7 +253,8 @@ router.get('/:studentId/shortlisted-internships', async (req, res) => {
           companyName: internship.recruiter.companyName,
           isActive: false,
           importantForStudent: chatRoom ? chatRoom.importantForStudent : false, // Check if it's important for the student
-          importantForRecruiter: chatRoom ? chatRoom.importantForRecruiter : false // Check if it's important for the recruiter
+          importantForRecruiter: chatRoom ? chatRoom.importantForRecruiter : false, // Check if it's important for the recruiter
+          studentStatus:chatRoom.studentStatus
         };
       })
     );
