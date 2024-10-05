@@ -6,7 +6,7 @@ import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
 import SubmitAssignment from './SubmitAssignment';
-import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots,FaEllipsisV, FaStar, FaBolt,FaExclamation } from 'react-icons/fa'
+import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots, FaEllipsisV, FaStar, FaBolt, FaExclamation } from 'react-icons/fa'
 import { MdDoneAll } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -37,8 +37,8 @@ const Chats = () => {
   const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({});
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const navigate= useNavigate();
- 
+  const navigate = useNavigate();
+
 
 
   useEffect(() => {
@@ -220,7 +220,7 @@ const Chats = () => {
       setIsLoading(false);
       console.log('loading status:', isLoading);
     }
-  }, [socket,shortlistedInternships]);
+  }, [socket, shortlistedInternships]);
 
   useEffect(() => {
     const scrollToBottom = () => {
@@ -373,10 +373,10 @@ const Chats = () => {
     // Add to filtered internships based on the active filter
     if (activeFilter === 'all') {
       acc.filteredInternships.push(internship); // Add all internships
-    } else if (activeFilter ==='unread' && latestMessagesSeenStatus[key] === false) {
+    } else if (activeFilter === 'unread' && latestMessagesSeenStatus[key] === false) {
       acc.filteredInternships.push(internship); // Add to filtered list if unread
-    }else if(activeFilter==='important' && internship.importantForStudent){
-      acc.filteredInternships.push(internship); 
+    } else if (activeFilter === 'important' && internship.importantForStudent) {
+      acc.filteredInternships.push(internship);
     }
 
     // Count unread messages regardless of the active filter
@@ -389,7 +389,7 @@ const Chats = () => {
 
 
   console.log(unreadCount);
-  console.log('these are filtered',filteredInternships);
+  console.log('these are filtered', filteredInternships);
 
   const openAssignmentPopup = () => {
     setPopupOpen(true);
@@ -478,8 +478,8 @@ const Chats = () => {
 
     // Emit socket event to mark the chat room as important for the current user
     socket.emit("markAsImportant", {
-      recruiterId:selectedRecruiter,
-      internshipId:selectedInternship, // Pass the ID of the logged-in user
+      recruiterId: selectedRecruiter,
+      internshipId: selectedInternship, // Pass the ID of the logged-in user
       studentId,
       type: 'Student', // 'Student' or 'Recruiter'
     });
@@ -499,17 +499,17 @@ const Chats = () => {
 
   };
 
-  const handleRemoveImportant=()=>{
+  const handleRemoveImportant = () => {
     socket.emit("removeAsImportant", {
-      recruiterId:selectedRecruiter,
-      internshipId:selectedInternship, // Pass the ID of the logged-in user
+      recruiterId: selectedRecruiter,
+      internshipId: selectedInternship, // Pass the ID of the logged-in user
       studentId,
       type: 'Student', // 'Student' or 'Recruiter'
     });
 
     setIsOptionsOpen(false);
     toast.success("Removed to important");
-    
+
     setShortlistedInternships((prevInternships) =>
       prevInternships.map((internship) => {
         if (internship.internshipId === selectedInternship) {
@@ -522,26 +522,26 @@ const Chats = () => {
 
   }
 
-  const handleViewDetails=()=>{
+  const handleViewDetails = () => {
     navigate(`/student/myApplications/${studentId}`)
   }
 
   useEffect(() => {
-    if(socket){
-    socket.on("studentStatusChangedAck",({studentStatus,recruiterId,internshipId})=>{
-    setShortlistedInternships.map(prevInterns=>{
-      prevInterns.map(intern=>{
-        if(intern.internshipId===internshipId){
-          return{...intern,studentStatus}
-        }else{
-          return intern
-        }
+    if (socket) {
+      socket.on("studentStatusChangedAck", ({ studentStatus, recruiterId, internshipId }) => {
+        setShortlistedInternships.map(prevInterns => {
+          prevInterns.map(intern => {
+            if (intern.internshipId === internshipId) {
+              return { ...intern, studentStatus }
+            } else {
+              return intern
+            }
+          })
+        })
       })
-    })
-    })
-  }
+    }
   }, [socket])
-  
+
 
 
   console.log('these are chat histories', chatHistories);
@@ -574,13 +574,13 @@ const Chats = () => {
         </div>
         <ul className=" w-[80%] space-y-2">
           {filteredInternships.map((intern) => {
-            const { internshipId, recruiterId, companyName, internshipName, statusUpdatedAt, isActive,studentStatus } = intern;
+            const { internshipId, recruiterId, companyName, internshipName, statusUpdatedAt, isActive, studentStatus } = intern;
 
             // Construct the chat key for retrieving messages from chatHistories
             const chatKey = `${recruiterId}_${internshipId}`;
             const chatHistory = chatHistories[chatKey] || [];
 
-            console.log('isActive status of intern',isActive);
+            console.log('isActive status of intern', isActive);
             const lastMessage = chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
 
             return (
@@ -591,7 +591,7 @@ const Chats = () => {
               >
                 <div className="flex-grow">
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center relative">
-                    <span className='flex items-center'>{intern.importantForStudent && <FaStar className='mr-2 text-yellow-400'/>}{companyName}</span>
+                    <span className='flex items-center'>{intern.importantForStudent && <FaStar className='mr-2 text-yellow-400' />}{companyName}</span>
                     {isActive && (<div className='ml-2 bg-green-500 rounded-full w-2 h-2'></div>)}
                     {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
                   </h3>
@@ -609,21 +609,21 @@ const Chats = () => {
                     </span>
                   </p>}
 
-                  {studentStatus==='inTouch'&& 
-                  <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-blue-100 rounded-md '>
-                    <span>In-touch</span>
-                    <span><FaBolt className='w-3 h-3 text-blue-400 '/></span>
-                  </div>}
-                  {studentStatus==='notHired'&& 
-                  <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-yellow-100 rounded-md '>
-                    <span>Not selected</span>
-                    <span><FaExclamation className='w-3 h-3 text-yellow-400 '/></span>
-                  </div>}
-                  {studentStatus==='Hired'&& 
-                  <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-green-100 rounded-md '>
-                    <span>Hired</span>
-                    <span><FaBolt className='w-3 h-3 text-green-400'/></span>
-                  </div>}
+                  {studentStatus === 'inTouch' &&
+                    <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-blue-100 rounded-md '>
+                      <span>In-touch</span>
+                      <span><FaBolt className='w-3 h-3 text-blue-400 ' /></span>
+                    </div>}
+                  {studentStatus === 'notHired' &&
+                    <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-yellow-100 rounded-md '>
+                      <span>Not selected</span>
+                      <span><FaExclamation className='w-3 h-3 text-yellow-400 ' /></span>
+                    </div>}
+                  {studentStatus === 'Hired' &&
+                    <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-green-100 rounded-md '>
+                      <span>Hired</span>
+                      <span><FaBolt className='w-3 h-3 text-green-400' /></span>
+                    </div>}
 
 
                 </div>
@@ -639,17 +639,17 @@ const Chats = () => {
         <div className='w-full h-[10%]  relative border-b shadow-md'>
           <p className='font-semibold capitalize text-2xl'>{companyName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
           <p>{internshipName}</p>
-          <div className='absolute right-10 top-7 hover:cursor-pointer hover:text-blue-400' onClick={()=>setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV/></div>
+          <div className='absolute right-10 top-7 hover:cursor-pointer hover:text-blue-400' onClick={() => setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV /></div>
         </div>
-        
+
         {isOptionsOpen && (
-        <div className='absolute right-5 top-[70px] bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10'>
-          <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleMarkAsImportant}>Mark as important</div>
-          {shortlistedInternships.map(intern=> intern.internshipId===selectedInternship && intern.importantForStudent) && (<div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleRemoveImportant}>Remove from important</div>)}
-          <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleViewDetails}>View internship details</div>
-          <div className='hover:text-blue-400 p-2 cursor-pointer'>Block chat</div>
-        </div>
-      )}
+          <div className='absolute right-5 top-[70px] bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10'>
+            <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleMarkAsImportant}>Mark as important</div>
+            {shortlistedInternships.map(intern => intern.internshipId === selectedInternship && intern.importantForStudent) && (<div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleRemoveImportant}>Remove from important</div>)}
+            <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleViewDetails}>View internship details</div>
+            <div className='hover:text-blue-400 p-2 cursor-pointer'>Block chat</div>
+          </div>
+        )}
 
         <div className="flex-grow mt-0 bg-white p-4 rounded-lg shadow-lg overflow-y-auto border-2">
           {/* Chat messages */}
@@ -701,7 +701,7 @@ const Chats = () => {
 
                           <p className={`text-xs font-semibold text-right text-gray-500`}>
                             {formatSentAt(msg.sentAt)}
-                          
+
                           </p>
 
 
@@ -778,13 +778,20 @@ const Chats = () => {
         </div>
 
         {/* Chat input */}
-        <div className="mt-4 flex space-x-4">
+        <div className="mt-4 flex space-x-4 ">
+
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             className="w-full p-2 border-2 rounded-lg"
             placeholder="Type a message..."
+          />
+          <label htmlFor="fileUpload" className='my-auto text-gray-600 hover:cursor-pointer'><FaPaperclip className='w-5 h-5' /></label>
+          <input
+            type="file"
+            id="fileUpload"
+            className="hidden"
           />
           <button
             className="bg-blue-500 text-white border px-9 py-1 rounded-lg"
