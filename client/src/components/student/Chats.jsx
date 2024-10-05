@@ -40,6 +40,8 @@ const Chats = () => {
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
   const [attachmentSelected, setAttachmentSelected] = useState(false);
+  const [filteredInternships, setFilteredInternships] = useState([]);
+const [unreadCount, setUnreadCount] = useState(0);
 
 
 
@@ -213,7 +215,7 @@ const Chats = () => {
   // }, [studentId,isLoading]);
 
   useEffect(() => {
-    if (shortlistedInternships.length > 0) {
+    if (shortlistedInternships && shortlistedInternships.length > 0) {
       console.log('Updated shortlistedInternships:', shortlistedInternships);
       if (socket) {
         handleInternClick(shortlistedInternships[0].internshipId, shortlistedInternships[0].recruiterId);
@@ -369,25 +371,38 @@ const Chats = () => {
     setActiveFilter(filter);
   };
 
-  const { filteredInternships, unreadCount } = shortlistedInternships.reduce((acc, internship) => {
-    const key = `${internship.recruiterId}_${internship.internshipId}`;
-
-    // Add to filtered internships based on the active filter
-    if (activeFilter === 'all') {
-      acc.filteredInternships.push(internship); // Add all internships
-    } else if (activeFilter === 'unread' && latestMessagesSeenStatus[key] === false) {
-      acc.filteredInternships.push(internship); // Add to filtered list if unread
-    } else if (activeFilter === 'important' && internship.importantForStudent) {
-      acc.filteredInternships.push(internship);
+  console.log('this is shortlisted internships',shortlistedInternships);
+  useEffect(() => {
+    if (shortlistedInternships && shortlistedInternships.length > 0) {
+      const { filteredInternships, unreadCount } = shortlistedInternships.reduce((acc, internship) => {
+        const key = `${internship.recruiterId}_${internship.internshipId}`;
+  
+        // Add to filtered internships based on the active filter
+        if (activeFilter === 'all') {
+          acc.filteredInternships.push(internship); // Add all internships
+        } else if (activeFilter === 'unread' && latestMessagesSeenStatus[key] === false) {
+          acc.filteredInternships.push(internship); // Add to filtered list if unread
+        } else if (activeFilter === 'important' && internship.importantForStudent) {
+          acc.filteredInternships.push(internship);
+        }
+  
+        // Count unread messages regardless of the active filter
+        if (latestMessagesSeenStatus[key] === false) {
+          acc.unreadCount += 1; // Increment the unread count
+        }
+  
+        return acc; // Return the accumulator
+      }, { filteredInternships: [], unreadCount: 0 });
+  
+      // Update state with new filtered internships and unread count
+      setFilteredInternships(filteredInternships);
+      setUnreadCount(unreadCount);
+    } else {
+      // Reset state if there are no shortlisted internships
+      setFilteredInternships([]);
+      setUnreadCount(0);
     }
-
-    // Count unread messages regardless of the active filter
-    if (latestMessagesSeenStatus[key] === false) {
-      acc.unreadCount += 1; // Increment the unread count
-    }
-
-    return acc; // Return the accumulator
-  }, { filteredInternships: [], unreadCount: 0 });
+  }, [shortlistedInternships, activeFilter, latestMessagesSeenStatus]);
 
 
   console.log(unreadCount);
@@ -531,15 +546,15 @@ const Chats = () => {
   useEffect(() => {
     if (socket) {
       socket.on("studentStatusChangedAck", ({ studentStatus, recruiterId, internshipId }) => {
-        setShortlistedInternships.map(prevInterns => {
+        setShortlistedInternships(prevInterns => 
           prevInterns.map(intern => {
             if (intern.internshipId === internshipId) {
               return { ...intern, studentStatus }
-            } else {
-              return intern
             }
+              return intern
+            
           })
-        })
+        )
       })
     }
   }, [socket])
