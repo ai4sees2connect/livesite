@@ -11,7 +11,7 @@ import 'react-dropdown/style.css';
 // import Select from 'react-select';
 // import select from './utils/select.css'
 import './utils/Styles.css'
-import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip, FaStar, FaEllipsisV, FaBolt, FaClock, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip, FaStar, FaEllipsisV, FaBolt, FaClock, FaTimes, FaFilePdf, FaArrowCircleDown } from 'react-icons/fa';
 import RecAssignment from './RecAssignment';
 import { MdDoneAll } from 'react-icons/md';
 import { toast } from 'react-toastify';
@@ -529,20 +529,20 @@ const RecChatRoom = () => {
     navigate(`/recruiter/${selectedInternship}/application-details/${selectedStudent}`)
   }
 
-  const handleStatusChange=(value)=>{
+  const handleStatusChange = (value) => {
     let valueToChange;
-    if(value==='Hire'){
-      valueToChange='Hired'
-    }else{
-      valueToChange='notHired'
+    if (value === 'Hire') {
+      valueToChange = 'Hired'
+    } else {
+      valueToChange = 'notHired'
     }
-    socket.emit('studentStatusChanged',{valueToChange,studentId:selectedStudent, recruiterId,internshipId:selectedInternship});
+    socket.emit('studentStatusChanged', { valueToChange, studentId: selectedStudent, recruiterId, internshipId: selectedInternship });
 
     setShortlistedStudents((prevStudents) =>
       prevStudents.map((student) => {
-        if (student.internshipId === selectedInternship){
-          return {...student,studentStatus:valueToChange}
-        }else{
+        if (student.internshipId === selectedInternship) {
+          return { ...student, studentStatus: valueToChange }
+        } else {
           return student
         }
       }
@@ -649,23 +649,23 @@ const RecChatRoom = () => {
 
                   </p>}
 
-                  {studentStatus==='inTouch'&& 
-                  <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm border rounded-md '>
-                    <span>Pending decision</span>
-                    <span><FaClock className='w-3 h-3 text-gray-500'/></span>
-                  </div>}
+                  {studentStatus === 'inTouch' &&
+                    <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm border rounded-md '>
+                      <span>Pending decision</span>
+                      <span><FaClock className='w-3 h-3 text-gray-500' /></span>
+                    </div>}
 
-                  {studentStatus==='notHired'&& 
-                  <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm border rounded-md bg-red-100'>
-                    <span>Rejected</span>
-                    <span><FaTimes className='w-3 h-3 text-red-400'/></span>
-                  </div>}
+                  {studentStatus === 'notHired' &&
+                    <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm border rounded-md bg-red-100'>
+                      <span>Rejected</span>
+                      <span><FaTimes className='w-3 h-3 text-red-400' /></span>
+                    </div>}
 
-                  {studentStatus==='Hired'&& 
-                  <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm border rounded-md bg-green-100'>
-                    <span>Hired</span>
-                    <span><FaBolt className='w-3 h-3 text-green-400'/></span>
-                  </div>}
+                  {studentStatus === 'Hired' &&
+                    <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm border rounded-md bg-green-100'>
+                      <span>Hired</span>
+                      <span><FaBolt className='w-3 h-3 text-green-400' /></span>
+                    </div>}
 
                 </div>
               </div>
@@ -685,9 +685,9 @@ const RecChatRoom = () => {
               rel="noopener noreferrer" className='flex items-center space-x-4 text-blue-500 font-semibold'>View application<FaCaretRight className='mt-1 mx-1' /></Link>
             <div className='space-x-4 absolute right-5 font-semibold'>
 
-              <button className='bg-green-400 text-white rounded-lg px-4 py-1 hover:scale-105 duration-300 hover:bg-green-500' onClick={()=>handleStatusChange('Hire')}>Hire</button>
+              <button className='bg-green-400 text-white rounded-lg px-4 py-1 hover:scale-105 duration-300 hover:bg-green-500' onClick={() => handleStatusChange('Hire')}>Hire</button>
 
-              <button className='bg-red-400 text-white rounded-lg px-2 py-1 hover:scale-105 duration-300 hover:bg-red-500' onClick={()=>handleStatusChange('Reject')}>Reject</button>
+              <button className='bg-red-400 text-white rounded-lg px-2 py-1 hover:scale-105 duration-300 hover:bg-red-500' onClick={() => handleStatusChange('Reject')}>Reject</button>
 
               <button className='hover:cursor-pointer' onClick={() => setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV /></button>
 
@@ -722,7 +722,7 @@ const RecChatRoom = () => {
                     </div>
                   )}
 
-                  {!msg.isAssignment && <div
+                  {!msg.isAssignment && !msg.isAttachment && <div
                     className={`py-2 px-3 rounded inline-block break-words ${msg.senderId === recruiterId ? 'bg-[#DBEAFE] self-end text-right  ' : 'bg-gray-100 '} `}
                     style={{ maxWidth: 'fit-content' }}
                   >
@@ -736,7 +736,7 @@ const RecChatRoom = () => {
                   </div>}
 
                   {msg.isAssignment && msg.senderId === recruiterId &&
-                    <div className=' break-words rounded-fullbg-blue-400 self-end text-right  text-white' >
+                    <div className=' break-words rounded-full bg-blue-400 self-end text-right  text-white' >
                       <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
                         <FaCheckCircle className='absolute top-4 left-4 text-white' />
                         <h1 className='ml-8 text-white font-bold'>Assignment Sent</h1>
@@ -801,6 +801,30 @@ const RecChatRoom = () => {
                         </div>
                       </div>
                     )
+                  }
+
+                  {msg.isAttachment &&
+
+                    <div
+                      key={index}
+                      className={`p-2 rounded bg-gray-100 max-w-[240px]`}
+
+                    >
+                      <div className='flex justify-center h-[100%] relative group'>
+                        <FaFilePdf className='w-[60%] h-[60%] text-blue-400 ' />
+                        <FaArrowCircleDown onClick={() => downloadFile(msg.attachment.fileId, msg.attachment.fileName)} className='absolute top-16 w-[20%] h-[20%] hidden group-hover:block hover:cursor-pointer text-gray-700' />
+
+                      </div>
+                      <p className='text-center'>{msg.attachment.fileName}</p>
+
+
+
+                      <p className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right text-gray-500`}>
+                        <span>{formatSentAt(msg.sentAt)}</span>
+                        {/* {msg.senderId === studentId && <span><MdDoneAll className={`w-5 h-5 ${msg.seenStatus && 'text-blue-500'}`} /></span>} */}
+                      </p>
+                    </div>
+
                   }
                 </React.Fragment>
               )

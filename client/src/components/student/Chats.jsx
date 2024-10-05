@@ -839,7 +839,7 @@ const Chats = () => {
 
                     <div
                       key={index}
-                      className={`p-2 rounded bg-[#DBEAFE] self-end text-right min-w-[240px] min-h-[200px]`}
+                      className={`p-2 rounded bg-[#DBEAFE] self-end text-right min-w-[240px] max-h-[200px]`}
 
                     >
                       <div className='flex justify-center h-[100%] w-full relative group'>
