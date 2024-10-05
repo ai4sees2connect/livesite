@@ -39,6 +39,7 @@ const messageSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+ 
   assignmentDetails: {
     // only for assignment messages
     description: {
@@ -64,6 +65,17 @@ const messageSchema = new mongoose.Schema({
     originalAssignmentId:{type:String},
     submittedAt: { type: Date, default: Date.now },
   },
+  isAttachment: {
+    type:Boolean,
+    default: false,
+    
+  },
+  attachment: 
+    {
+      fileName: { type: String },
+      fileSize: { type: String },
+      fileId: { type: String },
+    },
 });
 
 const Message = mongoose.model("Message", messageSchema);

@@ -364,6 +364,50 @@ const initSocket = (server) => {
       }
     });
 
+    socket.on("sentAttachment",async({file,recruiterId,studentId,internshipId,fileId,fileName,fileSize})=>{
+    try {
+      const chatRoom = await createOrGetChatRoom(
+        recruiterId,
+        studentId,
+        internshipId
+      );
+      console.log(file);
+
+      const newAttachment = new Message({
+        chatRoomId: chatRoom._id,
+        senderId: studentId,
+        senderType: "Student",
+        receiverId: recruiterId,
+        receiverType: "Recruiter",
+        messageContent: "Attachment sent", 
+        isAttachment: true, 
+        attachment: {
+          fileName,
+          fileId:fileId,
+          fileSize
+
+        },
+      });
+
+      await newAttachment.save();
+
+      const newAttachmentWithInternship = {
+        ...newAttachment.toObject(), // Converts Mongoose model to a plain object
+        internshipId, // Attach the internshipId field
+      };
+
+      socket
+          .to(chatRoom._id.toString())
+          .emit(
+            `receiveMessages_${studentId}_${internshipId}`,
+            newAttachmentWithInternship
+          );
+
+    } catch (error) {
+      console.error("Error sending attachment:", err);
+    }
+    })
+
     socket.on("submitAssignment", async (submissionData) => {
       try {
         const { msgId, files, link, additionalInfo, internshipId } =

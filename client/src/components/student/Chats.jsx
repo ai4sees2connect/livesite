@@ -6,7 +6,7 @@ import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
 import SubmitAssignment from './SubmitAssignment';
-import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots, FaEllipsisV, FaStar, FaBolt, FaExclamation } from 'react-icons/fa'
+import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots, FaEllipsisV, FaStar, FaBolt, FaExclamation, FaFile, FaArrowCircleDown, FaFilePdf } from 'react-icons/fa'
 import { MdDoneAll } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -38,6 +38,8 @@ const Chats = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const navigate = useNavigate();
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [attachmentSelected, setAttachmentSelected] = useState(false);
 
 
 
@@ -543,6 +545,72 @@ const Chats = () => {
   }, [socket])
 
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    // Check if the file is a PDF
+    if (file && file.type === 'application/pdf') {
+      setSelectedFile(file);
+      setAttachmentSelected(true);
+      // setNewMessage(file.name);
+      console.log(file)
+    } else {
+      toast.error('Please upload a PDF file.');
+    }
+  };
+
+  const handleFileUpload = async () => {
+
+    if(!selectedFile){
+      toast.error('No file selected');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    console.log('yooooooooooooooooo*******************',selectedFile);
+
+    const response = await axios.post(`${api}/student/file-to-url`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data', // Important for file uploads
+      },
+    });
+
+
+    socket.emit('sentAttachment', { file: selectedFile, studentId, recruiterId: selectedRecruiter, internshipId: selectedInternship, fileId: response.data.fileId, fileName:selectedFile.name, fileSize:selectedFile.size });
+
+    setChatHistories((prevHistories) => {
+      const newMessage = {
+        senderId: studentId,
+        messageContent: "Attachment sent", // You might want to adjust this based on your needs
+        sentAt: new Date(),
+        isAttachment: true, // Indicate this is an assignment submission
+        attachment: {
+          fileName: selectedFile.name,
+          fileSize: (selectedFile.size / 1024).toFixed(2) + ' KB',
+        }
+      };
+
+      // console.log(newMessage);
+
+      return {
+        ...prevHistories,
+        [`${selectedRecruiter}_${selectedInternship}`]: [
+          ...(prevHistories[`${selectedRecruiter}_${selectedInternship}`] || []), // Get existing messages or an empty array
+          newMessage, // Add the new message
+        ],
+      };
+    });
+  
+    setSelectedFile(null);
+    setAttachmentSelected(false);
+
+  };
+
+  const handleFileRemove = () => {
+    setSelectedFile(null);
+    setAttachmentSelected(false);
+  }
+
+
 
   console.log('these are chat histories', chatHistories);
 
@@ -671,7 +739,7 @@ const Chats = () => {
                     </div>
                   )}
 
-                  {!msg.isAssignment &&
+                  {!msg.isAssignment && !msg.isAttachment &&
 
                     <div
                       key={index}
@@ -767,6 +835,30 @@ const Chats = () => {
                     )
                   }
 
+                  {msg.isAttachment &&
+
+                    <div
+                      key={index}
+                      className={`p-2 rounded bg-[#DBEAFE] self-end text-right min-w-[240px] min-h-[200px]`}
+
+                    >
+                      <div className='flex justify-center h-[100%] w-full relative group'>
+                        <FaFilePdf className='w-[60%] h-[60%] text-blue-400 ' />
+                        <FaArrowCircleDown onClick={() => downloadFile(msg.attachment.fileId, msg.attachment.fileName)} className='absolute top-16 w-[20%] h-[20%] hidden group-hover:block hover:cursor-pointer text-gray-700'/>
+                        
+                      </div>
+                      <p className='text-center text-blue-500'>{msg.attachment.fileName}</p>
+
+
+
+                      <p className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right text-gray-500`}>
+                        <span>{formatSentAt(msg.sentAt)}</span>
+                        {msg.senderId === studentId && <span><MdDoneAll className={`w-5 h-5 ${msg.seenStatus && 'text-blue-500'}`} /></span>}
+                      </p>
+                    </div>
+
+                  }
+
 
 
 
@@ -778,7 +870,7 @@ const Chats = () => {
         </div>
 
         {/* Chat input */}
-        <div className="mt-4 flex space-x-4 ">
+        <div className="mt-4 flex space-x-4 relative">
 
           <input
             type="text"
@@ -792,7 +884,24 @@ const Chats = () => {
             type="file"
             id="fileUpload"
             className="hidden"
+            onChange={handleFileChange}
+            accept=".pdf"
           />
+          {attachmentSelected && (
+            <div className="absolute flex items-center justify-between space-x-2 bg-white border border-gray-300 shadow-lg p-3 rounded-md w-full h-[105%] -left-4">
+              <span className="text-gray-800 font-medium">Send Attachment- {selectedFile.name}</span>
+              <div className='flex space-x-3 items-center'>
+                <button
+                  onClick={handleFileUpload} // Your file upload handler
+                  className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition duration-200"
+                >
+                  Upload
+                </button>
+                <button className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition duration-200" onClick={handleFileRemove}>Delete </button>
+              </div>
+            </div>
+          )}
+
           <button
             className="bg-blue-500 text-white border px-9 py-1 rounded-lg"
             onClick={sendMessage}
