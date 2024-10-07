@@ -41,7 +41,8 @@ const Chats = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [attachmentSelected, setAttachmentSelected] = useState(false);
   const [filteredInternships, setFilteredInternships] = useState([]);
-const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [chatBlocked, setChatBlocked] = useState({});
 
 
 
@@ -164,55 +165,26 @@ const [unreadCount, setUnreadCount] = useState(0);
   }, [studentId]);
 
 
-  // useEffect(() => {
-  //   if(!isLoading){
-  //   const socketConnection = io(api, {
-  //     query: { userType: 'Student', userId: studentId }
-  //   });
-  //   setSocket(socketConnection);
-  //   console.log('socket connection established from student side');
+  useEffect(() => {
+    const fetchBlockedChats = async () => {
+      try {
+        const response = await axios.get(`${api}/recruiter/blocked-chats`);
+        const blockedChats = response.data;
 
-  //   socketConnection.on('recruitersStatus', (recruiters) => {
-  //     if(shortlistedInternships){
-  //       console.log('yes interns to haii',recruiters);
-  //       console.log('theeeeeseee',shortlistedInternships.length);
-  //     }
-  //     setShortlistedInternships(prevInterns => 
-  //       prevInterns.map(intern => {
-  //         // Find the matching recruiter in the recruiters array
-  //         const matchingRecruiter = recruiters.find(rec => rec.recruiterId === intern.recruiterId);
-  //         console.log('Intern recruiterId:', intern.recruiterId);
-  //         console.log('Matching recruiter:', matchingRecruiter);
+        const blockedMap = blockedChats.reduce((acc, chat) => {
+          const chatRoomKey = `${chat.recruiter}_${chat.internship}`;
+          acc[chatRoomKey] = 'recruiter';
+          return acc;
+        }, {});
 
-  //         // If a match is found, update the isActive status
-  //         if (matchingRecruiter && intern.isActive!==true) {
-  //           console.log('Updating isActive for recruiterId:', intern.recruiterId);
-  //           return {
-  //             ...intern,
-  //             isActive: true, // Set the active status
-  //           };
-  //         }
+        setChatBlocked(blockedMap); // Update the state with blocked chats
+      } catch (error) {
+        console.error('Error fetching blocked chats:', error);
+      }
+    };
 
-  //         console.log('not changing any thing');
-  //         return intern;
-  //       })
-  //     );
-  //     // setShortlistedRecruiters(recruiters);
-  //   });
-
-  //   socketConnection.on('recruitersActive', ({ userId, isActive }) => {
-  //     console.log('listening to all active recruiters')
-  //     setShortlistedInternships(prevInterns => {
-  //       console.log(isActive);
-  //       return prevInterns.map(intern => intern.recruiterId === userId ? { ...intern, isActive } : intern)
-  //     }
-  //     )
-  //   })
-
-  //   return () => {
-  //     socketConnection.disconnect();
-  //   }}
-  // }, [studentId,isLoading]);
+    fetchBlockedChats(); // Call the function to fetch blocked chats when the component mounts
+  }, []);
 
   useEffect(() => {
     if (shortlistedInternships && shortlistedInternships.length > 0) {
@@ -371,12 +343,12 @@ const [unreadCount, setUnreadCount] = useState(0);
     setActiveFilter(filter);
   };
 
-  console.log('this is shortlisted internships',shortlistedInternships);
+  console.log('this is shortlisted internships', shortlistedInternships);
   useEffect(() => {
     if (shortlistedInternships && shortlistedInternships.length > 0) {
       const { filteredInternships, unreadCount } = shortlistedInternships.reduce((acc, internship) => {
         const key = `${internship.recruiterId}_${internship.internshipId}`;
-  
+
         // Add to filtered internships based on the active filter
         if (activeFilter === 'all') {
           acc.filteredInternships.push(internship); // Add all internships
@@ -385,15 +357,15 @@ const [unreadCount, setUnreadCount] = useState(0);
         } else if (activeFilter === 'important' && internship.importantForStudent) {
           acc.filteredInternships.push(internship);
         }
-  
+
         // Count unread messages regardless of the active filter
         if (latestMessagesSeenStatus[key] === false) {
           acc.unreadCount += 1; // Increment the unread count
         }
-  
+
         return acc; // Return the accumulator
       }, { filteredInternships: [], unreadCount: 0 });
-  
+
       // Update state with new filtered internships and unread count
       setFilteredInternships(filteredInternships);
       setUnreadCount(unreadCount);
@@ -546,13 +518,13 @@ const [unreadCount, setUnreadCount] = useState(0);
   useEffect(() => {
     if (socket) {
       socket.on("studentStatusChangedAck", ({ studentStatus, recruiterId, internshipId }) => {
-        setShortlistedInternships(prevInterns => 
+        setShortlistedInternships(prevInterns =>
           prevInterns.map(intern => {
             if (intern.internshipId === internshipId) {
               return { ...intern, studentStatus }
             }
-              return intern
-            
+            return intern
+
           })
         )
       })
@@ -575,13 +547,13 @@ const [unreadCount, setUnreadCount] = useState(0);
 
   const handleFileUpload = async () => {
 
-    if(!selectedFile){
+    if (!selectedFile) {
       toast.error('No file selected');
       return;
     }
     const formData = new FormData();
     formData.append('file', selectedFile);
-    console.log('yooooooooooooooooo*******************',selectedFile);
+    console.log('yooooooooooooooooo*******************', selectedFile);
 
     const response = await axios.post(`${api}/student/file-to-url`, formData, {
       headers: {
@@ -590,7 +562,7 @@ const [unreadCount, setUnreadCount] = useState(0);
     });
 
 
-    socket.emit('sentAttachment', { file: selectedFile, studentId, recruiterId: selectedRecruiter, internshipId: selectedInternship, fileId: response.data.fileId, fileName:selectedFile.name, fileSize:selectedFile.size });
+    socket.emit('sentAttachment', { file: selectedFile, studentId, recruiterId: selectedRecruiter, internshipId: selectedInternship, fileId: response.data.fileId, fileName: selectedFile.name, fileSize: selectedFile.size });
 
     setChatHistories((prevHistories) => {
       const newMessage = {
@@ -614,7 +586,7 @@ const [unreadCount, setUnreadCount] = useState(0);
         ],
       };
     });
-  
+
     setSelectedFile(null);
     setAttachmentSelected(false);
 
@@ -625,6 +597,35 @@ const [unreadCount, setUnreadCount] = useState(0);
     setAttachmentSelected(false);
   }
 
+  useEffect(() => {
+    if (socket) {
+      socket.on('chatBlocked', ({ recruiterId, studentId, internshipId, blockedBy, blocked }) => {
+        const chatRoomKey = `${recruiterId}_${internshipId}`;
+        if (blocked) {
+
+          setChatBlocked(prevState => ({
+            ...prevState,
+            [chatRoomKey]: blockedBy // Update the blocked status for this specific chat room
+          }));
+
+        } else {
+          setChatBlocked(prevState => ({
+            ...prevState,
+            [chatRoomKey]: null // Update the blocked status for this specific chat room
+          }));
+
+        }
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('chatBlocked'); // Clean up the event listener when component unmounts
+      }
+    };
+  }, [socket]);
+
+  console.log('blocked status', chatBlocked);
 
 
   console.log('these are chat histories', chatHistories);
@@ -669,7 +670,7 @@ const [unreadCount, setUnreadCount] = useState(0);
             return (
               <div
                 key={`${recruiterId}-${internshipId}`}
-                className={`student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship === internshipId && 'border-blue-500  '} hover:scale-105 duration-300 w-full`}
+                className={`student-internship-entry bg-white  rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship === internshipId && 'border-blue-500  '} hover:scale-105 duration-300 w-full`}
                 onClick={() => { handleInternClick(internshipId, recruiterId); handleInfoSetter(companyName, internshipName, isActive) }}
               >
                 <div className="flex-grow">
@@ -717,9 +718,9 @@ const [unreadCount, setUnreadCount] = useState(0);
       </div>
 
       {/* Right Column - Chat Interface */}
-      <div className="w-[59%] p-4 flex flex-col mx-3 h-[84vh] mr-32 ">
+      <div className="w-[65%] p-4 flex flex-col mx-3 h-[84vh]  ">
 
-        <div className='w-full h-[10%]  relative border-b shadow-md'>
+        <div className='w-full h-[10%]  relative '>
           <p className='font-semibold capitalize text-2xl'>{companyName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
           <p>{internshipName}</p>
           <div className='absolute right-10 top-7 hover:cursor-pointer hover:text-blue-400' onClick={() => setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV /></div>
@@ -730,7 +731,7 @@ const [unreadCount, setUnreadCount] = useState(0);
             <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleMarkAsImportant}>Mark as important</div>
             {shortlistedInternships.map(intern => intern.internshipId === selectedInternship && intern.importantForStudent) && (<div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleRemoveImportant}>Remove from important</div>)}
             <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleViewDetails}>View internship details</div>
-            <div className='hover:text-blue-400 p-2 cursor-pointer'>Block chat</div>
+            
           </div>
         )}
 
@@ -859,8 +860,8 @@ const [unreadCount, setUnreadCount] = useState(0);
                     >
                       <div className='flex justify-center h-[100%] w-full relative group'>
                         <FaFilePdf className='w-[60%] h-[60%] text-blue-400 ' />
-                        <FaArrowCircleDown onClick={() => downloadFile(msg.attachment.fileId, msg.attachment.fileName)} className='absolute top-16 w-[20%] h-[20%] hidden group-hover:block hover:cursor-pointer text-gray-700'/>
-                        
+                        <FaArrowCircleDown onClick={() => downloadFile(msg.attachment.fileId, msg.attachment.fileName)} className='absolute top-16 w-[20%] h-[20%] hidden group-hover:block hover:cursor-pointer text-gray-700' />
+
                       </div>
                       <p className='text-center text-blue-500'>{msg.attachment.fileName}</p>
 
@@ -880,12 +881,23 @@ const [unreadCount, setUnreadCount] = useState(0);
                 </React.Fragment>
               )
             })}
+
+            {chatBlocked[`${selectedRecruiter}_${selectedInternship}`] === 'recruiter' &&
+              <>
+                <div className='flex justify-center items-center text-gray-500 font-semibold text-lg'>
+                  
+                  <span>You can no longer send or receive messages</span>
+                </div>
+              </>
+            }
+
+
             <div ref={chatEndRef} />
           </div>
         </div>
 
         {/* Chat input */}
-        <div className="mt-4 flex space-x-4 relative">
+        {chatBlocked[`${selectedRecruiter}_${selectedInternship}`] !== 'recruiter' && <div className="mt-4 flex space-x-4 relative">
 
           <input
             type="text"
@@ -923,7 +935,7 @@ const [unreadCount, setUnreadCount] = useState(0);
           >
             Send
           </button>
-        </div>
+        </div>}
       </div>
     </div>
   );

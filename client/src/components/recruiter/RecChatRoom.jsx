@@ -11,7 +11,7 @@ import 'react-dropdown/style.css';
 // import Select from 'react-select';
 // import select from './utils/select.css'
 import './utils/Styles.css'
-import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip, FaStar, FaEllipsisV, FaBolt, FaClock, FaTimes, FaFilePdf, FaArrowCircleDown } from 'react-icons/fa';
+import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip, FaStar, FaEllipsisV, FaBolt, FaClock, FaTimes, FaFilePdf, FaArrowCircleDown, FaExclamation } from 'react-icons/fa';
 import RecAssignment from './RecAssignment';
 import { MdDoneAll } from 'react-icons/md';
 import { toast } from 'react-toastify';
@@ -38,6 +38,7 @@ const RecChatRoom = () => {
   const [showAssignmentModal, setShowAssignmentModal] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const navigate = useNavigate();
+  const [chatBlocked, setChatBlocked] = useState({});
 
 
 
@@ -207,7 +208,26 @@ const RecChatRoom = () => {
 
   console.log('seen status', latestMessagesSeenStatus);
 
+  useEffect(() => {
+    const fetchBlockedChats = async () => {
+      try {
+        const response = await axios.get(`${api}/recruiter/blocked-chats`);
+        const blockedChats = response.data;
 
+        const blockedMap = blockedChats.reduce((acc, chat) => {
+          const chatRoomKey = `${chat.student}_${chat.internship}`;
+          acc[chatRoomKey] = 'recruiter';
+          return acc;
+        }, {});
+
+        setChatBlocked(blockedMap); // Update the state with blocked chats
+      } catch (error) {
+        console.error('Error fetching blocked chats:', error);
+      }
+    };
+
+    fetchBlockedChats(); // Call the function to fetch blocked chats when the component mounts
+  }, []);
 
   useEffect(() => {
     if (shortlistedStudents.length > 0) {
@@ -549,6 +569,63 @@ const RecChatRoom = () => {
       ))
   }
 
+  const handleBlockChat = () => {
+    const updatedBlockStatus = true; // Set this to true for blocking
+
+    // Emit block event to backend using socket
+    socket.emit('blockInitiatedByRecruiter', {
+      recruiterId: recruiterId,
+      studentId: selectedStudent,
+      internshipId: selectedInternship,
+      blockedByRecruiter: true
+    });
+    toast.success('You have blocked this student');
+    setChatBlocked(prevState=>{
+      return {...prevState, [`${selectedStudent}_${selectedInternship}`]: 'recruiter' }
+    })
+
+  };
+
+  const handleUnblock=()=>{
+    socket.emit('unblockInitiatedByRecruiter', {
+      recruiterId: recruiterId,
+      studentId: selectedStudent,
+      internshipId: selectedInternship,
+      blockedByRecruiter: false
+    });
+    toast.success('You have unblocked this student');
+  }
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('chatBlocked', ({ recruiterId, studentId, internshipId, blockedBy, blocked }) => {
+        const chatRoomKey = `${studentId}_${internshipId}`;
+        if (blocked) {
+
+          setChatBlocked(prevState => ({
+            ...prevState,
+            [chatRoomKey]: blockedBy // Update the blocked status for this specific chat room
+          }));
+          
+        }else{
+          setChatBlocked(prevState => ({
+            ...prevState,
+            [chatRoomKey]: null // Update the blocked status for this specific chat room
+          }));
+          
+        }
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('chatBlocked'); // Clean up the event listener when component unmounts
+      }
+    };
+  }, [socket]);
+
+  console.log('blocked status', chatBlocked);
+
 
   console.log('these are all chats', chatHistories);
 
@@ -676,7 +753,8 @@ const RecChatRoom = () => {
       </div>
 
       {/* Right Column - Chat Interface */}
-      <div className="w-[65%] p-4 flex flex-col  mx-3 h-[84vh]">
+
+      <div className="w-[65%] p-4 flex flex-col  mx-3 h-[84vh] ">
         <div className='w-full h-[10%]  mb-2'>
           <p className='font-semibold capitalize text-2xl'>{firstName} {lastName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
           <div className='flex space-x-5 relative'>
@@ -697,16 +775,15 @@ const RecChatRoom = () => {
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleRemoveImportant}>Remove from important</div>
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleViewDetails}>Review application</div>
 
-                  <div className='hover:text-blue-400 p-2 cursor-pointer'>Block chat</div>
+                  <div onClick={handleBlockChat} className='hover:text-blue-400 p-2 cursor-pointer'>Block chat</div>
                 </div>
               )}
             </div>
           </div>
         </div>
-        <div className="flex-grow bg-white mt-4 p-4 rounded-lg shadow-lg overflow-y-auto border-2">
+        <div className={`flex-grow mt-4 p-4 rounded-lg bg-white shadow-lg border-2 relative overflow-y-auto `}>
+          <div className="flex flex-col space-y-4 ">
 
-          {/* Chat messages */}
-          <div className="flex flex-col space-y-4">
             {chatHistories[`${selectedStudent}_${selectedInternship}`]?.map((msg, index, arr) => {
 
               const currentDate = new Date(msg.sentAt);
@@ -714,7 +791,7 @@ const RecChatRoom = () => {
               const isSameDay = previousDate && currentDate.toDateString() === previousDate.toDateString();
 
               return (
-                <React.Fragment key={index}>
+                <React.Fragment key={index} className='border border-black'>
 
                   {!isSameDay && (
                     <div className="text-center text-gray-500 text-sm my-2 font-semibold">
@@ -828,13 +905,26 @@ const RecChatRoom = () => {
                   }
                 </React.Fragment>
               )
+
             })}
+
+            {chatBlocked[`${selectedStudent}_${selectedInternship}`] === 'recruiter' &&
+              <>
+                <div className='flex justify-center items-center text-gray-500 font-semibold text-lg'>
+              
+                  <span>You have blocked this chat</span>
+                </div>
+                <div className='mx-auto px-2 hover:cursor-pointer hover:bg-gray-200 rounded-lg border-2 text-gray-700 text-center font-bold' onClick={handleUnblock}>Unblock</div>
+              </>
+            }
             <div ref={chatEndRef} />
           </div>
+
+
         </div>
 
         {/* Chat input */}
-        <div className="mt-4 flex flex-col space-y-4">
+        {chatBlocked[`${selectedStudent}_${selectedInternship}`] !== 'recruiter' && <div className="mt-4 flex flex-col space-y-4">
           <button
             onClick={toggleAssignmentModal}
             className="bg-red-500 text-white w-[20%] px-2 py-1 rounded-lg hover:scale-105 duration-300"
@@ -858,6 +948,7 @@ const RecChatRoom = () => {
               onChange={(e) => setNewMessage(e.target.value)}
               className="w-full p-2 border-2 rounded-lg"
               placeholder="Type a message..."
+
             />
             <button disabled={newMessage === '' ? true : false}
               className={`bg-blue-500 text-white border px-9 py-1 rounded-lg ${newMessage === '' && 'bg-gray-300'}`}
@@ -866,9 +957,13 @@ const RecChatRoom = () => {
               Send
             </button>
           </div>
-        </div>
+        </div>}
+
       </div>
+
     </div>
+
+
   );
 };
 

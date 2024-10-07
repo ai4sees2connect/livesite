@@ -465,6 +465,48 @@ const initSocket = (server) => {
         socket.emit("error", { message: "Failed to submit assignment." });
       }
     });
+
+
+    socket.on('blockInitiatedByRecruiter', async ({ recruiterId, studentId, internshipId, blockedByRecruiter }) => {
+      try {
+        // Update the chat room status in the database
+        const chatRoom = await ChatRoom.findOneAndUpdate(
+          { recruiter: recruiterId, student: studentId, internship: internshipId },
+          { blockedByRecruiter },
+          { new: true }
+        );
+
+    
+        // Notify both users about the updated block status
+        io.to(chatRoom._id.toString()).emit('chatBlocked', { recruiterId, studentId, internshipId, blockedBy: 'recruiter', blocked: true });
+
+        console.log('emitted');
+      } catch (error) {
+        console.error('Failed to block chat:', error);
+      }
+    });
+
+    socket.on('unblockInitiatedByRecruiter', async ({ recruiterId, studentId, internshipId, blockedByRecruiter }) => {
+      try {
+        // Update the chat room status in the database
+        const chatRoom = await ChatRoom.findOneAndUpdate(
+          { recruiter: recruiterId, student: studentId, internship: internshipId },
+          { blockedByRecruiter },
+          { new: true }
+        );
+
+    
+        // Notify both users about the updated block status
+        io.to(chatRoom._id.toString()).emit('chatBlocked', { recruiterId, studentId, internshipId, blockedBy: 'recruiter', blocked: false });
+
+        console.log('emitted');
+      } catch (error) {
+        console.error('Failed to block chat:', error);
+      }
+    });
+
+
+
   });
 
   return io;

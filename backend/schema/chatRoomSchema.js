@@ -25,6 +25,8 @@ const chatRoomSchema = new mongoose.Schema({
     enum: ['inTouch', 'notHired', 'Hired'],
     default: 'inTouch'
   },
+  blockedByStudent: { type: Boolean, default: false },
+  blockedByRecruiter: { type: Boolean, default: false },
   createdAt: {
     type: Date,
     default: Date.now

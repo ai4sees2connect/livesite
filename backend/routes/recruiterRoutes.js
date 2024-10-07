@@ -315,4 +315,17 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
   }
 });
 
+
+router.get('/blocked-chats', async (req, res) => {
+  try {
+    const blockedChats = await ChatRoom.find({ blockedByRecruiter: true })
+      .select('student recruiter internship')
+
+    res.json(blockedChats);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 module.exports = router;
