@@ -153,10 +153,48 @@ const RecProfile = () => {
     setCompanyUrl(e.target.value);
   };
 
-  const handleSubmit = () => {
-
-  }
-
+  const handleSubmit = async () => {
+    // Check if either the company URL or the selected file is provided
+    if (!companyUrl && !selectedFile) {
+      toast.error('Please provide either a company website URL or upload a certificate.');
+      return;
+    }
+  
+    try {
+      let formData = new FormData();
+  
+      // Check if the company URL is provided
+      if (companyUrl) {
+        formData.append('companyWebsite', companyUrl);
+      }
+  
+      // Check if the selected file is provided
+      if (selectedFile) {
+        formData.append('companyCertificate', selectedFile);
+      }
+  
+      // Make an API call to submit the data
+      const response = await axios.post(`${api}/recruiter/${idFromToken}/upload-details`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      if (response.status === 200) {
+        toast.success('Details submitted successfully!');
+        // Reset the form after successful submission
+        setCompanyUrl('');
+        setSelectedFile(null);
+      } else {
+        toast.error('Failed to submit details. Please try again.');
+      }
+  
+    } catch (error) {
+      toast.error('An error occurred during submission. Please try again.');
+      console.error(error);
+    }
+  };
+  
   return (
     !recruiter ? (
       <Spinner />
@@ -213,9 +251,9 @@ const RecProfile = () => {
               <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-500 bg-opacity-50 z-50 mt-10" >
                 <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] flex flex-col space-y-4 justify-between relative">
                   {/* File Upload Section */}
-                  <FaTimes className='absolute right-3 top-3 text-red-500 hover:cursor-pointer' onClick={()=>setIsModalOpen(false)}/>
-                  <div className='flex'>
-                  <div className="w-[45%] flex flex-col items-center justify-center">
+                  <FaTimes className='absolute right-3 top-3 text-red-500 hover:cursor-pointer' onClick={()=>{setIsModalOpen(false);setSelectedFile(null); setCompanyUrl('')}}/>
+                  <div className='flex justify-center items-center'>
+                  {!companyUrl && <div className="w-[45%] flex flex-col items-center justify-center">
                     <input
                       id="fileinput"
                       type="file"
@@ -229,15 +267,15 @@ const RecProfile = () => {
                       <span>Upload PDF</span>
                     </label>
                     {selectedFile && <p>{selectedFile.name}</p>}
-                  </div>
+                  </div>}
 
                   {/* OR Divider */}
-                  <div className="w-[10%] flex items-center justify-center">
+                 {!selectedFile && !companyUrl && <div className="w-[10%] flex items-center justify-center">
                     <span className="text-gray-400">OR</span>
-                  </div>
+                  </div>}
 
                   {/* URL Input Section */}
-                  <div className="w-[45%] flex flex-col items-center">
+                  {!selectedFile && <div className="w-[45%] flex flex-col items-center">
                     <input
                       type="text"
                       placeholder="Enter company's website URL"
@@ -245,7 +283,7 @@ const RecProfile = () => {
                       className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500"
                     />
 
-                  </div>
+                  </div>}
                   </div>
                   <button
                   onClick={() => { setIsModalOpen(false); handleSubmit() }}

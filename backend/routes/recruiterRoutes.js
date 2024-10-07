@@ -327,5 +327,50 @@ router.get('/blocked-chats', async (req, res) => {
   }
 });
 
+router.post('/:recruiterId/upload-details', upload.single('companyCertificate'), async (req, res) => {
+  try {
+    const { recruiterId } = req.params;
+    const { companyWebsite } = req.body; // Retrieve the company URL from the request body
+
+    let updateData = {};
+
+    // If a company URL is provided, update the URL
+    if (companyWebsite) {
+      updateData.companyWebsite = {
+        link: companyWebsite,
+        uploadedDate: new Date(), // Track the date of the URL submission
+      };
+    }
+
+    // If a file (company certificate) is uploaded, process the file
+    if (req.file) {
+      updateData.companyCertificate = {
+        data: req.file.buffer, // Store the file as a binary buffer
+        contentType: req.file.mimetype,
+        filename: req.file.originalname,
+        fileSize: req.file.size,
+        uploadedDate: new Date(), // Track the date of the file upload
+      };
+    }
+
+    // Update recruiter with company details (either URL or certificate)
+    const recruiter = await Recruiter.findByIdAndUpdate(
+      recruiterId,
+      { $set: updateData },
+      { new: true }
+    );
+
+    if (!recruiter) {
+      return res.status(404).json({ message: 'Recruiter not found' });
+    }
+
+    return res.status(200).json({ message: 'Details updated successfully', recruiter });
+  } catch (error) {
+    console.error('Error uploading company details:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
+
 
 module.exports = router;

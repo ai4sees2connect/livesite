@@ -66,6 +66,22 @@ const recruiterSchema =new mongoose.Schema({
     data: Buffer,        // To store the actual image data as a buffer
     contentType: String, // To store the MIME type of the file (e.g., 'image/png', 'image/jpeg')
     filename: String     // To store the file name
+  },
+  companyWebsite:{
+    link:{type:String},
+    uploadedDate:{
+      type: Date,
+    }
+  },
+
+  companyCertificate:{
+    data: Buffer, // Store the file data as binary
+    contentType: String, // Store the MIME type
+    filename: String, // Store the original filename
+    fileSize: Number, 
+    uploadedDate:{
+      type: Date
+    }
   }
   
     
