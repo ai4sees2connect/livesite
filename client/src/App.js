@@ -29,6 +29,8 @@ import RecDashboard from "./components/recruiter/RecDashboard";
 import Applicants from "./components/recruiter/Applicants";
 import RecChatRoom from "./components/recruiter/RecChatRoom";
 import ApplicationDetails from "./components/recruiter/ApplicationDetails";
+import AdminLogin from "./components/Admin/AdminLogin";
+import AdminDashboard from "./components/Admin/AdminDashboard";
 
 
 //import broswerRouter for different routes
@@ -72,6 +74,10 @@ function App() {
         <Route path="/recruiter/posting/:userId" element={<RecPosting/>} />
         <Route path="/recruiter/:recruiterId/chatroom" element={<RecChatRoom/>} />
         <Route path="/recruiter/:internshipId/application-details/:studentId" element={<ApplicationDetails/>} />
+
+        <Route path="/adminLogin$$$" element={<AdminLogin/>} />
+        <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+
         
       </Routes>
       <ToastContainer
