@@ -7,6 +7,7 @@ import Spinner from '../common/Spinner'
 import api from '../common/server_url';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import TimeAgo from '../common/TimeAgo'
 
 
 const RecProfile = () => {
@@ -24,6 +25,7 @@ const RecProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [companyUrl, setCompanyUrl] = useState('');
+  const [pdfUrl, setPdfUrl] = useState('');
 
   useEffect(() => {
 
@@ -74,6 +76,18 @@ const RecProfile = () => {
       }
     };
   }, [logo]);
+
+  useEffect(() => {
+    if (recruiter?.companyCertificate?.data) {
+      const byteArray = new Uint8Array(recruiter.companyCertificate.data.data);
+      const blob = new Blob([byteArray], { type: recruiter.companyCertificate.contentType });
+      const url = URL.createObjectURL(blob);
+      setPdfUrl(url);
+    }
+  }, [recruiter]);
+
+
+
 
 
   const handleFileChange = (e) => {
@@ -159,42 +173,45 @@ const RecProfile = () => {
       toast.error('Please provide either a company website URL or upload a certificate.');
       return;
     }
-  
+
     try {
       let formData = new FormData();
-  
+
       // Check if the company URL is provided
       if (companyUrl) {
         formData.append('companyWebsite', companyUrl);
       }
-  
+
       // Check if the selected file is provided
       if (selectedFile) {
         formData.append('companyCertificate', selectedFile);
       }
-  
+
       // Make an API call to submit the data
       const response = await axios.post(`${api}/recruiter/${idFromToken}/upload-details`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       if (response.status === 200) {
         toast.success('Details submitted successfully!');
         // Reset the form after successful submission
         setCompanyUrl('');
         setSelectedFile(null);
+        window.location.reload();
       } else {
         toast.error('Failed to submit details. Please try again.');
       }
-  
+
     } catch (error) {
       toast.error('An error occurred during submission. Please try again.');
       console.error(error);
     }
   };
-  
+
+  console.log(recruiter);
+
   return (
     !recruiter ? (
       <Spinner />
@@ -236,7 +253,7 @@ const RecProfile = () => {
           }
           <h1 className=' text-gray-600 '>Ph no- {recruiter.phone}</h1>
 
-          <div className='flex flex-col space-y-3 justify-center'>
+          {!recruiter.companyWebsite.link && !recruiter.companyCertificate.data && <div className='flex flex-col space-y-3 justify-center'>
             {/* Trigger button to open popup */}
             <p className='text-red-400'>Upload company's incorporation certificate or Official webisite link</p>
             <button
@@ -251,55 +268,72 @@ const RecProfile = () => {
               <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-500 bg-opacity-50 z-50 mt-10" >
                 <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] flex flex-col space-y-4 justify-between relative">
                   {/* File Upload Section */}
-                  <FaTimes className='absolute right-3 top-3 text-red-500 hover:cursor-pointer' onClick={()=>{setIsModalOpen(false);setSelectedFile(null); setCompanyUrl('')}}/>
+                  <FaTimes className='absolute right-3 top-3 text-red-500 hover:cursor-pointer' onClick={() => { setIsModalOpen(false); setSelectedFile(null); setCompanyUrl('') }} />
                   <div className='flex justify-center items-center'>
-                  {!companyUrl && <div className="w-[45%] flex flex-col items-center justify-center">
-                    <input
-                      id="fileinput"
-                      type="file"
-                      onChange={handleFileInput}
-                      className="hidden"
-                      accept=".pdf"
-                    />
-                    <label
-                      htmlFor="fileinput"
-                      className="text-blue-500 text-lg hover:cursor-pointer hover:scale-105 duration-300">
-                      <span>Upload PDF</span>
-                    </label>
-                    {selectedFile && <p>{selectedFile.name}</p>}
-                  </div>}
+                    {!companyUrl && <div className="w-[45%] flex flex-col items-center justify-center">
+                      <input
+                        id="fileinput"
+                        type="file"
+                        onChange={handleFileInput}
+                        className="hidden"
+                        accept=".pdf"
+                      />
+                      <label
+                        htmlFor="fileinput"
+                        className="text-blue-500 text-lg hover:cursor-pointer hover:scale-105 duration-300">
+                        <span>Upload PDF</span>
+                      </label>
+                      {selectedFile && <p>{selectedFile.name}</p>}
+                    </div>}
 
-                  {/* OR Divider */}
-                 {!selectedFile && !companyUrl && <div className="w-[10%] flex items-center justify-center">
-                    <span className="text-gray-400">OR</span>
-                  </div>}
+                    {/* OR Divider */}
+                    {!selectedFile && !companyUrl && <div className="w-[10%] flex items-center justify-center">
+                      <span className="text-gray-400">OR</span>
+                    </div>}
 
-                  {/* URL Input Section */}
-                  {!selectedFile && <div className="w-[45%] flex flex-col items-center">
-                    <input
-                      type="text"
-                      placeholder="Enter company's website URL"
-                      onChange={handleUrlInputChange}
-                      className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500"
-                    />
+                    {/* URL Input Section */}
+                    {!selectedFile && <div className="w-[45%] flex flex-col items-center">
+                      <input
+                        type="text"
+                        placeholder="Enter company's website URL"
+                        onChange={handleUrlInputChange}
+                        className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500"
+                      />
 
-                  </div>}
+                    </div>}
                   </div>
                   <button
-                  onClick={() => { setIsModalOpen(false); handleSubmit() }}
-                  className="bg-green-500 text-white mt-2 py-2 px-4 rounded hover:bg-green-700 "
-                >
-                  Submit
-                </button>
+                    onClick={() => { setIsModalOpen(false); handleSubmit() }}
+                    className="bg-green-500 text-white mt-2 py-2 px-4 rounded hover:bg-green-700 "
+                  >
+                    Submit
+                  </button>
                 </div>
-
-                
-                
-                
 
               </div>
             )}
-          </div>
+          </div>}
+
+          {pdfUrl && (
+            <>
+            <a
+              href={pdfUrl}
+              download={recruiter.companyCertificate.filename}
+              className="text-blue-500"
+            >
+              Download Company Incorporation Certificate
+            </a>
+            <p className='text-gray-600'>({`Uploaded ${TimeAgo(recruiter.companyCertificate.uploadedDate)}`})</p>
+            <p className='text-red-400'>We will verify your certificate shortly!</p>
+            <p className='text-red-400 text-center'>(Estimated time-24hrs)</p>
+            </>
+          )}
+
+          {recruiter.companyWebsite.link && <div>
+            <p className='text-blue-500'>{recruiter.companyWebsite.link}</p>
+            <p className='text-red-400'>We will verify your provided link shortly!</p>
+            <p className='text-red-400 text-center'>(Estimated time-24hrs)</p>
+          </div>}
         </div>
 
 

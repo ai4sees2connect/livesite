@@ -144,6 +144,8 @@ router.get("/details", async (req, res) => {
         phone: recruiter.phone,
         companyLogo: recruiter.companyLogo,
         companyName: recruiter.companyName,
+        companyWebsite:recruiter.companyWebsite,
+        companyCertificate:recruiter.companyCertificate
       },
     });
   } catch (error) {
