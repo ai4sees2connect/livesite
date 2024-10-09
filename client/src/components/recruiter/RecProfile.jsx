@@ -253,7 +253,7 @@ const RecProfile = () => {
           }
           <h1 className=' text-gray-600 '>Ph no- {recruiter.phone}</h1>
 
-          {!recruiter.companyWebsite.link && !recruiter.companyCertificate.data && <div className='flex flex-col space-y-3 justify-center'>
+          {!recruiter.companyWebsite && !recruiter.companyCertificate && <div className='flex flex-col space-y-3 justify-center'>
             {/* Trigger button to open popup */}
             <p className='text-red-400'>Upload company's incorporation certificate or Official website link</p>
             <button
@@ -338,7 +338,7 @@ const RecProfile = () => {
             </>
           )}
 
-          {recruiter.companyWebsite.link && <div>
+          {recruiter.companyWebsite && <div>
             <p className='text-blue-500 text-center'>{recruiter.companyWebsite.link}</p>
             <p>{recruiter.companyWebsite.status}</p>
             <p className='text-red-400'>We will verify your provided link shortly!</p>

@@ -8,6 +8,8 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import api from '../common/server_url'
 import Select from 'react-select';
+import { useRecruiter } from './context/recruiterContext'
+import Spinner from '../common/Spinner'
 
 const RecPosting = () => {
   const [formData, setFormData] = useState({
@@ -36,6 +38,7 @@ const RecPosting = () => {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedPerks, setSelectedPerks] = useState([]);
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
+  const {recruiter}=useRecruiter();
   const jobProfiles = [
     "3D Animation",
     "Account Management",
@@ -285,6 +288,7 @@ const RecPosting = () => {
 
   const perks = ["Letter of recommendation", "Flexible work hours", "Certificate", "Informal dress code", "5 days a week", "Free snacks & beverages", "Job offer"];
 
+  console.log(recruiter);
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -422,6 +426,30 @@ const RecPosting = () => {
   console.log('this is assessment question', formData.assessment);
   console.log('this is my location',formData.internLocation);
   console.log('this is my currency',formData.currency);
+
+  let status = null;
+
+  if (recruiter?.companyWebsite?.status !== 'Verified' || recruiter?.companyCertificate?.status !== 'Verified') {
+    if (recruiter?.companyWebsite) {
+      status = recruiter.companyWebsite.status;
+    } else if (recruiter?.companyCertificate) {
+      status = recruiter.companyCertificate.status;
+    }
+
+    if (status === 'pending') {
+      return (
+        <div className='mt-[350px] text-center text-gray-700 text-lg font-semibold'>
+          Please wait some time while we verify your details
+        </div>
+      );
+    } else if (status === 'Rejected') {
+      return (
+        <div className='mt-[350px] text-center text-gray-700 text-lg font-semibold'>
+          We regret to inform you that your verification has failed
+        </div>
+      );
+    }
+  }
 
   return (
     <div>
@@ -798,6 +826,7 @@ const RecPosting = () => {
       </div>
     </div>
   );
+
 };
 
 export default RecPosting;

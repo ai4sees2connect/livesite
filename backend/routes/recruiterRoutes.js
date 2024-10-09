@@ -144,8 +144,12 @@ router.get("/details", async (req, res) => {
         phone: recruiter.phone,
         companyLogo: recruiter.companyLogo,
         companyName: recruiter.companyName,
-        companyWebsite:recruiter.companyWebsite,
-        companyCertificate:recruiter.companyCertificate
+        ...(recruiter.companyWebsite?.link && {
+          companyWebsite: recruiter.companyWebsite,
+        }),
+        ...(recruiter.companyCertificate?.data && {
+          companyCertificate: recruiter.companyCertificate,
+        }),
       },
     });
   } catch (error) {
@@ -256,7 +260,6 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
     const internshipIds = recruiter.internships.map(
       (internship) => internship._id
     );
-   
 
     // Find students who applied for these internships and have been shortlisted
     const shortlistedStudents = await Student.find({
@@ -281,8 +284,9 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
 
       const shortlistedInternships = student.appliedInternships.filter(
         (appliedInternship) =>
-          internshipIds.some((id) => id.equals(appliedInternship.internship._id)) &&
-          appliedInternship.internshipStatus.status === "Shortlisted"
+          internshipIds.some((id) =>
+            id.equals(appliedInternship.internship._id)
+          ) && appliedInternship.internshipStatus.status === "Shortlisted"
       );
       // console.log(shortlistedInternships);
 
@@ -291,22 +295,26 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
         firstname: student.firstname,
         lastname: student.lastname,
         email: student.email,
-        shortlistedInternships: shortlistedInternships.map((shortlistedInternship) => {
+        shortlistedInternships: shortlistedInternships.map(
+          (shortlistedInternship) => {
+            const chatRoom = chatRooms.find(
+              (room) =>
+                room.student.equals(student._id) &&
+                room.internship.equals(shortlistedInternship.internship._id)
+            );
 
-          const chatRoom = chatRooms.find(
-            (room) =>
-              room.student.equals(student._id) &&
-              room.internship.equals(shortlistedInternship.internship._id)
-          );
-
-          return {
-            internshipId: shortlistedInternship.internship._id,
-            internshipName: shortlistedInternship.internship.internshipName,
-            statusUpdatedAt: shortlistedInternship.internshipStatus.statusUpdatedAt,
-            importantForRecruiter: chatRoom ? chatRoom.importantForRecruiter : false,
-            studentStatus:chatRoom.studentStatus // Default to false if no chatRoom is found
-          };
-        }),
+            return {
+              internshipId: shortlistedInternship.internship._id,
+              internshipName: shortlistedInternship.internship.internshipName,
+              statusUpdatedAt:
+                shortlistedInternship.internshipStatus.statusUpdatedAt,
+              importantForRecruiter: chatRoom
+                ? chatRoom.importantForRecruiter
+                : false,
+              studentStatus: chatRoom.studentStatus, // Default to false if no chatRoom is found
+            };
+          }
+        ),
       };
     });
 
@@ -317,62 +325,66 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
   }
 });
 
-
-router.get('/blocked-chats', async (req, res) => {
+router.get("/blocked-chats", async (req, res) => {
   try {
-    const blockedChats = await ChatRoom.find({ blockedByRecruiter: true })
-      .select('student recruiter internship')
+    const blockedChats = await ChatRoom.find({
+      blockedByRecruiter: true,
+    }).select("student recruiter internship");
 
     res.json(blockedChats);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-router.post('/:recruiterId/upload-details', upload.single('companyCertificate'), async (req, res) => {
-  try {
-    const { recruiterId } = req.params;
-    const { companyWebsite } = req.body; // Retrieve the company URL from the request body
+router.post(
+  "/:recruiterId/upload-details",
+  upload.single("companyCertificate"),
+  async (req, res) => {
+    try {
+      const { recruiterId } = req.params;
+      const { companyWebsite } = req.body; // Retrieve the company URL from the request body
 
-    let updateData = {};
+      let updateData = {};
 
-    // If a company URL is provided, update the URL
-    if (companyWebsite) {
-      updateData.companyWebsite = {
-        link: companyWebsite,
-        uploadedDate: new Date(), // Track the date of the URL submission
-      };
+      // If a company URL is provided, update the URL
+      if (companyWebsite) {
+        updateData.companyWebsite = {
+          link: companyWebsite,
+          uploadedDate: new Date(), // Track the date of the URL submission
+        };
+      }
+
+      // If a file (company certificate) is uploaded, process the file
+      if (req.file) {
+        updateData.companyCertificate = {
+          data: req.file.buffer, // Store the file as a binary buffer
+          contentType: req.file.mimetype,
+          filename: req.file.originalname,
+          fileSize: req.file.size,
+          uploadedDate: new Date(), // Track the date of the file upload
+        };
+      }
+
+      // Update recruiter with company details (either URL or certificate)
+      const recruiter = await Recruiter.findByIdAndUpdate(
+        recruiterId,
+        { $set: updateData },
+        { new: true }
+      );
+
+      if (!recruiter) {
+        return res.status(404).json({ message: "Recruiter not found" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Details updated successfully", recruiter });
+    } catch (error) {
+      console.error("Error uploading company details:", error);
+      res.status(500).json({ message: "Server error", error });
     }
-
-    // If a file (company certificate) is uploaded, process the file
-    if (req.file) {
-      updateData.companyCertificate = {
-        data: req.file.buffer, // Store the file as a binary buffer
-        contentType: req.file.mimetype,
-        filename: req.file.originalname,
-        fileSize: req.file.size,
-        uploadedDate: new Date(), // Track the date of the file upload
-      };
-    }
-
-    // Update recruiter with company details (either URL or certificate)
-    const recruiter = await Recruiter.findByIdAndUpdate(
-      recruiterId,
-      { $set: updateData },
-      { new: true }
-    );
-
-    if (!recruiter) {
-      return res.status(404).json({ message: 'Recruiter not found' });
-    }
-
-    return res.status(200).json({ message: 'Details updated successfully', recruiter });
-  } catch (error) {
-    console.error('Error uploading company details:', error);
-    res.status(500).json({ message: 'Server error', error });
   }
-});
-
-
+);
 
 module.exports = router;
