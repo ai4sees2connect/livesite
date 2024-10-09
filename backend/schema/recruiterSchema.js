@@ -71,6 +71,10 @@ const recruiterSchema =new mongoose.Schema({
     link:{type:String},
     uploadedDate:{
       type: Date,
+    },
+    status:{
+      type: String,
+      default:'pending'
     }
   },
 
@@ -81,6 +85,10 @@ const recruiterSchema =new mongoose.Schema({
     fileSize: Number, 
     uploadedDate:{
       type: Date
+    },
+    status:{
+      type: String,
+      default:'pending'
     }
   }
   

@@ -255,7 +255,7 @@ const RecProfile = () => {
 
           {!recruiter.companyWebsite.link && !recruiter.companyCertificate.data && <div className='flex flex-col space-y-3 justify-center'>
             {/* Trigger button to open popup */}
-            <p className='text-red-400'>Upload company's incorporation certificate or Official webisite link</p>
+            <p className='text-red-400'>Upload company's incorporation certificate or Official website link</p>
             <button
               onClick={() => setIsModalOpen(true)}
               className='bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700'
@@ -316,24 +316,36 @@ const RecProfile = () => {
 
           {pdfUrl && (
             <>
-            <a
-              href={pdfUrl}
-              download={recruiter.companyCertificate.filename}
-              className="text-blue-500"
-            >
-              Download Company Incorporation Certificate
-            </a>
-            <p className='text-gray-600'>({`Uploaded ${TimeAgo(recruiter.companyCertificate.uploadedDate)}`})</p>
-            <p className='text-red-400'>We will verify your certificate shortly!</p>
-            <p className='text-red-400 text-center'>(Estimated time-24hrs)</p>
+              <a
+                href={pdfUrl}
+                download={recruiter.companyCertificate.filename}
+                className="text-blue-500"
+              >
+                Download Company Incorporation Certificate
+              </a>
+              <p className='text-gray-600'>({`Uploaded ${TimeAgo(recruiter.companyCertificate.uploadedDate)}`})</p>
+              <p className='text-gray-600'>Verification: 
+                 <span className={`${recruiter.companyCertificate.status === 'pending'
+                  ? 'text-yellow-500'
+                  : recruiter.companyCertificate.status === 'Verified'
+                    ? 'text-green-500'
+                    : recruiter.companyCertificate.status === 'Rejected'
+                      ? 'text-red-500'
+                      : ''
+                }`}>{recruiter.companyCertificate.status}</span></p>
+              <p className='text-red-400'>We will verify your certificate shortly!</p>
+              <p className='text-red-400 text-center'>(Estimated time-24hrs)</p>
             </>
           )}
 
           {recruiter.companyWebsite.link && <div>
             <p className='text-blue-500 text-center'>{recruiter.companyWebsite.link}</p>
+            <p>{recruiter.companyWebsite.status}</p>
             <p className='text-red-400'>We will verify your provided link shortly!</p>
             <p className='text-red-400 text-center'>(Estimated time-24hrs)</p>
           </div>}
+
+
         </div>
 
 
