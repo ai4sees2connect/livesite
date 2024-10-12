@@ -340,7 +340,7 @@ const RecProfile = () => {
 
           {recruiter.companyWebsite && <div>
             <p className='text-blue-500 text-center'>{recruiter.companyWebsite.link}</p>
-            <p>{recruiter.companyWebsite.status}</p>
+            <p className='text-gray-700 text-center'>Verification: {recruiter.companyWebsite.status}</p>
             <p className='text-red-400'>We will verify your provided link shortly!</p>
             <p className='text-red-400 text-center'>(Estimated time-24hrs)</p>
           </div>}

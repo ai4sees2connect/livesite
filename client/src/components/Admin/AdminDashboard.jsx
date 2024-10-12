@@ -160,12 +160,12 @@ const AdminDashboard = () => {
                 )}
               </td>
               
-              <td>
+              <td className='px-4 py-2 border border-gray-200'>
                 <button className='border mx-1 px-2 py-1 bg-green-600 text-white rounded-md hover:scale-105 duration-300 font-semibold' onClick={()=>handleVerified(recruiter._id)}>Verified</button>
                 <button className='border mx-1 px-2 py-1 bg-red-500 text-white rounded-md hover:scale-105 duration-300 font-semibold' onClick={()=>handleReject(recruiter._id)}>Reject</button>
               </td>
 
-              <td>
+              <td className='px-4 py-2 border border-gray-200'>
                 <div>{status}</div>
               </td>
             </tr>

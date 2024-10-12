@@ -40,9 +40,9 @@ const RecNavbar = () => {
         <div className="flex space-x-8">
           {/* Links starts from here */}
           <div className="relative mt-5 group ">
-            <a href="#" className=" hover:text-blue-500 p-5 ">
+            <Link to={`/recruiter/${userId}/pricing`} className=" hover:text-blue-500 p-5 ">
               Plans and Pricing
-            </a>
+            </Link>
           </div>
 
         

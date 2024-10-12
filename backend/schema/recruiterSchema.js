@@ -34,66 +34,77 @@ const Internship=require('./internshipSchema')
 
 
 
-const recruiterSchema =new mongoose.Schema({
-  firstname:{
-    type:String,
-    required: true,
-  },
-  lastname:{
-    type:String,
-    required: true,
-  },
-  email:{
+const recruiterSchema = new mongoose.Schema({
+  firstname: {
     type: String,
-     required: true,
-      unique: true
+    required: true,
   },
-  phone:{
-    type:Number
+  lastname: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  phone: {
+    type: Number,
   },
   password: { 
     type: String,
   },
-  companyName:{
-    type:String
+  companyName: {
+    type: String,
   },
   internships: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Internship',
-    default: []
+    default: [],
   }],
   companyLogo: {
-    data: Buffer,        // To store the actual image data as a buffer
-    contentType: String, // To store the MIME type of the file (e.g., 'image/png', 'image/jpeg')
-    filename: String     // To store the file name
+    data: Buffer,        
+    contentType: String, 
+    filename: String,     
   },
-  companyWebsite:{
-    link:{type:String},
-    uploadedDate:{
-      type: Date,
-    },
-    status:{
+  companyWebsite: {
+    link: { type: String },
+    uploadedDate: { type: Date },
+    status: {
       type: String,
-      default:'pending'
-    }
+      default: 'pending',
+    },
   },
-
-  companyCertificate:{
-    data: Buffer, // Store the file data as binary
-    contentType: String, // Store the MIME type
-    filename: String, // Store the original filename
+  companyCertificate: {
+    data: Buffer, 
+    contentType: String, 
+    filename: String, 
     fileSize: Number, 
-    uploadedDate:{
-      type: Date
-    },
-    status:{
+    uploadedDate: { type: Date },
+    status: {
       type: String,
-      default:'pending'
-    }
-  }
-  
-    
-},{timestamps: true});
+      default: 'pending',
+    },
+  },
+  subscription: {
+    planType: {
+      type: String, // e.g., 'free', '1-month', '3-month', '1-year'
+      default: 'free',
+    },
+    activationDate: {
+      type: Date,
+      default: Date.now,
+    },
+    expirationDate: {
+      type: Date, // Automatically calculated when plan is purchased
+    },
+    status: {
+      type: String,
+      default: 'active', // 'active', 'expired', etc.
+    },
+  },
+}, { timestamps: true });
+
 
 
 recruiterSchema.pre('save', async function (next) {
