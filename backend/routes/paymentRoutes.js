@@ -3,6 +3,7 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const Recruiter = require("../schema/recruiterSchema");
 const dotenv = require("dotenv");
+// const { connect } = require("http2");
 
 dotenv.config();
 const router = express.Router();
@@ -43,9 +44,26 @@ router.post('/:recruiterId/create-order', async (req, res) => {
   }
 });
 
-router.post('/:recruiterId/verification', async (req, res) => {
+router.post('/verify-payment', async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, planType, recruiterId } = req.body;
+    // console.log(req.body);
+    // console.log('this is recruiterId', recruiterId.recruiterId);
+    // const recruiter=await Recruiter.findById(recruiterId);
+    // console.log(recruiter);
+    let posts='';
+    switch(planType) {
+      case '1-month':
+        posts="3"
+        break;
+      
+      case '3-month':
+        posts="12"
+        break;
+
+      case '1-year':
+        posts="Unlimited"
+    }
 
     // Perform Razorpay payment verification
     const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -53,7 +71,7 @@ router.post('/:recruiterId/verification', async (req, res) => {
       .createHmac("sha256", process.env.RAZORPAY_API_SECRET)
       .update(body.toString())
       .digest("hex");
-
+    // console.log(expectedSignature===razorpay_signature);
     if (expectedSignature === razorpay_signature) {
       // Payment is verified
       
@@ -63,28 +81,32 @@ router.post('/:recruiterId/verification', async (req, res) => {
         '3-month': { duration: 3, unit: 'month' },
         '1-year': { duration: 1, unit: 'year' }
       };
+      // console.log('this is subscriptionPlans',subscriptionPlans);
 
       const selectedPlan = subscriptionPlans[planType];
       const activationDate = new Date();
       const expirationDate = new Date();
       expirationDate.setMonth(activationDate.getMonth() + selectedPlan.duration); // Add the duration to calculate expiration date
 
-      // Find and update recruiter by ID
-      await Recruiter.findByIdAndUpdate(recruiterId, {
+      const updatedRecruiter = await Recruiter.findByIdAndUpdate(recruiterId, {
         'subscription.planType': planType,
         'subscription.activationDate': activationDate,
         'subscription.expirationDate': expirationDate,
+        'subscription.postsRemaining':posts,
         'subscription.status': 'active',
-      });
+      }, { new: true }); // Get the updated document
+     
+      
 
-      res.status(200).json({ message: 'Payment verified and subscription updated.' });
+      res.status(200).json({ message: 'Payment verified and subscription updated.',success:true });
     } else {
-      return res.status(400).json({ message: "Payment verification failed." });
+      return res.status(400).json({ message: "Payment verification failed." , success:false});
     }
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error.", error });
+    return res.status(500).json({ message: "Internal server error.", error, success:false });
   }
 });
+
 
 
 module.exports = router;

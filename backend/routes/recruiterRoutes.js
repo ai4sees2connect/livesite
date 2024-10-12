@@ -30,6 +30,12 @@ router.post("/signup", async (req, res) => {
       email,
       phone,
       password,
+      subscription: { // Initialize the subscription field
+        planType: 'free', // You can set a default plan type
+        activationDate: null,
+        expirationDate: null,
+        status: 'inactive', // Default status
+      }
     });
 
     const token = jwt.sign({ id: recruiter._id }, process.env.JWT_SECRET_KEY, {
@@ -143,6 +149,7 @@ router.get("/details", async (req, res) => {
         email: recruiter.email,
         phone: recruiter.phone,
         companyLogo: recruiter.companyLogo,
+        subscription:recruiter.subscription,
         companyName: recruiter.companyName,
         ...(recruiter.companyWebsite?.link && {
           companyWebsite: recruiter.companyWebsite,

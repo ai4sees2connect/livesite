@@ -98,6 +98,10 @@ const recruiterSchema = new mongoose.Schema({
     expirationDate: {
       type: Date, // Automatically calculated when plan is purchased
     },
+    postsRemaining:{
+      type: String,
+      default: "1"
+    },
     status: {
       type: String,
       default: 'active', // 'active', 'expired', etc.

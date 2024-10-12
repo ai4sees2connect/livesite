@@ -2,11 +2,16 @@ import React from 'react';
 import axios from 'axios';
 import api from '../common/server_url'
 import { useParams } from 'react-router-dom';
+import {toast} from 'react-toastify'
+import {useRecruiter} from './context/recruiterContext'
+import Spinner from '../common/Spinner'
+import TimeLeft from '../common/TimeLeft'
 
 const RecPricing = () => {
   
-  const recruiterId=useParams();
-
+  const {recruiterId}=useParams();
+  const {recruiter}=useRecruiter();
+  console.log(recruiterId);
 
   const handlePayment = async (amount, planType) => {
     try {
@@ -27,7 +32,7 @@ const RecPricing = () => {
         key: razorpayKey, // Replace with your Razorpay Key ID from environment
         amount: order.amount, // Order amount in the smallest currency unit (paise)
         currency: 'INR',
-        name: 'Your Company Name',
+        name: 'Internshub',
         description: `Payment for ${planType}`, // Use the planType dynamically
         order_id: order.id, // Order ID from Razorpay
   
@@ -38,15 +43,15 @@ const RecPricing = () => {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              recruiterId,  // Pass the recruiterId to identify the recruiter
+              recruiterId,
               planType,     // Pass the plan type to update subscription
             });
   
             if (verifyData.success) {
-              alert('Payment successful and verified!');
+              toast.success('Payment successful')
               // You can redirect or update the UI to reflect the new subscription
             } else {
-              alert('Payment verification failed');
+              toast.error('Payment failed')
             }
           } catch (error) {
             console.error('Payment verification failed:', error);
@@ -54,14 +59,14 @@ const RecPricing = () => {
           }
         },
   
-        // prefill: {
-        //   name: 'Recruiter Name', // You can dynamically populate this based on logged-in recruiter
-        //   email: 'recruiter@example.com', // Similarly, populate this from recruiter data
-        //   contact: '9999999999', // Optional
-        // },
+        prefill: {
+          name: '', // You can dynamically populate this based on logged-in recruiter
+          email: '', // Similarly, populate this from recruiter data
+          contact: '', // Optional
+        },
         
         theme: {
-          color: '#3399cc', // Customize the color
+          color: '#1b70d1', // Customize the color
         },
       };
   
@@ -73,11 +78,39 @@ const RecPricing = () => {
       alert('Payment failed to initialize');
     }
   };
+  console.log(recruiter);
   
+  if(!recruiter){
+    return <Spinner />
+  }
+  let planType='';
+  switch(recruiter.subscription.planType){
+    case 'free':
+      planType='Free Plan';
+      break;
+    case '1-month':
+      planType='1 Month Plan';
+      break;
+    case '3-month':
+      planType='3 Month Plan';
+      break;
+    case '1-year':
+      planType='1 Year Plan';
+      break;
+    
+  }
 
   return (
     <div className='mt-20'>
-      <div className='text-gray-700 text-center'>You are currently using free plan</div>
+      <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-[20%] text-center mx-auto bg-blue-50 ">
+          <h2 className="text-xl font-semibold mb-4">Active Plan</h2>
+          <p className="text-xl font-semibold mb-4 text-blue-600 capitalize">{planType}</p>
+          
+          <p className="text-red-500 mb-4">Your subscription ends in {TimeLeft(recruiter.subscription.expirationDate)} days</p>
+          <p className='text-gray-700'>No of postings left:{recruiter.subscription.postsRemaining}</p>
+         
+        </div>
+
       <div className="flex justify-center space-x-4 p-6 text-gray-700 text-center">
         
         {/* Free Plan */}
@@ -95,10 +128,10 @@ const RecPricing = () => {
           <p className="text-gray-600 mb-4">Best for short-term hiring.</p>
           <br />
           <p className="text-blue-600  mb-4">Total Posting: 3/month</p>
-          <p className="text-2xl font-bold">&#8377;2000</p>
+          <p className="text-2xl font-bold">&#8377;1</p>
           <button 
             className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg"
-            onClick={() => handlePayment(200000,'1-month')}
+            onClick={() => handlePayment(100,'1-month')}
           >
             Buy Now
           </button>
@@ -109,10 +142,10 @@ const RecPricing = () => {
           <h2 className="text-xl font-semibold mb-4">3 Month Plan</h2>
           <p className="text-gray-600 mb-4">Popular choice for consistent hiring.</p>
           <p className="text-blue-600  mb-4">Total Posting: 4/month</p>
-          <p className="text-2xl font-bold">&#8377;5600</p>
+          <p className="text-2xl font-bold">&#8377;2</p>
           <button 
             className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg"
-            onClick={() => handlePayment(560000,'3-month')}
+            onClick={() => handlePayment(200,'3-month')}
           >
             Buy Now
           </button>
@@ -123,10 +156,10 @@ const RecPricing = () => {
           <h2 className="text-xl font-semibold mb-4">1 Year Plan</h2>
           <p className="text-gray-600 mb-4">Best value for long-term hiring needs.</p>
           <p className="text-blue-600  mb-4">Total Posting: Unlimited</p>
-          <p className="text-2xl font-bold">&#8377;23000</p>
+          <p className="text-2xl font-bold">&#8377;3</p>
           <button 
             className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg"
-            onClick={() => handlePayment(2300000,'1-year')}
+            onClick={() => handlePayment(300,'1-year')}
           >
             Buy Now
           </button>
