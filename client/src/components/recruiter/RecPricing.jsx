@@ -53,6 +53,9 @@ const RecPricing = () => {
             } else {
               toast.error('Payment failed')
             }
+            setTimeout(()=>{
+              window.location.reload();
+            },1000)
           } catch (error) {
             console.error('Payment verification failed:', error);
             alert('Payment verification failed');
@@ -106,7 +109,7 @@ const RecPricing = () => {
           <h2 className="text-xl font-semibold mb-4">Active Plan</h2>
           <p className="text-xl font-semibold mb-4 text-blue-600 capitalize">{planType}</p>
           
-          <p className="text-red-500 mb-4">Your subscription ends in {TimeLeft(recruiter.subscription.expirationDate)} days</p>
+          {recruiter.subscription.planType!=='free' && <p className="text-red-500 mb-4">Your subscription ends in {TimeLeft(recruiter.subscription.expirationDate)} days</p>}
           <p className='text-gray-700'>No of postings left:{recruiter.subscription.postsRemaining}</p>
          
         </div>
@@ -123,7 +126,7 @@ const RecPricing = () => {
         </div>
 
         {/* 1 Month Plan */}
-        <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-[20%]">
+        <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-[20%]  hover:border-blue-500 hover:scale-105 duration-300">
           <h2 className="text-xl font-semibold mb-4">1 Month Plan</h2>
           <p className="text-gray-600 mb-4">Best for short-term hiring.</p>
           <br />
@@ -138,7 +141,7 @@ const RecPricing = () => {
         </div>
 
         {/* 3 Month Plan */}
-        <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-[20%]">
+        <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-[20%]  hover:border-blue-500 hover:scale-105 duration-300">
           <h2 className="text-xl font-semibold mb-4">3 Month Plan</h2>
           <p className="text-gray-600 mb-4">Popular choice for consistent hiring.</p>
           <p className="text-blue-600  mb-4">Total Posting: 4/month</p>
@@ -152,7 +155,7 @@ const RecPricing = () => {
         </div>
 
         {/* 1 Year Plan */}
-        <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-[20%]">
+        <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-[20%]  hover:border-blue-500 hover:scale-105 duration-300">
           <h2 className="text-xl font-semibold mb-4">1 Year Plan</h2>
           <p className="text-gray-600 mb-4">Best value for long-term hiring needs.</p>
           <p className="text-blue-600  mb-4">Total Posting: Unlimited</p>

@@ -288,7 +288,7 @@ const RecPosting = () => {
 
   const perks = ["Letter of recommendation", "Flexible work hours", "Certificate", "Informal dress code", "5 days a week", "Free snacks & beverages", "Job offer"];
 
-  console.log(recruiter);
+  console.log('this is recruite data',recruiter);
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -449,6 +449,10 @@ const RecPosting = () => {
         </div>
       );
     }
+  }
+
+  if(!recruiter?.companyCertificate && !recruiter?.companyWebsite){
+    return (<div className='mt-[350px] text-center text-gray-700 text-lg font-semibold'>Verification pending in profile section</div>)
   }
 
   return (
