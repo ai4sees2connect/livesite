@@ -110,7 +110,7 @@ const RecPricing = () => {
           <p className="text-xl font-semibold mb-4 text-blue-600 capitalize">{planType}</p>
           
           {recruiter.subscription.planType!=='free' && <p className="text-red-500 mb-4">Your subscription ends in {TimeLeft(recruiter.subscription.expirationDate)} days</p>}
-          <p className='text-gray-700'>No of postings left:{recruiter.subscription.postsRemaining}</p>
+          <p className='text-gray-700'>No of postings left: {recruiter.subscription.postsRemaining}</p>
          
         </div>
 

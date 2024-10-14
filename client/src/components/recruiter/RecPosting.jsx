@@ -10,6 +10,7 @@ import api from '../common/server_url'
 import Select from 'react-select';
 import { useRecruiter } from './context/recruiterContext'
 import Spinner from '../common/Spinner'
+import { Link } from 'react-router-dom';
 
 const RecPosting = () => {
   const [formData, setFormData] = useState({
@@ -38,7 +39,7 @@ const RecPosting = () => {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedPerks, setSelectedPerks] = useState([]);
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
-  const {recruiter}=useRecruiter();
+  const { recruiter } = useRecruiter();
   const jobProfiles = [
     "3D Animation",
     "Account Management",
@@ -288,7 +289,7 @@ const RecPosting = () => {
 
   const perks = ["Letter of recommendation", "Flexible work hours", "Certificate", "Informal dress code", "5 days a week", "Free snacks & beverages", "Job offer"];
 
-  console.log('this is recruite data',recruiter);
+  console.log('this is recruite data', recruiter);
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -388,22 +389,7 @@ const RecPosting = () => {
       if (response.data.success) {
         toast.success('Internship posted successfully');
         console.log('Response:', response.data);
-        // setFormData({
-        //   internshipName: '',
-        //   internshipType: '',
-        //   internLocation: '', // Reset internLocation
-        //   numberOfOpenings: '',
-        //   stipend: '',
-        //   duration: '',
-        //   description: '',
-        //   assessment: '',
-        //   skills: [],
-        // });
-        // // setSkill('');
-        // setSelectedProfile(null);
-        // setSelectedPerks([]);
-        // setFormKey(formKey + 1);
-        // console.log(formData);
+       window.location.reload();
         return;
       }
       else {
@@ -424,8 +410,8 @@ const RecPosting = () => {
   // console.log(selectedProfile)
   // console.log(selectedPerks);
   console.log('this is assessment question', formData.assessment);
-  console.log('this is my location',formData.internLocation);
-  console.log('this is my currency',formData.currency);
+  console.log('this is my location', formData.internLocation);
+  console.log('this is my currency', formData.currency);
 
   let status = null;
 
@@ -451,8 +437,25 @@ const RecPosting = () => {
     }
   }
 
-  if(!recruiter?.companyCertificate && !recruiter?.companyWebsite){
+  if (!recruiter?.companyCertificate && !recruiter?.companyWebsite) {
     return (<div className='mt-[350px] text-center text-gray-700 text-lg font-semibold'>Verification pending in profile section</div>)
+  }
+  else if (recruiter?.subscription.planType !== 'Unlimited') {
+    if (recruiter?.subscription.planType === 'free' && recruiter?.subscription.postsRemaining < 1) {
+      return (
+        <div className='flex flex-col space-y-3'>
+          <div className='mt-[350px] text-center text-gray-700 text-lg font-semibold'>You have used your monthly available free postings</div>
+          <Link to={`/recruiter/${userId}/pricing`} className='w-fit mx-auto border bg-blue-400 px-2 py-1 font-semibold text-white rounded-md '>Upgrade your plan</Link>
+        </div>
+      )
+    } else if ((recruiter?.subscription.planType === '1-month' || recruiter?.subscription.planType === '3-month' || recruiter?.subscription.planType === '1-year') && recruiter?.subscription.postsRemaining < 1) {
+      return (
+        <div className='flex flex-col space-y-3'>
+          <div className='mt-[350px] text-center text-gray-700 text-lg font-semibold'>You have used your available postings</div>
+          <Link to={`/recruiter/${userId}/pricing`} className='w-fit mx-auto border bg-blue-400 px-2 py-1 font-semibold text-white rounded-md '>Upgrade your plan</Link>
+        </div>
+      )
+    }
   }
 
   return (
@@ -542,7 +545,7 @@ const RecPosting = () => {
               <Select
                 options={statesAndUTs}
                 values={formData.internLocation}
-                onChange={(value)=>setFormData({...formData,internLocation:value.value})}
+                onChange={(value) => setFormData({ ...formData, internLocation: value.value })}
                 placeholder="Select a location"
                 searchable={true}
                 className='w-full shadow-md'
@@ -728,13 +731,13 @@ const RecPosting = () => {
             {formData.stipendType === "performance-based" && (
               <div className='flex flex-col my-4'>
                 <label className='font-medium'>Describe your incentive criteria</label>
-              <textarea
-                name="incentiveDescription"
-                value={formData.incentiveDescription}
-                onChange={handleChange}
-                className="p-2 border border-gray-300 rounded-md shadow-md"
-                placeholder="Describe the performance-based incentive"
-              />
+                <textarea
+                  name="incentiveDescription"
+                  value={formData.incentiveDescription}
+                  onChange={handleChange}
+                  className="p-2 border border-gray-300 rounded-md shadow-md"
+                  placeholder="Describe the performance-based incentive"
+                />
               </div>
             )}
           </div>

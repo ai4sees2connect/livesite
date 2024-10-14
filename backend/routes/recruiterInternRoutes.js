@@ -18,7 +18,10 @@ router.post('/post/:userId',async(req,res)=>{
   try{
 
   const recruiter=await Recruiter.findById(userId);
+  
   if(!recruiter) return res.status(404).json({message:'Recruiter not found'});
+
+  recruiter.subscription.postsRemaining = parseInt(recruiter.subscription.postsRemaining) - 1;
 
   const newInternship = new Internship({
     internshipName,
