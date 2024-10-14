@@ -62,7 +62,7 @@ router.post('/verify-payment', async (req, res) => {
         break;
 
       case '1-year':
-        posts="Unlimited"
+        posts="10"
     }
 
     // Perform Razorpay payment verification

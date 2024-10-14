@@ -158,7 +158,7 @@ const RecPricing = () => {
         <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-[20%]  hover:border-blue-500 hover:scale-105 duration-300">
           <h2 className="text-xl font-semibold mb-4">1 Year Plan</h2>
           <p className="text-gray-600 mb-4">Best value for long-term hiring needs.</p>
-          <p className="text-blue-600  mb-4">Total Posting: Unlimited</p>
+          <p className="text-blue-600  mb-4">Total Posting: 10/month</p>
           <p className="text-2xl font-bold">&#8377;3</p>
           <button 
             className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg"

@@ -124,6 +124,35 @@ router.post("/login/googleauth", async (req, res) => {
   }
 });
 
+
+const refreshPostsForNewMonth = async (recruiter) => {
+  const currentDate = new Date();
+  const activationDate = new Date(recruiter.subscription.activationDate);
+  const currentMonth = currentDate.getMonth();
+  const activationMonth = activationDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+  const activationYear = activationDate.getFullYear();
+
+  // Check if a new month has started since activation
+  if (currentMonth !== activationMonth || currentYear !== activationYear) {
+    // Refresh the postsRemaining based on the plan type
+    if (recruiter.subscription.planType === 'free') {
+      recruiter.subscription.postsRemaining = 1; // Free version gets 1 post per month
+    } else if (recruiter.subscription.planType === '1-month') {
+      recruiter.subscription.postsRemaining = 3; // Reset to 3 for 1-month plan
+    } else if (recruiter.subscription.planType === '3-month') {
+      recruiter.subscription.postsRemaining = 4; // Reset to 4 for 3-month plan
+    } else if (recruiter.subscription.planType === '1-year') {
+      recruiter.subscription.postsRemaining = 10; // Reset to 10 for 1-year plan
+    }
+
+    // Update activation date to the current month
+    recruiter.subscription.activationDate = new Date(currentYear, currentMonth, 1);
+    await recruiter.save(); // Save the recruiter with the updated subscription details
+  }
+};
+
+
 router.get("/details", async (req, res) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1]; // Get token from 'Bearer TOKEN'
@@ -140,6 +169,7 @@ router.get("/details", async (req, res) => {
 
     if (!recruiter) return res.json({ success: false });
 
+    await refreshPostsForNewMonth(recruiter);
     // Send user data as response
     res.status(200).json({
       success: true,
