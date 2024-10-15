@@ -62,7 +62,7 @@ router.post('/verify-payment', async (req, res) => {
         break;
 
       case '1-year':
-        posts="10"
+        posts="90"
     }
 
     // Perform Razorpay payment verification
@@ -79,14 +79,15 @@ router.post('/verify-payment', async (req, res) => {
       const subscriptionPlans = {
         '1-month': { duration: 1, unit: 'month' },
         '3-month': { duration: 3, unit: 'month' },
-        '1-year': { duration: 1, unit: 'year' }
+        '1-year': { duration: 12, unit: 'month' }
       };
       // console.log('this is subscriptionPlans',subscriptionPlans);
 
       const selectedPlan = subscriptionPlans[planType];
       const activationDate = new Date();
       const expirationDate = new Date();
-      expirationDate.setMonth(activationDate.getMonth() + selectedPlan.duration); // Add the duration to calculate expiration date
+      
+      expirationDate.setMonth(expirationDate.getMonth() + selectedPlan.duration);
 
       const updatedRecruiter = await Recruiter.findByIdAndUpdate(recruiterId, {
         'subscription.planType': planType,

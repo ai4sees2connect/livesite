@@ -23,6 +23,9 @@ router.post("/signup", async (req, res) => {
     if (recruiter) {
       return res.status(400).json({ message: "Recruiter already exists" });
     }
+    const currentDate = new Date();
+    const oneMonthLater = new Date(currentDate);
+    oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
 
     recruiter = await Recruiter.create({
       firstname,
@@ -32,8 +35,8 @@ router.post("/signup", async (req, res) => {
       password,
       subscription: { // Initialize the subscription field
         planType: 'free', // You can set a default plan type
-        activationDate: null,
-        expirationDate: null,
+        activationDate: currentDate,
+        expirationDate: oneMonthLater,
         status: 'inactive', // Default status
       }
     });
