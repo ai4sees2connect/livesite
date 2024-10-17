@@ -3,6 +3,7 @@ const cors = require('cors');
 const connection=require('./mongoose/connect');
 const dotenv = require('dotenv');
 const Student=require('./schema/studentSchema');
+const Recruiter=require('./schema/recruiterSchema');
 const jwt = require('jsonwebtoken');
 const studentRoutes= require('./routes/studentRoutes');
 const recruiterRoutes= require('./routes/recruiterRoutes')
@@ -36,6 +37,31 @@ app.use('/payments',paymentRoutes);
 app.get('/',(req,res)=>{
   res.send('Welcome to our Server......')
 })
+
+app.get('/findUserType/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Check if the userId exists in the Students collection
+    const student = await Student.findById(userId);
+    if (student) {
+      return res.json({ userType: 'student' });
+    }
+
+    // Check if the userId exists in the Recruiters collection
+    const recruiter = await Recruiter.findById(userId);
+    if (recruiter) {
+      return res.json({ userType: 'recruiter'});
+    }
+
+    // If not found in both collections
+    return res.status(404).json({ error: 'User not found' });
+  } catch (error) {
+    console.error('Error finding user type:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 const server = http.createServer(app);
 initSocket(server);  // Initialize the socket

@@ -1,4 +1,6 @@
 import React, {useEffect} from 'react';
+import findUser from '../common/UserDetection.js'
+import { useNavigate } from 'react-router-dom';
 
 const Privacy = () => {
 
@@ -6,12 +8,27 @@ const Privacy = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  const navigate = useNavigate();
+  const handleUserNavigate=async()=>{
+    const {userType,userId}=await findUser();
+    console.log(userType)
+    if(userType==='student'){
+      navigate(`/student/dashboard/${userId}`)
+      return;
+    }
+
+    if(userType==='recruiter'){
+      navigate(`/recruiter/dashboard/${userId}`)
+      return;
+    }
+  }
+
   return (
     <>
      <nav className="w-full bg-white shadow-md z-10">
         <div className="max-w-7xl mx-auto px-4 py-4 text-center flex justify-center space-x-5">
-          <h1 className='text-xl font-bold text-gray-700'>Home</h1>
-          <h1 className="text-xl font-bold text-blue-600 ">Privacy Policy</h1>
+          <button onClick={handleUserNavigate} className='text-xl font-bold text-gray-700'>Home</button>
+          <button className="text-xl font-bold text-blue-600 ">Privacy Policy</button>
         </div>
       </nav>
     
