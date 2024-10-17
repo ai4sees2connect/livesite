@@ -62,7 +62,7 @@ app.get('/findUserType/:userId', async (req, res) => {
   }
 });
 
-
+//hello 
 const server = http.createServer(app);
 initSocket(server);  // Initialize the socket
 
