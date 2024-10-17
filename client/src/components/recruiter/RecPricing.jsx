@@ -104,7 +104,7 @@ const RecPricing = () => {
   }
 
   return (
-    <div className='mt-20'>
+    <div className='mt-20 h-screen'>
       <div className="border border-gray-300 rounded-lg p-6 shadow-lg w-[20%] text-center mx-auto bg-blue-50 ">
           <h2 className="text-xl font-semibold mb-4">Active Plan</h2>
           <p className="text-xl font-semibold mb-4 text-blue-600 capitalize">{planType}</p>

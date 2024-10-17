@@ -99,7 +99,7 @@ const RightSide = () => {
   };
 
   return (
-    <div className="w-2/3 h-screen absolute right-0 top-[200px]">
+    <div className="w-2/3 h-auto absolute right-0 top-[120px]">
       <button className="fixed right-10 bottom-5 border border-black h-[46px] w-[220px] text-center bg-blue-400 rounded-md z-20 font-semibold hover:bg-green-600">
       <FontAwesomeIcon icon={faPhone} className="text-black mr-2" />
       Contact Us</button>

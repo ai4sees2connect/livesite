@@ -284,6 +284,10 @@ const Internships = () => {
   console.log(workType);
 
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
 
   useEffect(() => {
     const fetchInternships = async () => {
@@ -533,11 +537,11 @@ const Internships = () => {
       <h1 className="text-3xl font-bold mb-8 mt-8 absolute left-1/2 transform-translate-x-1/2 translate-x-14">{filteredInternships.length} Total Internships</h1>
 
       <div className='flex justify-end '>
-        <div className=' w-[20%] mt-0 px-6 h-screen fixed left-28 shadow-xl border-t py-6 overflow-y-hidden bg-white'>
+        <div className=' w-[20%] mt-0 px-6 h-screen  shadow-xl border-t py-6 overflow-y-hidden bg-white border border-black relative'>
           <h1 className='text-center font-extrabold text-xl tracking-widest'>Filters</h1>
 
           <p className='mb-4 mt-6'>Type of Internship:</p>
-          <button onClick={handleReset} className='absolute right-4 top-20 text-blue-400 underline'>Reset filters</button>
+          <button onClick={handleReset} className='absolute right-5 top-[76px] text-blue-400 underline'>Reset filters</button>
           <div className="flex flex-col space-y-4">
             <label className="flex items-center space-x-2">
               <input
@@ -608,7 +612,7 @@ const Internships = () => {
 
           {
             (workType === 'Work from Office' || workType === 'Hybrid') &&
-            <div className='mt-12'>
+            <div className='mt-7'>
               <p className='mt-6 mb-2 font-bold'>Location</p>
               <Select
                 options={statesAndUTs}
