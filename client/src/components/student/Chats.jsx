@@ -200,7 +200,7 @@ const Chats = () => {
 
   useEffect(() => {
     const scrollToBottom = () => {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
 
 
 
@@ -276,7 +276,7 @@ const Chats = () => {
 
   useEffect(() => {
     const scrollToBottom = () => {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     }
     scrollToBottom();
   }, [chatHistories]);
@@ -631,9 +631,9 @@ const Chats = () => {
   console.log('these are chat histories', chatHistories);
 
   return (
-    <div className="flex justify-end h-[80vh]  w-[100%]  mt-20 relative">
+    <div className="flex justify-end h-[90vh]  w-[100%]  mt-20 relative">
       {/* Left Column - Shortlisted Students */}
-      <div className="fixed flex flex-col items-center left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[80vh]">
+      <div className=" flex flex-col items-center left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[80vh]">
         <h2 className="text-xl font-semibold mb-4">Shortlisted Internships</h2>
         <div className=" inline-block space-x-4  border-2 rounded-full  mb-4">
           <button
@@ -877,7 +877,7 @@ const Chats = () => {
 
 
 
-
+                <div ref={chatEndRef} />
                 </React.Fragment>
               )
             })}
@@ -892,7 +892,7 @@ const Chats = () => {
             }
 
 
-            <div ref={chatEndRef} />
+            
           </div>
         </div>
 

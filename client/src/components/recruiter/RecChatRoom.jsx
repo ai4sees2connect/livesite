@@ -250,7 +250,7 @@ const RecChatRoom = () => {
 
   useEffect(() => {
     const scrollToBottom = () => {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
 
 
 
@@ -258,7 +258,7 @@ const RecChatRoom = () => {
     const timer = setTimeout(scrollToBottom, 500);
 
     return () => clearTimeout(timer);
-  }, [selectedInternship, selectedStudent, socket]);
+  }, [selectedInternship, selectedStudent, socket,chatHistories]);
 
 
   console.log(`this is selectedStudent: ${selectedStudent} and this is selectedinternship: ${selectedInternship}`);
@@ -630,9 +630,9 @@ const RecChatRoom = () => {
   console.log('these are all chats', chatHistories);
 
   return (
-    <div className="flex justify-end h-[80vh]  mt-20 relative w-[100%]">
+    <div className="flex justify-end h-[90vh]  mt-20 relative w-[100%]">
       {/* Left Column - Shortlisted Students */}
-      <div className="fixed flex flex-col items-center left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[80vh]">
+      <div className=" flex flex-col items-center left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[80vh]">
         <h2 className="text-xl font-semibold mb-4">Messages from all internships</h2>
 
         <div className='flex flex-col justify-center w-full'>
@@ -791,6 +791,7 @@ const RecChatRoom = () => {
               const isSameDay = previousDate && currentDate.toDateString() === previousDate.toDateString();
 
               return (
+                
                 <React.Fragment key={index} className='border border-black'>
 
                   {!isSameDay && (
@@ -903,11 +904,14 @@ const RecChatRoom = () => {
                     </div>
 
                   }
+                <div ref={chatEndRef} />
                 </React.Fragment>
+                
+                
               )
+              
 
             })}
-
             {chatBlocked[`${selectedStudent}_${selectedInternship}`] === 'recruiter' &&
               <>
                 <div className='flex justify-center items-center text-gray-500 font-semibold text-lg'>
@@ -917,7 +921,7 @@ const RecChatRoom = () => {
                 <div className='mx-auto px-2 hover:cursor-pointer hover:bg-gray-200 rounded-lg border-2 text-gray-700 text-center font-bold' onClick={handleUnblock}>Unblock</div>
               </>
             }
-            <div ref={chatEndRef} />
+            {/* <div ref={chatEndRef} /> */}
           </div>
 
 
@@ -931,6 +935,7 @@ const RecChatRoom = () => {
           >
             Send Assignment
           </button>
+          
 
           {showAssignmentModal && (
             <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
