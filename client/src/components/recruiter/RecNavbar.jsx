@@ -52,8 +52,8 @@ const RecNavbar = () => {
           <Link to={`/recruiter/posting/${userId}`} className=" hover:text-blue-500 p-5">
             Post Internship
           </Link>
-          <Link to={`/recruiter/${userId}/chatroom`} className="p-5 group">
-          <FaRegCommentDots className="w-6 h-6 hover:text-blue-500"/>
+          <Link to={`/recruiter/${userId}/chatroom`} className="hover:text-blue-500 p-5 group">
+          Messages
           {/* <div className="absolute top-[64%] hidden group-hover:block ">Messages</div> */}
           </Link>
 

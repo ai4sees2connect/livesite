@@ -32,6 +32,12 @@ import ApplicationDetails from "./components/recruiter/ApplicationDetails";
 import AdminLogin from "./components/Admin/AdminLogin";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import RecPricing from "./components/recruiter/RecPricing";
+import Footer from "./components/common/Footer";
+import About from "./components/common/About";
+import Contact from "./components/common/Contact";
+import Privacy from "./components/common/Privacy";
+import Terms from "./components/common/Terms";
+import Cancellation from "./components/common/Cancellation";
 
 
 //import broswerRouter for different routes
@@ -79,9 +85,15 @@ function App() {
 
         <Route path="/adminLogin$$$" element={<AdminLogin/>} />
         <Route path="/admin/dashboard" element={<AdminDashboard/>} />
-
+        
+        <Route path='/about-us' element={<About/>}/>
+        <Route path='/contact' element={<Contact/>}/>
+        <Route path='/privacy-policy' element={<Privacy/>}/>
+        <Route path='/terms-conditions' element={<Terms/>}/>
+        <Route path='/Cancellation' element={<Cancellation/>}/>
         
       </Routes>
+      <Footer />
       <ToastContainer
       autoClose={1000}
       position="top-center"
