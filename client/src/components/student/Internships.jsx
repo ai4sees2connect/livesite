@@ -546,7 +546,7 @@ const Internships = () => {
       <h1 className="text-3xl font-bold mb-8 mt-8 absolute left-1/2 transform-translate-x-1/2 translate-x-14">{filteredInternships.length} Total Internships</h1>
 
       <div className='flex justify-end '>
-        <div className=' w-[20%] mt-0 px-6 h-screen  shadow-xl border-t py-6 overflow-y-hidden bg-white border border-black relative'>
+        <div className=' w-[20%] mt-20 px-6 h-screen  shadow-xl border-t py-6 overflow-y-hidden bg-white  relative'>
           <h1 className='text-center font-extrabold text-xl tracking-widest'>Filters</h1>
 
           <p className='mb-4 mt-6'>Type of Internship:</p>

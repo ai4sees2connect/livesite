@@ -20,7 +20,7 @@ const StipendSlider = ({ selectedStipend, setSelectedStipend }) => {
   return (
     <div className="w-full max-w-md mx-auto py-4 mt-5">
       <h3 className="text-base mb-4">Select Minimum Stipend</h3>
-      <div className="px-2">
+      <div className="px-2  ">
         <Slider
           min={0}
           max={10000}

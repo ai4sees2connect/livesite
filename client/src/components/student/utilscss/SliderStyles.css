@@ -1,21 +1,25 @@
 .custom-slider .rc-slider-track {
-  background-color: #0952f0; /* Tailwind's blue-600 */
-  height: 6px;
-  z-index: -2;
+  background-color: #0051ff; /* Tailwind's blue-600 */
+  height: 5px;
+  z-index: 1;
+  opacity: 0.5;
+
 }
 
 .custom-slider .rc-slider-rail {
-  background-color: #E5E7EB; /* Tailwind's gray-200 */
+  background-color: #dcf3e1; /* Tailwind's gray-200 */
   height: 6px;
-  z-index: -3;
+  /* width: 100px; */
+  z-index: 1;
+  opacity: 0.4;
 }
 
 .custom-slider .rc-slider-handle {
-  z-index: -1;
-  border: 2px solid #ffffff9c; 
+  z-index: 10;
+  border: 2px solid #0d03039c; 
   height: 15px;
   width: 15px;
-  background-color: #8170ef;
+  background-color: #1abeff;
   text-decoration: none;
   /* cursor:default; */
 
@@ -23,4 +27,8 @@
 
 .custom-slider .rc-slider-mark-text {
   font-size: 0.875rem; /* Text size similar to Tailwind's text-sm */
+}
+
+.custom-slider .rc-slider-dot {
+  display: none; /* Hides the dots on the track */
 }
