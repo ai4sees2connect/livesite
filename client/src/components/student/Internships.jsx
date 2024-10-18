@@ -21,7 +21,7 @@ const Internships = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedInternship, setSelectedInternship] = useState(null);
-  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [selectedProfile, setSelectedProfile] = useState([]);
   const { student } = useStudent();
   const userId = getUserIdFromToken();
 
@@ -66,6 +66,7 @@ const Internships = () => {
     { value: 'Ladakh', label: 'Ladakh' }
   ];
   const jobProfiles = [
+    
     "3D Animation",
     "Account Management",
     "Accounting & Auditing",
@@ -271,7 +272,7 @@ const Internships = () => {
     "Web Development"
   ];
 
-  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState([]);
   const [workType, setWorkType] = useState('All Internships');
   const [selectedStipend, setSelectedStipend] = useState(0);
   const [isInterestedModalOpen, setIsInterestedModalOpen] = useState(false);
@@ -412,12 +413,20 @@ const Internships = () => {
     const matchesWorkType = workType === 'All Internships' || internship.internshipType.toLowerCase() === workType.toLowerCase();
 
     // Matches Job Profile
-    const matchesJobProfile = !selectedProfile ||
-      selectedProfile.some(profile => internship.profile.toLowerCase() === profile.value.toLowerCase());
+    const matchesJobProfile = selectedProfile.length==0 ||
+      selectedProfile.some(profile => internship?.jobProfile?.toLowerCase() === profile?.label?.toLowerCase());
+      // internship?.jobProfile?.toLowerCase() === selectedProfile?.label?.toLowerCase()
 
     // Matches Location
-    const matchesLocation = !selectedLocation ||
-      selectedLocation.some(location => internship.location.toLowerCase() === location.value.toLowerCase());
+    console.log('this is selected location',selectedLocation)
+    console.log('this is interns profile',internship.jobProfile)
+    console.log('this is selected profile',selectedProfile)
+    console.log('this is internship',internship)
+
+    const matchesLocation = selectedLocation.length==0 ||
+    selectedLocation.some(location=>location?.label?.toLowerCase()===internship?.internLocation?.toLowerCase())
+    // const matchesLocation = selectedLocation==='All Locations' ||
+    //   selectedLocation.some(location => internship.internLocation.toLowerCase() === location.value.toLowerCase());
 
     // Matches Stipend
     const matchesStipend = selectedStipend === 0 || internship.stipend >= selectedStipend;
@@ -498,10 +507,10 @@ const Internships = () => {
   }
 
   const handleReset = () => {
-    setSelectedLocation(null);
+    setSelectedLocation([]);
     setWorkType('All Internships');
     setSelectedStipend(0);
-    setSelectedProfile(null);
+    setSelectedProfile([]);
   }
 
   const isAlreadyApplied = (internshipId) => {
@@ -601,6 +610,7 @@ const Internships = () => {
                   label: job
                 }
               ))}
+              isMulti
               placeholder="e.g Marketing"
               className='w-full mb-3 shadow-md'
             />
@@ -620,6 +630,7 @@ const Internships = () => {
                 onChange={handleChange}
                 placeholder="Select a location"
                 searchable={true}
+                isMulti
                 className='w-full shadow-md'
 
               />
