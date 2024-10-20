@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
-import logo from "../../images/nav_logo.png";
+import logo from "../../images/logo.png";
 import getUserIdFromToken from "./auth/authUtilsRecr.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -33,7 +33,7 @@ const RecNavbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         {/* Logo */}
         <Link to='/'><div className="inline-flex items-center">
-          <h1>AI4SEES</h1>
+          
           <img src={logo} alt="" className="h-10 " />
         </div></Link>
         {/* Navigation Links */}

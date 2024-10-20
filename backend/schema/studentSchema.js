@@ -24,11 +24,11 @@ const studentSchema = new mongoose.Schema(
     },
     yearsOfExp: {
       type: String,
-      required: true,
+      
     },
     homeLocation: {
       type: String,
-      required: true,
+      
     },
     resume: {
       data: Buffer, // Store the file data as binary

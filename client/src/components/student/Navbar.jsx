@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
-import logo from "../../images/nav_logo.png";
+import logo from "../../images/logo.png";
 import getUserIdFromToken from "./auth/authUtils.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,10 +31,9 @@ const Navbar = () => {
     <nav className="bg-white fixed top-0 w-[100vw] shadow-md z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         {/* Logo */}
-        <Link to='/'><div className="inline-flex items-center">
-          <h1>AI4SEES</h1>
-          <img src={logo} alt="" className="h-10 " />
-        </div></Link>
+        <Link to='/'>
+          <img src={logo} alt="" className="h-full w-14" />
+        </Link>
         {/* Navigation Links */}
         <div className="flex space-x-8">
           {/* Links starts from here */}
