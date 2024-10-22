@@ -11,8 +11,8 @@ const Footer = () => {
 
   return (
     <footer className='h-[220px] border border-black bg-gray-700 text-white'>
-      <div className='flex flex-col space-y-9 items-center my-5'>
-        <div className='flex space-x-4 border-b py-1'>
+      <div className='text-xs md:text-base flex flex-col space-y-9 items-center my-5'>
+        <div className='flex text-center md:space-x-4 border-b py-1'>
           <Link to='/about-us' className='px-2 hover:text-blue-300'>About us</Link>
           <Link to='/contact' className='px-2 hover:text-blue-300'>Contact us</Link>
           <Link to='/privacy-policy' className='px-2 hover:text-blue-300'>Privacy policy</Link>
