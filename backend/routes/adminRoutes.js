@@ -46,7 +46,7 @@ router.get('/fetch-recruiters', async (req, res) => {
     const recruiters = await Recruiter.find({
       $or: [
         { 'companyWebsite.link': { $exists: true, $ne: null } },  // companyWebsite.link is not null
-        { 'companyCertificate': { $exists: true, $ne: null } }     // companyCertificate is not null
+        { 'companyCertificate.data': { $exists: true, $ne: null } }     // companyCertificate is not null
       ]
     })
     .select('firstname lastname email phone companyName companyWebsite companyCertificate'); // Select only necessary fields

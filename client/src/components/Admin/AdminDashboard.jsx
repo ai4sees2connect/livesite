@@ -17,6 +17,7 @@ const AdminDashboard = () => {
         const response = await axios.get(`${api}/admin/fetch-recruiters`); // Adjust the endpoint if needed
         setRecruiters(response.data);
         setLoading(false);
+        console.log('list of all recruiters', response.data);
       } catch (error) {
         console.error('Error fetching recruiters:', error);
         setError('Failed to load recruiters');
@@ -110,7 +111,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 relative">
+    <div className="container mx-auto p-4 relative h-screen">
       <button className='absolute right-5 top-5 bg-blue-500 text-white rounded-md  px-2 py-1 font-semibold ' onClick={handleLogout}>Logout</button>
       <h1 className="text-2xl font-bold mb-4 mt-10">Recruiters List</h1>
 
@@ -127,9 +128,11 @@ const AdminDashboard = () => {
         </thead>
         <tbody>
           {recruiters.map((recruiter) => {
+            console.log(recruiter);
             const companyWebsite = recruiter.companyWebsite.link ? recruiter.companyWebsite : null;
             const companyCertificate = recruiter.companyCertificate.data ? recruiter.companyCertificate : null;
             const status=companyWebsite?companyWebsite.status:companyCertificate.status
+            console.log('this is',recruiter.firstname, '.....', status)
 
             return(
             <tr key={recruiter._id} className="bg-white  text-center">
