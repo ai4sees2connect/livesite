@@ -178,7 +178,7 @@ function Signup() {
 
   return (
     <div className='flex mt-10 md:mt-0 min-h-screen'>
-      <div className='relativelg-w-1/2 hidden lg:block '>
+      <div className='relative lg-w-1/2 hidden lg:block '>
         <img src={login_bg} alt="" className=' w-full h-screen' />
       </div>
       <div className='mx-auto w-[90%] lg:w-1/2 '>

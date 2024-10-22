@@ -102,17 +102,17 @@ function Login() {
   }
 
   return (
-    <div className='flex min-h-screen'>
-      <div className='relative w-1/2 h-auto border-r'>
+    <div className='flex mt-10 md:mt-0 min-h-screen'>
+      <div className='relative lg:w-1/2 hidden lg:block'>
       <img src={recruiter_bg} alt="" className='absolute inset-0 w-full h-full object-cover'/>
       </div>
 
-      <div className='w-1/2'>
+      <div className='mx-auto w-[90%] lg:w-1/2 md:mt-10'>
        
 
-        <div className='text-center flex flex-col justify-center items-center mt-[20px]'>
-          <p className='text-5xl font-extrabold mb-12'>Login</p>
-          <div className='flex space-x-3'>
+        <div className=' flex flex-col items-center mt-[20px]'>
+          <p className='text-5xl font-extrabold mb-8 md:mb-6'>Login</p>
+          <div className='flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center'>
           <ToggleButton type="recruiter" auth="login"/>
           <ToggleButtonSecond type="recruiter" auth="login"/>
           </div>
@@ -122,9 +122,9 @@ function Login() {
 
           {/* form starts from here */}
 
-          <div className="flex justify-center items-center mt-[90px] w-[600px] mx-auto " >
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex flex-col items-center">
+          <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full " >
+            <form onSubmit={handleSubmit} className="space-y-4 w-[60%]  md:max-w-xl">
+              <div className="mx-auto max-w-sm md:max-w-xl">
                 <input
                   type="email"
                   id="email"
@@ -134,7 +134,7 @@ function Login() {
                     setEmail(e.target.value);
 
                   }}
-                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-[560px]"
+                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                   required
                 />
 
@@ -150,7 +150,7 @@ function Login() {
                   placeholder='Password'
                   onChange={(e) => setPassword(e.target.value)
                   }
-                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-10 w-[560px]"
+                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-10 w-full"
                   required
                 />
 
@@ -183,16 +183,16 @@ function Login() {
 
           </div>
 
-          <p className='my-4 text-center'>OR</p>
+          <p className='mt-5 text-center'>OR</p>
 
-          <div className='w-[580px] mx-auto mt-8 space-y-3'>
+          <div className='w-[70%] mx-auto mt-8 mb-10 md:mb-0 space-y-3'>
 
             <button
-              className='w-full py-2 border border-gray-300 h-[50px] text-black text-[18px] rounded-full font-semibold' onClick={handleGoogleClick}
+              className='w-full mx-auto py-2 border border-gray-300 md:h-[50px] text-black text-[18px] rounded-full font-semibold' onClick={handleGoogleClick}
             >
-              <div className='inline-flex space-x-4'>
+              <div className='flex items-center justify-center space-x-4'>
                 <img src={google_pic} alt="" className='w-5 h-5 py-0 px-0 ml-5 mt-2' />
-                <span className='mt-1'>Continue up with Google</span>
+                <span className='mt-1 font-semibold text-sm md:text-base text-center pr-2'>Continue up with Google</span>
               </div>
             </button>
             
