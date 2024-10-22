@@ -177,15 +177,15 @@ function Signup() {
 
 
   return (
-    <div className='flex min-h-screen'>
-      <div className='relative w-1/2 h-auto '>
+    <div className='flex mt-10 md:mt-0 min-h-screen'>
+      <div className='relativelg-w-1/2 hidden lg:block '>
         <img src={login_bg} alt="" className=' w-full h-screen' />
       </div>
-      <div className='w-1/2 '>
+      <div className='mx-auto w-[90%] lg:w-1/2 '>
 
         <div className='flex flex-col items-center mt-[20px]'>
-          <p className='text-5xl font-extrabold mb-12 '>Sign up</p>
-          <div className='flex space-x-3'>
+          <p className='text-5xl font-extrabold mb-8 md:mb-6 '>Sign up</p>
+          <div className='flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center'>
             <ToggleButton type='student' auth='signup' />
             <ToggleButtonSecond type="student" auth="signup" />
           </div>
@@ -194,9 +194,9 @@ function Signup() {
 
           {/* form starts from here */}
 
-          <div className="flex justify-center items-center mt-[40px] w-full " >
-            <form className="space-y-4 mx-auto">
-              <div className='flex flex-col items-center'>
+          <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full " >
+            <form className="space-y-4 w-[60%]  md:max-w-xl ">
+              <div className='mx-auto max-w-sm md:max-w-xl'>
                 <input type="text"
                   id='firstname'
                   value={firstname}
@@ -208,7 +208,7 @@ function Signup() {
                     }
                     else setNameError('');
                   }}
-                  className='h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-[560px]' />
+                  className='h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full' />
                 {nameError && (
                   <p className="text-red-500 text-left w-full">{nameError}</p>
                 )}
@@ -226,7 +226,7 @@ function Signup() {
                     }
                     else setNameError('');
                   }}
-                  className='h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-[560px]' />
+                  className='h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full' />
                 {nameError && (
                   <p className="text-red-500 text-left w-full">{nameError}</p>
                 )}
@@ -247,7 +247,7 @@ function Signup() {
                       }
                       else setEmailError('');
                     }}
-                    className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-[560px]"
+                    className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                     required
                   />
                   {validateEmail(email) && !sendingOtp && <button className='text-blue-500 text-left absolute right-2 top-3' onClick={handleSendOtp}>Send OTP</button>}
@@ -289,7 +289,7 @@ function Signup() {
                     else setPasswordError('');
                   }
                   }
-                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-10 w-[560px]"
+                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-10 w-full"
                   required
                 />
                 {passwordError && (
@@ -332,7 +332,7 @@ function Signup() {
 
           <p className='mt-5 text-center'>OR</p>
 
-          <div className='w-[580px] mx-auto mt-8  space-y-3'>
+          <div className='w-[70%] mx-auto mt-8 mb-10 md:mb-0 space-y-3'>
 
             <button onClick={handleGoogleClick}
               className='w-full mx-auto py-2 border border-gray-300 h-[50px] text-black text-[18px] rounded-full font-semibold'

@@ -29,8 +29,8 @@ const ToggleButtonSecond = ({type,auth}) => {
   };
 
   return (
-    <div className=" items-center inline-block justify-center">
-      <div className="relative flex w-[232px] h-12 bg-gray-200 rounded-full p-1">
+    <div className=" flex items-center justify-center ">
+      <div className="relative flex w-[232px] h-12 bg-gray-200 rounded-full p-1 ">
         <div
           className={`absolute top-1 left-1 w-28 h-10 rounded-full transition-transform duration-300 transform ${selected === 'login' ? 'translate-x-0' : 'translate-x-full'
             } bg-[rgb(129,41,217)]`}
