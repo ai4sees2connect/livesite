@@ -186,11 +186,11 @@ function Login() {
           <div className='w-[70%] mx-auto mt-8 space-y-3 '>
 
             <button
-              className='w-full py-2 border border-gray-300 h-[50px] text-black text-[18px] rounded-full font-semibold' onClick={handleGoogleClick}
+              className='w-full py-2 border border-gray-300 md:h-[50px] text-black text-[18px] rounded-full font-semibold' onClick={handleGoogleClick}
             >
-              <div className='inline-flex space-x-4'>
+              <div className='flex items-center justify-center space-x-4'>
                 <img src={google_pic} alt="" className='w-5 h-5 py-0 px-0 ml-5 mt-2' />
-                <span className='mt-1'>Continue up with Google</span>
+                <span className='mt-1 text-sm md:text-base text-center pr-2'>Continue up with Google</span>
               </div>
             </button>
 

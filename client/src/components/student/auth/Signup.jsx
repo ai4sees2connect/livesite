@@ -335,11 +335,11 @@ function Signup() {
           <div className='w-[70%] mx-auto mt-8 mb-10 md:mb-0 space-y-3'>
 
             <button onClick={handleGoogleClick}
-              className='w-full mx-auto py-2 border border-gray-300 h-[50px] text-black text-[18px] rounded-full font-semibold'
+              className='w-full mx-auto py-2 border border-gray-300 md:h-[50px] text-black text-[18px] rounded-full font-semibold'
             >
-              <div className='inline-flex space-x-4'>
+              <div className='flex items-center justify-center space-x-4'>
                 <img src={google_pic} alt="" className='w-5 h-5 py-0 px-0 ml-5 mt-2' />
-                <span className='mt-1'>Sign up with Google</span>
+                <span className='mt-1 text-sm md:text-base text-center pr-2'>Sign up with Google</span>
               </div>
             </button>
             {/* <button
