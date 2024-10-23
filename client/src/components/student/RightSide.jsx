@@ -100,9 +100,9 @@ const RightSide = () => {
 
   return (
     <div className="w-2/3 h-auto absolute right-0 top-[120px]">
-      <button className="fixed right-10 bottom-5 border border-black h-[46px] w-[220px] text-center bg-blue-400 rounded-md z-20 font-semibold hover:bg-green-600">
+      {/* <button className="fixed right-10 bottom-5 border border-black h-[46px] w-[220px] text-center bg-blue-400 rounded-md z-20 font-semibold hover:bg-green-600">
       <FontAwesomeIcon icon={faPhone} className="text-black mr-2" />
-      Contact Us</button>
+      Contact Us</button> */}
       <div>
         <h1 className="text-2xl font-bold py-5 px-9">Recommended For You!!!</h1>
         <div className="w-[87%] h-[200px] mx-auto ">

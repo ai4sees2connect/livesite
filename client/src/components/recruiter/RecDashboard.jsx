@@ -92,12 +92,12 @@ const RecDashboard = () => {
   }
 
   return (
-    <div className="py-10 px-5 mt-10 border border-black bg-gray-100 min-h-screen">
+    <div className="py-10 px-5 mt-10  bg-gray-100 min-h-screen">
       <h1 className=" text-xl lg:text-3xl font-bold text-center mb-8">My Posted Internships</h1>
-      <div className="bg-white w-[111%] -ml-5  shadow-md rounded-lg p-2 lg:p-6 sm:w-[90%] my-3  sm:mx-auto ">
+      <div className="bg-white w-[111%]  -ml-5  shadow-md rounded-lg p-2 lg:p-6 sm:w-[90%] my-3  sm:mx-auto ">
         {/* Column Headings */}
         <div className="grid grid-cols-5 gap-4 font-semibold mb-2 border-b-2 pb-2 text-center w-full">
-          <div className='w-[90%] text-sm ml-0 lg:text-base lg:w-[190px]  lg:ml-10'>Post</div>
+          <div className='w-[90%] text-sm -ml-3 lg:text-base lg:w-[190px]  lg:ml-10'>Post</div>
           <div className='w-[80%] text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-28'>Status</div>
           <div className='w-[80%] text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-20'>Total Views</div>
           <div className='w-full text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-16'>View Applicants</div>
