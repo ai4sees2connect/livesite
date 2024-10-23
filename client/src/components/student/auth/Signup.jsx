@@ -250,7 +250,7 @@ function Signup() {
                     className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                     required
                   />
-                  {validateEmail(email) && !sendingOtp && <button className='text-blue-500 text-left absolute right-2 top-3' onClick={handleSendOtp}>Send OTP</button>}
+                  {validateEmail(email) && !sendingOtp && <button className='text-blue-500 text-left absolute -right-[67px] sm:-right-[73px] text-sm sm:text-base top-3' onClick={handleSendOtp}>Send OTP</button>}
 
                   {sendingOtp &&  <FontAwesomeIcon icon={faSpinner} spin className="h-5 w-5 text-black absolute right-2 top-4" />}
 
@@ -259,7 +259,7 @@ function Signup() {
                   <p className="text-red-500 text-left w-full">{emailError}</p>
                 )}
                 {otpInput && (
-                  <div className='relative my-3 w-[240px]'>
+                  <div className='relative my-3 w-full'>
                     <input
                       type="text"
                       id="otp"
@@ -268,7 +268,7 @@ function Signup() {
                       placeholder='Enter otp'
                       className='h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-20 w-full'
                     />
-                    <button onClick={handleVerifyOtp} className='absolute right-2 top-3 text-blue-500 text-sm'>Verify</button>
+                    <button onClick={handleVerifyOtp} className='absolute -right-[40px] top-3 text-blue-500 text-sm'>Verify</button>
                     
                   </div>
                 )}
@@ -324,11 +324,7 @@ function Signup() {
 
           </div>
 
-          {/* <div className='w-[80%] mx-auto mt-[40px]'>
-            <p className='text-center text-gray-500'>
-              By clicking Create account, you agree to Linktree's privacy notice, T&Cs and to receive offers, news and updates.
-            </p>
-          </div> */}
+          
 
           <p className='mt-5 text-center'>OR</p>
 
