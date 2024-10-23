@@ -65,6 +65,7 @@ console.log('running')
       text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
     };
 
+    console.log(mailOptions);
     // Step 4: Send email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
