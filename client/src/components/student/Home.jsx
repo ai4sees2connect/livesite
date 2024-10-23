@@ -47,7 +47,7 @@ const Home = () => {
   return (
    <>
       
-          <div className='Home border border-black h-[180vh]'>
+          <div className='Home h-[180vh]'>
         <Sidebar student={student}/>
           <RightSide/>
           </div>
