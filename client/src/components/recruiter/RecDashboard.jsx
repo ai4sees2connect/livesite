@@ -93,19 +93,19 @@ const RecDashboard = () => {
 
   return (
     <div className="py-10 px-5 mt-10 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-center mb-8">My Posted Internships</h1>
-      <div className="bg-white shadow-md rounded-lg p-6 w-[90%] my-3 mx-auto">
+      <h1 className=" text-xl lg:text-3xl font-bold text-center mb-8">My Posted Internships</h1>
+      <div className="bg-white shadow-md rounded-lg p-6 w-full lg:w-[90%] my-3 mx-auto border border-black">
         {/* Column Headings */}
         <div className="grid grid-cols-5 gap-4 font-semibold mb-2 border-b-2 pb-2 text-center">
-          <div className='w-[190px] ml-10'>Post</div>
-          <div className='w-[90px] ml-40'>Status</div>
-          <div className='w-[90px] mx-auto'>Total Views</div>
-          <div>View Applicants</div>
-          <div>View Details</div>
+          <div className='w-[90%] text-sm ml-3 lg:text-base lg:w-[190px]  lg:ml-10'>Post</div>
+          <div className='w-[80%] text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-40'>Status</div>
+          <div className='w-[80%] text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-20'>Total Views</div>
+          <div className='w-full text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-20'>View Applicants</div>
+          <div className='w-[80%] text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-20'>View Details</div>
         </div>
         {internships.map((internship) => (
           <div key={internship._id} className="grid grid-cols-5 gap-5 py-2 border-b-2">
-            <div className='text-center ml-10 my-3 w-[190px]'>{internship.internshipName}</div>
+            <div className='text-center text-sm lg:text-base   ml-4 lg:ml-10 my-3 w-[80%] lg:w-[190px]'>{internship.internshipName}</div>
 
             <div className='relative inline-flex justify-center h-8 my-auto w-[90px] ml-40 group'>
 
