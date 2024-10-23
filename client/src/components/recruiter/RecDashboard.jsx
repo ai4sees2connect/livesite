@@ -92,11 +92,11 @@ const RecDashboard = () => {
   }
 
   return (
-    <div className="py-10 px-5 mt-10 bg-gray-100 min-h-screen">
+    <div className="py-10 px-5 mt-10 border border-black bg-gray-100 min-h-screen">
       <h1 className=" text-xl lg:text-3xl font-bold text-center mb-8">My Posted Internships</h1>
-      <div className="bg-white shadow-md rounded-lg p-6 w-full lg:w-[90%] my-3 mx-auto border border-black">
+      <div className="bg-white w-[111%] -ml-5  shadow-md rounded-lg p-2 lg:p-6 sm:w-[90%] my-3  sm:mx-auto ">
         {/* Column Headings */}
-        <div className="grid grid-cols-5 gap-4 font-semibold mb-2 border-b-2 pb-2 text-center">
+        <div className="grid grid-cols-5 gap-4 font-semibold mb-2 border-b-2 pb-2 text-center w-full">
           <div className='w-[90%] text-sm ml-0 lg:text-base lg:w-[190px]  lg:ml-10'>Post</div>
           <div className='w-[80%] text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-28'>Status</div>
           <div className='w-[80%] text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-20'>Total Views</div>
@@ -105,11 +105,11 @@ const RecDashboard = () => {
         </div>
         {internships.map((internship) => (
           <div key={internship._id} className="grid grid-cols-5 gap-5 py-2 border-b-2">
-            <div className='text-left sm:text-center text-sm lg:text-base  ml-0 sm:ml-2 lg:ml-10 my-3 w-[80%] lg:w-[190px]'>{internship.internshipName}</div>
+            <div className='text-xs text-left ml-0 my-3 w-[80%] sm:text-center sm:text-sm sm:ml-2 lg:text-base lg:ml-10 lg:w-[190px]'>{internship.internshipName}</div>
 
             <div className='relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-3 lg:ml-28 group'>
 
-              <div className='flex items-center  text-sm lg:text-base'>
+              <div className='flex items-center  text-xs  sm:text-base'>
                 <span className={`${internship.status==='On Hold' && 'bg-orange-300'} ${internship.status==='Fulfilled' && 'bg-green-400'} bg-gray-200 rounded-lg px-2 py-1`}>{internship.status}</span>
                 
               </div>
@@ -124,11 +124,11 @@ const RecDashboard = () => {
 
             </div>
 
-            <div className='w-[80%] lg:w-[80px] mx-auto text-center h-6 my-auto lg:ml-20'>{internship.views}</div>
+            <div className='w-[80%] text-xs sm:text-base lg:w-[80px] mx-auto text-center h-6 my-auto ml-3 lg:ml-20'>{internship.views}</div>
 
-            <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}`} className='sm:ml-3 md:mx-auto text-sm px-1 lg:text-base lg:ml-4 text-center my-auto rounded-xl bg-blue-400 text-white w-24  lg:w-[190px] hover:bg-blue-700 hover:cursor-pointer  py-1'>Applications ({internship.applicantCount})</Link>
+            <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}`} className='sm:ml-3 md:mx-auto text-xs px-1 sm:text-base lg:ml-4 text-center my-auto rounded-xl bg-blue-400 text-white w-24  lg:w-[190px] hover:bg-blue-700 hover:cursor-pointer  py-1'>Applications ({internship.applicantCount})</Link>
 
-            <div className='text-center ml-8 lg:ml-12 h-8 lg:w-36 mx-auto my-auto'>
+            <div className='text-center text-xs sm:text-base ml-8 sm:ml-12  lg:w-36 mx-auto my-auto'>
               <button onClick={() => openModal(internship)} className="text-blue-500 hover:underline ">View</button>
             </div>
           </div>
