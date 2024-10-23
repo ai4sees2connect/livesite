@@ -97,36 +97,38 @@ const RecDashboard = () => {
       <div className="bg-white shadow-md rounded-lg p-6 w-full lg:w-[90%] my-3 mx-auto border border-black">
         {/* Column Headings */}
         <div className="grid grid-cols-5 gap-4 font-semibold mb-2 border-b-2 pb-2 text-center">
-          <div className='w-[90%] text-sm ml-3 lg:text-base lg:w-[190px]  lg:ml-10'>Post</div>
-          <div className='w-[80%] text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-40'>Status</div>
+          <div className='w-[90%] text-sm ml-0 lg:text-base lg:w-[190px]  lg:ml-10'>Post</div>
+          <div className='w-[80%] text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-28'>Status</div>
           <div className='w-[80%] text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-20'>Total Views</div>
-          <div className='w-full text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-20'>View Applicants</div>
-          <div className='w-[80%] text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-20'>View Details</div>
+          <div className='w-full text-sm ml-3 lg:text-base lg:w-[90px] lg:ml-16'>View Applicants</div>
+          <div className='w-[80%] text-sm ml-6 lg:text-base lg:w-[90px] lg:ml-20'>View Details</div>
         </div>
         {internships.map((internship) => (
           <div key={internship._id} className="grid grid-cols-5 gap-5 py-2 border-b-2">
-            <div className='text-center text-sm lg:text-base   ml-4 lg:ml-10 my-3 w-[80%] lg:w-[190px]'>{internship.internshipName}</div>
+            <div className='text-left sm:text-center text-sm lg:text-base  ml-0 sm:ml-2 lg:ml-10 my-3 w-[80%] lg:w-[190px]'>{internship.internshipName}</div>
 
-            <div className='relative inline-flex justify-center h-8 my-auto w-[90px] ml-40 group'>
+            <div className='relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-3 lg:ml-28 group'>
 
-              <div className='flex items-center'>
+              <div className='flex items-center  text-sm lg:text-base'>
                 <span className={`${internship.status==='On Hold' && 'bg-orange-300'} ${internship.status==='Fulfilled' && 'bg-green-400'} bg-gray-200 rounded-lg px-2 py-1`}>{internship.status}</span>
                 
               </div>
 
-              <div className='absolute top-[90%] left-0 mt-1 hidden w-32 bg-white border rounded shadow-md group-hover:block z-10'>
+              <div className='absolute top-[90%] left-0 mt-1 text-sm lg:text-base hidden w-20 lg:w-32 bg-white border rounded shadow-md group-hover:block z-10'>
                 <ul className='text-gray-700'>
-                  <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer' onClick={() => updateStatus('Active', internship._id)}>Active</li>
-                  <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer' onClick={() => updateStatus('On Hold', internship._id)}>On Hold</li>
-                  <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer' onClick={() => updateStatus('Fulfilled', internship._id)}>Fulfilled</li>
+                  <li className='px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer' onClick={() => updateStatus('Active', internship._id)}>Active</li>
+                  <li className=' px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer' onClick={() => updateStatus('On Hold', internship._id)}>On Hold</li>
+                  <li className='px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer' onClick={() => updateStatus('Fulfilled', internship._id)}>Fulfilled</li>
                 </ul>
               </div>
 
             </div>
 
-            <div className='w-[80px] mx-auto text-center my-3'>{internship.views}</div>
-            <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}`} className='text-center my-auto rounded-xl bg-blue-400 text-white w-[190px] hover:bg-blue-700 hover:cursor-pointer mx-auto py-1'>View Applications ({internship.applicantCount})</Link>
-            <div className='text-center h-8 w-36 mx-auto my-auto'>
+            <div className='w-[80%] lg:w-[80px] mx-auto text-center h-6 my-auto lg:ml-20'>{internship.views}</div>
+
+            <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}`} className='sm:ml-3 md:mx-auto text-sm px-1 lg:text-base lg:ml-4 text-center my-auto rounded-xl bg-blue-400 text-white w-24  lg:w-[190px] hover:bg-blue-700 hover:cursor-pointer  py-1'>Applications ({internship.applicantCount})</Link>
+
+            <div className='text-center ml-8 lg:ml-12 h-8 lg:w-36 mx-auto my-auto'>
               <button onClick={() => openModal(internship)} className="text-blue-500 hover:underline ">View</button>
             </div>
           </div>
