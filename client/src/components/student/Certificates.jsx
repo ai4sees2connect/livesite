@@ -176,7 +176,10 @@ const Certificates = () => {
         <div className="flex flex-col items-center mt-10">
           {certificates.length > 0 ? (
             certificates.map((cert, index) => (
-              <div key={index} className="border-2 shadow-lg p-5 mb-2">
+              <div
+                key={index}
+                className="border-2 shadow-lg p-5 mb-2 min-w-full"
+              >
                 <div>
                   <div className="flex justify-between">
                     <h3 className="text-lg font-semibold">{cert.title}</h3>

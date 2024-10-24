@@ -1,45 +1,43 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import google_pic from '../../../images/google_pic.png'
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import getUserIdFromToken from "./authUtils"
-import { auth, provider } from '../../common/firebaseConfig'
-import { signInWithPopup } from 'firebase/auth'
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useStudent } from '../context/studentContext';
-import login_bg from '../../../images/login_bg.jpeg'
-import ToggleButton from '../../common/ToggleButton';
-import ToggleButtonSecond from '../../common/ToogleButtonSecond';
-import api from '../../common/server_url'
-import Spinner from '../../common/Spinner'
+import google_pic from "../../../images/google_pic.png";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import getUserIdFromToken from "./authUtils";
+import { auth, provider } from "../../common/firebaseConfig";
+import { signInWithPopup } from "firebase/auth";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useStudent } from "../context/studentContext";
+import login_bg from "../../../images/login_bg.jpeg";
+import ToggleButton from "../../common/ToggleButton";
+import ToggleButtonSecond from "../../common/ToogleButtonSecond";
+import api from "../../common/server_url";
+import Spinner from "../../common/Spinner";
 
-import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 function Signup() {
-
   const [showPassword, setShowPassword] = useState(false);
 
-  const [firstname, setFirstName] = useState('');
-  const [lastname, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [nameError, setNameError] = useState('');
+  const [firstname, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [nameError, setNameError] = useState("");
   const navigate = useNavigate();
   const userId = getUserIdFromToken();
   const { login } = useStudent();
-  const [otpInput, setIsOtpInput] = useState(false)
-  const [otp, setOtp] = useState('');
+  const [otpInput, setIsOtpInput] = useState(false);
+  const [otp, setOtp] = useState("");
   const [sendingOtp, setSendingOtp] = useState(false);
-  const [otpVerified,setOtpVerified]=useState(false);
-
+  const [otpVerified, setOtpVerified] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       login();
       navigate(`/student/dashboard/${userId}`);
@@ -56,16 +54,15 @@ function Signup() {
     return emailRegex.test(email);
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission
 
     if (!validateEmail(email)) {
-      setEmailError('The email does not look right. Try again.');
+      setEmailError("The email does not look right. Try again.");
       return;
     }
-    setEmailError('');
+    setEmailError("");
     try {
       // Send a POST request to the backend
       const response = await axios.post(`${api}/student/signup`, {
@@ -76,8 +73,8 @@ function Signup() {
       });
 
       // Handle success
-      toast.success('You are Signed in');
-      localStorage.setItem('token', response.data.token); // Store token if needed
+      toast.success("You are Signed in");
+      localStorage.setItem("token", response.data.token); // Store token if needed
       login();
       const userId = getUserIdFromToken();
       console.log(response.data.token);
@@ -86,21 +83,19 @@ function Signup() {
       // Handle error
       toast.error(error.response.data.message);
     }
-
   };
-
 
   const handleVerifyOtp = async (e) => {
     try {
       e.preventDefault();
       const response = await axios.post(`${api}/student/verify-otp`, {
         email: email,
-        otp: otp
+        otp: otp,
       });
 
       if (response.status === 200) {
         // OTP verified successfully
-        toast.success('OTP verified successfully!');
+        toast.success("OTP verified successfully!");
         setOtpVerified(true);
       } else {
         // Something went wrong, show the error message
@@ -113,35 +108,41 @@ function Signup() {
         toast.error(error.response.data.message);
       } else {
         // Something else went wrong (e.g., network error)
-        toast.error('An error occurred while verifying the OTP');
+        toast.error("An error occurred while verifying the OTP");
       }
-      console.error('Error verifying OTP:', error);
+      console.error("Error verifying OTP:", error);
     }
-  }
+  };
 
   const handleSendOtp = async (e) => {
     try {
       e.preventDefault();
       if (!validateEmail(email)) {
-        setEmailError('The email does not look right. Try again.');
+        setEmailError("The email does not look right. Try again.");
         return;
       }
-      setEmailError('');
+      setEmailError("");
       setSendingOtp(true);
       const response = await axios.post(`${api}/student/send-otp`, { email });
 
       // Prompt user to enter the OTP
-      toast.success('OTP sent to your email.');
+      toast.success("OTP sent to your email.");
       setSendingOtp(false);
 
       // Store email and other form data temporarily
       setIsOtpInput(true); // Show OTP input field
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Error sending OTP');
+      toast.error(error.response?.data?.message || "Error sending OTP");
     }
-  }
+  };
 
-  const isFormValid = email.trim() !== '' && password.trim() !== '' && firstname.trim() !== '' && lastname.trim() !== '' && otp.trim() !== '' && otpVerified;
+  const isFormValid =
+    email.trim() !== "" &&
+    password.trim() !== "" &&
+    firstname.trim() !== "" &&
+    lastname.trim() !== "" &&
+    otp.trim() !== "" &&
+    otpVerified;
 
   const handleGoogleClick = async (e) => {
     e.preventDefault();
@@ -149,8 +150,8 @@ function Signup() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const email = user.email;
-      const firstname = user.displayName.split(' ')[0];
-      const lastname = user.displayName.split(' ')[1] || '';
+      const firstname = user.displayName.split(" ")[0];
+      const lastname = user.displayName.split(" ")[1] || "";
 
       const response = await axios.post(`${api}/student/signup/googleauth`, {
         email,
@@ -159,143 +160,158 @@ function Signup() {
       });
 
       if (response.data.success) {
-        toast.success('You are Signed in');
+        toast.success("You are Signed in");
         const token = response.data.token;
-        localStorage.setItem('token', token);
+        localStorage.setItem("token", token);
         login();
         const userId = getUserIdFromToken();
         navigate(`/student/dashboard/${userId}`);
       } else {
-        toast.error('Something went wrong')
+        toast.error("Something went wrong");
       }
-
-
     } catch (error) {
-      console.error('Error signing in with Google', error);
+      console.error("Error signing in with Google", error);
     }
-  }
-
+  };
 
   return (
-    <div className='flex mt-10 md:mt-0 min-h-screen'>
-      <div className='relative lg-w-1/2 hidden lg:block '>
-        <img src={login_bg} alt="" className=' w-full h-screen' />
+    <div className="flex mt-10 md:mt-0 min-h-screen">
+      <div className="relative flex-1 hidden lg:block ">
+        <img src={login_bg} alt="" className=" w-full h-full" />
       </div>
-      <div className='mx-auto w-[90%] lg:w-1/2 '>
-
-        <div className='flex flex-col items-center mt-[20px]'>
-          <p className='text-5xl font-extrabold mb-8 md:mb-6 '>Sign up</p>
-          <div className='flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center'>
-            <ToggleButton type='student' auth='signup' />
+      <div className="flex-1 mx-auto w-[90%] mb-20">
+        <div className="flex flex-col items-center mt-[20px]">
+          <p className="text-3xl lg:text-5xl font-extrabold mb-5 md:mb-12">
+            Sign up
+          </p>
+          <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center">
+            <ToggleButton type="student" auth="signup" />
             <ToggleButtonSecond type="student" auth="signup" />
           </div>
         </div>
         <div>
-
           {/* form starts from here */}
 
-          <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full " >
-            <form className="space-y-4 w-[60%]  md:max-w-xl ">
-              <div className='mx-auto max-w-sm md:max-w-xl'>
-                <input type="text"
-                  id='firstname'
+          <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full ">
+            <form className="space-y-4 w-full lg:w-[60%]  md:max-w-xl px-5 lg:px-0">
+              <div className="mx-auto md:max-w-xl">
+                <input
+                  type="text"
+                  id="firstname"
                   value={firstname}
-                  placeholder='Enter Your First Name'
+                  placeholder="Enter Your First Name"
                   onChange={(e) => {
                     setFirstName(e.target.value);
-                    if (e.target.value.trim() === '') {
-                      setNameError('Give complete name')
-                    }
-                    else setNameError('');
+                    if (e.target.value.trim() === "") {
+                      setNameError("Give complete name");
+                    } else setNameError("");
                   }}
-                  className='h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full' />
+                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
+                />
                 {nameError && (
                   <p className="text-red-500 text-left w-full">{nameError}</p>
                 )}
               </div>
 
-              <div className='flex flex-col items-center'>
-                <input type="text"
-                  id='lastname'
+              <div className="flex flex-col items-center">
+                <input
+                  type="text"
+                  id="lastname"
                   value={lastname}
-                  placeholder='Enter Your Last Name'
+                  placeholder="Enter Your Last Name"
                   onChange={(e) => {
                     setLastName(e.target.value);
-                    if (e.target.value.trim() === '') {
-                      setNameError('Give complete name')
-                    }
-                    else setNameError('');
+                    if (e.target.value.trim() === "") {
+                      setNameError("Give complete name");
+                    } else setNameError("");
                   }}
-                  className='h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full' />
+                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
+                />
                 {nameError && (
                   <p className="text-red-500 text-left w-full">{nameError}</p>
                 )}
               </div>
 
-
               <div className="flex flex-col">
-                <div className='flex relative'>
+                <div className="flex relative">
                   <input
                     type="email"
                     id="email"
                     value={email}
-                    placeholder='Email'
+                    placeholder="Email"
                     onChange={(e) => {
                       setEmail(e.target.value);
                       if (!validateEmail(e.target.value)) {
-                        setEmailError('The email does not look right. Try again.');
-                      }
-                      else setEmailError('');
+                        setEmailError(
+                          "The email does not look right. Try again."
+                        );
+                      } else setEmailError("");
                     }}
                     className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                     required
                   />
-                  {validateEmail(email) && !sendingOtp && <button className='text-blue-500 text-left absolute -right-[67px] sm:-right-[73px] text-sm sm:text-base top-3' onClick={handleSendOtp}>Send OTP</button>}
+                  {validateEmail(email) && !sendingOtp && (
+                    <button
+                      className="text-blue-500 text-left absolute -right-[67px] sm:-right-[73px] text-sm sm:text-base top-3"
+                      onClick={handleSendOtp}
+                    >
+                      Send OTP
+                    </button>
+                  )}
 
-                  {sendingOtp &&  <FontAwesomeIcon icon={faSpinner} spin className="h-5 w-5 text-black absolute right-2 top-4" />}
-
+                  {sendingOtp && (
+                    <FontAwesomeIcon
+                      icon={faSpinner}
+                      spin
+                      className="h-5 w-5 text-black absolute right-2 top-4"
+                    />
+                  )}
                 </div>
                 {emailError && (
                   <p className="text-red-500 text-left w-full">{emailError}</p>
                 )}
                 {otpInput && (
-                  <div className='relative my-3 w-full'>
+                  <div className="relative my-3 w-full">
                     <input
                       type="text"
                       id="otp"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
-                      placeholder='Enter otp'
-                      className='h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-20 w-full'
+                      placeholder="Enter otp"
+                      className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-20 w-full"
                     />
-                    <button onClick={handleVerifyOtp} className='absolute -right-[40px] top-3 text-blue-500 text-sm'>Verify</button>
-                    
+                    <button
+                      onClick={handleVerifyOtp}
+                      className="absolute -right-[40px] top-3 text-blue-500 text-sm"
+                    >
+                      Verify
+                    </button>
                   </div>
                 )}
-
-
               </div>
 
               <div className="flex flex-col items-center relative">
-
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   value={password}
-                  placeholder='Password'
+                  placeholder="Password"
                   onChange={(e) => {
                     setPassword(e.target.value);
-                    if (e.target.value.trim().length < 8) setPasswordError('Password must be at least 8 characters');
-                    else setPasswordError('');
-                  }
-                  }
+                    if (e.target.value.trim().length < 8)
+                      setPasswordError(
+                        "Password must be at least 8 characters"
+                      );
+                    else setPasswordError("");
+                  }}
                   className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-10 w-full"
                   required
                 />
                 {passwordError && (
-                  <p className="text-red-500 text-left w-full">{passwordError}</p>
+                  <p className="text-red-500 text-left w-full">
+                    {passwordError}
+                  </p>
                 )}
-
 
                 <button
                   type="button"
@@ -303,39 +319,47 @@ function Signup() {
                   className="absolute right-2 top-[24px] transform -translate-y-1/2"
                 >
                   {showPassword ? (
-                    <FontAwesomeIcon icon={faEye} className="w-5 h-5 text-gray-500" />
+                    <FontAwesomeIcon
+                      icon={faEye}
+                      className="w-5 h-5 text-gray-500"
+                    />
                   ) : (
-
-                    <FontAwesomeIcon icon={faEyeSlash} className="w-5 h-5 text-gray-500" />
+                    <FontAwesomeIcon
+                      icon={faEyeSlash}
+                      className="w-5 h-5 text-gray-500"
+                    />
                   )}
                 </button>
-
               </div>
 
               <button
                 onClick={handleSubmit}
-                className={`w-full py-2 bg-[rgb(129,41,217)] border-none h-[50px] text-white rounded-full ${!isFormValid ? `bg-[rgb(224,226,217)]` : ''} `}
+                className={`w-full py-2 bg-[rgb(129,41,217)] border-none h-[50px] text-white rounded-full ${
+                  !isFormValid ? `bg-[rgb(224,226,217)]` : ""
+                } `}
                 disabled={!isFormValid}
-
               >
                 Create Account
               </button>
             </form>
-
           </div>
 
-          
+          <p className="mt-5 text-center">OR</p>
 
-          <p className='mt-5 text-center'>OR</p>
-
-          <div className='w-[70%] mx-auto mt-8 mb-10 md:mb-0 space-y-3'>
-
-            <button onClick={handleGoogleClick}
-              className='w-full mx-auto py-2 border border-gray-300 md:h-[50px] text-black text-[18px] rounded-full font-semibold'
+          <div className="w-[70%] mx-auto mt-8 mb-10 md:mb-0 space-y-3">
+            <button
+              onClick={handleGoogleClick}
+              className="w-full mx-auto py-2 border border-gray-300 md:h-[50px] text-black text-[18px] rounded-full font-semibold"
             >
-              <div className='flex items-center justify-center space-x-4'>
-                <img src={google_pic} alt="" className='w-5 h-5 py-0 px-0 ml-5 mt-2' />
-                <span className='mt-1 text-sm md:text-base text-center pr-2'>Sign up with Google</span>
+              <div className="flex items-center justify-center space-x-4">
+                <img
+                  src={google_pic}
+                  alt=""
+                  className="w-5 h-5 py-0 px-0 ml-5 mt-2"
+                />
+                <span className="mt-1 text-sm md:text-base text-center pr-2">
+                  Sign up with Google
+                </span>
               </div>
             </button>
             {/* <button
@@ -359,17 +383,10 @@ function Signup() {
             <Link to='/recruiter/signup'><span className='text-purple-500 underline'>&nbsp;Sign up</span></Link>
           </div>
           </div> */}
-
-
-
-
-
-
-
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Signup
+export default Signup;

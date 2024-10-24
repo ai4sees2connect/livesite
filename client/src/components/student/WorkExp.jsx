@@ -131,7 +131,7 @@ const WorkExp = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 border-b shadow-lg mt-[68px] w-full lg:w-2/3">
+    <div className="container mx-auto p-4 border-b shadow-lg mt-[68px] lg:w-2/3">
       <h2 className="text-xl font-semibold flex justify-between font-outfit">
         Work Experience / Internship
         <button
@@ -211,7 +211,10 @@ const WorkExp = () => {
         <div className="flex gap-5 flex-col items-center mt-10">
           {workExperiences.length > 0 ? (
             workExperiences.map((work, index) => (
-              <div key={index} className="border-2 shadow-lg p-5 mb-2 ">
+              <div
+                key={index}
+                className="border-2 shadow-lg p-5 mb-2 min-w-full"
+              >
                 <div>
                   <div className="flex justify-between">
                     <h3 className="text-lg font-semibold">
