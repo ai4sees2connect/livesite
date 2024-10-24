@@ -15,6 +15,9 @@ import {
   FaCheck,
   FaBuilding,
   FaArrowLeft,
+  FaUserFriends,
+  FaEye,
+  FaCheckCircle,
 } from "react-icons/fa";
 
 const MyApplications = () => {
@@ -131,7 +134,7 @@ const MyApplications = () => {
         ))}
       </div> */}
       {/* Bapi Used Table */}
-      <div className="overflow-x-auto">
+      <div className=" hidden lg:block">
         <table className="min-w-full table-auto border-collapse">
           <thead>
             <tr className="bg-gray-200 text-center font-semibold border-b">
@@ -161,17 +164,14 @@ const MyApplications = () => {
                 <td className="px-4 py-2 w-[130px]">{applied.studentCount}</td>
                 <td className="px-4 py-2 w-[100px]">
                   <span
-                    className={`rounded-xl py-1 px-2 ${
-                      applied.internshipStatus.status === "Viewed" &&
+                    className={`rounded-xl py-1 px-2 ${applied.internshipStatus.status === "Viewed" &&
                       "text-yellow-400"
-                    } 
-              ${
-                applied.internshipStatus.status === "Rejected" && "text-red-500"
-              } 
-              ${
-                applied.internshipStatus.status === "Shortlisted" &&
-                "text-green-600"
-              }`}
+                      } 
+              ${applied.internshipStatus.status === "Rejected" && "text-red-500"
+                      } 
+              ${applied.internshipStatus.status === "Shortlisted" &&
+                      "text-green-600"
+                      }`}
                   >
                     {applied.internshipStatus.status}
                   </span>
@@ -190,6 +190,45 @@ const MyApplications = () => {
         </table>
       </div>
 
+      <div className="lg:hidden">
+        {appliedInternships.map((applied) => (
+          <div
+            key={applied._id}
+            className="border-2 shadow-lg py-4 px-4  flex flex-col space-y-1 md:space-y-2 w-[95%] md:w-[83%] mx-auto relative"
+          >
+            <div className="font-bold text-2xl capitalize">
+              {applied.recruiter.companyName}
+            </div>
+            <div className="text-gray-600">
+              {applied.internship.internshipName}
+            </div>
+            <div className="text-gray-600">
+              Applied: {TimeAgo(applied.appliedAt)}
+            </div>
+            <div className="flex  items-center text-gray-600">
+              <span className="font-semibold"><FaUserFriends className="mr-2" /></span> {applied.studentCount} Applicants
+            </div>
+            <div>
+
+              <span
+                className={` py-1 flex items-center ${applied.internshipStatus.status === "Viewed" && "text-yellow-500"
+                  } ${applied.internshipStatus.status === "Rejected" && "text-red-500"
+                  } ${applied.internshipStatus.status === "Shortlisted" && "text-green-600"
+                  }`}
+              >
+                {applied.internshipStatus.status === 'Viewed' && <FaEye className=" mr-2" />} {applied.internshipStatus.status === 'Shortlisted' && <FaCheckCircle className="mr-2" />} {applied.internshipStatus.status === 'Rejected' && <FaTimes className="mr-2" />}{applied.internshipStatus.status}
+              </span>
+            </div>
+            <div className="absolute right-2 top-4">
+              <button onClick={() => setSelectedInternship(applied)} className="text-blue-400 hover:underline">
+                View details
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+
       {selectedInternship && (
         <>
           <div
@@ -197,9 +236,9 @@ const MyApplications = () => {
             onClick={closeModal}
           ></div>
           <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-[60%] h-[90%] p-6 relative overflow-auto">
+            <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-[90%] lg:w-[60%] h-[90%] p-6 relative overflow-auto">
               <div className="border-b">
-                <h2 className="text-2xl font-semibold mb-4">
+                <h2 className=" text-lg md:text-2xl font-semibold md:mb-4">
                   {selectedInternship.internship.internshipName}
                 </h2>
                 <button
@@ -245,7 +284,7 @@ const MyApplications = () => {
                 </div>
               )}
 
-              <h3 className="text-lg font-medium mb-2">Skills Required:</h3>
+              <h3 className="lg:text-lg font-medium mb-2">Skills Required:</h3>
               <div className="flex flex-wrap mb-4">
                 {selectedInternship.internship.skills.map((skill, index) => (
                   <span
@@ -257,15 +296,15 @@ const MyApplications = () => {
                 ))}
               </div>
 
-              <h3 className="text-lg font-medium mb-2">Description:</h3>
+              <h3 className="lg:text-lg font-medium mb-2">Description:</h3>
               <div
-                className="text-gray-700 mb-4"
+                className="text-gray-700 mb-4 text-sm md:text-base"
                 dangerouslySetInnerHTML={{
                   __html: selectedInternship.internship.description,
                 }}
               ></div>
 
-              <h3 className="text-lg font-medium mb-2">Perks and Benefits</h3>
+              <h3 className="md:text-lg font-medium mb-2">Perks and Benefits</h3>
               <div className="flex flex-wrap mb-4">
                 {selectedInternship.internship.perks.map((perk, index) => (
                   <span
