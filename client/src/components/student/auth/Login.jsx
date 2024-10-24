@@ -101,13 +101,15 @@ function Login() {
 
   return (
     <div className="flex mt-10 md:mt-0 min-h-screen">
-      <div className="relative hidden lg:block">
-        <img src={login_bg} alt="" className="w-full h-screen" />
+      <div className="flex-1 relative hidden lg:block">
+        <img src={login_bg} alt="" className="w-full h-full" />
         {/* <p className='absolute flex inset-0 justify-center items-center text-white text-6xl font-bold '>Welcome back !</p> */}
       </div>
-      <div className="mx-auto ">
+      <div className="mb-20 w-full lg:w-[90%] flex-1">
         <div className="text-center flex flex-col justify-center items-center mt-[20px] ">
-          <p className="text-5xl font-extrabold mb-5 md:mb-12">Login</p>
+          <p className="text-3xl lg:text-5xl font-extrabold mb-5 md:mb-12">
+            Login
+          </p>
           <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5 md:items-center ">
             <ToggleButton type="student" auth="login" />
 
@@ -120,9 +122,9 @@ function Login() {
           <div className="flex justify-center items-center mt-[40px] md:mt-[90px] w-full mx-auto ">
             <form
               onSubmit={handleSubmit}
-              className="space-y-4 w-[60%] md:max-w-xl "
+              className="space-y-4 w-full lg:w-[60%] md:max-w-xl px-5 md:px-0"
             >
-              <div className="mx-auto max-w-sm md:max-w-xl">
+              <div className="mx-auto md:max-w-xl">
                 <input
                   type="email"
                   id="email"
