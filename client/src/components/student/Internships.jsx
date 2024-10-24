@@ -37,7 +37,7 @@ const Internships = () => {
   const [selectedProfile, setSelectedProfile] = useState([]);
   const { student } = useStudent();
   const userId = getUserIdFromToken();
-  const [filterOpen, setFilterOpen]=useState(false);
+  const [filterOpen, setFilterOpen]=useState(true);
 
   const statesAndUTs = [
     { value: "All Locations", label: "All Locations" },
