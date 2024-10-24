@@ -14,6 +14,7 @@ import {
   FaRunning,
   FaStar,
   FaQuestion,
+  FaFilter
 } from "react-icons/fa";
 import Spinner from "../common/Spinner";
 import getUserIdFromToken from "./auth/authUtils";
@@ -36,6 +37,7 @@ const Internships = () => {
   const [selectedProfile, setSelectedProfile] = useState([]);
   const { student } = useStudent();
   const userId = getUserIdFromToken();
+  const [filterOpen, setFilterOpen]=useState(false);
 
   const statesAndUTs = [
     { value: "All Locations", label: "All Locations" },
@@ -576,15 +578,24 @@ const Internships = () => {
 
   return (
     <div className="py-10 px-5 mt-10 min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-8 mt-8 text-center">
+      <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
         {filteredInternships.length} Total Internships
       </h1>
 
       <div className="flex flex-col lg:flex-row max-w-[1170px] mx-auto gap-10">
-        <div className="min-w-[300px] h-full lg:max-h-screen mt-10 lg:mt-20 px-6 shadow-xl border-t py-6 overflow-y-hidden bg-white  relative">
+
+        {/* this below div is filter button */}
+        <div className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${filterOpen &&'border-blue-400'}`} onClick={()=>setFilterOpen(!filterOpen)}>
+          <span>Filters</span>
+          <FaFilter  className="hover:cursor-pointer text-blue-500"/>
+        </div>
+
+        {/* this below div is filter box */}
+        <div className={` ${filterOpen? 'block':'hidden'} w-[84%] md:w-[70%] mx-auto lg:w-[30%] h-full lg:max-h-screen lg:mt-20 px-6 shadow-xl border-t py-6 overflow-y-hidden bg-white  relative`}>
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
           </h1>
+          <FaTimes onClick={()=>setFilterOpen(false)} className="absolute right-3 top-5 lg:hidden text-blue-500 hover:cursor-pointer"/>
 
           <p className="mb-4 mt-6">Type of Internship:</p>
           <button
@@ -677,16 +688,23 @@ const Internships = () => {
           )}
         </div>
 
-        <div className="flex-1 mt-14 lg:mt-28 ">
+        <h1 className="text-3xl font-bold mb-8 mt-8 text-center lg:hidden">
+        {filteredInternships.length} Total Internships
+      </h1>
+
+
+        <div className="flex-1 lg:mt-28 ">
           <div className="flex flex-col justify-center bg-gray-100">
+
+            {/* this below div is list of internships */}
             {filteredInternships.map((internship) => (
               <div
                 key={internship._id}
-                className="bg-white shadow-md rounded-lg p-6 w-full my-3 mx-auto relative"
+                className="bg-white shadow-md rounded-lg px-3 py-3 w-full my-3 mx-auto relative"
               >
                 <div className="flex justify-between items-center">
                   <div className="mb-4">
-                    <h2 className="text-xl lg:text-2xl font-semibold mb-2">
+                    <h2 className="text-lg lg:text-2xl font-semibold md:mb-2">
                       {internship.internshipName}
                     </h2>
                     <p className="text-gray-600">
@@ -705,9 +723,9 @@ const Internships = () => {
                   )}
                 </div>
 
-                <div className="flex flex-col md:flex-row ">
+                <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row ">
                   <div className="flex  items-center text-gray-700 mb-2">
-                    <FaMapMarkerAlt className="mr-2" />
+                    <FaMapMarkerAlt className="mr-1" />
                     <span>
                       {internship.internLocation
                         ? `${internship.internLocation}`
@@ -722,7 +740,7 @@ const Internships = () => {
 
                   {internship.stipendType === "unpaid" && (
                     <div className="flex items-center text-gray-700 mb-2">
-                      <FaMoneyBillWave className="mr-2" />
+                      <FaMoneyBillWave className="mr-1" />
                       <span>Unpaid</span>
                     </div>
                   )}
@@ -730,7 +748,7 @@ const Internships = () => {
                   {internship.stipendType !== "unpaid" && (
                     <div className="flex items-center space-x-1">
                       <div className="flex items-center text-gray-700 mb-2">
-                        <FaMoneyBillWave className="mr-2" />
+                        <FaMoneyBillWave className="mr-1" />
                         <span>
                           {internship.currency} {internship.stipend} /month
                         </span>
@@ -753,24 +771,24 @@ const Internships = () => {
                 </div>
 
                 {isAlreadyApplied(internship._id) && (
-                  <p className="text-green-600 inline-flex rounded-xl border border-green-600 px-2 py-1">
+                  <p className="text-green-600 text-sm md:text-base inline-flex rounded-xl border border-green-600 px-2 py-1">
                     Applied
                     <FaCheck className="ml-2 mt-1" />
                   </p>
                 )}
-                <div className="flex space-x-4 items-center">
+                <div className="flex text-sm md:text-base space-x-4 items-center">
                   <div
                     className={`${
                       internship.studentCount < 20
                         ? "text-green-500"
                         : "text-gray-500"
-                    } my-2`}
+                    } my-2 w-[30%] md:w-auto`}
                   >
                     {internship.studentCount} Applicants
                   </div>
 
                   {internship.studentCount < 20 && (
-                    <div className="flex space-x-2 items-center">
+                    <div className="flex  space-x-2 items-center">
                       <FaRunning className="text-yellow-500  w-5 h-5" />
                       <span className="text-gray-500">
                         Be an early Applicant
@@ -785,21 +803,21 @@ const Internships = () => {
                   )}
                 </div>
 
-                <p className="text-gray-500 mb-4">
+                <p className="text-gray-500 mb-2 md:mb-4 text-sm md:text-base">
                   Posted: {TimeAgo(internship.createdAt)}
                 </p>
 
                 {!isAlreadyApplied(internship._id) ? (
                   <button
                     onClick={() => openModal(internship)}
-                    className=" w-auto my-2 rounded-md text-blue-500 hover:scale-105 duration-300"
+                    className=" w-auto md:my-2 text-sm md:text-base rounded-md text-blue-500 hover:scale-105 duration-300"
                   >
                     View details
                   </button>
                 ) : (
                   <Link
                     to={`/student/myApplications/${userId}`}
-                    className=" w-auto my-2 rounded-md text-blue-500 hover:scale-105 duration-300"
+                    className=" w-auto text-sm md:text-base my-2 rounded-md text-blue-500 hover:scale-105 duration-300"
                   >
                     Check Status
                   </Link>
@@ -815,9 +833,9 @@ const Internships = () => {
                     onClick={closeModal}
                   ></div>
                   <div className="fixed inset-0 flex items-center justify-center z-50 ">
-                    <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-[60%] h-[90%] p-6 relative overflow-auto">
+                    <div className="bg-white border border-gray-600 rounded-lg shadow-3xl w-[90%] lg:w-[60%] h-[90%] p-6 relative overflow-auto">
                       <div className="border-b">
-                        <h2 className="text-2xl font-semibold mb-4">
+                        <h2 className=" text-lg lg:text-2xl font-semibold lg:mb-4">
                           Applying for {selectedInternship.internshipName}
                         </h2>
                         <button
@@ -826,19 +844,22 @@ const Internships = () => {
                         >
                           <FaTimes />
                         </button>
-                        <p className="text-gray-600 mb-4">
+                        <div>
+                        <p className="text-gray-600 mb-1 lg:mb-4">
                           {selectedInternship.recruiter.companyName}
                         </p>
-                      </div>
-
-                      <button
+                        <button
                         onClick={openInterestedModal}
-                        className="absolute bg-blue-300 hover:bg-blue-400 py-2 px-5 rounded-xl right-5 top-[130px]"
+                        className="text-sm lg:text-base font-semibold px-2 py-2 bg-blue-100  lg:py-2 lg:px-5 rounded-lg text-blue-500 mb-2"
                       >
                         I'm Interested
                       </button>
+                        </div>
+                      </div>
 
-                      <div className="flex items-center text-gray-700 mb-2">
+                      
+
+                      <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
                         <FaMapMarkerAlt className="mr-2" />
                         <span>
                           {selectedInternship.internLocation
@@ -847,16 +868,16 @@ const Internships = () => {
                         </span>
                       </div>
 
-                      <div className="flex items-center text-gray-700 mb-2">
+                      <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
                         <FaMoneyBillWave className="mr-2" />
                         <span>₹ {selectedInternship.stipend}</span>
                       </div>
-                      <div className="flex items-center text-gray-700 mb-2">
+                      <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
                         <FaClock className="mr-2" />
                         <span>{selectedInternship.duration} Months</span>
                       </div>
 
-                      <div className="flex items-center text-gray-700 mb-2">
+                      <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
                         <FaUsers className="mr-2" />
                         <span>
                           {selectedInternship.numberOfOpenings} Openings
@@ -864,13 +885,13 @@ const Internships = () => {
                       </div>
 
                       {selectedInternship.internLocation && (
-                        <div className="flex items-center text-gray-700 mb-4">
+                        <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
                           <FaClipboardList className="mr-2" />
                           <span>{selectedInternship.internshipType}</span>
                         </div>
                       )}
 
-                      <h3 className="text-lg font-medium mb-2">
+                      <h3 className=" text-base lg:text-lg font-medium mb-2">
                         Skills Required:
                       </h3>
                       <div className="flex flex-wrap mb-4">
@@ -884,9 +905,9 @@ const Internships = () => {
                         ))}
                       </div>
 
-                      <h3 className="text-lg font-medium mb-2">Description:</h3>
+                      <h3 className="text-base lg:text-lg font-medium mb-2">Description:</h3>
                       <div
-                        className="text-gray-700 mb-4"
+                        className="text-sm lg:text-base text-gray-700 mb-4"
                         dangerouslySetInnerHTML={{
                           __html: selectedInternship.description,
                         }}
