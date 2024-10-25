@@ -9,6 +9,7 @@ import SubmitAssignment from './SubmitAssignment';
 import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots, FaEllipsisV, FaStar, FaBolt, FaExclamation, FaFile, FaArrowCircleDown, FaFilePdf ,FaArrowLeft } from 'react-icons/fa'
 import { MdDoneAll } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import Spinner from '../common/Spinner'
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -44,6 +45,7 @@ const Chats = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [chatBlocked, setChatBlocked] = useState({});
   const [chatListOpen, setChatListOpen] = useState(true);
+  const [loading, setLoading] = useState(true);
 
 
 
@@ -633,6 +635,18 @@ const Chats = () => {
   console.log('these are chat histories', chatHistories);
   console.log('chat list',chatListOpen);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        setLoading(false);
+    }, 1500); // Set timer for 1 second
+
+    return () => clearTimeout(timer); // Cleanup on component unmount
+}, []);
+
+if(loading){
+  return <Spinner/>
+}
+
   return (
     <div className="flex justify-end h-[90vh]  w-[100%]  mt-20 relative">
       {/* Left Column - Shortlisted Students */}
@@ -721,7 +735,7 @@ const Chats = () => {
       </div>
 
       {/* Right Column - Chat Interface */}
-      <div className={`${chatListOpen && 'hidden'} w-[95%] md:w-[65%] p-4 flex flex-col mx-3 h-[84vh] `}>
+      <div className={`${chatListOpen && 'hidden'} w-[95%] md:w-[63%] p-4 flex flex-col mx-2 h-[84vh] `}>
 
         <div className='w-full h-[15%] md:h-[10%]  relative '>
           <button onClick={()=>setChatListOpen(true)} className='flex md:hidden space-x-1 text-blue-400 items-center'>
