@@ -14,7 +14,8 @@ import {
   FaRunning,
   FaStar,
   FaQuestion,
-  FaFilter
+  FaFilter,
+  
 } from "react-icons/fa";
 import Spinner from "../common/Spinner";
 import getUserIdFromToken from "./auth/authUtils";
@@ -938,9 +939,9 @@ const Internships = () => {
                   onClick={closeModal}
                 ></div>
                 <div className="fixed inset-0 flex items-center justify-center z-50">
-                  <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-[60%] h-[90%] py-8 px-10 relative overflow-auto flex flex-col space-y-3">
+                  <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-[90%] lg:w-[60%] h-[90%] py-8 px-5 sm:px-10 relative overflow-auto flex flex-col space-y-3">
                     <div className="border-b ">
-                      <h2 className="text-2xl font-semibold mb-1">
+                      <h2 className=" text-xl sm:text-2xl font-semibold mb-1 mt-5">
                         Thank you for showing interest!
                       </h2>
                       <h1 className="text-gray-600 mt-2">
@@ -954,9 +955,12 @@ const Internships = () => {
 
                       <button
                         onClick={closeModal}
-                        className="absolute top-7 right-4 text-blue-500 hover:text-blue-700 focus:outline-none"
+                        className="absolute top-5 right-4 sm:top-7 sm:right-4 text-blue-500 hover:text-blue-700 focus:outline-none"
                       >
                         <FaTimes />
+                      </button>
+                      <button onClick={()=>setIsInterestedModalOpen(false)} className="absolute top-6 left-7  text-blue-500">
+                        <FaArrowLeft/>
                       </button>
                     </div>
                     {selectedInternship.internLocation !== "" &&
@@ -969,9 +973,9 @@ const Internships = () => {
 
                     <div>
                       <div className="resume-box mt-4">
-                        <h1 className="text-xl font-semibold">Your Resume</h1>
+                        <h1 className="text-lg sm:text-xl font-semibold">Your Resume</h1>
 
-                        <div className="flex space-x-2">
+                        <div className="flex flex-col sm:flex-row sm:space-x-2">
                           <h1 className="text-gray-600">
                             This Resume will be submitted along with you
                             application
@@ -991,13 +995,13 @@ const Internships = () => {
                       </div>
 
                       <div className="about-yourself-box mt-9">
-                        <h1 className="text-xl font-semibold">
+                        <h1 className="text-lg sm:text-xl font-semibold">
                           Tell us about yourself
                         </h1>
                         <textarea
                           value={aboutText}
                           onChange={(e) => setAboutText(e.target.value)}
-                          className="my-3 w-[80%] p-2 border-2"
+                          className="my-3 w-[90%] sm:w-[80%] p-2 border-2"
                           placeholder="Mention your skills, your interests, your previous experience in my company, achievements and Why do you want to work with us."
                           rows={4}
                         ></textarea>
@@ -1033,7 +1037,7 @@ const Internships = () => {
 
                       {selectedInternship.assessment && (
                         <div className="assessment-box mt-4">
-                          <h1 className="text-xl font-semibold mb-2">
+                          <h1 className="text-lg sm:text-xl font-semibold mb-2">
                             Assessment
                           </h1>
                           <div className="text-gray-600 mb-2">
@@ -1042,7 +1046,7 @@ const Internships = () => {
                           <textarea
                             value={assessmentAns}
                             onChange={(e) => setAssessmentAns(e.target.value)}
-                            className="w-[80%] border-2 p-2"
+                            className="w-[90%] sm:w-[80%] border-2 p-2"
                             rows={4}
                             name=""
                             id=""
