@@ -1,0 +1,92 @@
+[
+  {
+    "jobTitle": "Software Engineer",
+    "companyName": "Tech Solutions",
+    "logo": "https://i.ibb.co/0ZDD93w/to.png",
+    "location": "New York, NY",
+    "salary": "$8000 - $10000",
+    "time": "Full-time",
+    "jobType": "On-site"
+  },
+  {
+    "jobTitle": "Product Manager",
+    "companyName": "Innovate Inc.",
+    "logo": "https://i.ibb.co/0ZDD93w/to.png",
+    "location": "San Francisco, CA",
+    "salary": "$9000 - $11000",
+    "time": "Full-time",
+    "jobType": "Remote"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "companyName": "Data Insights",
+    "logo": "https://i.ibb.co/0ZDD93w/to.png",
+    "location": "Austin, TX",
+    "salary": "$7500 - $9000",
+    "time": "Full-time",
+    "jobType": "Hybrid"
+  },
+  {
+    "jobTitle": "UX Designer",
+    "companyName": "Creative Labs",
+    "logo": "https://i.ibb.co/0ZDD93w/to.png",
+    "location": "Seattle, WA",
+    "salary": "$6000 - $7500",
+    "time": "Full-time",
+    "jobType": "Remote"
+  },
+  {
+    "jobTitle": "Marketing Specialist",
+    "companyName": "GrowthHub",
+    "logo": "https://i.ibb.co/0ZDD93w/to.png",
+    "location": "Chicago, IL",
+    "salary": "$5000 - $6500",
+    "time": "Part-time",
+    "jobType": "On-site"
+  },
+  {
+    "jobTitle": "DevOps Engineer",
+    "companyName": "CloudBase",
+    "logo": "https://i.ibb.co/0ZDD93w/to.png",
+    "location": "Denver, CO",
+    "salary": "$8500 - $10000",
+    "time": "Full-time",
+    "jobType": "Hybrid"
+  },
+  {
+    "jobTitle": "Backend Developer",
+    "companyName": "WebWorks",
+    "logo": "https://i.ibb.co/0ZDD93w/to.png",
+    "location": "Portland, OR",
+    "salary": "$7800 - $9000",
+    "time": "Full-time",
+    "jobType": "Remote"
+  },
+  {
+    "jobTitle": "Financial Analyst",
+    "companyName": "FinancePro",
+    "logo": "https://i.ibb.co/0ZDD93w/to.png",
+    "location": "Boston, MA",
+    "salary": "$6500 - $8000",
+    "time": "Full-time",
+    "jobType": "On-site"
+  },
+  {
+    "jobTitle": "HR Coordinator",
+    "companyName": "PeopleFirst",
+    "logo": "https://i.ibb.co/0ZDD93w/to.png",
+    "location": "Miami, FL",
+    "salary": "$4500 - $5500",
+    "time": "Part-time",
+    "jobType": "Hybrid"
+  },
+  {
+    "jobTitle": "Customer Success Manager",
+    "companyName": "ClientCare",
+    "logo": "https://i.ibb.co/0ZDD93w/to.png",
+    "location": "Las Vegas, NV",
+    "salary": "$6000 - $7500",
+    "time": "Full-time",
+    "jobType": "Remote"
+  }
+]

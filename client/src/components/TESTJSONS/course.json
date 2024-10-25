@@ -1,0 +1,72 @@
+[
+  {
+    "image": "https://i.ibb.co/0ZDD93w/to.png",
+    "courseTitle": "Web Development Course 1",
+    "totalOpportunities": 10,
+    "courseTime": "6 months",
+    "expectedSalary": "$50,000 - $70,000"
+  },
+  {
+    "image": "https://i.ibb.co/0ZDD93w/to.png",
+    "courseTitle": "Web Development Course 2",
+    "totalOpportunities": 10,
+    "courseTime": "6 months",
+    "expectedSalary": "$50,000 - $70,000"
+  },
+  {
+    "image": "https://i.ibb.co/0ZDD93w/to.png",
+    "courseTitle": "Web Development Course 3",
+    "totalOpportunities": 10,
+    "courseTime": "6 months",
+    "expectedSalary": "$50,000 - $70,000"
+  },
+  {
+    "image": "https://i.ibb.co/0ZDD93w/to.png",
+    "courseTitle": "Web Development Course 4",
+    "totalOpportunities": 10,
+    "courseTime": "6 months",
+    "expectedSalary": "$50,000 - $70,000"
+  },
+  {
+    "image": "https://i.ibb.co/0ZDD93w/to.png",
+    "courseTitle": "Web Development Course 5",
+    "totalOpportunities": 10,
+    "courseTime": "6 months",
+    "expectedSalary": "$50,000 - $70,000"
+  },
+  {
+    "image": "https://i.ibb.co/0ZDD93w/to.png",
+    "courseTitle": "Web Development Course 6",
+    "totalOpportunities": 10,
+    "courseTime": "6 months",
+    "expectedSalary": "$50,000 - $70,000"
+  },
+  {
+    "image": "https://i.ibb.co/0ZDD93w/to.png",
+    "courseTitle": "Web Development Course 7",
+    "totalOpportunities": 10,
+    "courseTime": "6 months",
+    "expectedSalary": "$50,000 - $70,000"
+  },
+  {
+    "image": "https://i.ibb.co/0ZDD93w/to.png",
+    "courseTitle": "Web Development Course 8",
+    "totalOpportunities": 10,
+    "courseTime": "6 months",
+    "expectedSalary": "$50,000 - $70,000"
+  },
+  {
+    "image": "https://i.ibb.co/0ZDD93w/to.png",
+    "courseTitle": "Web Development Course 9",
+    "totalOpportunities": 10,
+    "courseTime": "6 months",
+    "expectedSalary": "$50,000 - $70,000"
+  },
+  {
+    "image": "https://i.ibb.co/0ZDD93w/to.png",
+    "courseTitle": "Web Development Course 10",
+    "totalOpportunities": 10,
+    "courseTime": "6 months",
+    "expectedSalary": "$50,000 - $70,000"
+  }
+]
