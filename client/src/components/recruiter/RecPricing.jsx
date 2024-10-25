@@ -10,7 +10,7 @@ import TimeLeft from "../common/TimeLeft";
 const RecPricing = () => {
   const { recruiterId } = useParams();
   const { recruiter } = useRecruiter();
-  console.log(recruiterId);
+  
 
   const handlePayment = async (amount, planType) => {
     try {
@@ -107,6 +107,8 @@ const RecPricing = () => {
       planType = "1 Year Plan";
       break;
   }
+
+  console.log('this is date', recruiter.subscription.expirationDate);
 
   return (
     <div className=" bg-gradient-to-r from-blue-500 to-blue-400 pt-32 pb-10">

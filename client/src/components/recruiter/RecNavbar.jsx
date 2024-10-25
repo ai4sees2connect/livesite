@@ -93,9 +93,10 @@ const RecNavbar = () => {
       </div>
 
       {/* Sidebar for Small Devices */}
-      {isSidebarOpen && (
+      
        
-        <div className="sm:hidden fixed left-0 top-0 w-[50%] h-screen bg-gray-200 shadow-xl z-20 ">
+        <div className={`sm:hidden fixed top-0 left-0 w-[50%] h-screen bg-gray-200 shadow-xl z-20 
+          transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <div className="flex justify-between items-center p-4">
             <h2 className="text-lg font-semibold">Menu</h2>
             <button onClick={toggleSidebar}>
@@ -124,7 +125,7 @@ const RecNavbar = () => {
           </div>
         </div>
        
-      )}
+      
     </nav>
   );
 };
