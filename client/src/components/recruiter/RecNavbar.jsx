@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import logo from "../../images/logo.png";
+import internsnestlogo1 from '../../images/internsnest_pic1.jpg'
+import internsnestlogo2 from '../../images/internsnest_pic2.jpg'
 import getUserIdFromToken from "./auth/authUtilsRecr.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -41,7 +43,7 @@ const RecNavbar = () => {
         {/* Logo */}
         <Link to="/">
           <div className="inline-flex items-center">
-            <img src={logo} alt="" className="h-10" />
+            <img src={internsnestlogo2} alt="" className="h-14 w-24" />
           </div>
         </Link>
 
@@ -93,7 +95,7 @@ const RecNavbar = () => {
       {/* Sidebar for Small Devices */}
       {isSidebarOpen && (
        
-        <div className="sm:hidden fixed left-0 top-0 w-[50%] h-screen bg-gray-200 shadow-xl z-10">
+        <div className="sm:hidden fixed left-0 top-0 w-[50%] h-screen bg-gray-200 shadow-xl z-20 ">
           <div className="flex justify-between items-center p-4">
             <h2 className="text-lg font-semibold">Menu</h2>
             <button onClick={toggleSidebar}>
