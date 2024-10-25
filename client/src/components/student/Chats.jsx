@@ -650,9 +650,10 @@ if(loading){
   return (
     <div className="flex justify-end h-[90vh]  w-[100%]  mt-20 relative">
       {/* Left Column - Shortlisted Students */}
-      <div className={`${!chatListOpen? 'hidden':'flex'} border md:flex  flex-col justify-center items-center absolute  top-0 left-5 md:left-20 w-[90%] md:w-[40%] lg:w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[90%] md:h-[80vh]`}>
-        <h2 className="text-xl w-fit font-semibold mb-2 mt-36 sm:mt-28 md:mt-48">Shortlisted Internships</h2>
-        <div className="flex  text-sm lg:text-base md:h-full space-x-1 lg:space-x-4  border-2 rounded-md sm:rounded-full mb-4">
+      <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center  absolute  top-0 left-5 md:left-20 w-[90%]  lg:w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[90%] md:h-[80vh]`}>
+        <h2 className="text-xl w-fit font-semibold mb-2 ">Shortlisted Internships</h2>
+
+        <div className="flex items-center justify-center text-sm lg:text-base  space-x-1 lg:space-x-4  border-2 rounded-md sm:rounded-full mb-4">
           <button
             className={`text-sm sm:text-base py-2 px-3 rounded-full ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
             onClick={() => handleFilterChange('all')}
@@ -735,10 +736,10 @@ if(loading){
       </div>
 
       {/* Right Column - Chat Interface */}
-      <div className={`${chatListOpen && 'hidden'} w-[95%] md:w-[63%] p-4 flex flex-col mx-2 h-[84vh] `}>
+      <div className={`${chatListOpen && 'hidden'} w-[95%] lg:w-[63%] p-4 flex flex-col mx-2 h-[84vh] `}>
 
-        <div className='w-full h-[15%] md:h-[10%]  relative '>
-          <button onClick={()=>setChatListOpen(true)} className='flex md:hidden space-x-1 text-blue-400 items-center'>
+        <div className='w-full h-[15%] lg:h-[10%]  relative '>
+          <button onClick={()=>setChatListOpen(true)} className='flex lg:hidden space-x-1 text-blue-400 items-center'>
             <FaArrowLeft/>
             <span>back</span>
           </button>
