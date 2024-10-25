@@ -6,7 +6,7 @@ import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
 import SubmitAssignment from './SubmitAssignment';
-import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots, FaEllipsisV, FaStar, FaBolt, FaExclamation, FaFile, FaArrowCircleDown, FaFilePdf } from 'react-icons/fa'
+import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots, FaEllipsisV, FaStar, FaBolt, FaExclamation, FaFile, FaArrowCircleDown, FaFilePdf ,FaArrowLeft } from 'react-icons/fa'
 import { MdDoneAll } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -43,6 +43,7 @@ const Chats = () => {
   const [filteredInternships, setFilteredInternships] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [chatBlocked, setChatBlocked] = useState({});
+  const [chatListOpen, setChatListOpen] = useState(true);
 
 
 
@@ -247,6 +248,7 @@ const Chats = () => {
   const handleInternClick = (internshipId, recruiterId) => {
     setSelectedRecruiter(recruiterId);
     setSelectedInternship(internshipId);
+    setChatListOpen(false);
 
     socket.emit('markLastMessageAsSeen', {
       studentId,
@@ -629,15 +631,16 @@ const Chats = () => {
 
 
   console.log('these are chat histories', chatHistories);
+  console.log('chat list',chatListOpen);
 
   return (
     <div className="flex justify-end h-[90vh]  w-[100%]  mt-20 relative">
       {/* Left Column - Shortlisted Students */}
-      <div className=" flex flex-col items-center left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[80vh]">
-        <h2 className="text-xl font-semibold mb-4">Shortlisted Internships</h2>
-        <div className=" inline-block space-x-4  border-2 rounded-full  mb-4">
+      <div className={`${!chatListOpen? 'hidden':'flex'} border md:flex  flex-col justify-center items-center absolute  top-0 left-5 md:left-20 w-[90%] md:w-[40%] lg:w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[90%] md:h-[80vh]`}>
+        <h2 className="text-xl w-fit font-semibold mb-2 mt-36 sm:mt-28 md:mt-48">Shortlisted Internships</h2>
+        <div className="flex  text-sm lg:text-base md:h-full space-x-1 lg:space-x-4  border-2 rounded-md sm:rounded-full mb-4">
           <button
-            className={`py-2 px-3 rounded-full ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            className={`text-sm sm:text-base py-2 px-3 rounded-full ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
             onClick={() => handleFilterChange('all')}
           >
             All Messages
@@ -656,7 +659,7 @@ const Chats = () => {
             Important
           </button>
         </div>
-        <ul className=" w-[80%] space-y-2">
+        <ul className=" w-[90%] space-y-2">
           {filteredInternships.map((intern) => {
             const { internshipId, recruiterId, companyName, internshipName, statusUpdatedAt, isActive, studentStatus } = intern;
 
@@ -718,12 +721,16 @@ const Chats = () => {
       </div>
 
       {/* Right Column - Chat Interface */}
-      <div className="w-[65%] p-4 flex flex-col mx-3 h-[84vh]  ">
+      <div className={`${chatListOpen && 'hidden'} w-[95%] md:w-[65%] p-4 flex flex-col mx-3 h-[84vh] `}>
 
-        <div className='w-full h-[10%]  relative '>
+        <div className='w-full h-[15%] md:h-[10%]  relative '>
+          <button onClick={()=>setChatListOpen(true)} className='flex md:hidden space-x-1 text-blue-400 items-center'>
+            <FaArrowLeft/>
+            <span>back</span>
+          </button>
           <p className='font-semibold capitalize text-2xl'>{companyName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
           <p>{internshipName}</p>
-          <div className='absolute right-10 top-7 hover:cursor-pointer hover:text-blue-400' onClick={() => setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV /></div>
+          <div className='absolute right-0 top-9 md:right-1 md:top-7 hover:cursor-pointer hover:text-blue-400' onClick={() => setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV /></div>
         </div>
 
         {isOptionsOpen && (
