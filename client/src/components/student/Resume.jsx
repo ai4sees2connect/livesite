@@ -110,10 +110,10 @@ const Resume = () => {
   };
 
   return (
-    <div className="text-black w-full min-h-screen bg-gradient-to-b from-white to-blue-500">
-      <div className="w-1/2 h-1/2 mt-[140px] flex flex-col items-center justify-center mx-auto border-4 border-red-600 border-dotted ">
+    <div className="text-black w-full min-h-screen bg-gradient-to-b from-white to-blue-500 px-5 lg:px-0">
+      <div className="w-full lg:w-1/2 h-1/2 mt-[140px] flex flex-col items-center justify-center mx-auto border-4 border-red-600 border-dotted">
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
-          <h2 className="text-center my-7 text-2xl lg:text-4xl font-bold pt-5">
+          <h2 className="text-center my-4 lg:my-7 text-2xl lg:text-4xl font-bold pt-5">
             Upload Your Resume
           </h2>
           <div className="w-[70px] h-[70px] ">
@@ -142,7 +142,7 @@ const Resume = () => {
             } `}
             disabled={!file}
           >
-            UPLOAD
+            UPLOAD NOW
           </button>
           {(file || resumeUrl) && (
             <>
@@ -155,18 +155,19 @@ const Resume = () => {
               <a
                 href={resumeUrl}
                 download={resumeFilename}
-                className="text-red-500 text-xl font-bold mt-4 hover:scale-105 duration-300"
+                className="text-red-500 text-xl font-bold mt-4 hover:scale-105 duration-300 pb-4 text-center"
               >
-                Download Resume-{resumeFilename}
+                Download Resume:
+                <br />
+                {resumeFilename}
               </a>
             </>
           )}
         </form>
       </div>
 
-      <div className=" mt-[80px]">
+      <div className=" mt-[50px]">
         <Link to={`/student/dashboard/${userId}`}>
-          {" "}
           <div className="border-2 border-black rounded-full w-[60px] h-[60px] mx-auto p-2 hover:bg-green-400 hover:cursor-pointer">
             <FontAwesomeIcon icon={faArrowLeft} className="w-full h-full" />
           </div>
