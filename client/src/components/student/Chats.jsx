@@ -650,12 +650,12 @@ if(loading){
   return (
     <div className="flex justify-end h-[90vh]  w-[100%]  mt-20 relative">
       {/* Left Column - Shortlisted Students */}
-      <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center  absolute  top-0 left-5 md:left-20 w-[90%]  lg:w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[90%] md:h-[80vh]`}>
+      <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center  absolute  top-0 left-5 lg:left-4 md:left-20 w-[90%]  lg:w-[36%] xl:w-[30%] bg-gray-100 py-4 lg:px-1 shadow-lg overflow-y-auto h-[90%] md:h-[80vh]`}>
         <h2 className="text-xl w-fit font-semibold mb-2 ">Shortlisted Internships</h2>
 
-        <div className="flex items-center justify-center text-sm lg:text-base  space-x-1 lg:space-x-4  border-2 rounded-md sm:rounded-full mb-4">
+        <div className="flex items-center justify-center text-sm lg:text-base w-fit space-x-1 lg:space-x-2  border-2 rounded-md sm:rounded-full mb-4">
           <button
-            className={`text-sm sm:text-base py-2 px-3 rounded-full ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            className={`text-sm sm:text-base py-2 px-3 rounded-full  ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
             onClick={() => handleFilterChange('all')}
           >
             All Messages
