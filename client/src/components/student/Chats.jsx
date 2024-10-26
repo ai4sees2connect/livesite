@@ -193,7 +193,7 @@ const Chats = () => {
     if (shortlistedInternships && shortlistedInternships.length > 0) {
       console.log('Updated shortlistedInternships:', shortlistedInternships);
       if (socket) {
-        handleInternClick(shortlistedInternships[0].internshipId, shortlistedInternships[0].recruiterId);
+        // handleInternClick(shortlistedInternships[0].internshipId, shortlistedInternships[0].recruiterId);
         handleInfoSetter(shortlistedInternships[0].companyName, shortlistedInternships[0].internshipName, shortlistedInternships[0].isActive);
       }
       setIsLoading(false);
@@ -801,7 +801,7 @@ if(loading){
                           <h1 className='ml-8 text-white font-bold'>Assignment Received</h1>
                         </div>
                         <div className={`py-2 px-3  inline-block  bg-gray-100 `} >
-                          <p className='max-w-[400px] min-w-[150px]'>{msg.assignmentDetails.description}</p>
+                          <p className='max-w-[230px] md:max-w-[400px] min-w-[150px]'>{msg.assignmentDetails.description}</p>
                           <p className=' font-semibold mt-5 text-red-500'>Submission deadline: {new Date(msg.assignmentDetails.deadline).toLocaleDateString('en-GB')}</p>
                           <button onClick={openAssignmentPopup} className='bg-blue-400 rounded-lg px-3 py-2 mt-8 text-sm text-white font-bold'>Submit assignment</button>
 
@@ -826,7 +826,7 @@ if(loading){
 
                   {
                     msg.isAssignment && msg.senderId === studentId && (
-                      <div className='flex flex-col self-end items-end break-words max-w-[600px]'>
+                      <div className='flex flex-col self-end items-end break-words max-w-[260px] md:max-w-[400px]'>
                         <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
                           <FaCheckCircle className='absolute top-4 left-4 text-white' />
                           <h1 className='ml-8 text-white font-bold'>Assignment Submitted</h1>
@@ -843,8 +843,8 @@ if(loading){
                                   <FaFileDownload />
 
                                 </span>
-                                <span className='font-semibold'>{file.fileName}</span>
-                                <span className='text-gray-500'>{file.fileSize}</span>
+                                <span className='font-semibold text-sm md:text-base'>{file.fileName}</span>
+                                <span className='text-gray-500 text-sm md:text-base'>{file.fileSize}</span>
                               </div>
 
                             ))}
