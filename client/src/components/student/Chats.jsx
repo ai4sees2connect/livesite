@@ -193,7 +193,7 @@ const Chats = () => {
     if (shortlistedInternships && shortlistedInternships.length > 0) {
       console.log('Updated shortlistedInternships:', shortlistedInternships);
       if (socket) {
-        // handleInternClick(shortlistedInternships[0].internshipId, shortlistedInternships[0].recruiterId);
+        handleInternClick(shortlistedInternships[0].internshipId, shortlistedInternships[0].recruiterId);
         handleInfoSetter(shortlistedInternships[0].companyName, shortlistedInternships[0].internshipName, shortlistedInternships[0].isActive);
       }
       setIsLoading(false);
