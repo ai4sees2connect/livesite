@@ -791,7 +791,7 @@ if(loading){
               <button className='hover:cursor-pointer' onClick={() => setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV /></button>
 
               {isOptionsOpen && (
-                <div className='absolute right-0 top-[48px] bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10'>
+                <div className='absolute -right-5 top-[36px] md:top-[51px] md:-right-5 bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10'>
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleMarkAsImportant}>Mark as important</div>
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleRemoveImportant}>Remove from important</div>
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleViewDetails}>Review application</div>
