@@ -784,7 +784,7 @@ if(loading){
                       className={`p-2 rounded  inline-block break-words  ${msg.senderId === studentId ? 'bg-[#DBEAFE] self-end text-right' : 'bg-gray-100'} `}
                       style={{ maxWidth: 'fit-content' }}
                     >
-                      <p className='max-w-[400px]'>{msg.messageContent}</p>
+                      <p className='max-w-[230px] md:max-w-[400px]'>{msg.messageContent}</p>
                       <p className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right text-gray-500`}>
                         <span>{formatSentAt(msg.sentAt)}</span>
                         {msg.senderId === studentId && <span><MdDoneAll className={`w-5 h-5 ${msg.seenStatus && 'text-blue-500'}`} /></span>}
