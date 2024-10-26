@@ -11,10 +11,11 @@ import 'react-dropdown/style.css';
 // import Select from 'react-select';
 // import select from './utils/select.css'
 import './utils/Styles.css'
-import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip, FaStar, FaEllipsisV, FaBolt, FaClock, FaTimes, FaFilePdf, FaArrowCircleDown, FaExclamation } from 'react-icons/fa';
+import { FaSearch, FaNewspaper, FaCaretRight, FaCheckCircle, FaFileDownload, FaPaperclip, FaStar, FaEllipsisV, FaBolt, FaClock, FaTimes, FaFilePdf, FaArrowCircleDown, FaExclamation, FaArrowLeft } from 'react-icons/fa';
 import RecAssignment from './RecAssignment';
 import { MdDoneAll } from 'react-icons/md';
 import { toast } from 'react-toastify';
+import Spinner from '../common/Spinner';
 
 const RecChatRoom = () => {
   const { recruiterId } = useParams();
@@ -39,6 +40,8 @@ const RecChatRoom = () => {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const navigate = useNavigate();
   const [chatBlocked, setChatBlocked] = useState({});
+  const [chatListOpen, setChatListOpen] = useState(true);
+  const [loading, setLoading] = useState(true);
 
 
 
@@ -270,6 +273,7 @@ const RecChatRoom = () => {
   const handleStudentClick = (studentId, internshipId) => {
     setSelectedStudent(studentId);
     setSelectedInternship(internshipId);
+    setChatListOpen(false);
 
     socket.emit('markLastMessageAsSeen', {
       studentId,
@@ -567,6 +571,7 @@ const RecChatRoom = () => {
         }
       }
       ))
+      toast.success('Status changes successfully');
   }
 
   const handleBlockChat = () => {
@@ -629,10 +634,22 @@ const RecChatRoom = () => {
 
   console.log('these are all chats', chatHistories);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        setLoading(false);
+    }, 1500); // Set timer for 1 second
+
+    return () => clearTimeout(timer); // Cleanup on component unmount
+}, []);
+
+if(loading){
+  return <Spinner/>
+}
+
   return (
     <div className="flex justify-end h-[90vh]  mt-20 relative w-[100%]">
       {/* Left Column - Shortlisted Students */}
-      <div className=" flex flex-col items-center left-10 top-30 w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[80vh]">
+      <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center  absolute  top-0 left-5 md:left-20 w-[90%]  lg:w-[30%] bg-gray-100 p-4 shadow-lg overflow-y-auto h-[90%] md:h-[80vh]`}>
         <h2 className="text-xl font-semibold mb-4">Messages from all internships</h2>
 
         <div className='flex flex-col justify-center w-full'>
@@ -660,9 +677,9 @@ const RecChatRoom = () => {
           />
         </div>
 
-        <div className=" inline-block space-x-4  border-2 rounded-full  mb-4">
+        <div className="flex items-center justify-center text-sm lg:text-base  space-x-1 lg:space-x-4  border-2 rounded-md sm:rounded-full mb-4">
           <button
-            className={`py-2 px-3 rounded-full ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            className={`text-sm sm:text-base py-2 px-3 rounded-full ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
             onClick={() => handleFilterChange('all')}
           >
             All Messages
@@ -721,7 +738,7 @@ const RecChatRoom = () => {
                   {lastMessage && <p className="text-md text-gray-800">
                     <span className='font-semibold text-blue-400'>{lastMessage.senderId === recruiterId ? 'You:  ' : ''}</span>
                     <span className={`${lastMessage.senderId !== recruiterId && !latestMessagesSeenStatus[`${studentId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-500'} text-md`}>
-                      {lastMessage ? (lastMessage.messageContent.slice(0, 30) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
+                      {lastMessage ? (lastMessage.messageContent.slice(0, 20) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
 
                   </p>}
@@ -754,18 +771,22 @@ const RecChatRoom = () => {
 
       {/* Right Column - Chat Interface */}
 
-      <div className="w-[65%] p-4 flex flex-col  mx-3 h-[84vh] ">
-        <div className='w-full h-[10%]  mb-2'>
+      <div className={`${chatListOpen && 'hidden'} w-[95%] lg:w-[63%] p-4 flex flex-col mx-2 h-[84vh] `}>
+        <div className='w-full h-[15%] lg:h-[10%] -mt-5  relative '>
+        <button onClick={()=>setChatListOpen(true)} className='flex lg:hidden space-x-1 text-blue-400 items-center'>
+            <FaArrowLeft/>
+            <span>back</span>
+          </button>
           <p className='font-semibold capitalize text-2xl'>{firstName} {lastName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
-          <div className='flex space-x-5 relative'>
-            <p>{internshipName}</p>
-            <Link to={`/recruiter/${selectedInternship}/application-details/${selectedStudent}`} target="_blank"
-              rel="noopener noreferrer" className='flex items-center space-x-4 text-blue-500 font-semibold'>View application<FaCaretRight className='mt-1 mx-1' /></Link>
-            <div className='space-x-4 absolute right-5 font-semibold'>
+          <div className='flex space-x-5  relative '>
+            <p className=''>{internshipName}</p>
+            {/* <Link to={`/recruiter/${selectedInternship}/application-details/${selectedStudent}`} target="_blank"
+              rel="noopener noreferrer" className='absolute  hidden md:flex top-6 -left-4  sm:items-center space-x-4 text-blue-500 font-semibold'>View application<FaCaretRight className='mt-1 mx-1' /></Link> */}
+            <div className='flex mt-2 md:mt-0 items-end md:items-center space-x-4 absolute right-5  font-semibold'>
 
-              <button className='bg-green-400 text-white rounded-lg px-4 py-1 hover:scale-105 duration-300 hover:bg-green-500' onClick={() => handleStatusChange('Hire')}>Hire</button>
+              <button className='bg-green-400 hidden md:block mt-4 sm:mt-0 h-fit text-sm sm:text-base text-white rounded-lg px-4 py-1 hover:scale-105 duration-300 hover:bg-green-500' onClick={() => handleStatusChange('Hire')}>Hire</button>
 
-              <button className='bg-red-400 text-white rounded-lg px-2 py-1 hover:scale-105 duration-300 hover:bg-red-500' onClick={() => handleStatusChange('Reject')}>Reject</button>
+              <button className='bg-red-400  hidden md:block h-fit text-sm sm:text-base text-white rounded-lg px-2 py-1 hover:scale-105 duration-300 hover:bg-red-500' onClick={() => handleStatusChange('Reject')}>Reject</button>
 
               <button className='hover:cursor-pointer' onClick={() => setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV /></button>
 
@@ -774,6 +795,8 @@ const RecChatRoom = () => {
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleMarkAsImportant}>Mark as important</div>
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleRemoveImportant}>Remove from important</div>
                   <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleViewDetails}>Review application</div>
+                  <div className='block md:hidden hover:text-blue-400 p-2 cursor-pointer' onClick={() => handleStatusChange('Hire')}>Hire</div>
+                  <div className='block md:hidden hover:text-blue-400 p-2 cursor-pointer' onClick={() => handleStatusChange('Reject')}>Reject</div>
 
                   <div onClick={handleBlockChat} className='hover:text-blue-400 p-2 cursor-pointer'>Block chat</div>
                 </div>
@@ -781,7 +804,8 @@ const RecChatRoom = () => {
             </div>
           </div>
         </div>
-        <div className={`flex-grow mt-4 p-4 rounded-lg bg-white shadow-lg border-2 relative overflow-y-auto `}>
+
+        <div className={`flex-grow mt-5 md:mt-7 p-4 rounded-lg bg-white shadow-lg border-2 relative overflow-y-auto `}>
           <div className="flex flex-col space-y-4 ">
 
             {chatHistories[`${selectedStudent}_${selectedInternship}`]?.map((msg, index, arr) => {
@@ -804,7 +828,7 @@ const RecChatRoom = () => {
                     className={`py-2 px-3 rounded inline-block break-words ${msg.senderId === recruiterId ? 'bg-[#DBEAFE] self-end text-right  ' : 'bg-gray-100 '} `}
                     style={{ maxWidth: 'fit-content' }}
                   >
-                    <p className='max-w-[400px] min-w-[70px]'>{msg.messageContent}</p>
+                    <p className='max-w-[230px] md:max-w-[400px] min-w-[70px]'>{msg.messageContent}</p>
                     <p className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right  text-gray-500`}>
                       <span>{formatSentAt(msg.sentAt)}</span>
                       {msg.senderId === recruiterId && <span><MdDoneAll className={`w-5 h-5 ${msg.seenStatus && 'text-blue-500'}`} /></span>}
@@ -814,13 +838,13 @@ const RecChatRoom = () => {
                   </div>}
 
                   {msg.isAssignment && msg.senderId === recruiterId &&
-                    <div className=' break-words rounded-full bg-blue-400 self-end text-right  text-white' >
+                    <div className=' break-words rounded-full bg-blue-400 self-end text-right max-w-[260px] md:max-w-[400px] text-white' >
                       <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
                         <FaCheckCircle className='absolute top-4 left-4 text-white' />
                         <h1 className='ml-8 text-white font-bold'>Assignment Sent</h1>
                       </div>
                       <div className={`py-2 px-3  inline-block text-black bg-gray-100 `} >
-                        <p className='max-w-[400px] min-w-[150px]'>{msg.assignmentDetails.description}</p>
+                        <p className='max-w-[230px] md:max-w-[400px] min-w-[150px]'>{msg.assignmentDetails.description}</p>
                         <p className='text-blue-500 font-semibold mt-5'>Deadline- {new Date(msg.assignmentDetails.deadline).toLocaleDateString('en-GB')}</p>
 
                         <p className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right  text-gray-500`}>
@@ -835,7 +859,7 @@ const RecChatRoom = () => {
 
                   {
                     msg.isAssignment && msg.senderId === selectedStudent && (
-                      <div className='flex flex-col break-words max-w-[600px]'>
+                      <div className='flex flex-col break-words max-w-[260px] md:max-w-[400px]'>
                         <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
                           <FaCheckCircle className='absolute top-4 left-4 text-white' />
                           <h1 className='ml-8 text-white font-bold'>Assignment Received</h1>
@@ -846,14 +870,14 @@ const RecChatRoom = () => {
                             {msg.submissionDetails.submittedFiles.map((file, index) => (
 
 
-                              <div key={index} className='flex justify-end items-center space-x-4 w-full py-1 border-b border-gray-400'>
+                              <div key={index} className='flex justify-start items-center space-x-4 w-full py-1 border-b border-gray-400'>
                                 <span className='text-gray-600 hover:cursor-pointer hover:scale-105 duration-300' onClick={() => downloadFile(file.fileId, file.fileName)}>
 
                                   <FaFileDownload />
 
                                 </span>
-                                <span className='font-semibold'>{file.fileName}</span>
-                                <span className='text-gray-500'>{file.fileSize}</span>
+                                <span className='font-semibold text-sm md:text-base'>{file.fileName}</span>
+                                <span className='text-gray-500 text-sm md:text-base'>{file.fileSize}</span>
                               </div>
 
                             ))}
@@ -861,7 +885,7 @@ const RecChatRoom = () => {
 
                           {/* Submission link */}
                           {msg.submissionDetails.submissionLink && (
-                            <a href={msg.submissionDetails.submissionLink} target='_blank' className='mt-3 flex items-center space-x-4 justify-end border-b border-gray-400 font-semibold'>
+                            <a href={msg.submissionDetails.submissionLink} target='_blank' className='mt-3 flex items-center space-x-4 justify-start border-b border-gray-400 font-semibold'>
 
                               <FaPaperclip className='mx-2' />{msg.submissionDetails.submissionLink}
 
@@ -870,7 +894,7 @@ const RecChatRoom = () => {
 
                           {/* Additional Information */}
                           {msg.submissionDetails.additionalInfo && (
-                            <p className='mt-3 text-right text-gray-700'>{msg.submissionDetails.additionalInfo}</p>
+                            <p className='mt-3 text-left text-gray-700'>{msg.submissionDetails.additionalInfo}</p>
                           )}
 
                           <p className='text-xs font-semibold text-right text-gray-500 mt-2'>
@@ -931,15 +955,15 @@ const RecChatRoom = () => {
         {chatBlocked[`${selectedStudent}_${selectedInternship}`] !== 'recruiter' && <div className="mt-4 flex flex-col space-y-4">
           <button
             onClick={toggleAssignmentModal}
-            className="bg-red-500 text-white w-[20%] px-2 py-1 rounded-lg hover:scale-105 duration-300"
+            className="bg-red-500 text-white text-sm sm:text-base w-fit  px-2 py-1 rounded-lg hover:scale-105 duration-300"
           >
             Send Assignment
           </button>
           
 
           {showAssignmentModal && (
-            <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-[50%] h-[60%]">
+            <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center md:items-center z-50">
+              <div className="bg-white p-6 rounded-lg mt-10 md:mt-0 shadow-lg w-[90%] md:w-[50%] h-[70%] md:h-[63%]">
                 <RecAssignment onClose={toggleAssignmentModal} sendAssignment={sendAssignment} /> {/* Pass onClose to hide modal */}
               </div>
             </div>

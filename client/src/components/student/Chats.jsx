@@ -705,9 +705,9 @@ if(loading){
 
                   {/* Display the most recent message */}
                   {lastMessage && <p className="text-sm text-gray-800">
-                    <span className='font-semibold text-blue-400'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
+                    <span className='font-semibold text-sm md:text-base text-blue-400'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
                     <span className={`${lastMessage.senderId !== studentId && !latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-500'} text-md`}>
-                      {lastMessage ? (lastMessage.messageContent.slice(0, 30) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
+                      {lastMessage ? (lastMessage.messageContent.slice(0, 20) + (lastMessage.messageContent.length >20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
                   </p>}
 

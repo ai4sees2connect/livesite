@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FaTimes } from 'react-icons/fa';
 
 const RecAssignment = ({  onClose, sendAssignment }) => {
   const [description, setDescription] = useState('');
@@ -9,8 +10,9 @@ const RecAssignment = ({  onClose, sendAssignment }) => {
   };
 
   return (
-    <div className="assignment-modal">
+    <div className="assignment-modal relative">
       <h2 className="text-xl mb-4">New Assignment</h2>
+      <FaTimes className='absolute right-0 top-0 text-blue-500'/>
 
       <div className="mb-4">
         <label className="block">Assignment Description:</label>
