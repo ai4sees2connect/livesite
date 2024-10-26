@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
-import getUserIdFromToken from './auth/authUtilsRecr'
-import { toast } from 'react-toastify'
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import api from '../common/server_url'
-import Select from 'react-select';
-import { useRecruiter } from './context/recruiterContext'
-import Spinner from '../common/Spinner'
-import { Link } from 'react-router-dom';
+import { faClose } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import getUserIdFromToken from "./auth/authUtilsRecr";
+import { toast } from "react-toastify";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import api from "../common/server_url";
+import Select from "react-select";
+import { useRecruiter } from "./context/recruiterContext";
+import Spinner from "../common/Spinner";
+import { Link } from "react-router-dom";
 
 const RecPosting = () => {
   const [formData, setFormData] = useState({
-    internshipName: '',
-    internshipType: '',
-    internLocation: '',
-    internshipStartQues: '',
-    stipendType: '',
-    incentiveDescription: '',
-    currency: '₹',
-    ppoCheck: '',
-    numberOfOpenings: '',
-    stipend: '',
-    duration: '',
-    description: '',
-    assessment: '',
+    internshipName: "",
+    internshipType: "",
+    internLocation: "",
+    internshipStartQues: "",
+    stipendType: "",
+    incentiveDescription: "",
+    currency: "₹",
+    ppoCheck: "",
+    numberOfOpenings: "",
+    stipend: "",
+    duration: "",
+    description: "",
+    assessment: "",
     skills: [],
   });
   // const [Location,setLocation]=useState('');
@@ -243,71 +243,84 @@ const RecPosting = () => {
     "Ruby on Rails Development",
     "Travels",
     "Tourism",
-    "Web Development"
+    "Web Development",
   ];
 
   const statesAndUTs = [
-    { value: 'All Locations', label: 'All Locations' },
-    { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
-    { value: 'Arunachal Pradesh', label: 'Arunachal Pradesh' },
-    { value: 'Assam', label: 'Assam' },
-    { value: 'Bihar', label: 'Bihar' },
-    { value: 'Chhattisgarh', label: 'Chhattisgarh' },
-    { value: 'Chennai', label: 'Chennai' },
-    { value: 'Goa', label: 'Goa' },
-    { value: 'Gujarat', label: 'Gujarat' },
-    { value: 'Haryana', label: 'Haryana' },
-    { value: 'Himachal Pradesh', label: 'Himachal Pradesh' },
-    { value: 'Jharkhand', label: 'Jharkhand' },
-    { value: 'Karnataka', label: 'Karnataka' },
-    { value: 'Kerala', label: 'Kerala' },
-    { value: 'Madhya Pradesh', label: 'Madhya Pradesh' },
-    { value: 'Maharashtra', label: 'Maharashtra' },
-    { value: 'Manipur', label: 'Manipur' },
-    { value: 'Meghalaya', label: 'Meghalaya' },
-    { value: 'Mizoram', label: 'Mizoram' },
-    { value: 'Nagaland', label: 'Nagaland' },
-    { value: 'Odisha', label: 'Odisha' },
-    { value: 'Punjab', label: 'Punjab' },
-    { value: 'Rajasthan', label: 'Rajasthan' },
-    { value: 'Sikkim', label: 'Sikkim' },
-    { value: 'Tamil Nadu', label: 'Tamil Nadu' },
-    { value: 'Telangana', label: 'Telangana' },
-    { value: 'Tripura', label: 'Tripura' },
-    { value: 'Uttar Pradesh', label: 'Uttar Pradesh' },
-    { value: 'Uttarakhand', label: 'Uttarakhand' },
-    { value: 'West Bengal', label: 'West Bengal' },
-    { value: 'Andaman and Nicobar Islands', label: 'Andaman and Nicobar Islands' },
-    { value: 'Chandigarh', label: 'Chandigarh' },
-    { value: 'Dadra and Nagar Haveli and Daman and Diu', label: 'Dadra and Nagar Haveli and Daman and Diu' },
-    { value: 'Lakshadweep', label: 'Lakshadweep' },
-    { value: 'Delhi', label: 'Delhi' },
-    { value: 'Puducherry', label: 'Puducherry' },
-    { value: 'Jammu and Kashmir', label: 'Jammu and Kashmir' },
-    { value: 'Ladakh', label: 'Ladakh' }
+    { value: "All Locations", label: "All Locations" },
+    { value: "Andhra Pradesh", label: "Andhra Pradesh" },
+    { value: "Arunachal Pradesh", label: "Arunachal Pradesh" },
+    { value: "Assam", label: "Assam" },
+    { value: "Bihar", label: "Bihar" },
+    { value: "Chhattisgarh", label: "Chhattisgarh" },
+    { value: "Chennai", label: "Chennai" },
+    { value: "Goa", label: "Goa" },
+    { value: "Gujarat", label: "Gujarat" },
+    { value: "Haryana", label: "Haryana" },
+    { value: "Himachal Pradesh", label: "Himachal Pradesh" },
+    { value: "Jharkhand", label: "Jharkhand" },
+    { value: "Karnataka", label: "Karnataka" },
+    { value: "Kerala", label: "Kerala" },
+    { value: "Madhya Pradesh", label: "Madhya Pradesh" },
+    { value: "Maharashtra", label: "Maharashtra" },
+    { value: "Manipur", label: "Manipur" },
+    { value: "Meghalaya", label: "Meghalaya" },
+    { value: "Mizoram", label: "Mizoram" },
+    { value: "Nagaland", label: "Nagaland" },
+    { value: "Odisha", label: "Odisha" },
+    { value: "Punjab", label: "Punjab" },
+    { value: "Rajasthan", label: "Rajasthan" },
+    { value: "Sikkim", label: "Sikkim" },
+    { value: "Tamil Nadu", label: "Tamil Nadu" },
+    { value: "Telangana", label: "Telangana" },
+    { value: "Tripura", label: "Tripura" },
+    { value: "Uttar Pradesh", label: "Uttar Pradesh" },
+    { value: "Uttarakhand", label: "Uttarakhand" },
+    { value: "West Bengal", label: "West Bengal" },
+    {
+      value: "Andaman and Nicobar Islands",
+      label: "Andaman and Nicobar Islands",
+    },
+    { value: "Chandigarh", label: "Chandigarh" },
+    {
+      value: "Dadra and Nagar Haveli and Daman and Diu",
+      label: "Dadra and Nagar Haveli and Daman and Diu",
+    },
+    { value: "Lakshadweep", label: "Lakshadweep" },
+    { value: "Delhi", label: "Delhi" },
+    { value: "Puducherry", label: "Puducherry" },
+    { value: "Jammu and Kashmir", label: "Jammu and Kashmir" },
+    { value: "Ladakh", label: "Ladakh" },
   ];
 
-  const perks = ["Letter of recommendation", "Flexible work hours", "Certificate", "Informal dress code", "5 days a week", "Free snacks & beverages", "Job offer"];
+  const perks = [
+    "Letter of recommendation",
+    "Flexible work hours",
+    "Certificate",
+    "Informal dress code",
+    "5 days a week",
+    "Free snacks & beverages",
+    "Job offer",
+  ];
 
-  console.log('this is recruite data', recruiter);
+  console.log("this is recruite data", recruiter);
 
   useEffect(() => {
     const fetchSkills = async () => {
       try {
         const response = await axios.get(`${api}/recruiter/api/get-skills`);
-        const skillsData = response.data.map(skill => ({
+        const skillsData = response.data.map((skill) => ({
           label: skill.name, // Map 'name' field to 'label'
-          value: skill.name  // Map 'name' field to 'value'
+          value: skill.name, // Map 'name' field to 'value'
         }));
         setSkills(skillsData);
       } catch (error) {
-        console.error('Error fetching skills:', error);
+        console.error("Error fetching skills:", error);
       }
     };
 
     fetchSkills();
   }, []);
-
 
   const handleChange = (e) => {
     console.log(e.target.name);
@@ -326,19 +339,18 @@ const RecPosting = () => {
     });
   };
 
-
   const handleSkillsChange = (selectedOptions) => {
     setSelectedSkills(selectedOptions);
-    console.log('This is a skill set', selectedOptions);
+    console.log("This is a skill set", selectedOptions);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const skillSet = selectedSkills.map(skill => {
+    const skillSet = selectedSkills.map((skill) => {
       return skill.value;
-    })
-    const perksSet = selectedPerks.map(perk => {
-      return perk.value
+    });
+    const perksSet = selectedPerks.map((perk) => {
+      return perk.value;
     });
 
     const postData = {
@@ -358,79 +370,85 @@ const RecPosting = () => {
       perks: perksSet,
       ppoCheck: formData.ppoCheck,
       assessment: formData.assessment,
-
-
-
-    }
+    };
     console.log(postData);
-    if (!postData.internshipName || !postData.internshipType || !postData.internshipStartQues || !postData.stipendType || !postData.ppoCheck || !postData.assessment || postData.perks.length == 0 || !postData.jobProfile || !postData.duration || !postData.numberOfOpenings || !postData.description || postData.skills.length == 0) {
-      toast.error('Please enter all fields');
+    if (
+      !postData.internshipName ||
+      !postData.internshipType ||
+      !postData.internshipStartQues ||
+      !postData.stipendType ||
+      !postData.ppoCheck ||
+      !postData.assessment ||
+      postData.perks.length == 0 ||
+      !postData.jobProfile ||
+      !postData.duration ||
+      !postData.numberOfOpenings ||
+      !postData.description ||
+      postData.skills.length == 0
+    ) {
+      toast.error("Please enter all fields");
       return;
     }
 
-    if (postData.internshipType === 'Remote') {
+    if (postData.internshipType === "Remote") {
       // setFormData({...formData,internshipType: 'Work from Home'})
-      postData.internshipType = 'Work from Home';
-      postData.internLocation = '';
-    }
-    else if (postData.internshipType === 'Office') {
-      postData.internshipType = 'Work from Office';
-    }
-
-    else if (postData.internshipType === 'Hybrid') {
-      postData.internshipType = 'Hybrid';
+      postData.internshipType = "Work from Home";
+      postData.internLocation = "";
+    } else if (postData.internshipType === "Office") {
+      postData.internshipType = "Work from Office";
+    } else if (postData.internshipType === "Hybrid") {
+      postData.internshipType = "Hybrid";
     }
 
-    console.log('sending this data', postData)
+    console.log("sending this data", postData);
     try {
       // Make the POST request to your backend
-      const response = await axios.post(`${api}/recruiter/internship/post/${userId}`, postData);
+      const response = await axios.post(
+        `${api}/recruiter/internship/post/${userId}`,
+        postData
+      );
 
       if (response.data.success) {
-        toast.success('Internship posted successfully');
-        console.log('Response:', response.data);
-       window.location.reload();
+        toast.success("Internship posted successfully");
+        console.log("Response:", response.data);
+        window.location.reload();
+        return;
+      } else {
+        toast.error("some error occured");
         return;
       }
-      else {
-        toast.error('some error occured');
-        return;
-      }
-
-
-
-
-
-
     } catch (error) {
       // Handle errors
-      console.error('There was an error posting the internship:', error);
+      console.error("There was an error posting the internship:", error);
     }
   };
   // console.log(selectedProfile)
   // console.log(selectedPerks);
-  console.log('this is assessment question', formData.assessment);
-  console.log('this is my location', formData.internLocation);
-  console.log('this is my currency', formData.currency);
+  console.log("this is assessment question", formData.assessment);
+  console.log("this is my location", formData.internLocation);
+  console.log("this is my currency", formData.currency);
 
   let status = null;
 
-  if (recruiter?.companyWebsite?.status !== 'Verified' || recruiter?.companyCertificate?.status !== 'Verified') {
+  if (
+    recruiter?.companyWebsite?.status !== "Verified" ||
+    recruiter?.companyCertificate?.status !== "Verified"
+  ) {
     if (recruiter?.companyWebsite) {
       status = recruiter.companyWebsite.status;
     } else if (recruiter?.companyCertificate) {
       status = recruiter.companyCertificate.status;
     }
 
-    if (status === 'pending') {
+    if (status === "pending") {
       return (
-        <div className='mt-[350px] text-center text-gray-700 text-lg font-semibold'>
+        <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
           Please wait some time while we verify your details
         </div>
       );
-    } else if (status === 'Rejected') {
+    } else if (status === "Rejected") {
       return (
-        <div className='mt-[350px] text-center text-gray-700 text-lg font-semibold'>
+        <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
           We regret to inform you that your verification has failed
         </div>
       );
@@ -438,45 +456,72 @@ const RecPosting = () => {
   }
 
   if (!recruiter?.companyCertificate && !recruiter?.companyWebsite) {
-    return (<div className='mt-[350px] text-center text-gray-700 text-lg font-semibold'>Verification pending in profile section</div>)
-  }
-  else if (recruiter?.subscription.planType !== 'Unlimited') {
-    if (recruiter?.subscription.planType === 'free' && recruiter?.subscription.postsRemaining < 1) {
+    return (
+      <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
+        Verification pending in profile section
+      </div>
+    );
+  } else if (recruiter?.subscription.planType !== "Unlimited") {
+    if (
+      recruiter?.subscription.planType === "free" &&
+      recruiter?.subscription.postsRemaining < 1
+    ) {
       return (
-        <div className='flex flex-col space-y-3'>
-          <div className='mt-[350px] text-center text-gray-700 text-lg font-semibold'>You have used your monthly available free postings</div>
-          <Link to={`/recruiter/${userId}/pricing`} className='w-fit mx-auto border bg-blue-400 px-2 py-1 font-semibold text-white rounded-md '>Upgrade your plan</Link>
+        <div className="flex flex-col space-y-3">
+          <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
+            You have used your monthly available free postings
+          </div>
+          <Link
+            to={`/recruiter/${userId}/pricing`}
+            className="w-fit mx-auto border bg-blue-400 px-2 py-1 font-semibold text-white rounded-md "
+          >
+            Upgrade your plan
+          </Link>
         </div>
-      )
-    } else if ((recruiter?.subscription.planType === '1-month' || recruiter?.subscription.planType === '3-month' || recruiter?.subscription.planType === '1-year') && recruiter?.subscription.postsRemaining < 1) {
+      );
+    } else if (
+      (recruiter?.subscription.planType === "1-month" ||
+        recruiter?.subscription.planType === "3-month" ||
+        recruiter?.subscription.planType === "1-year") &&
+      recruiter?.subscription.postsRemaining < 1
+    ) {
       return (
-        <div className='flex flex-col space-y-3'>
-          <div className='mt-[350px] text-center text-gray-700 text-lg font-semibold'>You have used your available postings</div>
-          <Link to={`/recruiter/${userId}/pricing`} className='w-fit mx-auto border bg-blue-400 px-2 py-1 font-semibold text-white rounded-md '>Upgrade your plan</Link>
+        <div className="flex flex-col space-y-3">
+          <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
+            You have used your available postings
+          </div>
+          <Link
+            to={`/recruiter/${userId}/pricing`}
+            className="w-fit mx-auto border bg-blue-400 px-2 py-1 font-semibold text-white rounded-md "
+          >
+            Upgrade your plan
+          </Link>
         </div>
-      )
+      );
     }
   }
 
   return (
     <div>
-      <h2 className="text-4xl font-semibold mb-6 text-center mt-24">Post Internship</h2>
-      <div className="flex flex-col">
-
-        <p className='text-center text-lg font-semibold mt-5'>Internship Details</p>
-        <div className='border border-gray-300 w-[45%] mx-auto  p-6 rounded-lg shadow-lg mb-7 '>
+      <h2 className="text-4xl font-semibold mb-6 text-center mt-24">
+        Post Internship
+      </h2>
+      <div className="px-5">
+        <p className="text-center text-lg font-semibold my-5">
+          Internship Details
+        </p>
+        <div className="border border-gray-300 mx-auto  p-6 rounded-lg shadow-lg mb-7 w-full lg:w-[70%]">
           <div className="flex flex-col my-5">
             {/* <label className="mb-2 font-medium">Internship Name:</label> */}
-            <label className='font-medium'>Internship Title</label>
+            <label className="font-medium">Internship Title</label>
             <input
               type="text"
               name="internshipName"
               value={formData.internshipName}
               onChange={handleChange}
               className="p-2 border text-gray-600 shadow-md border-gray-300 rounded-md"
-              placeholder='e.g Angular Development'
+              placeholder="e.g Angular Development"
             />
-
           </div>
 
           <div className="flex flex-col my-5">
@@ -488,25 +533,24 @@ const RecPosting = () => {
                 onChange={handleSkillsChange}
                 options={skills}
                 placeholder="Select or type skills "
-                className='w-60 shadow-md'
+                className="w-60 shadow-md"
               />
             </div>
           </div>
 
           <div className="p-2 my-5">
-            <p className='my-2 font-medium'>Internship Type</p>
-            <label >
+            <p className="my-2 font-medium">Internship Type</p>
+            <label>
               <input
                 type="radio"
                 name="internshipType"
                 value="Hybrid"
                 checked={formData.internshipType === "Hybrid"}
                 onChange={handleChange}
-                className='w-4 h-4 mr-1'
+                className="w-4 h-4 mr-1"
               />
-              <span className='text-gray-600'>Hybrid</span>
+              <span className="text-gray-600">Hybrid</span>
             </label>
-
 
             <label className="ml-4 text-gray-600">
               <input
@@ -515,7 +559,7 @@ const RecPosting = () => {
                 value="Remote"
                 checked={formData.internshipType === "Remote"}
                 onChange={handleChange}
-                className='w-4 h-4 mr-1 '
+                className="w-4 h-4 mr-1 "
               />
               Remote
             </label>
@@ -527,14 +571,15 @@ const RecPosting = () => {
                 value="Office"
                 checked={formData.internshipType === "Office"}
                 onChange={handleChange}
-                className='w-4 h-4 mr-1'
+                className="w-4 h-4 mr-1"
               />
               Office
             </label>
           </div>
 
-          {
-            (formData.internshipType === 'Office' || formData.internshipType === 'Hybrid') && <div className='flex flex-col my-5'>
+          {(formData.internshipType === "Office" ||
+            formData.internshipType === "Hybrid") && (
+            <div className="flex flex-col my-5">
               {/* <input type="text"
                 name="internLocation"
                 value={formData.internLocation}
@@ -545,39 +590,39 @@ const RecPosting = () => {
               <Select
                 options={statesAndUTs}
                 values={formData.internLocation}
-                onChange={(value) => setFormData({ ...formData, internLocation: value.value })}
+                onChange={(value) =>
+                  setFormData({ ...formData, internLocation: value.value })
+                }
                 placeholder="Select a location"
                 searchable={true}
-                className='w-full shadow-md'
-
+                className="w-full shadow-md"
               />
-
             </div>
-          }
+          )}
 
-          <div className='flex flex-col my-5 space-y-3'>
-            <p className='font-medium'>Internship Start date</p>
-            <div className='flex space-x-16 text-gray-600'>
-              <label className='ml-4 flex items-center'>
+          <div className="flex flex-col my-5 space-y-3">
+            <p className="font-medium">Internship Start date</p>
+            <div className="flex space-x-16 text-gray-600">
+              <label className="ml-4 flex items-center">
                 <input
                   type="radio"
                   name="internshipStartQues"
                   value="Immediately"
                   checked={formData.internshipStartQues === "Immediately"}
                   onChange={handleChange}
-                  className='w-4 h-4 mr-1'
+                  className="w-4 h-4 mr-1"
                 />
                 Immediately (within next 30 days)
               </label>
 
-              <label className='ml-4 flex items-center'>
+              <label className="ml-4 flex items-center">
                 <input
                   type="radio"
                   name="internshipStartQues"
                   value="Later"
                   checked={formData.internshipStartQues === "Later"}
                   onChange={handleChange}
-                  className='w-4 h-4 mr-1'
+                  className="w-4 h-4 mr-1"
                 />
                 Later
               </label>
@@ -591,62 +636,60 @@ const RecPosting = () => {
               name="numberOfOpenings"
               value={formData.numberOfOpenings}
               onChange={handleChange}
-
               className="p-2 border border-gray-300 rounded-md shadow-md"
-              placeholder='e.g. 4'
+              placeholder="e.g. 4"
             />
           </div>
 
           <div className="flex flex-col my-5">
-            <label className='mb-2 font-medium'>Internship Duration (in months)</label>
+            <label className="mb-2 font-medium">
+              Internship Duration (in months)
+            </label>
             <input
               type="number"
               name="duration"
               value={formData.duration}
               onChange={handleChange}
               className="p-2 border border-gray-300 rounded-md shadow-md"
-              placeholder='e.g. 5'
+              placeholder="e.g. 5"
             />
           </div>
 
           <div className="flex flex-col my-5">
-            <p className='my-2 font-medium'>Type of internship</p>
+            <p className="my-2 font-medium">Type of internship</p>
             <Select
               value={selectedProfile}
               onChange={(values) => setSelectedProfile(values)}
-              options={jobProfiles.map(job => (
-                {
-                  value: job,
-                  label: job
-                }
-              ))}
+              options={jobProfiles.map((job) => ({
+                value: job,
+                label: job,
+              }))}
               placeholder="e.g Web development"
-              className='w-full mb-3 shadow-md'
+              className="w-full mb-3 shadow-md"
             />
           </div>
 
           <div className="flex flex-col my-5 h-[320px]">
-            <label className="my-2 ml-2 font-medium">Intern's responsibilities</label>
+            <label className="my-2 ml-2 font-medium">
+              Intern's responsibilities
+            </label>
             <ReactQuill
               value={formData.description}
               onChange={handleDescriptionChange}
               className="p-2 rounded-md h-[200px]"
               theme="snow"
-              placeholder='Enter the requirements....'
-
+              placeholder="Enter the requirements...."
             />
           </div>
-
         </div>
 
-        <p className='text-center text-lg font-semibold'>Stipend & Perks</p>
-        <div className='border border-gray-300 w-[45%] mx-auto p-6 rounded-lg shadow-lg mb-7 '>
-
+        <p className="text-center text-lg font-semibold py-5">
+          Stipend & Perks
+        </p>
+        <div className="border border-gray-300 mx-auto p-6 rounded-lg shadow-lg mb-7 w-full lg:w-[70%]">
           <div className="flex flex-col my-4">
-            <label className='mb-2 font-medium'>Stipend</label>
+            <label className="mb-2 font-medium">Stipend</label>
             <div className="mb-4">
-
-
               <input
                 type="radio"
                 name="stipendType"
@@ -655,10 +698,7 @@ const RecPosting = () => {
                 onChange={handleChange}
                 className="mr-1"
               />
-              <label className="mr-4">
-                Unpaid
-              </label>
-
+              <label className="mr-4">Unpaid</label>
 
               <label className="mr-4">
                 <input
@@ -696,7 +736,9 @@ const RecPosting = () => {
             </div>
 
             {/* Conditionally render Stipend Input based on selected type */}
-            {(formData.stipendType === "fixed" || formData.stipendType === "negotiable" || formData.stipendType === "performance-based") && (
+            {(formData.stipendType === "fixed" ||
+              formData.stipendType === "negotiable" ||
+              formData.stipendType === "performance-based") && (
               <div className="flex items-center mb-4">
                 {/* Currency Selector */}
                 <select
@@ -710,9 +752,7 @@ const RecPosting = () => {
                   <option value="€">€ (EUR)</option>
                   <option value="£">£ (GBP)</option>
                   <option value="¥">¥ (JPY)</option>
-
                 </select>
-
                 {/* Stipend Amount Input */}
                 <input
                   type="number"
@@ -722,15 +762,17 @@ const RecPosting = () => {
                   className="p-1 border w-28 border-gray-300 rounded-md shadow-md"
                   placeholder="e.g 4000"
                   required
-                /> /month
+                />{" "}
+                /month
               </div>
             )}
 
-
             {/* Conditionally render Incentive Description for Performance Based */}
             {formData.stipendType === "performance-based" && (
-              <div className='flex flex-col my-4'>
-                <label className='font-medium'>Describe your incentive criteria</label>
+              <div className="flex flex-col my-4">
+                <label className="font-medium">
+                  Describe your incentive criteria
+                </label>
                 <textarea
                   name="incentiveDescription"
                   value={formData.incentiveDescription}
@@ -742,7 +784,6 @@ const RecPosting = () => {
             )}
           </div>
 
-
           <div className="flex flex-col mt-4 mb-2">
             <label className="mb-2 font-medium">Perks and Benefits</label>
             <div className="flex items-center">
@@ -750,17 +791,17 @@ const RecPosting = () => {
                 isMulti
                 value={selectedPerks}
                 onChange={(values) => setSelectedPerks(values)}
-                options={perks.map(perk => ({
+                options={perks.map((perk) => ({
                   value: perk,
-                  label: perk
+                  label: perk,
                 }))}
                 placeholder="Select perk"
-                className='w-60 shadow-md'
+                className="w-60 shadow-md"
               />
             </div>
           </div>
 
-          <div className='my-5'>
+          <div className="my-5">
             <p>Does this internship comes with pre-placement offer (PPO)</p>
             <input
               type="radio"
@@ -768,42 +809,68 @@ const RecPosting = () => {
               value="yes"
               checked={formData.ppoCheck === "yes"}
               onChange={handleChange}
-              className="" /> <label className='mr-5'>Yes</label>
-
+              className=""
+            />{" "}
+            <label className="mr-5">Yes</label>
             <input
               type="radio"
               name="ppoCheck"
               value="no"
               checked={formData.ppoCheck === "no"}
               onChange={handleChange}
-              className="" /> <label>No</label>
+              className=""
+            />{" "}
+            <label>No</label>
           </div>
-
         </div>
 
-        <p className='text-center text-lg font-semibold'>Cover letter, Availability & Assessment Question</p>
-        <div className='border relative border-gray-300 w-[45%] mx-auto p-6 rounded-lg shadow-lg mb-7' >
-          <p className='text-gray-500 my-2'>Cover letter and availability Question will be asked to every Applicant by default. If you wish you may ask a customized question as an assessment</p>
-          <div className='my-2'>
+        <p className="text-center text-lg font-semibold py-5">
+          Cover letter, Availability & Assessment Question
+        </p>
+        <div className="border relative border-gray-300  mx-auto p-6 rounded-lg shadow-lg mb-7 w-full lg:w-[70%]">
+          <p className="text-gray-500 my-2">
+            Cover letter and availability Question will be asked to every
+            Applicant by default. If you wish you may ask a customized question
+            as an assessment
+          </p>
+          <div className="my-2">
             <p>Cover Letter</p>
-            <p className='text-gray-500 '>Tell us something about yourself and why should you be hired for this role.</p>
+            <p className="text-gray-500 ">
+              Tell us something about yourself and why should you be hired for
+              this role.
+            </p>
           </div>
 
-          <div className='my-2'>
+          <div className="my-2">
             <p>Availability</p>
-            <p className='text-gray-500 '>Can you join Immediately?</p>
+            <p className="text-gray-500 ">Can you join Immediately?</p>
           </div>
 
-          <div className='my-5'>
-            {!isAssessmentOpen ? <button className='text-blue-500 font-semibold' onClick={() => setIsAssessmentOpen(true)}>+ Add Assessment question</button> : <button onClick={() => {
-              setIsAssessmentOpen(false); setFormData({
-                ...formData,
-                assessment: ''
-              });
-            }} className='text-red-500 font-semibold'>- Remove Assessment</button>}
+          <div className="my-5">
+            {!isAssessmentOpen ? (
+              <button
+                className="text-blue-500 font-semibold"
+                onClick={() => setIsAssessmentOpen(true)}
+              >
+                + Add Assessment question
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsAssessmentOpen(false);
+                  setFormData({
+                    ...formData,
+                    assessment: "",
+                  });
+                }}
+                className="text-red-500 font-semibold"
+              >
+                - Remove Assessment
+              </button>
+            )}
           </div>
 
-          {isAssessmentOpen &&
+          {isAssessmentOpen && (
             <div className="flex flex-col h-[200px]">
               <label className="mb-2 font-medium">Assessment Question</label>
               <input
@@ -812,28 +879,21 @@ const RecPosting = () => {
                 value={formData.assessment}
                 onChange={handleChange}
                 className="p-2 border border-gray-300 rounded-md shadow-md"
-                placeholder='Enter Question for applicant'
+                placeholder="Enter Question for applicant"
               />
-
             </div>
-          }
+          )}
 
           <button
             onClick={handleSubmit}
-            className="w-[20%] absolute bottom-4 right-4 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
+            className="w-full md:w-[20%] static md:absolute bottom-4 right-4 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
           >
             Post Internship
           </button>
         </div>
-
-
-
-
-
       </div>
     </div>
   );
-
 };
 
 export default RecPosting;
