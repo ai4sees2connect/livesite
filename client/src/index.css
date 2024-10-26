@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes grow-md {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 140px;
+  }
+}
+
+@keyframes grow-lg {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 230px;
+  }
+}
+
+/* Animation Classes */
+.animate-grow-md {
+  animation: grow-md 1s ease-in-out forwards;
+}
+
+.animate-grow-lg {
+  animation: grow-lg 1s ease-in-out forwards;
+}
+
+/* footer bg */
+.bg-footer {
+  background-image: url("../src/images/footer_bg.png");
+  background-size: cover;
+  background-position: center;
+}

@@ -1,60 +1,49 @@
-import React,{useEffect,useState} from 'react'
-import Navbar from './Navbar'
-import Sidebar from './Sidebar'
-import RightSide from './RightSide'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import Navbar from "./Navbar";
+import Sidebar from "./Sidebar";
+import RightSide from "./RightSide";
+import { useNavigate } from "react-router-dom";
 // import getUserIdFromToken from "./auth/authUtils"
-import { useParams } from 'react-router-dom';
-import getUserIdFromToken from './auth/authUtils';
-import Spinner from '../common/Spinner'
-import { useStudent } from './context/studentContext'
-
+import { useParams } from "react-router-dom";
+import getUserIdFromToken from "./auth/authUtils";
+import Spinner from "../common/Spinner";
+import { useStudent } from "./context/studentContext";
 
 const Home = () => {
-
   const navigate = useNavigate();
   const { userId } = useParams();
   const idFromToken = getUserIdFromToken();
-  const {student,logout}=useStudent();
-  const token=localStorage.getItem('token');
-
- 
-
-
+  const { student, logout } = useStudent();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    
-    
-    if(!token ){
-      navigate('/student/login');
+    if (!token) {
+      navigate("/student/login");
       return;
     }
-    if(userId!==idFromToken){
+    if (userId !== idFromToken) {
       logout();
-      navigate('/student/login');
+      navigate("/student/login");
       return;
     }
-   
-    console.log(userId);
-  }, [userId,idFromToken,token])
 
-  if(!student){
-    return <Spinner/>
+    console.log(userId);
+  }, [userId, idFromToken, token]);
+
+  if (!student) {
+    return <Spinner />;
   }
 
-
-  
   return (
-   <>
-      
-          <div className='Home h-[180vh]'>
-        <Sidebar student={student}/>
-          <RightSide/>
-          </div>
-      
-  </>
-    
-  )
-}
+    <>
+      <div className="">
+        <div className="text-center">
+          <Sidebar student={student} />
+        </div>
+        <RightSide />
+      </div>
+    </>
+  );
+};
 
-export default Home
+export default Home;
