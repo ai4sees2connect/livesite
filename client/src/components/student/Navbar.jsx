@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
-import logo from "../../images/logo.png";
+import internsnestlogo2 from '../../images/internsnest_pic2.jpg'
 import getUserIdFromToken from "./auth/authUtils.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -38,7 +38,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         {/* Logo */}
         <Link to="/">
-          <img src={logo} alt="" className="h-full w-14" />
+          <img src={internsnestlogo2} alt="" className="h-14 w-24" />
         </Link>
 
         {/* Hamburger Icon for Small Devices */}
@@ -50,9 +50,9 @@ const Navbar = () => {
 
         {/* Navigation Links */}
         <div className="hidden sm:flex items-center sm:space-x-4 text-sm
-        md:text-base lg:space-x-8">
+        md:text-base lg:space-x-8 text-gray-800 lg:tracking-wider font-[400]">
           <Link to={`/student/internships/${userId}`} className="hover:text-blue-500 p-2 md:p-5">
-            Internship
+            Internships
           </Link>
           <Link to={`/student/${userId}/chats`} className="hover:text-blue-500 p-2 md:p-5">
             Messages
