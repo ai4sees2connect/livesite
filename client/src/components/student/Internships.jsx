@@ -292,6 +292,11 @@ const Internships = () => {
     "Web Development",
   ];
 
+  useEffect(() => {
+    const isLargeScreen = window.matchMedia("(min-width: 1024px)").matches;
+    setFilterOpen(isLargeScreen);
+}, []);
+
   const [selectedLocation, setSelectedLocation] = useState([]);
   const [workType, setWorkType] = useState("All Internships");
   const [selectedStipend, setSelectedStipend] = useState(0);
