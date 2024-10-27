@@ -87,12 +87,12 @@ const ApplicationDetails = () => {
 
   return (
     <>
-      <h1 className='mt-20 text-gray-600 mx-auto w-[70%] font-[500] capitalize'>Dashboard &gt; Applications Received &gt; <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internshipId}`}>{internshipDetails.internshipName}</Link> &gt; {firstname} {lastname}</h1>
-      <h1 className="text-2xl font-semibold mt-6 mx-auto w-[70%] text-gray-700">Application for {internshipDetails.internshipName}</h1>
+      <h1 className='mt-20 text-sm sm:text-base text-gray-600 mx-auto w-[96%] sm:w-[70%] font-[500] capitalize'>Dashboard &gt; Applications Received &gt; <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internshipId}`}>{internshipDetails.internshipName}</Link> &gt; {firstname} {lastname}</h1>
+      <h1 className="text-lg  sm:text-2xl font-semibold mt-6 mx-auto w-[95%] md:w-[70%] text-gray-700">Application for {internshipDetails.internshipName}</h1>
       <div className="">
 
 
-        <div className='border border-gray-300 mt-5 mx-auto p-6 w-[70%] rounded-lg shadow-md '>
+        <div className='border border-gray-300 mt-5 mx-auto p-6 w-[90%] md:w-[70%] rounded-lg shadow-md '>
           <div className="mb-4">
           <div className="mb-2 flex justify-between relative">
             
@@ -108,7 +108,7 @@ const ApplicationDetails = () => {
                   }`}>
                   {calculateMatchPercentage(skills, internshipDetails.skills)}% Matched
                 </div>
-                <div className='z-10 absolute right-3 top-2 text-gray-600 text-sm font-[500]'>
+                <div className=' absolute right-3 top-2 text-gray-600 text-sm font-[500]'>
                   Applied {TimeAgo(appliedAt)}
                 </div>
                 
@@ -130,7 +130,7 @@ const ApplicationDetails = () => {
             <span className='text-gray-600'>Skill(s): </span>
             <div className="flex flex-wrap gap-3">
               {skills.map((skill, index) => (
-                <p key={index} className="rounded-lg bg-blue-200 capitalize px-3 py-1">
+                <p key={index} className="text-sm sm:text-base rounded-lg bg-blue-200 capitalize px-2 md:px-3 py-1">
                   {skill.skillName}
                 </p>
               ))}
@@ -138,24 +138,24 @@ const ApplicationDetails = () => {
           </div>
         </div>
 
-        <h1 className='w-[70%] mx-auto mt-8 text-2xl font-semibold'>Availabilty & Assessment </h1>
-        <div className='border border-gray-300 mx-auto p-6 w-[70%] rounded-lg shadow-md '>
+        <h1 className='w-[90%] md:w-[70%] mx-auto mt-8 text-2xl font-semibold'>Availabilty & Assessment </h1>
+        <div className='border border-gray-300 mx-auto p-6 w-[90%] md:w-[70%] rounded-lg shadow-md '>
 
           <div className="mb-4">
             <p className="text-lg font-medium">Cover Letter</p>
-            <p className="text-gray-700">{aboutText}</p>
+            <p className="text-sm sm:text-base text-gray-700">{aboutText}</p>
           </div>
 
           <div className="mb-4">
             <p className="text-lg font-medium">Assessment </p>
-            <p className='text-gray-700'>Ques: {assessment}</p>
-            <p className="text-gray-700 ">Ans: <span className='ml-3'>{assessmentAns}</span></p>
+            <p className='text-sm sm:text-base text-gray-700'>Ques: {assessment}</p>
+            <p className="text-sm sm:text-base text-gray-700 ">Ans: <span className='ml-2'>{assessmentAns}</span></p>
           </div>
 
 
         </div>
-        <h1 className='w-[70%] mx-auto mt-8 text-2xl font-semibold'>Profile</h1>
-        <div className='border border-gray-300  mx-auto p-6 w-[70%] rounded-lg shadow-md mb-10 '>
+        <h1 className='w-[90%] md:w-[70%] mx-auto mt-8 text-2xl font-semibold'>Profile</h1>
+        <div className='border border-gray-300  mx-auto p-6 w-[90%] md:w-[70%] rounded-lg shadow-md mb-10 '>
 
           {/* Education Details */}
 
@@ -164,13 +164,13 @@ const ApplicationDetails = () => {
             {education.length > 0 ? (
               <ul className="list-disc list-inside text-gray-700">
                 {education.map((edu, index) => (
-                  <li key={index}>
+                  <li key={index} className='text-sm sm:text-base'>
                     {edu.degree}, {edu.fieldOfStudy} - {edu.institution} ({edu.startYear} - {edu.endYear})
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-gray-700">No education details provided</p>
+              <p className="text-gray-700 text-sm sm:text-base">No education details provided</p>
             )}
           </div>
 
@@ -178,7 +178,7 @@ const ApplicationDetails = () => {
           <div className="mb-6">
             <p className="text-lg font-medium">Work Experience:</p>
             {workExperience.length > 0 ? (
-              <ul className="list-disc list-inside text-gray-700">
+              <ul className="list-disc list-inside text-sm sm:text-base text-gray-700">
                 {workExperience.map((exp, index) => (
                   <li key={index}>
                     {exp.role} at {exp.company} ({exp.startDate} - {exp.endDate})
@@ -198,7 +198,7 @@ const ApplicationDetails = () => {
             {certificates.length > 0 ? (
               <ul className="list-disc list-inside text-gray-700">
                 {certificates.map((cert, index) => (
-                  <li key={index}>
+                  <li key={index} className='text-sm sm:text-base'>
                     {cert.title} - {cert.issuingOrganization} (Issued on: {cert.issueDate})
                     <br />
                     <span className='ml-5'>Desc: {cert.description}</span>
