@@ -56,7 +56,7 @@ const RecNavbar = () => {
 
         {/* Navigation Links */}
         <div className="hidden sm:flex items-center sm:space-x-4 text-sm
-        md:text-base lg:space-x-8">
+        md:text-base lg:space-x-6 text-gray-800 lg:tracking-wider font-[400]">
           <Link to={`/recruiter/${userId}/pricing`} className="hover:text-blue-500 p-2 md:p-5">
             Plans and Pricing
           </Link>
