@@ -4,7 +4,7 @@ import { faCaretRight, faFile } from "@fortawesome/free-solid-svg-icons";
 
 const Sidebar = ({ student }) => {
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 770);
-
+console.log('this student is inside sidebarrrr',student);
   useEffect(() => {
     const handleResize = () => {
       const isCurrentlyLargeScreen = window.innerWidth >= 770;

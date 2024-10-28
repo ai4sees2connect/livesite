@@ -12,7 +12,7 @@ import {
   FaClock,
 } from "react-icons/fa";
 import TimeAgo from "../common/TimeAgo";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const RecDashboard = () => {
@@ -21,7 +21,15 @@ const RecDashboard = () => {
   const [error, setError] = useState(null);
   const recruiterId = getUserIdFromToken();
   const [selectedInternship, setSelectedInternship] = useState(null);
+  const token=localStorage.getItem('token');
+  const navigate=useNavigate();
 
+  useEffect(() => {
+    if(!token){
+      navigate('/')
+    }
+  }, [token])
+  
   useEffect(() => {
     const fetchInternships = async () => {
       try {

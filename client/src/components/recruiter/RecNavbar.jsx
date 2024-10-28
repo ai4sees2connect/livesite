@@ -26,7 +26,7 @@ const RecNavbar = () => {
   const handleLogout = () => {
     // Clear the token from localStorage
     logout(); 
-    toast.success('You are logged out');
+    // window.location.reload();
 
     // Navigate to the login page
     navigate('/');
