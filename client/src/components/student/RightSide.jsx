@@ -28,6 +28,8 @@ import courses from "../TESTJSONS/course.json";
 import certificates from "../TESTJSONS/certificates.json";
 //image
 import google_pic from "../../images/google_pic.png";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const images = [
   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
@@ -42,7 +44,18 @@ const images = [
   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
 ];
 
+
+
 const RightSide = () => {
+
+  const token=localStorage.getItem('token');
+  const navigate=useNavigate();
+useEffect(() => {
+  if(!token){
+    navigate('/');
+  }
+}, [token])
+
   return (
     <div className="">
       {/* <button className="fixed right-10 bottom-5 border border-black h-[46px] w-[220px] text-center bg-blue-400 rounded-md z-20 font-semibold hover:bg-green-600">
@@ -376,7 +389,7 @@ const RightSide = () => {
         </div>
       </div>
       {/* footer top */}
-      <div className="bg-footer h-64 w-full bg-no-repeat bg-cover px-5 py-5 lg:py-0">
+      <div className="bg-footer  h-64 w-full bg-no-repeat bg-cover px-5 py-5 lg:py-0">
         <div className="flex flex-col lg:flex-row justify-center items-center h-full gap-5">
           <h2 className="lg:flex-1 text-3xl lg:text-5xl text-white font-bold">
             Boost your career with InternsNest today

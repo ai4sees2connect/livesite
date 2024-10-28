@@ -10,7 +10,7 @@ const Footer = () => {
   const [hoveredIcon, setHoveredIcon] = useState(null);
 
   return (
-    <footer className='h-[220px] border border-black bg-gray-700 text-white'>
+    <footer className='h-[220px] bg-gray-700 text-white'>
       <div className='text-xs md:text-base flex flex-col space-y-9 items-center my-5'>
         <div className='flex text-center md:space-x-4 border-b py-1'>
           <Link to='/about-us' className='px-2 hover:text-blue-300'>About us</Link>

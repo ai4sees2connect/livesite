@@ -16,7 +16,7 @@ import { useStudent } from "./context/studentContext.js";
 const Navbar = () => {
   const navigate=useNavigate();
   const userId = getUserIdFromToken();
-  const {logout}=useStudent();
+  const {logout,student}=useStudent();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar
 
   const toggleSidebar = () => {
@@ -26,9 +26,9 @@ const Navbar = () => {
   const handleLogout = () => {
     // Clear the token from localStorage
     logout(); 
-    toast.success('You are logged out');
-
-    // Navigate to the login page
+    // toast.success('You are logged out');
+    console.log('this is student data',student);
+    // window.location.reload();
     navigate('/');
   };
 

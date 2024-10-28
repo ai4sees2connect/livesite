@@ -507,9 +507,9 @@ const RecPosting = () => {
         Post Internship
       </h2>
       <div className="px-5">
-        <p className="text-center text-lg font-semibold my-5">
+        {/* <p className="text-center text-lg font-semibold my-5">
           Internship Details
-        </p>
+        </p> */}
         <div className="border border-gray-300 mx-auto  p-6 rounded-lg shadow-lg mb-7 w-full lg:w-[70%]">
           <div className="flex flex-col my-5">
             {/* <label className="mb-2 font-medium">Internship Name:</label> */}

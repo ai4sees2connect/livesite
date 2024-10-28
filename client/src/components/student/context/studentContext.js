@@ -39,7 +39,9 @@ export const StudentProvider = ({ children }) => {
           // Optionally handle errors (e.g., logout user)
         }
       }
-      else console.log('there is no token');
+      else {
+        setStudent(null);
+      }
     };
 
     fetchUserData();
