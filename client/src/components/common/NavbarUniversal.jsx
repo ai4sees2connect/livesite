@@ -92,11 +92,11 @@ const NavbarUniversal = () => {
           </div> */}
 
           {/* User Icon */}
-          <div className="hidden sm:flex relative group  items-center justify-center space-x-3 lg:space-x-5 ">
+          <div className="hidden sm:flex relative group  items-center justify-center space-x-2 lg:space-x-5 ">
             <Link to='/student/login'>
               <button className="border border-blue-500 text-blue-500 rounded-md font-semibold px-4 py-1 lg:px-3">Login</button></Link>
-            <Link to='/recruiter/signup'><button className="bg-blue-400 text-white rounded-md font-semibold px-2 md:px-3 py-1 ">Employer Sign-up</button></Link>
-            <Link to='/student/signup'> <button className="bg-blue-400 text-white rounded-md font-semibold px-4 lg:px-2 py-1">Student Sign-up</button></Link>
+            <Link to='/recruiter/signup'><button className="text-sm md:text-base bg-blue-400 text-white rounded-md font-semibold px-1 md:px-2 py-1 ">Employer Sign-up</button></Link>
+            <Link to='/student/signup'> <button className="text-sm md:text-base bg-blue-400 text-white rounded-md font-semibold px-1 md:px-2 py-1">Student Sign-up</button></Link>
 
           </div>
         </div>

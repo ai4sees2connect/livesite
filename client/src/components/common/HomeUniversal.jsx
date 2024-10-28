@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import getUserIdFromToken from "../student/auth/authUtils";
 import Spinner from "../common/Spinner";
 import { useStudent } from "../student/context/studentContext";
+import Sidebar from "../student/Sidebar";
 
 const HomeUniversal = () => {
   const navigate = useNavigate();
@@ -51,14 +52,8 @@ const HomeUniversal = () => {
   return (
     <>
       <div className="mt-20 text-center">
-        <div className="text-3xl lg:text-5xl py-10">
-          <h2 className="relative">
-            Transform Your <span>Dream Job</span> into Reality
-            <span
-              className={`absolute left-[44%] md:-bottom-3 lg:-bottom-5 md:h-[6px] lg:h-[8px] bg-orange-500 rounded-xl ${isLargeScreen ? "animate-grow-lg" : "animate-grow-md"
-                }`}
-            ></span>
-          </h2>
+      <div className="text-center">
+          <Sidebar student={student} />
         </div>
         <RightSide />
       </div>

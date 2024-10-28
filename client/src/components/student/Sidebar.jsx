@@ -21,25 +21,30 @@ const Sidebar = ({ student }) => {
       {/* Header */}
       <div className="py-12">
         {!student ? (
-          <div className="text-3xl lg:text-5xl py-10">
-            <h2 className="relative">
-              Transform Your <span>Dream Job</span> into Reality
-              <span
-                className={`absolute left-[44%] md:-bottom-3 lg:-bottom-5 md:h-[6px] lg:h-[8px] bg-orange-500 rounded-xl ${
-                  isLargeScreen ? "animate-grow-lg" : "animate-grow-md"
-                }`}
-              ></span>
-            </h2>
+          <div className="text-3xl lg:text-5xl  lg:py-10 z-20">
+            <div className="relative w-fit mx-auto z-0">
+              Transform Your Dream Job into Reality
+              <div
+                className={`absolute left-0 -z-10 lg:left-0 -bottom-4 md:-bottom-3 lg:-bottom-2  h-[6px] lg:h-[8px] bg-orange-400 rounded-xl  animate-grow-width-lg
+                  `}
+              ></div>
+            </div>
           </div>
         ) : (
           <div>
-            <h1 className="text-3xl font-bold p-3 mt-5">
+            <h1 className="text-3xl font-bold p-3 mt-5 relative w-full ">
               Hi, {student?.firstname}!
+              
             </h1>
-            <h1 className="text-xl px-3">
+            <div className="text-xl px-3 w-fit mx-auto relative">
               Let’s help you land your dream career.....
-            </h1>
+              <div
+                className={`absolute left-0  lg:left-0 md:-bottom-3 lg:-bottom-3  h-[6px] lg:h-[8px] bg-orange-500 rounded-xl   animate-grow-width-lg
+                  `}
+              ></div>
+            </div>
           </div>
+
         )}
       </div>
       {/* Pending Assignment */}

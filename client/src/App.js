@@ -53,7 +53,7 @@ function App() {
   const location = useLocation();
   return (
     <>
-      {location.pathname === '/' && <NavbarUniversal />}
+      {(location.pathname === '/' || location.pathname==='/internships') && <NavbarUniversal />}
       { !location.pathname.endsWith('/signup') && !location.pathname.endsWith('/login') && location.pathname !== '/' && location.pathname.startsWith('/student')&&  <Navbar />}
       { !location.pathname.endsWith('/signup') && !location.pathname.endsWith('/login') && location.pathname !== '/' && location.pathname.startsWith('/recruiter')&&  <RecNavbar />}
       <Routes>
