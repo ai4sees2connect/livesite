@@ -37,7 +37,7 @@ const Navbar = () => {
     <nav className="bg-white fixed top-0 w-full shadow-md z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         {/* Logo */}
-        <Link to="/">
+        <Link to={`/student/dashboard/${userId}`}>
           <img src={internsnestlogo2} alt="" className="h-14 w-24" />
         </Link>
 
@@ -50,7 +50,7 @@ const Navbar = () => {
 
         {/* Navigation Links */}
         <div className="hidden sm:flex items-center sm:space-x-4 text-sm
-        md:text-base lg:space-x-8 text-gray-800 lg:tracking-wider font-[400]">
+        md:text-base lg:space-x-8 text-gray-800 lg:tracking-wider font-semibold">
           <Link to={`/student/internships/${userId}`} className="hover:text-blue-500 p-2 md:p-5">
             Internships
           </Link>
@@ -89,7 +89,7 @@ const Navbar = () => {
 
       {/* Sidebar for Small Devices */}
       
-        <div className={`sm:hidden fixed top-0 left-0 w-[50%] h-screen bg-gray-200 shadow-xl z-20 
+        <div className={`sm:hidden fixed top-0 left-0 w-[50%] h-screen bg-gray-100 shadow-xl z-20 tracking-wider border
           transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <div className="flex justify-between items-center p-4">
             <h2 className="text-lg font-semibold">Menu</h2>

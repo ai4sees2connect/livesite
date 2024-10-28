@@ -41,7 +41,7 @@ const RecNavbar = () => {
     <nav className="bg-white fixed top-0 w-full shadow-md z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         {/* Logo */}
-        <Link to="/">
+        <Link to={`/recruiter/dashboard/${userId}`}>
           <div className="inline-flex items-center">
             <img src={internsnestlogo2} alt="" className="h-14 w-24" />
           </div>
@@ -95,8 +95,7 @@ const RecNavbar = () => {
       {/* Sidebar for Small Devices */}
       
        
-        <div className={`sm:hidden fixed top-0 left-0 w-[50%] h-screen bg-gray-200 shadow-xl z-20 
-          transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className={`sm:hidden fixed top-0 left-0 w-[50%] h-screen bg-gray-100 shadow-xl z-20 border tracking-wider transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <div className="flex justify-between items-center p-4">
             <h2 className="text-lg font-semibold">Menu</h2>
             <button onClick={toggleSidebar}>
