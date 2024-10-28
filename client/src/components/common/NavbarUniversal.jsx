@@ -45,7 +45,7 @@ const NavbarUniversal = () => {
 
         {/* Hamburger Icon for Small Devices */}
         <div className="flex items-center sm:hidden space-x-5 relative">
-        <button onClick={() => setRegisterOpen(!registerOpen)} className="bg-blue-400 px-4 py-2 text-white rounded-md flex items-center justify-between font-semibold">
+          <button onClick={() => setRegisterOpen(!registerOpen)} className="bg-blue-400 px-4 py-2 text-white rounded-md flex items-center justify-between font-semibold">
             Register
             {registerOpen ? (
               <FaAngleUp className="ml-2" />
@@ -56,15 +56,15 @@ const NavbarUniversal = () => {
 
           {registerOpen && <div className="absolute top-[40px] right-8 border bg-white shadow-lg w-full px-3 py-2">
             <Link to='/recruiter/signup'><button className="py-2 hover:text-blue-500">As an employer</button></Link>
-           <Link to='/student/signup'> <button className="py-2 hover:text-blue-500">As a student</button></Link>
+            <Link to='/student/signup'> <button className="py-2 hover:text-blue-500">As a student</button></Link>
           </div>}
 
 
           <button onClick={toggleSidebar}>
             <FontAwesomeIcon icon={faBars} size="1x" />
           </button>
-          
-         
+
+
         </div>
 
 
@@ -73,9 +73,17 @@ const NavbarUniversal = () => {
         <div className="hidden sm:flex items-center justify-between  text-sm
         sm:text-base lg:space-x-8 text-gray-800 lg:tracking-wider   w-full font-semibold">
           <div className="flex items-start justify-center">
-            <Link to={`/student/internships/${userId}`} className="hover:text-blue-500 p-2 md:p-5">
+            <Link to='/internships' className="hover:text-blue-500 p-2 md:p-5">
               Internships
             </Link>
+            <button className="hover:text-blue-500 p-2 md:p-5" onClick={() => {
+              window.scrollTo({
+                top: 2 * window.innerHeight - (window.innerHeight / 2.4),
+                behavior: "smooth",
+              });
+            }}>
+              Courses
+            </button>
 
           </div>
 
@@ -106,9 +114,17 @@ const NavbarUniversal = () => {
           </button>
         </div>
         <div className="flex flex-col p-4">
-          <Link to={`/student/internships/${userId}`} className="py-2 hover:text-blue-500">
+          <Link to='/internships' className="py-2 hover:text-blue-500">
             Internship
           </Link>
+          <button className="hover:text-blue-500 py-2 text-left" onClick={() => {
+            window.scrollTo({
+              top: 2 * window.innerHeight - (window.innerHeight / 2.4),
+              behavior: "smooth",
+            });
+          }}>
+            Courses
+          </button>
           <Link to={`/student/login`} className="py-2 hover:text-blue-500">
             Login
           </Link>

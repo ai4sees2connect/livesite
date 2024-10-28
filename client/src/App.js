@@ -40,6 +40,7 @@ import Terms from "./components/common/Terms";
 import Cancellation from "./components/common/Cancellation";
 import HomeUniversal from "./components/common/HomeUniversal";
 import NavbarUniversal from "./components/common/NavbarUniversal";
+import InternshipsUniversal from "./components/common/InternshipsUniversal";
 
 
 //import broswerRouter for different routes
@@ -59,6 +60,8 @@ function App() {
         {/* <Route path="/" element={<Main />} /> */}
         {/* <Route path="/spinner" element={<Spinner />} /> */}
         <Route path="/" element={<HomeUniversal/>}/>
+        <Route path="/internships" element={<InternshipsUniversal/>}/>
+
         <Route path="/student/signup" element={<Signup />} />
         <Route path="/student/login" element={<Login />} />
         <Route path="/student/dashboard/:userId" element={<Home />} />

@@ -20,7 +20,7 @@ const Sidebar = ({ student }) => {
     <div className="pt-10 px-8 bg-[#f0fbff]">
       {/* Header */}
       <div className="py-12">
-        {student ? (
+        {!student ? (
           <div className="text-3xl lg:text-5xl py-10">
             <h2 className="relative">
               Transform Your <span>Dream Job</span> into Reality

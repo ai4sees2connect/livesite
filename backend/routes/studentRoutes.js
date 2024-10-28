@@ -364,7 +364,7 @@ router.get('/resume/:id', async (req, res) => {
   }
 });
 
-router.get('/:userId/internships', async (req, res) => {
+router.get('/internships', async (req, res) => {
   try {
     // const { workType, locationName,minStipend,profile } = req.query;
     // console.log('Received workType:', workType);

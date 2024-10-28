@@ -18,12 +18,12 @@ const Home = () => {
 
   useEffect(() => {
     if (!token) {
-      navigate("/student/login");
+      navigate("/");
       return;
     }
     if (userId !== idFromToken) {
       logout();
-      navigate("/student/login");
+      navigate("/");
       return;
     }
 
