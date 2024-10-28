@@ -200,7 +200,7 @@ const RecDashboard = () => {
               onClick={closeModal}
             ></div>
             <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-full lg:w-[60%] h-[90%] p-6 relative overflow-auto mx-10 lg:mx-0">
+              <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-full lg:w-[60%] h-[90%] p-6 relative overflow-auto mx-1 lg:mx-0">
                 <h2 className="text-2xl font-semibold mb-4">
                   {selectedInternship.internshipName}
                 </h2>
