@@ -132,7 +132,7 @@ router.post('/signup', async (req, res) => {
       password,
     })
     
-    const token = jwt.sign({ id: newStudent._id }, process.env.JWT_SECRET_KEY, { expiresIn: '10d' });
+    const token = jwt.sign({ id: newStudent._id, userType: 'Student' }, process.env.JWT_SECRET_KEY, { expiresIn: '10d' });
     res.status(201).json({ message: 'Student created successfully',token });
   } catch (error) {
     console.error('Server error:', error);
@@ -158,7 +158,7 @@ router.post('/signup/googleauth', async (req, res) => {
       await student.save();
     }
      
-      const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET_KEY, { expiresIn: '10d' });
+      const token = jwt.sign({ id: student._id,userType: 'Student' }, process.env.JWT_SECRET_KEY, { expiresIn: '10d' });
       res.json({ success: true, student, token });
     } 
       
@@ -182,7 +182,7 @@ router.post('/login', async(req,res)=>{
     return res.status(400).json({ message: 'Invalid email or password' });
   }
 
-  const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET_KEY, { expiresIn: '10d' });
+  const token = jwt.sign({ id: student._id,userType: 'Student' }, process.env.JWT_SECRET_KEY, { expiresIn: '10d' });
   res.status(200).json({ message: 'Login successful', token });
 }
 catch(error){
@@ -206,7 +206,7 @@ router.post('/login/googleauth', async (req, res) => {
          await student.save();
 
     } 
-    const token=jwt.sign({id:student._id},process.env.JWT_SECRET_KEY,{expiresIn:'10d'});
+    const token=jwt.sign({id:student._id,userType: 'Student'},process.env.JWT_SECRET_KEY,{expiresIn:'10d'});
     res.json({success:true,token,student});
     
   } catch (error) {

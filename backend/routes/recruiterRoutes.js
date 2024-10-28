@@ -41,7 +41,7 @@ router.post("/signup", async (req, res) => {
       }
     });
 
-    const token = jwt.sign({ id: recruiter._id }, process.env.JWT_SECRET_KEY, {
+    const token = jwt.sign({ id: recruiter._id, userType: 'Recruiter' }, process.env.JWT_SECRET_KEY, {
       expiresIn: "10d",
     });
     res.status(201).json({ message: "recruiter created successfully", token });
@@ -69,7 +69,7 @@ router.post("/signup/googleauth", async (req, res) => {
       await recruiter.save();
     }
 
-    const token = jwt.sign({ id: recruiter._id }, process.env.JWT_SECRET_KEY, {
+    const token = jwt.sign({ id: recruiter._id, userType: 'Recruiter' }, process.env.JWT_SECRET_KEY, {
       expiresIn: "10d",
     });
     res.json({ success: true, recruiter, token });
@@ -93,7 +93,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ id: recruiter._id }, process.env.JWT_SECRET_KEY, {
+    const token = jwt.sign({ id: recruiter._id, userType: 'Recruiter' }, process.env.JWT_SECRET_KEY, {
       expiresIn: "10d",
     });
     res.status(200).json({ message: "Login successful", token });
@@ -117,7 +117,7 @@ router.post("/login/googleauth", async (req, res) => {
       });
       await recruiter.save();
     }
-    const token = jwt.sign({ id: recruiter._id }, process.env.JWT_SECRET_KEY, {
+    const token = jwt.sign({ id: recruiter._id, userType: 'Recruiter' }, process.env.JWT_SECRET_KEY, {
       expiresIn: "10d",
     });
     res.json({ success: true, token, recruiter });

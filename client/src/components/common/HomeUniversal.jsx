@@ -10,6 +10,8 @@ import getUserIdFromToken from "../student/auth/authUtils";
 import Spinner from "../common/Spinner";
 import { useStudent } from "../student/context/studentContext";
 import Sidebar from "../student/Sidebar";
+// import jwt from 'jsonwebtoken';
+import {jwtDecode} from 'jwt-decode';
 
 const HomeUniversal = () => {
   const navigate = useNavigate();
@@ -31,19 +33,32 @@ const HomeUniversal = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // useEffect(() => {
-  //   if (!token) {
-  //     navigate("/student/login");
-  //     return;
-  //   }
-  //   if (userId !== idFromToken) {
-  //     logout();
-  //     navigate("/student/login");
-  //     return;
-  //   }
+  useEffect(() => {
+   
+    if(token){
+      try {
+        const decoded = jwtDecode(token);
+        if (decoded) {
+          const userType = decoded.userType; // 'student' or 'recruiter'
+          
+          console.log('User Type:', userType);
+    
+          // Navigate or render components based on user type
+          if (userType === 'Student') {
+            navigate(`/student/dashboard/${idFromToken}`)
+          } else if (userType === 'Recruiter') {
+            navigate(`/recruiter/dashboard/${idFromToken}`)
+          }
+        } else {
+          console.log('Invalid token');
+        }
+      } catch (error) {
+        console.error('Failed to decode token:', error);
+      }
+    }
 
-  //   console.log(userId);
-  // }, [userId, idFromToken, token]);
+    console.log(userId);
+  }, [ idFromToken, token]);
 
   // if (!student) {
   //   return <Spinner />;
