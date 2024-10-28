@@ -29,7 +29,7 @@ const Navbar = () => {
     toast.success('You are logged out');
 
     // Navigate to the login page
-    navigate('/student/login');
+    navigate('/');
   };
 
 

@@ -29,7 +29,7 @@ const RecNavbar = () => {
     toast.success('You are logged out');
 
     // Navigate to the login page
-    navigate('/recruiter/login');
+    navigate('/');
   };
 
   const toggleSidebar = () => {

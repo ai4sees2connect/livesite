@@ -40,6 +40,7 @@ import Terms from "./components/common/Terms";
 import Cancellation from "./components/common/Cancellation";
 import HomeUniversal from "./components/common/HomeUniversal";
 import NavbarUniversal from "./components/common/NavbarUniversal";
+import InternshipsUniversal from "./components/common/InternshipsUniversal";
 
 
 //import broswerRouter for different routes
@@ -52,13 +53,15 @@ function App() {
   const location = useLocation();
   return (
     <>
-      {location.pathname === '/' && <NavbarUniversal />}
+      {(location.pathname === '/' || location.pathname==='/internships') && <NavbarUniversal />}
       { !location.pathname.endsWith('/signup') && !location.pathname.endsWith('/login') && location.pathname !== '/' && location.pathname.startsWith('/student')&&  <Navbar />}
       { !location.pathname.endsWith('/signup') && !location.pathname.endsWith('/login') && location.pathname !== '/' && location.pathname.startsWith('/recruiter')&&  <RecNavbar />}
       <Routes>
         {/* <Route path="/" element={<Main />} /> */}
         {/* <Route path="/spinner" element={<Spinner />} /> */}
         <Route path="/" element={<HomeUniversal/>}/>
+        <Route path="/internships" element={<InternshipsUniversal/>}/>
+
         <Route path="/student/signup" element={<Signup />} />
         <Route path="/student/login" element={<Login />} />
         <Route path="/student/dashboard/:userId" element={<Home />} />
