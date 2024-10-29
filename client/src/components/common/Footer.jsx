@@ -11,13 +11,13 @@ const Footer = () => {
 
   return (
     <footer className='h-[220px] bg-gray-700 text-white'>
-      <div className='text-xs md:text-base flex flex-col space-y-9 items-center my-5'>
-        <div className='flex text-center md:space-x-4 border-b py-1'>
-          <Link to='/about-us' className='px-2 hover:text-blue-300'>About us</Link>
-          <Link to='/contact' className='px-2 hover:text-blue-300'>Contact us</Link>
-          <Link to='/privacy-policy' className='px-2 hover:text-blue-300'>Privacy policy</Link>
-          <Link to='/terms-conditions' className='px-2 hover:text-blue-300'>Terms and conditions</Link>
-          <Link to='/cancellation' className='px-2 hover:text-blue-300'>Cancellation/Refund policy</Link>
+      <div className='text-xs sm:text-base flex flex-col space-y-9 items-center max-w-full '>
+        <div className='flex text-center   space-x-1   sm:space-x-4 border-b py-1 my-3 '>
+          <Link to='/about-us' className='  md:px-2 hover:text-blue-300'>About us</Link>
+          <Link to='/contact' className=' px-1 md:px-2 hover:text-blue-300'>Contact us</Link>
+          <Link to='/privacy-policy' className='px-1 md:px-2 hover:text-blue-300'>Privacy policy</Link>
+          <Link to='/terms-conditions' className='px-1 md:px-2 hover:text-blue-300'>Terms and conditions</Link>
+          <Link to='/cancellation' className='px-1 md:px-2 hover:text-blue-300'>Cancellation policy</Link>
         </div>
         <div className="flex space-x-10">
           <FaInstagram className='w-7 h-7 hover:text-pink-500'/>

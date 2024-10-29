@@ -35,12 +35,14 @@ import courses from "../TESTJSONS/course.json";
 import certificates from "../TESTJSONS/certificates.json";
 //image
 import google_pic from "../../images/google_pic.png";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { FaBuilding, FaClock, FaMoneyBillWave, FaQuestion } from "react-icons/fa";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Spinner from "../common/Spinner";
+import getUserIdFromToken from "./auth/authUtils";
+import {jwtDecode} from 'jwt-decode';
 
 // const images = [
 //   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
@@ -54,6 +56,9 @@ import Spinner from "../common/Spinner";
 //   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
 //   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
 // ];
+
+const userId=getUserIdFromToken();
+const token = localStorage.getItem("token");
 
 const NextArrow = ({ onClick }) => (
   <div
@@ -192,7 +197,7 @@ const RightSide = () => {
     ],
   };
 
-  if(!internships){
+  if(loading){
     return <Spinner/>
   }
 
@@ -218,7 +223,7 @@ const RightSide = () => {
         </div>
       </div>
       {/* Recommended jobs */}
-      <div className="my-10 px-3 lg:px-5 py-10 bg-[#f0fbff] rounded-xl">
+      <div className="my-5 px-3 lg:px-5 py-10 bg-[#f0fbff] rounded-xl">
         <div className="text-center mb-10">
           <h1 className=" text-2xl font-bold px-9">Recommended for you</h1>
           <p className="text-black">
@@ -305,9 +310,9 @@ const RightSide = () => {
                 {/* Buttons */}
                 <div className="flex flex-col lg:flex-row space-y-3 justify-between items-center mt-5">
                   <p className="text-xs text-gray-600 bg-gray-300 rounded-md px-2 py-1 lg:px-3">{intern?.internshipType}</p>
-                  <button className="px-2 lg:px-4 py-1 border-2 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600 transition duration-500">
+                  <Link to={`/${token?'student/':''}internships${token?`/${userId}`:''}`} className="px-2 lg:px-4 py-1 border-2 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600 transition duration-500">
                     See Details
-                  </button>
+                  </Link>
                 </div>
               </div>
               </div>
@@ -502,13 +507,13 @@ const RightSide = () => {
             Boost your career with InternsNest today
           </h2>
           <div className="lg:flex-1 flex gap-5 lg:justify-end">
-            <button className="px-2 lg:px-10 py-1 lg:py-3 rounded-lg bg-white font-semibold flex items-center gap-3">
-              <img src={google_pic} alt="" className="w-5 h-5 py-0 px-0 ml-5" />
+            <Link to='/student/login' className="px-4 lg:px-10 py-1 lg:py-3 rounded-lg bg-white font-semibold flex items-center justify-center gap-2">
+              <img src={google_pic} alt="" className="w-5 h-5 py-0 px-0 " />
               <span> Continue With Google</span>
-            </button>
-            <button className="px-10 py-3 rounded-lg bg-blue-800 text-white font-semibold">
+            </Link>
+            <Link to='/student/signup' className="px-10 py-3 rounded-lg bg-blue-800 text-white font-semibold">
               Register Now
-            </button>
+            </Link>
           </div>
         </div>
       </div>
