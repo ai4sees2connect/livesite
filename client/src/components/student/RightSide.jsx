@@ -40,6 +40,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { FaBuilding, FaClock, FaMoneyBillWave, FaQuestion } from "react-icons/fa";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import Spinner from "../common/Spinner";
 
 // const images = [
 //   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
@@ -162,7 +163,7 @@ const RightSide = () => {
 
   const settings = {
     dots: true, // Show dots for navigation
-    infinite: false,
+    infinite: true,
     speed: 500,
     slidesToShow: 3, // Number of slides to show at once
     slidesToScroll: 1,
@@ -191,6 +192,9 @@ const RightSide = () => {
     ],
   };
 
+  if(!internships){
+    return <Spinner/>
+  }
 
   return (
     <div className="">
@@ -208,7 +212,7 @@ const RightSide = () => {
         </h1>
 
         <div className="w-full overflow-hidden">
-          <video src={vids2} autoPlay muted loop className="w-[50%] h-[30%] mx-auto  ">
+          <video src={vids2} autoPlay muted loop className="md:w-[50%] md:h-[30%] mx-auto  ">
             Your browser does not support the video tag.
           </video>
         </div>
