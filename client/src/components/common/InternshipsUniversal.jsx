@@ -320,7 +320,7 @@ const InternshipsUniversal = () => {
 
   useEffect(() => {
     const fetchInternships = async () => {
-      const cachedInternships = localStorage.getItem("cachedInternships");
+      // const cachedInternships = localStorage.getItem("cachedInternships");
 
       try {
         console.log("LocationName", selectedLocation);
