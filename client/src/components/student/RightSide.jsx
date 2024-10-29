@@ -3,6 +3,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
+import api from '../common/server_url'
+import vids from '../../videos/vids.mp4'
+import vids2 from '../../videos/vids2.mp4'
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Slider from 'react-slick';
+import '../student/utilscss/swiper.css'
 
 // Import Swiper styles
 import "swiper/css";
@@ -29,32 +36,161 @@ import certificates from "../TESTJSONS/certificates.json";
 //image
 import google_pic from "../../images/google_pic.png";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { FaBuilding, FaClock, FaMoneyBillWave, FaQuestion } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-const images = [
-  "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-  "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-  "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-  "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-  "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-  "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-  "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-  "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-  "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-  "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-];
+// const images = [
+//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
+//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
+//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
+//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
+//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
+//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
+//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
+//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
+//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
+//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
+// ];
+
+const NextArrow = ({ onClick }) => (
+  <div
+    className="absolute right-[20%] md:right-[31%] xl:right-[40%] top-[104%] transform -translate-y-1/2 z-10 cursor-pointer bg-blue-600 rounded-full p-2 shadow-md transition-all hover:bg-blue-700"
+    onClick={onClick}
+  >
+    <FaChevronRight className="text-white text-lg" />
+  </div>
+);
+
+const PrevArrow = ({ onClick }) => (
+  <div
+    className="absolute left-[20%] md:left-[31%] xl:left-[40%] top-[104%] transform -translate-y-1/2 z-10 cursor-pointer bg-blue-600 rounded-full p-2 shadow-md transition-all hover:bg-blue-700"
+    onClick={onClick}
+  >
+    <FaChevronLeft className="text-white text-lg" />
+  </div>
+);
 
 
 
 const RightSide = () => {
 
-  const token=localStorage.getItem('token');
-  const navigate=useNavigate();
-useEffect(() => {
-  if(!token){
-    navigate('/');
-  }
-}, [token])
+  const [internships, setInternships] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const token = localStorage.getItem('token');
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/');
+    }
+  }, [token])
+
+  useEffect(() => {
+    const fetchInternships = async () => {
+      // const cachedInternships = localStorage.getItem("cachedInternships");
+
+      try {
+        // console.log("LocationName", selectedLocation);
+        // console.log("WorkType:", workType);
+        // console.log("profile", selectedProfile);
+
+
+        const response = await axios.get(`${api}/student/internships/top-15`);
+
+        // setAppliedInternships(appliedResponse.data);
+        const sortedInternships = response.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        const internshipsWithLogo = await Promise.all(
+          sortedInternships.map(async (internship) => {
+            if (internship.recruiter && internship.recruiter._id) {
+              try {
+                // Kick off the logo fetch but don't await it here
+                const logoPromise = axios.get(
+                  `${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`,
+                  { responseType: "blob" }
+                );
+
+                // Once the promise resolves, process the logo
+                const res = await logoPromise;
+                const logoBlob = new Blob([res.data], {
+                  type: res.headers["content-type"],
+                });
+                const logoUrl = URL.createObjectURL(logoBlob);
+
+                // Return the internship with the logo URL
+                return {
+                  ...internship,
+                  logoUrl,
+                };
+              } catch (error) {
+                console.error("Error fetching logo:", error);
+
+                // Return internship with a default or null logo URL in case of an error
+                return {
+                  ...internship,
+                  logoUrl: null, // Or use a default image URL here
+                };
+              }
+            }
+
+            // If no recruiter, return the internship as is
+            return internship;
+          })
+        );
+
+        setInternships(internshipsWithLogo);
+        // localStorage.setItem('cachedInternships', JSON.stringify(internshipsWithLogo));
+        console.log("internhsipswith logo", internshipsWithLogo);
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching internships:", err);
+        setError("Failed to fetch internships. Please try again later.");
+        setLoading(false);
+      }
+    };
+
+    fetchInternships();
+  }, []);
+
+  const settings = {
+    dots: true, // Show dots for navigation
+    infinite: false,
+    speed: 500,
+    slidesToShow: 3, // Number of slides to show at once
+    slidesToScroll: 1,
+    arrows: true,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+    responsive: [
+      {
+        breakpoint: 712,
+        settings: {
+          slidesToShow: 3, // Adjust based on screen size
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 467,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+
 
   return (
     <div className="">
@@ -62,7 +198,7 @@ useEffect(() => {
       <FontAwesomeIcon icon={faPhone} className="text-black mr-2" />
       Contact Us</button> */}
       {/* Trending Courses */}
-      <div className="px-3 lg:px-5">
+      <div className="px-3 lg:px-5 ">
         <h1 className="text-2xl font-bold py-5 text-center mb-5">
           Trending on InternsNest
           <FontAwesomeIcon
@@ -71,44 +207,10 @@ useEffect(() => {
           />
         </h1>
 
-        <div className="">
-          <Swiper
-            slidesPerView={3}
-            spaceBetween={30}
-            freeMode={true}
-            pagination={{
-              clickable: true,
-            }}
-            navigation={{
-              clickable: true,
-            }}
-            modules={[FreeMode, Pagination, Navigation]}
-            breakpoints={{
-              1200: {
-                slidesPerView: 3,
-                spaceBetween: 30,
-              },
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              280: {
-                slidesPerView: 1,
-                spaceBetween: 10,
-              },
-            }}
-            className="mySwiper"
-          >
-            {images.map((image, index) => (
-              <SwiperSlide key={index}>
-                <img
-                  src={image}
-                  alt=""
-                  className="px-3 lg:px-0 min-h-[260px] hover:cursor-pointer w-full h-full object-cover rounded-xl"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+        <div className="w-full overflow-hidden">
+          <video src={vids2} autoPlay muted loop className="w-[50%] h-[30%] mx-auto  ">
+            Your browser does not support the video tag.
+          </video>
         </div>
       </div>
       {/* Recommended jobs */}
@@ -119,99 +221,100 @@ useEffect(() => {
             as per your<span className="text-blue-600 ml-2">preferences</span>
           </p>
         </div>
-        <div className="">
-          <Swiper
-            slidesPerView={3}
-            spaceBetween={30}
-            freeMode={true}
-            pagination={{
-              clickable: true,
-            }}
-            navigation={{
-              clickable: true,
-            }}
-            modules={[FreeMode, Pagination, Navigation]}
-            breakpoints={{
-              1200: {
-                slidesPerView: 4,
-                spaceBetween: 20,
-              },
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              280: {
-                slidesPerView: 1,
-                spaceBetween: 10,
-              },
-            }}
-            className="mySwiper"
-          >
-            {jobs?.map((job, index) => (
-              <SwiperSlide key={index}>
-                <div className="mx-3 lg:mx-0 shadow-xl border-2 p-4 rounded-lg min-h-[330px]">
-                  <button className="px-4 py-1 border-2 rounded-lg flex gap-2 items-center text-xs font-semibold text-gray-600 mb-3">
-                    <FontAwesomeIcon
-                      icon={faArrowRightLong}
-                      className="text-blue-600"
-                    />
-                    Actively Hiring
-                  </button>
-                  {/* job company */}
-                  <div className="flex justify-between items-center border-1 border-b">
-                    <div className="min-h-[100px]">
-                      <h2 className="text-lg font-semibold">{job?.jobTitle}</h2>
-                      <p className="text-sm text-gray-600">
-                        {job?.companyName}
-                      </p>
-                    </div>
-                    <div>
-                      <img src={job?.logo} alt="" className="h-[50px] w-full" />
-                    </div>
+
+
+
+        <div className="z-0 ">
+          <Slider {...settings}>
+            {internships?.map((intern, index) => (
+               <div key={index} className="mx-0 md:mx-3 mb-6">
+              <div key={index} className="shadow-lg border-2 p-4 rounded-lg max-h-[350px] bg-white mx-2"> {/* Changed mx-3 to mx-2 */}
+                
+                {/* Job company */}
+                <div className="flex justify-between items-start border-b">
+                  <div className="min-h-[100px]">
+                    <h2 className="text-sm md:text-lg text-left font-semibold">{intern?.internshipName}</h2>
+                    <p className="text-sm text-gray-600 text-left">{intern?.recruiter.companyName}</p>
                   </div>
-                  {/* location money time */}
-                  <div className="my-4 space-y-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <FontAwesomeIcon
-                        icon={faLocationDot}
-                        className="text-gray-500"
-                      />
-                      <span className="text-sm text-gray-600">
-                        {job?.location}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <FontAwesomeIcon
-                        icon={faWallet}
-                        className="text-gray-500"
-                      />
-                      <span className="text-sm text-gray-600">
-                        {job?.salary} /Month
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <FontAwesomeIcon
-                        icon={faBusinessTime}
-                        className="text-gray-500"
-                      />
-                      <span className="text-sm text-gray-600">{job?.time}</span>
-                    </div>
-                  </div>
-                  {/* buttons */}
-                  <div className="flex justify-between items-center mt-16">
-                    <p className="text-xs text-gray-600 bg-gray-300 rounded-md px-3">
-                      {job?.jobType}
-                    </p>
-                    <button className="px-4 py-1 border-2 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600 transition-0.5s">
-                      See Details
-                    </button>
+                  <div>
+                    {intern.logoUrl ? (
+                      <img src={intern.logoUrl} alt={intern.logoUrl} className="md:min-w-20 md:min-h-20 min-w-14 max-h-14" />
+                    ) : (
+                      <FaBuilding />
+                    )}
                   </div>
                 </div>
-              </SwiperSlide>
+
+                <button className="px-4 py-1 border-2 rounded-lg flex gap-2 items-center text-xs font-semibold text-gray-600 my-3">
+                  <FontAwesomeIcon icon={faArrowRightLong} className="text-blue-600" />
+                  Actively Hiring
+                </button>
+
+                {/* Location, money, time */}
+                <div className="my-2 space-y-1 lg:space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <FontAwesomeIcon icon={faLocationDot} className="text-gray-500" />
+                    <span className="text-sm text-gray-600">
+                      {intern.internLocation ? `${intern.internLocation}` : "Remote"}
+                    </span>
+                  </div>
+
+                  <div className="text-sm md:text-base flex items-center text-gray-700 mb-2">
+                    <FaClock className="mr-1" />
+                    <span>{intern.duration} Months</span>
+                  </div>
+
+                  {intern.stipendType === "unpaid" && (
+                    <div className="flex items-center text-gray-700 mb-2">
+                      <FaMoneyBillWave className="mr-1" />
+                      <span>Unpaid</span>
+                    </div>
+                  )}
+
+                  {intern.stipendType !== "unpaid" && (
+                    <div className="flex items-center space-x-0">
+                      <div className="text-sm md:text-base text-gray-700 mb-2">
+                        {/* <FaMoneyBillWave className="mr-1" /> */}
+                        <span className="ml-0">
+                          
+                          {intern.currency} {intern.stipend} /month
+                        </span>
+                      </div>
+
+                      {/* {intern.stipendType === "performance-based" && (
+                        <div className="text-sm md:text-base flex items-center mb-2 text-gray-700">
+                          <span>+ incentives</span>
+                          <div className="relative group ">
+                            <FaQuestion className="border border-black p-1 mx-1 rounded-full hover:cursor-pointer" />
+                            <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
+                              This is a Performance Based internship.{" "}
+                              {intern.incentiveDescription}
+                            </span>
+                          </div>
+                        </div>
+                      )} */}
+                    </div>
+                  )}
+
+                  {/* Other details... */}
+                </div>
+                {/* Buttons */}
+                <div className="flex flex-col lg:flex-row space-y-3 justify-between items-center mt-5">
+                  <p className="text-xs text-gray-600 bg-gray-300 rounded-md px-2 py-1 lg:px-3">{intern?.internshipType}</p>
+                  <button className="px-2 lg:px-4 py-1 border-2 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600 transition duration-500">
+                    See Details
+                  </button>
+                </div>
+              </div>
+              </div>
             ))}
-          </Swiper>
+          </Slider>
+
         </div>
       </div>
+
+
+
       {/* Placement */}
       <div className="my-10 px-3 lg:px-5">
         <h1 className="text-2xl font-bold py-5 px-9 text-center">
