@@ -9,7 +9,7 @@ const ToggleButtonSecond = ({type,auth}) => {
     // setSelected((prev) => (prev === 'student' ? 'recruiter' : 'student'));
     if(auth==='login' && type==='student'){
       setSelected('signup');
-        navigate('/');
+        navigate('/student/signup');
     }
     if(auth==='signup' && type==='student'){
       setSelected('login');

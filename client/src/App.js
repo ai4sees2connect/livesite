@@ -40,7 +40,11 @@ import Terms from "./components/common/Terms";
 import Cancellation from "./components/common/Cancellation";
 import HomeUniversal from "./components/common/HomeUniversal";
 import NavbarUniversal from "./components/common/NavbarUniversal";
-import InternshipsUniversal from "./components/common/InternshipsUniversal";
+import InternDetails from "./components/student/InternDetails";
+import InternshipsUniversal from './components/common/InternshipsUniversal'
+
+// import InternshipDetails from "./components/student/InternshipDetails";
+
 
 
 //import broswerRouter for different routes
@@ -75,6 +79,8 @@ function App() {
         <Route path="/student/profile/:userId" element={<Profile />} />
         <Route path="/student/internships/:userId" element={<Internships />} />
         <Route path="/student/myApplications/:userId" element={<MyApplications />} />
+        <Route path="/internshipDetails/:internshipId" element={<InternDetails />} />
+       
         
 
 

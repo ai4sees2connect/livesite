@@ -12,6 +12,7 @@ const recruiterInternRoutes=require('./routes/recruiterInternRoutes')
 const studentInternRoutes = require('./routes/studentInternRoutes');
 const adminRoutes=require('./routes/adminRoutes')
 const paymentRoutes=require('./routes/paymentRoutes')
+const  internRoutes=require('./routes/internRoutes')
 const initSocket= require('./socket');
 const http = require('http');
 
@@ -34,6 +35,7 @@ app.use('/recruiter/internship',recruiterInternRoutes);
 app.use('/student/internship',studentInternRoutes);
 app.use('/admin',adminRoutes);
 app.use('/payments',paymentRoutes);
+app.use('/internship',internRoutes);
 app.get('/',(req,res)=>{
   res.send('Welcome to our Server......')
 })
