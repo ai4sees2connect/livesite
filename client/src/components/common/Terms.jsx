@@ -1,6 +1,8 @@
 import React, {useEffect} from 'react';
 import findUser from '../common/UserDetection.js'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode';
+import getUserIdFromToken from '../student/auth/authUtils.js';
 
 const Terms = () => {
   useEffect(() => {
@@ -8,16 +10,20 @@ const Terms = () => {
   }, []);
 
   const navigate = useNavigate();
+  const idFromToken = getUserIdFromToken();
+  const token = localStorage.getItem("token");
+
   const handleUserNavigate=async()=>{
-    const {userType,userId}=await findUser();
+    const decoded = jwtDecode(token);
+    const userType = decoded.userType;
     console.log(userType)
-    if(userType==='student'){
-      navigate(`/student/dashboard/${userId}`)
+    if(userType==='Student'){
+      navigate(`/student/dashboard/${idFromToken}`)
       return;
     }
 
-    if(userType==='recruiter'){
-      navigate(`/recruiter/dashboard/${userId}`)
+    if(userType==='Recruiter'){
+      navigate(`/recruiter/dashboard/${idFromToken}`)
       return;
     }
   }
@@ -26,7 +32,8 @@ const Terms = () => {
     <>
     <nav className="w-full bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-4 text-center flex justify-center space-x-5">
-          <button onClick={handleUserNavigate} className="text-xl font-bold text-gray-700">Home</button>
+          {token && <button onClick={handleUserNavigate} className="text-xl font-bold text-gray-700">Home</button>}
+          {!token && <Link to='/' className='text-xl font-bold text-gray-700 '>Home</Link>}
           <button className="text-xl font-bold text-blue-600">Terms and conditions</button>
         </div>
       </nav>

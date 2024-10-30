@@ -14,6 +14,7 @@ import api from "../common/server_url";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import { FaPen } from "react-icons/fa";
+import Resume from "./Resume";
 
 const Profile = () => {
   const idFromToken = getUserIdFromToken();
@@ -175,7 +176,7 @@ const Profile = () => {
     <Spinner />
   ) : (
     <div className=" mx-auto p-4 mt-[68px] ">
-      <div className="border-b pb-3">
+      <div className="border-b pb-3 ">
         <h1 className="text-3xl font-bold mb-2 text-center">Your Profile</h1>
         <h1 className=" text-xl capitalize text-center text-gray-600">
           {student.firstname} {student.lastname}
@@ -342,6 +343,10 @@ const Profile = () => {
           )}
         </div>
       </div>
+
+      <section className="mb-8">
+        <Resume/>
+      </section>
 
       <section className="mb-8">
         <Education />

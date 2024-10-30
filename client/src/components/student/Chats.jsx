@@ -46,6 +46,7 @@ const Chats = () => {
   const [chatBlocked, setChatBlocked] = useState({});
   const [chatListOpen, setChatListOpen] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [internsFoundCheck,setInternsFoundCheck] = useState(true);
 
 
 
@@ -56,7 +57,7 @@ const Chats = () => {
         const result = response.data;
         setShortlistedInternships(result);
         console.log('this is on initial fetching', response.data);
-
+        
 
 
         const socketConnection = io(api, {
@@ -158,6 +159,10 @@ const Chats = () => {
 
 
       } catch (err) {
+        if(err.response && err.response.status === 404){
+          setInternsFoundCheck(false);
+          return;
+        }
         toast.success('some error occured');
 
       }
@@ -645,6 +650,11 @@ const Chats = () => {
 
 if(loading){
   return <Spinner/>
+}
+
+console.log('internsFoundCheck',internsFoundCheck)
+if(!internsFoundCheck){
+  return <div className='h-screen flex items-center justify-center text-lg text-gray-600'>You are not shortlisted for any internship yet</div>
 }
 
   return (

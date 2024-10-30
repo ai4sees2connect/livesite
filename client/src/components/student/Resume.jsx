@@ -7,19 +7,22 @@ import {
   faCheck,
   faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
+import { FaTrash, FaDownload } from "react-icons/fa";
 import getUserIdFromToken from "./auth/authUtils.js";
 import { useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import api from "../common/server_url.js";
+import formatDateWithOrdinal from "../common/formatDate.js";
 
 const Resume = () => {
   const fileInputRef = useRef(null);
   const [file, setFile] = useState(null);
   const { userId } = useParams();
   const [resumeUrl, setResumeUrl] = useState("");
-  const [resumeFilename, setResumeFilename] = useState("resume.pdf");
+  const [resumeFilename, setResumeFilename] = useState(null);
   const idFromToken = getUserIdFromToken();
+  const [resumeCreatedAt, setResumeCreatedAt] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -45,10 +48,14 @@ const Resume = () => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         setResumeUrl(url);
         console.log(resumeUrl);
+        console.log('this is response',response.data);
 
         const contentDisposition = response.headers["content-disposition"];
-        // console.log('contentDisposition:', contentDisposition);
-        // console.log(Object.keys(response.headers));
+        const createdAt = response.headers["resume-created-at"];
+        console.log('this is created at',createdAt);
+        if (createdAt) {
+          setResumeCreatedAt(new Date(createdAt));
+        }
         // console.log('response.headers:', response.headers);
         if (contentDisposition) {
           console.log("yattttaaa");
@@ -65,25 +72,38 @@ const Resume = () => {
     fetchResume();
   }, [userId]);
 
+  const handleResumeDelete=async(e)=>{
+    e.preventDefault();
+    try {
+      await axios.delete(`${api}/student/${userId}/resume-delete`);
+      toast.success("Resume deleted");
+      setResumeFilename(null);
+      setResumeUrl(null);
+      setResumeCreatedAt(null);
+    } catch (error) {
+      toast.error("Error deleting resume:", error);
+    }
+  }
+
   const navigate = useNavigate();
 
   const handleFileClick = () => {
     fileInputRef.current.click();
   };
-  const handleFileReupload = () => {
-    setFile(null);
-    setResumeUrl("");
-    fileInputRef.current.click();
-  };
+  // const handleFileReupload = () => {
+  //   setFile(null);
+  //   setResumeUrl("");
+  //   fileInputRef.current.click();
+  // };
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+  // const handleFileChange = (e) => {
+  //   setFile(e.target.files[0]);
+  // };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    // handleFileChange(e);
 
-    if (!file) {
+    if (!e.target.files[0]) {
       alert("Please select a file to upload.");
       return;
     }
@@ -93,7 +113,7 @@ const Resume = () => {
     }
 
     const formData = new FormData();
-    formData.append("resume", file);
+    formData.append("resume", e.target.files[0]);
 
     try {
       await axios.post(`${api}/student/upload-resume/${userId}`, formData, {
@@ -101,81 +121,50 @@ const Resume = () => {
       });
 
       toast.success("Resume Uploaded Successfully");
-
-      navigate(`/student/dashboard/${userId}`);
+      // console.log(e.target.files[0].name);
+      setResumeFilename(e.target.files[0].name)
+      window.location.reload();
+      
     } catch (error) {
       console.error("There was an error uploading the resume:", error);
       alert("Failed to upload the resume.");
     }
   };
-
   return (
-    <div className="text-black w-full min-h-screen bg-gradient-to-b from-white to-blue-500 px-5 lg:px-0">
-      <div className="w-full lg:w-1/2 h-1/2 mt-[140px] flex flex-col items-center justify-center mx-auto border-4 border-red-600 border-dotted">
-        <form onSubmit={handleSubmit} className="flex flex-col items-center">
-          <h2 className="text-center my-4 lg:my-7 text-2xl lg:text-4xl font-bold pt-5">
-            Upload Your Resume
-          </h2>
-          <div className="w-[70px] h-[70px] ">
-            {!file ? (
-              <FontAwesomeIcon
-                onClick={handleFileClick}
-                icon={faCloudArrowUp}
-                className="w-full h-full hover:cursor-pointer hover:scale-125 duration-300"
-              />
-            ) : (
-              <FontAwesomeIcon icon={faCheck} className="w-full h-full" />
-            )}
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            onChange={handleFileChange}
-            className="hidden my-4 hover:cursor-pointer"
-          />
-          <button
-            type="submit"
-            className={`text-xl  font-bold mt-10 ${
-              file
-                ? `hover:scale-105  duration-300 text-black border-2 border-black p-2 hover:bg-green-400`
-                : `text-gray-400`
-            } `}
-            disabled={!file}
-          >
-            UPLOAD NOW
-          </button>
-          {(file || resumeUrl) && (
-            <>
-              <button
-                className=" text-red-500 text-xl font-bold mt-10 hover:scale-105 duration-300"
-                onClick={handleFileReupload}
-              >
-                RE-UPLOAD
-              </button>
-              <a
-                href={resumeUrl}
-                download={resumeFilename}
-                className="text-red-500 text-xl font-bold mt-4 hover:scale-105 duration-300 pb-4 text-center"
-              >
-                Download Resume:
-                <br />
-                {resumeFilename}
-              </a>
-            </>
-          )}
-        </form>
+    
+    <div className="w-full lg:w-[60%] h-[70%] mx-auto p-4 border-b ">
+      <h1 className="text-xl font-outfit font-semibold">Resume</h1>
+      <h1 className="text-gray-700">Your resume is the first impression you make on potential employers. Craft it carefully to secure your desired job or internship.</h1>
+      <h1> {resumeFilename}</h1>
+
+      <div className="flex justify-between items-center text-gray-600">
+      <h2>{resumeCreatedAt ? formatDateWithOrdinal(resumeCreatedAt) : ''}</h2>
+
+        {resumeFilename && <div className="flex space-x-3">
+
+          <a href={resumeUrl} download={resumeFilename} className="text-blue-500 text-xl font-bold mt-4 hover:scale-105 duration-300 pb-4 text-center" >
+            <FaDownload />
+          </a>
+          <button onClick={handleResumeDelete} className="text-red-500"><FaTrash /></button>
+        </div>}
+
       </div>
 
-      <div className=" mt-[50px]">
-        <Link to={`/student/dashboard/${userId}`}>
-          <div className="border-2 border-black rounded-full w-[60px] h-[60px] mx-auto p-2 hover:bg-green-400 hover:cursor-pointer">
-            <FontAwesomeIcon icon={faArrowLeft} className="w-full h-full" />
-          </div>
-        </Link>
-        <div className="text-center text-lg font-bold pb-5">Go back</div>
+      <div className="flex flex-col items-center space-y-4 py-4 w-[60%] mx-auto" >
+      <input
+            ref={fileInputRef}
+            type="file"
+            onChange={handleSubmit}
+            className="hidden my-4 hover:cursor-pointer"
+          />
+        <button onClick={handleFileClick} className="border-2 border-blue-500 text-blue-500 font-semibold rounded-full px-2 py-1">Upload Resume</button>
+        <div className="text-gray-600">Supported formats: PDF</div>
+        {!resumeFilename && <div className="text-red-400">No resume uploaded</div>}
       </div>
     </div>
   );
+
+
 };
 
 export default Resume;

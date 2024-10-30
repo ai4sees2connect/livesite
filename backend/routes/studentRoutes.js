@@ -227,17 +227,17 @@ router.post('/upload-resume/:id', upload.single('resume'), async (req, res) => {
         if (!student) {
           return res.status(404).send('Student not found.');
         }
-        const createdAt = new Date();
-        const day = String(createdAt.getDate()).padStart(2, '0');
+        // const createdAt = new Date();
+        // const day = String(createdAt.getDate()).padStart(2, '0');
         
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const month = months[createdAt.getMonth()];
+        // const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        // const month = months[createdAt.getMonth()];
         
         student.resume = {
           data: req.file.buffer,
           contentType: req.file.mimetype,
           filename: req.file.originalname,
-          createdAt: `${day}th ${month}`,
+          createdAt: new Date(), 
         };
         await student.save();
     
@@ -246,6 +246,37 @@ router.post('/upload-resume/:id', upload.single('resume'), async (req, res) => {
   } catch (error) {
     console.error('Error saving resume:', error);
     res.status(500).send('Error saving resume.');
+  }
+});
+
+router.delete('/:userId/resume-delete', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find the student by userId
+    const student = await Student.findById(userId);
+
+    // Check if the student exists
+    if (!student) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if the student has a resume
+    if (!student.resume) {
+      return res.status(404).json({ message: "Resume not found" });
+    }
+
+    // Remove the resume
+    student.resume = null; // Or you can use delete student.resume;
+
+    // Save the updated student document
+    await student.save();
+
+    // Send a success response
+    res.status(200).json({ message: "Resume deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting resume:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 
@@ -351,9 +382,10 @@ router.get('/resume/:id', async (req, res) => {
     if (!student || !student.resume) {
       return res.status(404).send('Resume not found.');
     }
-    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition, Resume-Created-At');
     res.setHeader('Content-Type', student.resume.contentType);
     res.setHeader('Content-Disposition', `attachment; filename="${student.resume.filename}"`);
+    res.setHeader('Resume-Created-At', student.resume.createdAt.toISOString());
     res.send(student.resume.data);
     
 
