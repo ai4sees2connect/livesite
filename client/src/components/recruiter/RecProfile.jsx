@@ -216,7 +216,7 @@ const RecProfile = () => {
     !recruiter ? (
       <Spinner />
     ) : (
-      <div className='container mx-auto p-4 mt-[68px] '>
+      <div className='container mx-auto p-4 mt-[68px] h-screen'>
         <div className='border-b flex flex-col items-center space-y-3'>
           <h1 className="text-3xl font-bold mb-2 text-center">Profile</h1>
           <div className=' w-40 h-auto my-10 flex flex-col space-y-4 items-center'>
@@ -338,7 +338,7 @@ const RecProfile = () => {
             </>
           )}
 
-          {recruiter.companyWebsite && <div>
+          {recruiter.companyWebsite && <div className='my-4'>
             <p className='text-blue-500 text-center'>{recruiter.companyWebsite.link}</p>
             <p className='text-gray-700 text-center'>Verification: {recruiter.companyWebsite.status}</p>
             <p className='text-red-400'>We will verify your provided link shortly!</p>

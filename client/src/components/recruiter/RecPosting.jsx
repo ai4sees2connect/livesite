@@ -486,7 +486,7 @@ const RecPosting = () => {
       recruiter?.subscription.postsRemaining < 1
     ) {
       return (
-        <div className="flex flex-col space-y-3">
+        <div className="flex flex-col space-y-3 h-screen">
           <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
             You have used your available postings
           </div>
