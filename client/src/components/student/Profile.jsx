@@ -242,7 +242,7 @@ const Profile = () => {
               Add years of experience
             </h1>
           )}
-          {!expEdit && (
+          {!expEdit && student.yearsOfExp && (
             <div className="flex space-x-3 justify-center items-center">
               <h1 className="text-gray-600 text-center">
                 {student.yearsOfExp === "fresher"
@@ -294,7 +294,7 @@ const Profile = () => {
               onClick={() => setGenderEdit(true)}
               className="text-red-500 text-center hover:cursor-pointer"
             >
-              Add your gender
+              Add gender
             </h1>
           )}
           {!genderEdit && (

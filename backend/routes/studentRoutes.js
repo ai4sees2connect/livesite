@@ -312,7 +312,7 @@ router.get('/details', async (req, res) => {
         personalProjects:student.personalProjects,
         skills:student.skills,
         portfolioLink:student.portfolioLink,
-        resume:student.resume
+        resume:student.resume.data
 
       }
     });

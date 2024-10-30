@@ -310,6 +310,7 @@ const Internships = () => {
   const [assessmentAns, setAssessmentAns] = useState("");
   // const [cachedInternships, setCachedInternships] = useState(null);
   console.log(workType);
+  console.log(student);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -317,7 +318,7 @@ const Internships = () => {
 
   useEffect(() => {
     const fetchInternships = async () => {
-      const cachedInternships = localStorage.getItem("cachedInternships");
+      // const cachedInternships = localStorage.getItem("cachedInternships");
       // if (cachedInternships) {
       //   setInternships(JSON.parse(cachedInternships));
       //   setLoading(false);
@@ -425,7 +426,9 @@ const Internships = () => {
       }
     };
 
+    if(student?.resume){
     fetchResume();
+    }
   }, [userId]);
   console.log("this is resume", resumeUrl);
 
@@ -446,10 +449,10 @@ const Internships = () => {
     // internship?.jobProfile?.toLowerCase() === selectedProfile?.label?.toLowerCase()
 
     // Matches Location
-    console.log("this is selected location", selectedLocation);
-    console.log("this is interns profile", internship.jobProfile);
-    console.log("this is selected profile", selectedProfile);
-    console.log("this is internship", internship);
+    // console.log("this is selected location", selectedLocation);
+    // console.log("this is interns profile", internship.jobProfile);
+    // console.log("this is selected profile", selectedProfile);
+    // console.log("this is internship", internship);
 
     const matchesLocation =
       selectedLocation.length == 0 ||
@@ -493,6 +496,10 @@ const Internships = () => {
   };
 
   const openInterestedModal = () => {
+    if( student.education.length==0 || student.personalProjects.length==0 || student.portfolioLink.length==0 || student.skills.length==0 || !student.gender || !student.homeLocation || !student.yearsOfExp || !student.resume ){
+      toast.error("Please complete your profile");
+      return;
+    }
     setIsInterestedModalOpen(true);
   };
 
