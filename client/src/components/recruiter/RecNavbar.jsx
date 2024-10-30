@@ -103,19 +103,19 @@ const RecNavbar = () => {
             </button>
           </div>
           <div className="flex flex-col p-4 text-left">
-            <Link to={`/recruiter/${userId}/pricing`} className="py-2 hover:text-blue-500">
+            <Link to={`/recruiter/${userId}/pricing`} onClick={toggleSidebar} className="py-2 hover:text-blue-500">
               Plans and Pricing
             </Link>
-            <Link to={`/recruiter/dashboard/${userId}`} className="py-2 hover:text-blue-500">
+            <Link to={`/recruiter/dashboard/${userId}`} onClick={toggleSidebar} className="py-2 hover:text-blue-500">
               My Dashboard
             </Link>
-            <Link to={`/recruiter/posting/${userId}`} className="py-2 hover:text-blue-500">
+            <Link to={`/recruiter/posting/${userId}`} onClick={toggleSidebar} className="py-2 hover:text-blue-500">
               Post Internship
             </Link>
-            <Link to={`/recruiter/${userId}/chatroom`} className="py-2 hover:text-blue-500">
+            <Link to={`/recruiter/${userId}/chatroom`} onClick={toggleSidebar} className="py-2 hover:text-blue-500">
               Messages
             </Link>
-            <Link to={`/recruiter/profile/${userId}`} className="py-2 hover:text-blue-500">
+            <Link to={`/recruiter/profile/${userId}`} onClick={toggleSidebar} className="py-2 hover:text-blue-500">
               Profile
             </Link>
             <button onClick={handleLogout} className="py-2 hover:text-blue-500 text-left">

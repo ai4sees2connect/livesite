@@ -39,7 +39,7 @@ const InternshipsUniversal = () => {
   const [selectedProfile, setSelectedProfile] = useState([]);
   const { login } = useStudent();
   const userId = getUserIdFromToken();
-  const [filterOpen, setFilterOpen] = useState(true);
+  const [filterOpen, setFilterOpen] = useState(false);
   const navigate = useNavigate();
 
   const statesAndUTs = [
@@ -465,7 +465,7 @@ const InternshipsUniversal = () => {
   }
 
   return (
-    <div className="py-10 px-5 mt-0 min-h-screen bg-gray-100 relative">
+    <div className="py-10 px-5 mt-10 min-h-screen bg-gray-100 relative">
 
       
 
@@ -476,7 +476,7 @@ const InternshipsUniversal = () => {
       <div className="flex flex-col lg:flex-row max-w-[1170px] mx-auto gap-10">
 
         {/* this below div is filter button */}
-        <div className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${filterOpen && 'border-blue-400'}`} onClick={() => setFilterOpen(!filterOpen)}>
+        <div className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400 mt-5 ${filterOpen && 'border-blue-400'}`} onClick={() => setFilterOpen(!filterOpen)}>
           <span>Filters</span>
           <FaFilter className="hover:cursor-pointer text-blue-500" />
         </div>
@@ -579,7 +579,7 @@ const InternshipsUniversal = () => {
           )}
         </div>
 
-        <h1 className="text-3xl font-bold mb-2 mt-2 text-center lg:hidden">
+        <h1 className="text-3xl font-bold mb-2  text-center lg:hidden">
           {filteredInternships.length} Total Internships
         </h1>
 

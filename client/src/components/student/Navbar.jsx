@@ -98,16 +98,16 @@ const Navbar = () => {
             </button>
           </div>
           <div className="flex flex-col p-4">
-            <Link to={`/student/internships/${userId}`} className="py-2 hover:text-blue-500">
+            <Link to={`/student/internships/${userId}`} onClick={toggleSidebar} className="py-2 hover:text-blue-500">
               Internship
             </Link>
-            <Link to={`/student/${userId}/chats`} className="py-2 hover:text-blue-500">
+            <Link to={`/student/${userId}/chats`} onClick={toggleSidebar} className="py-2 hover:text-blue-500">
               Messages
             </Link>
-            <Link to={`/student/myApplications/${userId}`} className="py-2 hover:text-blue-500">
+            <Link to={`/student/myApplications/${userId}`} onClick={toggleSidebar} className="py-2 hover:text-blue-500">
               My Applications
             </Link>
-            <Link to={`/student/profile/${userId}`} className="py-2 hover:text-blue-500">
+            <Link to={`/student/profile/${userId}`} onClick={toggleSidebar} className="py-2 hover:text-blue-500">
               Profile
             </Link>
             {/* <Link to={`/student/resume/${userId}`} className="py-2 hover:text-blue-500">
