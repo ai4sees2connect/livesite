@@ -654,7 +654,7 @@ if(loading){
 
 console.log('internsFoundCheck',internsFoundCheck)
 if(!internsFoundCheck){
-  return <div className='h-screen flex items-center justify-center text-lg text-gray-600'>You are not shortlisted for any internship yet</div>
+  return <div className='h-screen flex items-center justify-center text-lg text-gray-600 tracking-wider'>You are not shortlisted for any internship yet</div>
 }
 
   return (

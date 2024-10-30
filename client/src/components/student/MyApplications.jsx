@@ -68,6 +68,15 @@ const MyApplications = () => {
     return <Spinner />;
   }
 
+  if(appliedInternships.length==0){
+    
+    return (<div className="h-screen flex flex-col items-center justify-center space-y-4">
+      <h1 className="text-lg text-gray-600 tracking-wider">You have not applied to any internship..</h1>
+        <Link to={`/student/internships/${userId}`} className="border-2 border-blue-500 rounded-lg px-3 py-1 text-blue-500 font-semibold ">Browse Internships</Link>
+    </div>)
+    
+  }
+
   if (error) {
     return <p className="text-xl font-semibold text-red-500">{error}</p>;
   }
@@ -76,63 +85,7 @@ const MyApplications = () => {
     <div className="py-10 px-5 mt-10 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold text-center mb-8">My Applications</h1>
 
-      {/* Old Code */}
-      {/* <div className="bg-white shadow-md rounded-lg p-6 w-[90%] my-3 mx-auto">
       
-        <div className="flex justify-between items-center gap-3 font-semibold mb-2 border-b pb-2 pt-2 rounded-md text-center bg-gray-200">
-          <div className="w-[170px] text-center">COMPANY</div>
-          <div className="w-[200px] text-center ">PROFILE</div>
-          <div className="w-[100px] text-center">APPLIED</div>
-          <div className="w-[130px] text-center">NUMBER OF APPLICANTS</div>
-          <div className="w-[100px] text-center">STATUS</div>{" "}
-          <div className="w-[100px] text-center">VIEW DETAILS</div>
-           <div className="w-[140px] text-center">PROFILE MATCH</div> 
-        </div>
-
-        {appliedInternships.map((applied) => (
-          <div
-            key={applied._id}
-            className="flex justify-between gap-3 py-2 border-b h-auto text-gray-600"
-          >
-            <div className=" text-center w-[170px]">
-              {applied.recruiter.companyName}
-            </div>
-            <div className="w-[200px] text-center ml-8">
-              {applied.internship.internshipName}
-            </div>
-            <div className="w-[100px] text-center ml-7">
-              {TimeAgo(applied.appliedAt)}
-            </div>
-            <div className="w-[130px] text-center ml-8">
-              {applied.studentCount}
-            </div>
-            <div className="w-[100px] text-center ml-7 flex items-center justify-center">
-              <span
-                className={`rounded-xl ${
-                  applied.internshipStatus.status === "Viewed" &&
-                  "text-yellow-400"
-                } 
-            ${
-              applied.internshipStatus.status === "Rejected" && "text-red-500"
-            } ${
-                  applied.internshipStatus.status === "Shortlisted" &&
-                  "text-green-600"
-                } py-1 px-2`}
-              >
-                {applied.internshipStatus.status}
-              </span>
-            </div>
-            <div className="w-[100px] text-center ml-8 mt-3">
-              <button
-                onClick={() => setSelectedInternship(applied)}
-                className="text-blue-500 hover:underline"
-              >
-                View
-              </button>
-            </div>
-          </div>
-        ))}
-      </div> */}
       {/* Bapi Used Table */}
       <div className=" hidden lg:block">
         <table className="min-w-full table-auto border-collapse">
