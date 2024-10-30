@@ -208,13 +208,13 @@ const RightSide = () => {
       Contact Us</button> */}
       {/* Trending Courses */}
       <div className="px-3 lg:px-5 ">
-        <h1 className="text-2xl font-bold py-5 text-center mb-5">
+        {/* <h1 className="text-2xl font-bold py-5 text-center mb-5">
           Trending on InternsNest
           <FontAwesomeIcon
             icon={faFire}
             className="text-orange-600 ml-2 fa-beat"
           />
-        </h1>
+        </h1> */}
 
         <div className="w-full overflow-hidden">
           <video src={vids2} autoPlay muted loop className="md:w-[50%] md:h-[30%] mx-auto  ">

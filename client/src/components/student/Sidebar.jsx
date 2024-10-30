@@ -32,11 +32,11 @@ console.log('this student is inside sidebarrrr',student);
           </div>
         ) : (
           <div>
-            <h1 className="text-3xl font-bold p-3 mt-5 relative w-full ">
+            <h1 className="text-3xl lg:text-5xl font-bold p-3 mt-5 relative w-full capitalize">
               Hi, {student?.firstname}!
               
             </h1>
-            <div className="text-xl px-3 w-fit mx-auto relative">
+            <div className="text-xl lg:text-3xl px-3 w-fit mx-auto relative">
               Let’s help you land your dream career.....
               <div
                 className={`absolute left-0  lg:left-0 md:-bottom-3 lg:-bottom-3  h-[6px] lg:h-[8px] bg-orange-500 rounded-xl   animate-grow-width-lg
