@@ -501,7 +501,7 @@ const RightSide = () => {
         </div>
       </div>
       {/* footer top */}
-      <div className="bg-footer  h-64 w-full bg-no-repeat bg-cover px-5 py-5 lg:py-0">
+      {!token && <div className="bg-footer  h-64 w-full bg-no-repeat bg-cover px-5 py-5 lg:py-0">
         <div className="flex flex-col lg:flex-row justify-center items-center h-full gap-5">
           <h2 className="lg:flex-1 text-3xl lg:text-5xl text-white font-bold">
             Boost your career with InternsNest today
@@ -516,7 +516,8 @@ const RightSide = () => {
             </Link>
           </div>
         </div>
-      </div>
+      </div>}
+
     </div>
   );
 };

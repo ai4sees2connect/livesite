@@ -118,9 +118,9 @@ const Certificates = () => {
         Certificates
         <button
           onClick={() => setIsEditing(true)}
-          className="text-blue-500 hover:text-green-600 flex items-center space-x-1"
+          className="text-blue-500  flex items-center space-x-1"
         >
-          <span>Add Certificate</span> <FontAwesomeIcon icon={faPlus} />
+          <span>Add </span> 
         </button>
       </h2>
 
@@ -178,7 +178,7 @@ const Certificates = () => {
             certificates.map((cert, index) => (
               <div
                 key={index}
-                className="border-2 shadow-lg p-5 mb-2 min-w-full"
+                className="border p-5 mb-2 min-w-full"
               >
                 <div>
                   <div className="flex justify-between">
