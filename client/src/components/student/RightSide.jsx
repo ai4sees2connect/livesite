@@ -226,8 +226,7 @@ const RightSide = () => {
       <div className="my-5 px-3 lg:px-5 py-10 bg-[#f0fbff] rounded-xl">
         <div className="text-center mb-10">
           <h1 className=" text-2xl font-bold px-9">Recommended for you</h1>
-          <p className="text-black">
-            as per your<span className="text-blue-600 ml-2">preferences</span>
+          <p className=" text-blue-600 ml-2">Latest internships
           </p>
         </div>
 
@@ -323,162 +322,9 @@ const RightSide = () => {
       </div>
 
 
+    
 
-      {/* Placement */}
-      <div className="my-10 px-3 lg:px-5">
-        <h1 className="text-2xl font-bold py-5 px-9 text-center">
-          Placement Guarantee Courses
-        </h1>
-        <div className="">
-          <Swiper
-            slidesPerView={3}
-            spaceBetween={30}
-            freeMode={true}
-            pagination={{
-              clickable: true,
-            }}
-            navigation={{
-              clickable: true,
-            }}
-            modules={[FreeMode, Pagination, Navigation]}
-            breakpoints={{
-              1200: {
-                slidesPerView: 4,
-                spaceBetween: 30,
-              },
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              280: {
-                slidesPerView: 1,
-                spaceBetween: 10,
-              },
-            }}
-            className="mySwiper"
-          >
-            {courses?.map((job, index) => (
-              <SwiperSlide key={index}>
-                <div className="mx-3 lg:mx-0 shadow-xl border-2 rounded-lg min-h-[420px]">
-                  <img
-                    src={job?.image}
-                    alt=""
-                    className="w-full max-h-[180px] hover:cursor-pointer"
-                  />
-                  <div className="p-5 h-[270px] space-y-3">
-                    <h1 className="text-lg font-semibold">
-                      {job?.courseTitle}
-                    </h1>
-                    <button className="text-sm px-3 bg-orange-200 rounded-lg font-semibold text-gray-600">
-                      Course With Guaranteed Job
-                    </button>
-                    {/* location money time */}
-                    <div className="my-4 space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <FontAwesomeIcon
-                          icon={faBriefcase}
-                          className="text-gray-500"
-                        />
 
-                        <span className="text-sm text-gray-600">
-                          {job?.totalOpportunities} Opportunities
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <FontAwesomeIcon
-                          icon={faWallet}
-                          className="text-gray-500"
-                        />
-                        <span className="text-sm text-gray-600">
-                          Expected {job?.expectedSalary} /Month
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <FontAwesomeIcon
-                          icon={faBusinessTime}
-                          className="text-gray-500"
-                        />
-                        <span className="text-sm text-gray-600">
-                          {job?.courseTime}
-                        </span>
-                      </div>
-                    </div>
-                    <h1 className="text-blue-500 pt-5 hover:underline cursor-pointer">
-                      Know More <FontAwesomeIcon icon={faChevronRight} />
-                    </h1>
-                  </div>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-      </div>
-      {/* Certification */}
-      <div className="my-10 px-3 lg:px-5 py-10 bg-[#f0fbff] rounded-xl">
-        <h1 className="text-2xl font-bold py-5 px-9 text-center">
-          Certification courses for you
-        </h1>
-        <div className="">
-          <Swiper
-            slidesPerView={3}
-            spaceBetween={30}
-            freeMode={true}
-            pagination={{
-              clickable: true,
-            }}
-            navigation={{
-              clickable: true,
-            }}
-            modules={[FreeMode, Pagination, Navigation]}
-            breakpoints={{
-              1200: {
-                slidesPerView: 4,
-                spaceBetween: 30,
-              },
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              280: {
-                slidesPerView: 1,
-                spaceBetween: 10,
-              },
-            }}
-            className="mySwiper"
-          >
-            {certificates.map((course, index) => (
-              <SwiperSlide key={index}>
-                <div className="mx-3 lg:mx-0 shadow-xl border-2 rounded-lg min-h-[260px]">
-                  <img
-                    src={course?.image}
-                    alt=""
-                    className="w-full h-full hover:cursor-pointer max-h-[200px]"
-                  />
-                  <div className="p-5 h-[120px]">
-                    <p className="text-sm text-gray-600">{course?.time}</p>
-                    <h1 className="text-lg font-semibold">
-                      {course?.courseName}
-                    </h1>
-                    <div className="flex items-center gap-4 mt-1">
-                      <p className="pr-2 border-r-2">
-                        {course?.star}
-                        <FontAwesomeIcon
-                          className="text-orange-400 ml-1"
-                          icon={faStar}
-                        />
-                      </p>
-                      <p>{course?.totalLearner}Learner</p>
-                    </div>
-                  </div>
-                  <h1 className="text-blue-500 pt-5 hover:underline cursor-pointer pl-5 pb-5">
-                    Know More <FontAwesomeIcon icon={faChevronRight} />
-                  </h1>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-      </div>
       {/* customers */}
       <div className="px-3 lg:px-5 py-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-t-2">
         <div className="border-r-2 flex flex-col  lg:gap-3 justify-center items-center mb-10 lg:mb-0">
