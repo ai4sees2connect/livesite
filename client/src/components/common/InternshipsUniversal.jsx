@@ -16,6 +16,8 @@ import {
   FaStar,
   FaQuestion,
   FaFilter,
+  FaAngleRight,
+  FaAngleLeft
 
 } from "react-icons/fa";
 import Spinner from "../common/Spinner";
@@ -41,6 +43,8 @@ const InternshipsUniversal = () => {
   const userId = getUserIdFromToken();
   const [filterOpen, setFilterOpen] = useState(false);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const internshipsPerPage = 9;
 
   const statesAndUTs = [
     { value: "All Locations", label: "All Locations" },
@@ -294,6 +298,8 @@ const InternshipsUniversal = () => {
     "Web Development",
   ];
 
+
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -437,6 +443,34 @@ const InternshipsUniversal = () => {
   // console.log('this is selected location', selectedLocation);
   console.log("this is filtered internships", filteredInternships);
 
+  
+  
+  const indexOfLastInternship = currentPage * internshipsPerPage;
+  const indexOfFirstInternship = indexOfLastInternship - internshipsPerPage;
+  const currentInternships = filteredInternships.slice(
+    indexOfFirstInternship,
+    indexOfLastInternship
+  );
+  const totalPages = Math.ceil(filteredInternships.length / internshipsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < Math.ceil(filteredInternships.length / internshipsPerPage)) {
+      setCurrentPage(currentPage + 1);
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 500);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 500);
+    }
+  };
+
 
 
   const handleChange = (value) => {
@@ -467,7 +501,7 @@ const InternshipsUniversal = () => {
   return (
     <div className="py-10 px-5 mt-10 min-h-screen bg-gray-100 relative">
 
-      
+
 
       <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
         {filteredInternships.length} Total Internships
@@ -588,7 +622,7 @@ const InternshipsUniversal = () => {
           <div className="flex flex-col justify-center bg-gray-100">
 
             {/* this below div is list of internships */}
-            {filteredInternships.map((internship) => (
+            {currentInternships.map((internship) => (
               <div
                 key={internship._id}
                 className="bg-white shadow-md rounded-lg px-3 py-3 w-full my-3 mx-auto relative"
@@ -661,12 +695,6 @@ const InternshipsUniversal = () => {
                   )}
                 </div>
 
-                {/* {isAlreadyApplied(internship._id) && (
-                  <p className="text-green-600 text-sm md:text-base inline-flex rounded-xl border border-green-600 px-2 py-1">
-                    Applied
-                    <FaCheck className="ml-2 mt-1" />
-                  </p>
-                )} */}
                 <div className="flex text-sm md:text-base space-x-4 items-center">
                   <div
                     className={`${internship.studentCount < 20
@@ -704,6 +732,28 @@ const InternshipsUniversal = () => {
 
               </div>
             ))}
+
+            <div className="flex justify-center my-4 space-x-4">
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-md ${currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'}`}
+              >
+                <FaAngleLeft />
+              </button>
+              
+              <span>{currentPage} / {totalPages}</span>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-md ${currentPage === Math.ceil(filteredInternships.length / internshipsPerPage)
+                    ? 'bg-gray-300'
+                    : 'bg-blue-500 text-white'
+                  }`}
+              >
+                <FaAngleRight />
+              </button>
+            </div>
 
           </div>
         </div>

@@ -15,6 +15,8 @@ import {
   FaStar,
   FaQuestion,
   FaFilter,
+  FaAngleRight,
+  FaAngleLeft
   
 } from "react-icons/fa";
 import Spinner from "../common/Spinner";
@@ -39,6 +41,8 @@ const Internships = () => {
   const { student } = useStudent();
   const userId = getUserIdFromToken();
   const [filterOpen, setFilterOpen]=useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const internshipsPerPage = 9;
 
   const statesAndUTs = [
     { value: "All Locations", label: "All Locations" },
@@ -432,6 +436,8 @@ const Internships = () => {
   }, [userId]);
   console.log("this is resume", resumeUrl);
 
+  
+
   const filteredInternships = internships.filter((internship) => {
     // Matches Work Type
     const matchesWorkType =
@@ -446,13 +452,8 @@ const Internships = () => {
           internship?.jobProfile?.toLowerCase() ===
           profile?.label?.toLowerCase()
       );
-    // internship?.jobProfile?.toLowerCase() === selectedProfile?.label?.toLowerCase()
 
-    // Matches Location
-    // console.log("this is selected location", selectedLocation);
-    // console.log("this is interns profile", internship.jobProfile);
-    // console.log("this is selected profile", selectedProfile);
-    // console.log("this is internship", internship);
+      
 
     const matchesLocation =
       selectedLocation.length == 0 ||
@@ -476,6 +477,32 @@ const Internships = () => {
 
   // console.log('this is selected location', selectedLocation);
   console.log("this is filtered internships", filteredInternships);
+
+  const indexOfLastInternship = currentPage * internshipsPerPage;
+      const indexOfFirstInternship = indexOfLastInternship - internshipsPerPage;
+      const currentInternships = filteredInternships.slice(
+        indexOfFirstInternship,
+        indexOfLastInternship
+      );
+      const totalPages = Math.ceil(filteredInternships.length / internshipsPerPage);
+
+      const handleNextPage = () => {
+        if (currentPage < Math.ceil(filteredInternships.length / internshipsPerPage)) {
+          setCurrentPage(currentPage + 1);
+          setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 500);
+        }
+      };
+
+      const handlePreviousPage = () => {
+        if (currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+          setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 500);
+        }
+      };
 
   const openModal = async (internship) => {
     setSelectedInternship(internship);
@@ -595,7 +622,7 @@ const Internships = () => {
         {filteredInternships.length} Total Internships
       </h1>
 
-      <div className="flex flex-col lg:flex-row max-w-[1170px] mx-auto gap-10">
+      <div className="flex flex-col lg:flex-row w-[90%] mx-auto lg:mx-0 gap-10">
 
         {/* this below div is filter button */}
         <div className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${filterOpen &&'border-blue-400'}`} onClick={()=>setFilterOpen(!filterOpen)}>
@@ -604,7 +631,7 @@ const Internships = () => {
         </div>
 
         {/* this below div is filter box */}
-        <div className={` ${filterOpen? 'block':'hidden'} w-[84%] md:w-[70%] mx-auto lg:w-[30%] h-full lg:max-h-screen lg:mt-20 px-6 shadow-xl border-t py-6 overflow-y-hidden bg-white  relative`}>
+        <div className={` ${filterOpen? 'block':'hidden'} w-[84%] sm:w-[90%]  lg:ml-10 mx-auto lg:w-[30%] xl:w-[23%] h-full lg:max-h-screen lg:mt-4 px-6 shadow-xl border-t py-6 overflow-y-hidden bg-white  relative`}>
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
           </h1>
@@ -703,14 +730,14 @@ const Internships = () => {
 
         <h1 className="text-3xl font-bold mb-8 mt-8 text-center lg:hidden">
         {filteredInternships.length} Total Internships
-      </h1>
+        </h1>
 
 
-        <div className="flex-1 lg:mt-28 ">
+        <div className="flex-1 lg:mt-0 ">
           <div className="flex flex-col justify-center bg-gray-100">
 
             {/* this below div is list of internships */}
-            {filteredInternships.map((internship) => (
+            {currentInternships.map((internship) => (
               <div
                 key={internship._id}
                 className="bg-white shadow-md rounded-lg px-3 py-3 w-full my-3 mx-auto relative"
@@ -837,6 +864,28 @@ const Internships = () => {
                 )}
               </div>
             ))}
+
+<div className="flex justify-center my-4 space-x-4">
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-md ${currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'}`}
+              >
+                <FaAngleLeft />
+              </button>
+              <span>{currentPage} / {totalPages}</span>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-md ${currentPage === Math.ceil(filteredInternships.length / internshipsPerPage)
+                    ? 'bg-gray-300'
+                    : 'bg-blue-500 text-white'
+                  }`}
+              >
+                <FaAngleRight />
+              </button>
+            </div>
+
 
             {selectedInternship &&
               !isAlreadyApplied(selectedInternship._id) && (
