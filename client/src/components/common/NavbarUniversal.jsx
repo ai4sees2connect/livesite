@@ -114,15 +114,10 @@ const NavbarUniversal = () => {
           </button>
         </div>
         <div className="flex flex-col p-4">
-          <Link to='/internships' className="py-2 hover:text-blue-500">
+          <Link to='/internships' onClick={toggleSidebar} className="py-2 hover:text-blue-500">
             Internship
           </Link>
-          <button className="hover:text-blue-500 py-2 text-left" onClick={() => {
-            window.scrollTo({
-              top: 2 * window.innerHeight - (window.innerHeight / 2.4),
-              behavior: "smooth",
-            });
-          }}>
+          <button className="hover:text-blue-500 py-2 text-left" onClick={toggleSidebar}>
             Courses
           </button>
           <Link to={`/student/login`} className="py-2 hover:text-blue-500">

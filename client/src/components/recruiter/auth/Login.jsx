@@ -126,7 +126,7 @@ function Login() {
               onSubmit={handleSubmit}
               className="space-y-4 w-full lg:w-[60%]  md:max-w-xl px-5 lg:px-0"
             >
-              <div className="mx-auto max-w-sm md:max-w-xl">
+              <div className="mx-auto w-full md:max-w-xl">
                 <input
                   type="email"
                   id="email"
