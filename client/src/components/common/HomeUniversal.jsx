@@ -67,7 +67,7 @@ const HomeUniversal = () => {
   return (
     <>
     
-      <div className="mt-20 text-center">
+      <div className="mt-7 text-center">
       
       <div className="text-center">
           <Sidebar student={student} />
