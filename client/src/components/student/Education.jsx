@@ -133,14 +133,14 @@ const Education = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 border-b shadow-lg mt-[68px] w-full lg:w-2/3">
+    <div className="container mx-auto p-4 border-b shadow-md mt-[68px] w-full lg:w-[70%]">
       <h2 className="text-xl font-outfit font-semibold flex justify-between">
         Education
         <button
           onClick={() => setIsEditing(true)}
-          className="text-blue-500 hover:text-green-600 flex items-center space-x-1"
+          className="text-blue-500  flex items-center space-x-1"
         >
-          <span>Add Education</span> <FontAwesomeIcon icon={faPlus} />
+          <span>Add</span> 
         </button>
       </h2>
 
@@ -235,7 +235,7 @@ const Education = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 justify-center gap-5  items-center mt-10">
           {educationDetails.length > 0 ? (
             educationDetails.map((edu, index) => (
-              <div key={index} className="border-2 shadow-lg p-5  ">
+              <div key={index} className="border p-5  ">
                 <div>
                   <div className="flex justify-between">
                     <h3 className="text-lg font-semibold">{edu.degree}</h3>
@@ -254,8 +254,9 @@ const Education = () => {
                   </div>
                   <div className="text-gray-600">
                     <p>
-                      {edu.fieldOfStudy} at {edu.institution}
+                      {edu.fieldOfStudy}
                     </p>
+                    <p>{edu.institution}</p>
                     <p>Start Year: {edu.startYear}</p>
                     <p>Year of Completion: {edu.endYear}</p>
                     <p>Percentage/CGPA: {edu.score}</p>

@@ -14,6 +14,7 @@ import api from "../common/server_url";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import { FaPen } from "react-icons/fa";
+import Resume from "./Resume";
 
 const Profile = () => {
   const idFromToken = getUserIdFromToken();
@@ -175,7 +176,7 @@ const Profile = () => {
     <Spinner />
   ) : (
     <div className=" mx-auto p-4 mt-[68px] ">
-      <div className="border-b pb-3">
+      <div className="border-b pb-3 ">
         <h1 className="text-3xl font-bold mb-2 text-center">Your Profile</h1>
         <h1 className=" text-xl capitalize text-center text-gray-600">
           {student.firstname} {student.lastname}
@@ -241,7 +242,7 @@ const Profile = () => {
               Add years of experience
             </h1>
           )}
-          {!expEdit && (
+          {!expEdit && student.yearsOfExp && (
             <div className="flex space-x-3 justify-center items-center">
               <h1 className="text-gray-600 text-center">
                 {student.yearsOfExp === "fresher"
@@ -293,7 +294,7 @@ const Profile = () => {
               onClick={() => setGenderEdit(true)}
               className="text-red-500 text-center hover:cursor-pointer"
             >
-              Add your gender
+              Add gender
             </h1>
           )}
           {!genderEdit && (
@@ -342,6 +343,10 @@ const Profile = () => {
           )}
         </div>
       </div>
+
+      <section className="mb-8">
+        <Resume/>
+      </section>
 
       <section className="mb-8">
         <Education />

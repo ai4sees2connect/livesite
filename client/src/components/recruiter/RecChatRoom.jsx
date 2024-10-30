@@ -646,6 +646,10 @@ if(loading){
   return <Spinner/>
 }
 
+if(shortlistedStudents.length==0){
+  return <div className='h-screen flex items-center justify-center text-lg text-gray-600 tracking-wider font-semibold'>You have not shortlisted any student yet...</div>
+}
+
   return (
     <div className="flex justify-end h-[90vh]  mt-20 relative w-[100%]">
       {/* Left Column - Shortlisted Students */}

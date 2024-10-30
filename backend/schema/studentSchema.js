@@ -34,7 +34,10 @@ const studentSchema = new mongoose.Schema(
       data: Buffer, // Store the file data as binary
       contentType: String, // Store the MIME type
       filename: String, // Store the original filename
-      //add a field for current time and date
+      createdAt: {
+        type: Date,
+        default: Date.now // Automatically sets the creation date
+      }
     },
     education: [
       {

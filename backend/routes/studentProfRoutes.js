@@ -413,6 +413,13 @@ router.post("/:userId/skills", async (req, res) => {
     const { skillName, proficiency } = req.body;
     const student = await Student.findById(userId);
     if (!student) return res.status(404).json({ message: "User not found" });
+
+    const skillExists = student.skills.some(skill => skill.skillName === skillName);
+
+    if (skillExists) {
+      return res.status(400).json({ message: "Skill already exists" });
+    }
+
     student.skills.push({ skillName, proficiency });
 
     await student.save();
@@ -431,9 +438,14 @@ router.put("/:userId/skills/:index", async (req, res) => {
     const { skillName, proficiency } = req.body;
     const student = await Student.findById(userId);
     if (!student) return res.status(404).json({ message: "User not found" });
+
     if (index < 0 || student.skills.length <= index)
       return res.status(400).json({ message: "Invalid skills index" });
-
+    
+    const skillExists=student.skills.some(skill=> skill.skillName===skillName);
+    if(skillExists){
+      return res.status(400).json({ message: "Skill already exists" });
+    }
     student.skills[index] = {
       skillName,
       proficiency,

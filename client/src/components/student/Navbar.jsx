@@ -75,9 +75,9 @@ const Navbar = () => {
                 <li className="py-2 px-4 hover:text-blue-500">
                   <Link to={`/student/profile/${userId}`}>Profile</Link>
                 </li>
-                <li className="py-2 px-4 hover:text-blue-500">
+                {/* <li className="py-2 px-4 hover:text-blue-500">
                   <Link to={`/student/resume/${userId}`}>Resume</Link>
-                </li>
+                </li> */}
                 <li className="py-2 px-4 hover:text-blue-500">
                   <button onClick={handleLogout}>Logout</button>
                 </li>
@@ -110,9 +110,9 @@ const Navbar = () => {
             <Link to={`/student/profile/${userId}`} className="py-2 hover:text-blue-500">
               Profile
             </Link>
-            <Link to={`/student/resume/${userId}`} className="py-2 hover:text-blue-500">
+            {/* <Link to={`/student/resume/${userId}`} className="py-2 hover:text-blue-500">
               Resume
-            </Link>
+            </Link> */}
             <button onClick={handleLogout} className="py-2 hover:text-blue-500 text-left">
               Logout
             </button>
