@@ -73,26 +73,20 @@ const NavbarUniversal = () => {
         <div className="hidden sm:flex items-center justify-between  text-sm
         sm:text-base lg:space-x-8 text-gray-800 lg:tracking-wider   w-full font-semibold">
           <div className="flex items-start justify-center">
-            <Link to='/internships' className="hover:text-blue-500 p-2 md:p-5">
-              Internships
-            </Link>
-            <button className="hover:text-blue-500 p-2 md:p-5" onClick={() => {
-              window.scrollTo({
-                top: 2 * window.innerHeight - (window.innerHeight / 2.4),
-                behavior: "smooth",
-              });
-            }}>
-              Courses
-            </button>
+            
+            
+        
 
           </div>
 
-          {/* <div className="block sm:hidden">
-           
-          </div> */}
+          
+      
 
           {/* User Icon */}
           <div className="hidden sm:flex relative group  items-center justify-center space-x-2 lg:space-x-5 ">
+            <Link to='/internships' className="hover:text-blue-500 p-2 md:p-5">
+              Internships
+            </Link>
             <Link to='/student/login'>
               <button className="border border-blue-500 text-blue-500 rounded-md font-semibold px-4 py-1 lg:px-3">Login</button></Link>
             <Link to='/recruiter/signup'><button className="text-sm md:text-base bg-blue-400 text-white rounded-md font-semibold px-1 md:px-2 py-1 ">Employer Sign-up</button></Link>
@@ -117,9 +111,7 @@ const NavbarUniversal = () => {
           <Link to='/internships' onClick={toggleSidebar} className="py-2 hover:text-blue-500">
             Internship
           </Link>
-          <button className="hover:text-blue-500 py-2 text-left" onClick={toggleSidebar}>
-            Courses
-          </button>
+          
           <Link to={`/student/login`} className="py-2 hover:text-blue-500">
             Login
           </Link>
