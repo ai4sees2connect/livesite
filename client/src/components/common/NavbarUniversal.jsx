@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import internsnestlogo2 from '../../images/internsnest_pic2.jpg'
+import internsnestLogo from '../../images/internnest_logo.png'
 import getUserIdFromToken from "../student/auth/authUtils.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -40,7 +41,7 @@ const NavbarUniversal = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between sm:justify-start items-center h-20">
         {/* Logo */}
         <Link to="/">
-          <img src={internsnestlogo2} alt="" className="h-16 lg:h-[70px] w-24 lg:w-28" />
+          <img src={internsnestLogo} alt="" className="h-16 lg:h-[70px] w-24 lg:w-28" />
         </Link>
 
         {/* Hamburger Icon for Small Devices */}
