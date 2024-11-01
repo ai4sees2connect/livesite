@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import logo from "../../images/logo.png";
 import internsnestlogo1 from '../../images/internsnest_pic1.jpg'
 import internsnestlogo2 from '../../images/internsnest_pic2.jpg'
+import internsnestLogo from '../../images/internnest_logo.png'
 import getUserIdFromToken from "./auth/authUtilsRecr.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -39,11 +40,11 @@ const RecNavbar = () => {
 
   return (
     <nav className="bg-white fixed top-0 w-full shadow-md z-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
         {/* Logo */}
         <Link to={`/recruiter/dashboard/${userId}`}>
           <div className="inline-flex items-center">
-            <img src={internsnestlogo2} alt="" className="h-14 w-24" />
+            <img src={internsnestLogo} alt="" className="h-16 lg:h-[70px] w-24 lg:w-28" />
           </div>
         </Link>
 
