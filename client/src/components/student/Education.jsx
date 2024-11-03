@@ -19,7 +19,10 @@ const Education = () => {
   const [educationDetails, setEducationDetails] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
+  const startYears = Array.from({ length: 50 }, (_, i) => currentYear - i);
+  const endYears = Array.from({ length: 50 }, (_, i) => currentYear-40 + i).reverse();
+  //reverse this array
+
 
   const userId = getUserIdFromToken();
 
@@ -191,7 +194,7 @@ const Education = () => {
             className="border p-2 mb-2 w-full"
           >
             <option value="">Select Start Year</option>
-            {years.map((year) => (
+            {startYears.map((year) => (
               <option key={year} value={year}>
                 {year}
               </option>
@@ -204,7 +207,7 @@ const Education = () => {
             className="border p-2 mb-2 w-full"
           >
             <option value="">Select End Year</option>
-            {years.map((year) => (
+            {endYears.map((year) => (
               <option key={year} value={year}>
                 {year}
               </option>

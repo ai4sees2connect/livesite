@@ -191,14 +191,14 @@ const Profile = () => {
           </h1>
         )}
         {cityEdit && (
-          <div className="flex justify-center space-x-3 my-2">
+          <div className="flex justify-center space-x-3 my-2 ">
             <Select
               options={statesAndUTs}
               values={selectedCity}
               onChange={(value) => setSelectedCity(value)}
               placeholder="Select a location"
               searchable={true}
-              className="w-1/3 shadow-md "
+              className="w-[60%] md:w-1/3 shadow-md "
             />
             {selectedCity && (
               <button
@@ -213,7 +213,7 @@ const Profile = () => {
                 setCityEdit(false);
                 setSelectedCity(null);
               }}
-              className="bg-red-300 py-1 px-3 rounded-lg hover:bg-red-500"
+              className="bg-red-300  md:py-1 px-2 md:px-3 rounded-lg hover:bg-red-500"
             >
               Close
             </button>
@@ -258,24 +258,16 @@ const Profile = () => {
             </div>
           )}
           {expEdit && (
-            <div className="flex justify-center w-full">
+            <div className="flex justify-center space-x-3 my-2 w-full">
               <Select
                 options={nums}
                 values={exp}
                 onChange={(value) => setExp(value)}
                 placeholder="Experience in years"
                 searchable={true}
-                className="w-1/3 shadow-md "
+                className="w-[60%] md:w-1/3 shadow-md "
               />
-              <button
-                onClick={() => {
-                  setExpEdit(false);
-                  setExp(null);
-                }}
-                className="bg-red-300 py-1 px-3 rounded-lg hover:bg-red-500 mx-2"
-              >
-                Close
-              </button>
+              
               {exp && (
                 <button
                   onClick={handleSaveExp}
@@ -284,6 +276,15 @@ const Profile = () => {
                   Save
                 </button>
               )}
+              <button
+                onClick={() => {
+                  setExpEdit(false);
+                  setExp(null);
+                }}
+                className="bg-red-300  md:py-1 px-2 md:px-3  rounded-lg hover:bg-red-500 mx-2"
+              >
+                Close
+              </button>
             </div>
           )}
         </div>
@@ -309,7 +310,7 @@ const Profile = () => {
             </div>
           )}
           {genderEdit && (
-            <div className="flex justify-center w-full">
+            <div className="flex justify-center space-x-3 my-2 w-full">
               <Select
                 options={[
                   { value: "Male", label: "Male" },
@@ -320,17 +321,9 @@ const Profile = () => {
                 onChange={(value) => setGender(value)}
                 placeholder="select gender"
                 searchable={true}
-                className="w-1/3 shadow-md "
+                className="w-[60%] md:w-1/3 shadow-md "
               />
-              <button
-                onClick={() => {
-                  setGenderEdit(false);
-                  setGender(null);
-                }}
-                className="bg-red-300 py-1 px-3 rounded-lg hover:bg-red-500 mx-2"
-              >
-                Close
-              </button>
+              
               {gender && (
                 <button
                   onClick={handleSaveGender}
@@ -339,6 +332,15 @@ const Profile = () => {
                   Save
                 </button>
               )}
+              <button
+                onClick={() => {
+                  setGenderEdit(false);
+                  setGender(null);
+                }}
+                className="bg-red-300 md:py-1 px-2 md:px-3 rounded-lg hover:bg-red-500 mx-2"
+              >
+                Close
+              </button>
             </div>
           )}
         </div>
