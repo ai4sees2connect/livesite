@@ -7,7 +7,6 @@ import axios from "axios";
 import api from "../common/server_url";
 
 const PersonalProjects = () => {
-  const [clicked, setClicked] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -28,27 +27,39 @@ const PersonalProjects = () => {
           return;
         }
         setPersonalProjects(response.data);
-        setClicked(false);
       } catch (error) {
         console.error("Error fetching personal projects:", error);
       }
     };
     fetchPersonalProjects();
-  }, [userId, clicked]);
+  }, [userId]);
+
+  const validateDescription = (desc) => desc.trim().split(" ").length <= 100;
+  const validateLink = (url) => /^https:\/\/github\.com\/.+/.test(url);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!title || !description || !link) {
+      toast.error("Please enter all fields");
+      return;
+    }
+
+    if (!validateDescription(description)) {
+      toast.error("Description should be 100 words or less");
+      return;
+    }
+
+    if (!validateLink(link)) {
+      toast.error("Please enter a valid link");
+      return;
+    }
 
     const projectData = {
       title,
       description,
       link,
     };
-
-    if (!title || !description || !link) {
-      toast.error("Please enter all fields");
-      return;
-    }
 
     try {
       if (editIndex !== null) {
@@ -60,7 +71,6 @@ const PersonalProjects = () => {
         const updatedProjects = [...personalProjects];
         updatedProjects[editIndex] = response.data;
         setPersonalProjects(updatedProjects);
-        setIsEditing(false);
         toast.success("Project updated");
       } else {
         // Add new project entry
@@ -68,14 +78,10 @@ const PersonalProjects = () => {
           `${api}/student/profile/${userId}/personal-projects`,
           projectData
         );
-        setPersonalProjects([
-          ...personalProjects,
-          response.data.personalProjects,
-        ]);
+        setPersonalProjects([...personalProjects, response.data.personalProjects]);
         toast.success("Project added");
       }
 
-      setClicked(true);
       setTitle("");
       setDescription("");
       setLink("");
@@ -115,15 +121,15 @@ const PersonalProjects = () => {
         Personal Projects
         <button
           onClick={() => setIsEditing(true)}
-          className="text-blue-500  flex items-center space-x-1"
+          className="text-blue-500 flex items-center space-x-1"
         >
           <span>Add</span> 
+           <FontAwesomeIcon icon={faPlus} />
         </button>
       </h2>
 
       {isEditing ? (
         <form className="mt-4" onSubmit={handleSubmit}>
-          {/* Form Fields for Personal Projects */}
           <input
             type="text"
             value={title}
@@ -135,7 +141,7 @@ const PersonalProjects = () => {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description"
+            placeholder="Description (100 words max)"
             className="border p-2 mb-2 w-full"
             rows="4"
           />
@@ -144,7 +150,7 @@ const PersonalProjects = () => {
             type="text"
             value={link}
             onChange={(e) => setLink(e.target.value)}
-            placeholder="Project Link"
+            placeholder="GitHub Link"
             className="border p-2 mb-2 w-full"
           />
 

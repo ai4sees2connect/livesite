@@ -15,8 +15,6 @@ const Certificates = () => {
   const [description, setDescription] = useState("");
   const [certificates, setCertificates] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
   const userId = getUserIdFromToken();
 
@@ -26,11 +24,7 @@ const Certificates = () => {
         const response = await axios.get(
           `${api}/student/profile/${userId}/certificates`
         );
-        if (!response.data) {
-          toast.error("Sorry, no details found");
-          return;
-        }
-        setCertificates(response.data);
+        setCertificates(response.data || []);
         setClicked(false);
       } catch (error) {
         console.error("Error fetching certificates:", error);
@@ -42,6 +36,19 @@ const Certificates = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check that issueDate is a valid date (YYYY format)
+    if (!/^\d{4}$/.test(issueDate)) {
+      toast.error("Please enter a valid date (e.g., 2024)");
+      return;
+    }
+
+    // Check that description does not exceed 100 words
+    const wordCount = description.trim().split(/\s+/).length;
+    if (wordCount > 100) {
+      toast.error("Description should not exceed 100 words");
+      return;
+    }
+
     const certificateData = {
       title,
       issuingOrganization,
@@ -49,14 +56,8 @@ const Certificates = () => {
       description,
     };
 
-    if (!title || !issuingOrganization || !issueDate || !description) {
-      toast.error("Please enter all fields");
-      return;
-    }
-
     try {
       if (editIndex !== null) {
-        // Update existing certificate entry
         const response = await axios.put(
           `${api}/student/profile/${userId}/certificates/${editIndex}`,
           certificateData
@@ -64,10 +65,8 @@ const Certificates = () => {
         const updatedCertificates = [...certificates];
         updatedCertificates[editIndex] = response.data;
         setCertificates(updatedCertificates);
-        setIsEditing(false);
         toast.success("Details updated");
       } else {
-        // Add new certificate entry
         const response = await axios.post(
           `${api}/student/profile/${userId}/certificates`,
           certificateData
@@ -115,12 +114,13 @@ const Certificates = () => {
   return (
     <div className="container mx-auto p-4 border-b shadow-lg mt-[68px] w-full lg:w-2/3">
       <h2 className="text-xl font-semibold flex justify-between font-outfit">
-        Certificates
+        Certificates (Optional)
         <button
           onClick={() => setIsEditing(true)}
-          className="text-blue-500  flex items-center space-x-1"
+          className="text-blue-500 flex items-center space-x-1"
         >
-          <span>Add </span> 
+          <span>Add </span>
+          <FontAwesomeIcon icon={faPlus} />
         </button>
       </h2>
 
@@ -154,7 +154,7 @@ const Certificates = () => {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description"
+            placeholder="Description (up to 100 words)"
             className="border p-2 mb-2 w-full"
             rows="4"
           />

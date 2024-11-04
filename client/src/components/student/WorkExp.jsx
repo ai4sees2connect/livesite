@@ -139,6 +139,7 @@ const WorkExp = () => {
           className="text-blue-500  flex items-center space-x-1"
         >
           <span>Add</span> 
+            <FontAwesomeIcon icon={faPlus} />
         </button>
       </h2>
 
