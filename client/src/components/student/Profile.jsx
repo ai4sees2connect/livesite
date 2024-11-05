@@ -15,6 +15,7 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import { FaBuilding, FaPen, FaUser } from "react-icons/fa";
 import Resume from "./Resume";
+import statesAndCities from "../common/statesAndCities";
 
 const Profile = () => {
   const idFromToken = getUserIdFromToken();
@@ -48,51 +49,7 @@ const Profile = () => {
     { value: "9", label: "9" },
     { value: "10", label: "10+" },
   ];
-  const statesAndUTs = [
-    { value: "Andhra Pradesh", label: "Andhra Pradesh" },
-    { value: "Arunachal Pradesh", label: "Arunachal Pradesh" },
-    { value: "Assam", label: "Assam" },
-    { value: "Bihar", label: "Bihar" },
-    { value: "Chhattisgarh", label: "Chhattisgarh" },
-    { value: "Chennai", label: "Chennai" },
-    { value: "Goa", label: "Goa" },
-    { value: "Gujarat", label: "Gujarat" },
-    { value: "Haryana", label: "Haryana" },
-    { value: "Himachal Pradesh", label: "Himachal Pradesh" },
-    { value: "Jharkhand", label: "Jharkhand" },
-    { value: "Karnataka", label: "Karnataka" },
-    { value: "Kerala", label: "Kerala" },
-    { value: "Madhya Pradesh", label: "Madhya Pradesh" },
-    { value: "Maharashtra", label: "Maharashtra" },
-    { value: "Manipur", label: "Manipur" },
-    { value: "Meghalaya", label: "Meghalaya" },
-    { value: "Mizoram", label: "Mizoram" },
-    { value: "Nagaland", label: "Nagaland" },
-    { value: "Odisha", label: "Odisha" },
-    { value: "Punjab", label: "Punjab" },
-    { value: "Rajasthan", label: "Rajasthan" },
-    { value: "Sikkim", label: "Sikkim" },
-    { value: "Tamil Nadu", label: "Tamil Nadu" },
-    { value: "Telangana", label: "Telangana" },
-    { value: "Tripura", label: "Tripura" },
-    { value: "Uttar Pradesh", label: "Uttar Pradesh" },
-    { value: "Uttarakhand", label: "Uttarakhand" },
-    { value: "West Bengal", label: "West Bengal" },
-    {
-      value: "Andaman and Nicobar Islands",
-      label: "Andaman and Nicobar Islands",
-    },
-    { value: "Chandigarh", label: "Chandigarh" },
-    {
-      value: "Dadra and Nagar Haveli and Daman and Diu",
-      label: "Dadra and Nagar Haveli and Daman and Diu",
-    },
-    { value: "Lakshadweep", label: "Lakshadweep" },
-    { value: "Delhi", label: "Delhi" },
-    { value: "Puducherry", label: "Puducherry" },
-    { value: "Jammu and Kashmir", label: "Jammu and Kashmir" },
-    { value: "Ladakh", label: "Ladakh" },
-  ];
+  
 
   useEffect(() => {
     if (!token) {
@@ -302,14 +259,14 @@ const Profile = () => {
           </h1>
         )}
         {cityEdit && (
-          <div className="flex justify-center space-x-3 my-2 ">
+          <div className="flex justify-center space-x-3 my-2">
             <Select
-              options={statesAndUTs}
+              options={statesAndCities}
               values={selectedCity}
               onChange={(value) => setSelectedCity(value)}
               placeholder="Select a location"
               searchable={true}
-              className=" shadow-md "
+              className=" shadow-md w-[50%] lg:w-[70%]"
             />
             {selectedCity && (
               <button
