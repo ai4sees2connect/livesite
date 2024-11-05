@@ -238,7 +238,7 @@ const WorkExp = () => {
                 className="border  p-5 mb-2 w-[90%]"
               >
                 <div className="">
-// >>>>>>> main
+{/* // >>>>>>> main */}
                   <div className="flex justify-between">
                     <h3 className="text-lg font-semibold">
                       {work.role} at : {work.company}

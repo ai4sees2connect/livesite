@@ -357,10 +357,10 @@ const Education = () => {
 
   return (
 // <<<<<<< bapi
-//     <div className="container mx-auto p-4 border-b shadow-md mt-[68px] w-full lg:w-[80%]">
-// =======
-    <div className="container mx-auto p-4 border-b shadow-md mt-[68px] w-full lg:w-2/3">
-// >>>>>>> main
+    <div className="container mx-auto p-4 border-b shadow-md mt-[68px] w-full lg:w-[80%]">
+{/* // ======= */}
+    {/* // <div className="container mx-auto p-4 border-b shadow-md mt-[68px] w-full lg:w-2/3"> */}
+
       <h2 className="text-xl font-outfit font-semibold flex justify-between">
         Education
         <button
