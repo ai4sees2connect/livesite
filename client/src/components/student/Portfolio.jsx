@@ -330,6 +330,7 @@ const Portfolio = () => {
             value={linkType}
             onChange={(e) => setLinkType(e.target.value)}
             className="border p-2 mb-2 w-full"
+            required
           >
             <option value="">Select Link Type</option>
             <option value="GitHub">GitHub</option>
@@ -342,6 +343,7 @@ const Portfolio = () => {
             onChange={(e) => setLinkUrl(e.target.value)}
             placeholder="Link URL"
             className="border p-2 mb-2 w-full"
+            required
           />
           {urlError && <p className="text-red-500">{urlError}</p>}
 

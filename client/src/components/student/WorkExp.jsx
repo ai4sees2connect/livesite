@@ -158,6 +158,7 @@ const WorkExp = () => {
             onChange={(e) => setCompany(e.target.value)}
             placeholder="Company"
             className="border p-2 mb-2 w-full"
+            required
           />
           <input
             type="text"
@@ -165,6 +166,7 @@ const WorkExp = () => {
             onChange={(e) => setRole(e.target.value)}
             placeholder="Role"
             className="border p-2 mb-2 w-full"
+            required
           />
 
           <div className="flex items-center space-x-4">
@@ -174,6 +176,7 @@ const WorkExp = () => {
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="border p-2 mb-2 "
+              required
             />
           </div>
 
@@ -184,6 +187,7 @@ const WorkExp = () => {
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               className="border p-2 mb-2 "
+              required
             />
           </div>
 
@@ -194,6 +198,7 @@ const WorkExp = () => {
             onChange={(e) => setTypeOfWork(e.target.value)}
             placeholder="Type (e.g., Internship, Job)"
             className="border p-2 mb-2 w-full"
+            required
           >
             <option value="">Select Type</option>
             <option value="job">Job</option>
@@ -202,9 +207,10 @@ const WorkExp = () => {
           <textarea
             rows={5}
             value={description}
-            onChange={ handleDescriptionChange}
+            onChange={handleDescriptionChange}
             placeholder="Description"
             className="border p-2 mb-2 w-full"
+            required
           ></textarea>
           <div className="text-right text-sm text-gray-500">
             {500 - description.length} characters remaining
@@ -229,16 +235,9 @@ const WorkExp = () => {
         <div className="flex gap-5 flex-col items-center mt-10">
           {workExperiences.length > 0 ? (
             workExperiences.map((work, index) => (
-// <<<<<<< bapi
-//               <div key={index} className="border  p-5 mb-2 min-w-full">
-//                 <div>
-// =======
-              <div
-                key={index}
-                className="border  p-5 mb-2 w-[90%]"
-              >
+              <div key={index} className="border  p-5 mb-2 w-[90%]">
                 <div className="">
-{/* // >>>>>>> main */}
+
                   <div className="flex justify-between">
                     <h3 className="text-lg font-semibold">
                       {work.role} at : {work.company}
@@ -262,7 +261,9 @@ const WorkExp = () => {
                       Duration: {formatDate(work.startDate)} -{" "}
                       {formatDate(work.endDate)}
                     </p>
-                    <p className="w-[90%]  break-words">Details: {work.description}</p>
+                    <p className="w-[90%]  break-words">
+                      Details: {work.description}
+                    </p>
                   </div>
                 </div>
               </div>
