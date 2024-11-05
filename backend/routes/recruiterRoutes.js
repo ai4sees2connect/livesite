@@ -208,11 +208,7 @@ router.post(
       if (!recruiter) {
         return res.status(404).send("recruiter not found.");
       }
-      // const createdAt = new Date();
-      // const day = String(createdAt.getDate()).padStart(2, '0');
-
-      // const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      // const month = months[createdAt.getMonth()];
+    
 
       recruiter.companyLogo = {
         data: req.file.buffer, // The actual logo data
