@@ -194,7 +194,7 @@ const Education = () => {
             className="border p-2 mb-2 w-full"
           >
             <option value="">Start Year</option>
-            {years.map((year) => (
+            {startYears.map((year) => (
               <option key={year} value={year}>
                 {year}
               </option>
@@ -207,7 +207,7 @@ const Education = () => {
             className="border p-2 mb-2 w-full"
           >
             <option value="">End Year</option>
-            {years.map((year) => (
+            {endYears.map((year) => (
               <option key={year} value={year}>
                 {year}
               </option>
