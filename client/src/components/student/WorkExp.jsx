@@ -125,6 +125,13 @@ const WorkExp = () => {
     setCurrentEditIndex(null);
   };
 
+  const handleDescriptionChange = (e) => {
+    const value = e.target.value;
+    if (value.length <= 500) {
+      setDescription(value);
+    }
+  };
+
   const formatDate = (givenDate) => {
     const [year, month, day] = givenDate ? givenDate.split("-") : "";
     return `${day}-${month}-${year}`;
@@ -193,11 +200,15 @@ const WorkExp = () => {
             <option value="internship">Internship</option>
           </select>
           <textarea
+            rows={5}
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={ handleDescriptionChange}
             placeholder="Description"
             className="border p-2 mb-2 w-full"
           ></textarea>
+          <div className="text-right text-sm text-gray-500">
+            {500 - description.length} characters remaining
+          </div>
           <button
             type="submit"
             className="bg-blue-500 text-white px-4 py-2 mt-4"
@@ -218,8 +229,16 @@ const WorkExp = () => {
         <div className="flex gap-5 flex-col items-center mt-10">
           {workExperiences.length > 0 ? (
             workExperiences.map((work, index) => (
-              <div key={index} className="border  p-5 mb-2 min-w-full">
-                <div>
+// <<<<<<< bapi
+//               <div key={index} className="border  p-5 mb-2 min-w-full">
+//                 <div>
+// =======
+              <div
+                key={index}
+                className="border  p-5 mb-2 w-[90%]"
+              >
+                <div className="">
+// >>>>>>> main
                   <div className="flex justify-between">
                     <h3 className="text-lg font-semibold">
                       {work.role} at : {work.company}
@@ -237,13 +256,13 @@ const WorkExp = () => {
                       />
                     </div>
                   </div>
-                  <div className="text-gray-600">
+                  <div className="text-gray-600  max-w-[80%]">
                     <p> ({work.typeofwork})</p>
                     <p>
                       Duration: {formatDate(work.startDate)} -{" "}
                       {formatDate(work.endDate)}
                     </p>
-                    <p>Details: {work.description}</p>
+                    <p className="w-[90%]  break-words">Details: {work.description}</p>
                   </div>
                 </div>
               </div>
