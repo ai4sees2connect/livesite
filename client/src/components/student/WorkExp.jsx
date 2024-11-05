@@ -159,20 +159,26 @@ const WorkExp = () => {
             placeholder="Role"
             className="border p-2 mb-2 w-full"
           />
+
+          <div className="flex items-center space-x-4">
+          <label className="text-gray-500 mx-2 px-1">Start Date </label>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            placeholder="Start Date"
-            className="border p-2 mb-2 w-full"
+            className="border p-2 mb-2 "
           />
+          </div>
+
+          <div className="flex items-center space-x-4">
+          <label className="text-gray-500 mx-3 px-1">End Date</label>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            placeholder="End Date"
-            className="border p-2 mb-2 w-full"
+            className="border p-2 mb-2 "
           />
+          </div>
 
           {/* <input type="text" value={type} onChange={(e) => setType(e.target.value)} placeholder="Type (e.g., Internship, Job)" className="border p-2 mb-2 w-full" /> */}
           <select
