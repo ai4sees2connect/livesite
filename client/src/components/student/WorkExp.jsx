@@ -235,16 +235,9 @@ const WorkExp = () => {
         <div className="flex gap-5 flex-col items-center mt-10">
           {workExperiences.length > 0 ? (
             workExperiences.map((work, index) => (
-              // <<<<<<< bapi
-              //               <div key={index} className="border  p-5 mb-2 min-w-full">
-              //                 <div>
-              // =======
               <div key={index} className="border  p-5 mb-2 w-[90%]">
                 <div className="">
-// <<<<<<< bapi
-// =======
-{/* // >>>>>>> main */}
-// >>>>>>> main
+
                   <div className="flex justify-between">
                     <h3 className="text-lg font-semibold">
                       {work.role} at : {work.company}
