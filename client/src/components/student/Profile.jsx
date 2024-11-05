@@ -175,9 +175,16 @@ const Profile = () => {
   return !student ? (
     <Spinner />
   ) : (
-    <div className=" mx-auto p-4 mt-[68px] ">
-      <div className="border-b pb-3 ">
-        <h1 className="text-3xl font-bold mb-2 text-center">Your Profile</h1>
+    <div className=" mx-auto p-4 mt-[68px] flex flex-col lg:flex-row max-w-[1170px]">
+      <div className="border-b pb-3 mt-10 text-center border-2 p-5 rounded-lg h-full w-full lg:w-[280px]">
+        <div className="flex justify-center">
+          <img
+            className="h-14 w-14 rounded-full bg-green-300 border-2 mb-3"
+            src=""
+            alt=""
+          />
+        </div>
+        {/* <h1 className="text-2xl font-bold mb-2 text-center">Your Profile</h1> */}
         <h1 className=" text-xl capitalize text-center text-gray-600">
           {student.firstname} {student.lastname}
         </h1>
@@ -185,9 +192,9 @@ const Profile = () => {
         {!student.homeLocation && !cityEdit && (
           <h1
             onClick={() => setCityEdit(true)}
-            className="text-red-500 text-center hover:cursor-pointer"
+            className="text-blue-500 underline text-center hover:cursor-pointer"
           >
-            Add City
+            Select Your City
           </h1>
         )}
         {cityEdit && (
@@ -198,7 +205,7 @@ const Profile = () => {
               onChange={(value) => setSelectedCity(value)}
               placeholder="Select a location"
               searchable={true}
-              className="w-[60%] md:w-1/3 shadow-md "
+              className=" shadow-md "
             />
             {selectedCity && (
               <button
@@ -237,9 +244,9 @@ const Profile = () => {
           {!expEdit && !student.yearsOfExp && (
             <h1
               onClick={() => setExpEdit(true)}
-              className="text-red-500 text-center hover:cursor-pointer"
+              className="text-blue-500 underline text-center hover:cursor-pointer"
             >
-              Add years of experience
+              Add Job experiences
             </h1>
           )}
           {!expEdit && student.yearsOfExp && (
@@ -265,9 +272,9 @@ const Profile = () => {
                 onChange={(value) => setExp(value)}
                 placeholder="Experience in years"
                 searchable={true}
-                className="w-[60%] md:w-1/3 shadow-md "
+                className="shadow-md "
               />
-              
+
               {exp && (
                 <button
                   onClick={handleSaveExp}
@@ -293,9 +300,9 @@ const Profile = () => {
           {!genderEdit && !student.gender && (
             <h1
               onClick={() => setGenderEdit(true)}
-              className="text-red-500 text-center hover:cursor-pointer"
+              className="text-blue-500 underline text-center hover:cursor-pointer"
             >
-              Add gender
+              Select Your gender
             </h1>
           )}
           {!genderEdit && (
@@ -321,9 +328,9 @@ const Profile = () => {
                 onChange={(value) => setGender(value)}
                 placeholder="select gender"
                 searchable={true}
-                className="w-[60%] md:w-1/3 shadow-md "
+                className="shadow-md "
               />
-              
+
               {gender && (
                 <button
                   onClick={handleSaveGender}
@@ -344,30 +351,31 @@ const Profile = () => {
             </div>
           )}
         </div>
+        <section className="mb-8">
+          <Resume />
+        </section>
       </div>
 
-      <section className="mb-8">
-        <Resume/>
-      </section>
-
-      <section className="mb-8">
-        <Education />
-      </section>
-      <section className="mb-8">
-        <WorkExp />
-      </section>
-      <section className="mb-8">
-        <Certificates />
-      </section>
-      <section className="mb-8">
-        <PersonalProjects />
-      </section>
-      <section className="mb-8">
-        <Skills skillSet={skills} />
-      </section>
-      <section className="mb-8">
-        <Portfolio />
-      </section>
+      <div className="flex-1">
+        <section className="mb-8">
+          <Education />
+        </section>
+        <section className="mb-8">
+          <WorkExp />
+        </section>
+        <section className="mb-8">
+          <Certificates />
+        </section>
+        <section className="mb-8">
+          <PersonalProjects />
+        </section>
+        <section className="mb-8">
+          <Skills skillSet={skills} />
+        </section>
+        <section className="mb-8">
+          <Portfolio />
+        </section>
+      </div>
     </div>
   );
 };

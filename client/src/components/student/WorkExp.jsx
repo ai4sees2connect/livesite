@@ -131,15 +131,15 @@ const WorkExp = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 border-b shadow-lg mt-[68px] lg:w-2/3">
+    <div className="container mx-auto p-4 border-b shadow-lg mt-[68px] w-full lg:w-[80%]">
       <h2 className="text-xl font-semibold flex justify-between font-outfit">
         Work Experience / Internship
         <button
           onClick={() => setIsEditing(true)}
           className="text-blue-500  flex items-center space-x-1"
         >
-          <span>Add</span> 
-            <FontAwesomeIcon icon={faPlus} />
+          <span>Add</span>
+          <FontAwesomeIcon icon={faPlus} />
         </button>
       </h2>
 
@@ -161,23 +161,23 @@ const WorkExp = () => {
           />
 
           <div className="flex items-center space-x-4">
-          <label className="text-gray-500 mx-2 px-1">Start Date </label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="border p-2 mb-2 "
-          />
+            <label className="text-gray-500 mx-2 px-1">Start Date </label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="border p-2 mb-2 "
+            />
           </div>
 
           <div className="flex items-center space-x-4">
-          <label className="text-gray-500 mx-3 px-1">End Date</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="border p-2 mb-2 "
-          />
+            <label className="text-gray-500 mx-3 px-1">End Date</label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="border p-2 mb-2 "
+            />
           </div>
 
           {/* <input type="text" value={type} onChange={(e) => setType(e.target.value)} placeholder="Type (e.g., Internship, Job)" className="border p-2 mb-2 w-full" /> */}
@@ -218,10 +218,7 @@ const WorkExp = () => {
         <div className="flex gap-5 flex-col items-center mt-10">
           {workExperiences.length > 0 ? (
             workExperiences.map((work, index) => (
-              <div
-                key={index}
-                className="border  p-5 mb-2 min-w-full"
-              >
+              <div key={index} className="border  p-5 mb-2 min-w-full">
                 <div>
                   <div className="flex justify-between">
                     <h3 className="text-lg font-semibold">
