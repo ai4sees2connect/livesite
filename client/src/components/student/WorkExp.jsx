@@ -125,6 +125,13 @@ const WorkExp = () => {
     setCurrentEditIndex(null);
   };
 
+  const handleDescriptionChange = (e) => {
+    const value = e.target.value;
+    if (value.length <= 500) {
+      setDescription(value);
+    }
+  };
+
   const formatDate = (givenDate) => {
     const [year, month, day] = givenDate ? givenDate.split("-") : "";
     return `${day}-${month}-${year}`;
@@ -138,8 +145,8 @@ const WorkExp = () => {
           onClick={() => setIsEditing(true)}
           className="text-blue-500  flex items-center space-x-1"
         >
-          <span>Add</span> 
-            <FontAwesomeIcon icon={faPlus} />
+          <span>Add</span>
+          <FontAwesomeIcon icon={faPlus} />
         </button>
       </h2>
 
@@ -161,23 +168,23 @@ const WorkExp = () => {
           />
 
           <div className="flex items-center space-x-4">
-          <label className="text-gray-500 mx-2 px-1">Start Date </label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="border p-2 mb-2 "
-          />
+            <label className="text-gray-500 mx-2 px-1">Start Date </label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="border p-2 mb-2 "
+            />
           </div>
 
           <div className="flex items-center space-x-4">
-          <label className="text-gray-500 mx-3 px-1">End Date</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="border p-2 mb-2 "
-          />
+            <label className="text-gray-500 mx-3 px-1">End Date</label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="border p-2 mb-2 "
+            />
           </div>
 
           {/* <input type="text" value={type} onChange={(e) => setType(e.target.value)} placeholder="Type (e.g., Internship, Job)" className="border p-2 mb-2 w-full" /> */}
@@ -193,11 +200,15 @@ const WorkExp = () => {
             <option value="internship">Internship</option>
           </select>
           <textarea
+            rows={5}
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={ handleDescriptionChange}
             placeholder="Description"
             className="border p-2 mb-2 w-full"
           ></textarea>
+          <div className="text-right text-sm text-gray-500">
+            {500 - description.length} characters remaining
+          </div>
           <button
             type="submit"
             className="bg-blue-500 text-white px-4 py-2 mt-4"
@@ -220,9 +231,9 @@ const WorkExp = () => {
             workExperiences.map((work, index) => (
               <div
                 key={index}
-                className="border  p-5 mb-2 min-w-full"
+                className="border  p-5 mb-2 w-[90%]"
               >
-                <div>
+                <div className="">
                   <div className="flex justify-between">
                     <h3 className="text-lg font-semibold">
                       {work.role} at : {work.company}
@@ -240,13 +251,13 @@ const WorkExp = () => {
                       />
                     </div>
                   </div>
-                  <div className="text-gray-600">
+                  <div className="text-gray-600  max-w-[80%]">
                     <p> ({work.typeofwork})</p>
                     <p>
                       Duration: {formatDate(work.startDate)} -{" "}
                       {formatDate(work.endDate)}
                     </p>
-                    <p>Details: {work.description}</p>
+                    <p className="w-[90%]  break-words">Details: {work.description}</p>
                   </div>
                 </div>
               </div>
