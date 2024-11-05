@@ -78,7 +78,10 @@ const PersonalProjects = () => {
           `${api}/student/profile/${userId}/personal-projects`,
           projectData
         );
-        setPersonalProjects([...personalProjects, response.data.personalProjects]);
+        setPersonalProjects([
+          ...personalProjects,
+          response.data.personalProjects,
+        ]);
         toast.success("Project added");
       }
 
@@ -116,15 +119,15 @@ const PersonalProjects = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 border-b shadow-lg mt-[68px] w-full lg:w-2/3">
+    <div className="container mx-auto p-4 border-b shadow-lg mt-[68px] w-full lg:w-[80%]">
       <h2 className="text-xl font-semibold flex justify-between font-outfit">
         Personal Projects
         <button
           onClick={() => setIsEditing(true)}
           className="text-blue-500 flex items-center space-x-1"
         >
-          <span>Add</span> 
-           <FontAwesomeIcon icon={faPlus} />
+          <span>Add</span>
+          <FontAwesomeIcon icon={faPlus} />
         </button>
       </h2>
 
@@ -171,10 +174,7 @@ const PersonalProjects = () => {
         <div className="flex flex-col items-center mt-10">
           {personalProjects.length > 0 ? (
             personalProjects.map((project, index) => (
-              <div
-                key={index}
-                className="border p-5 mb-2 min-w-full"
-              >
+              <div key={index} className="border p-5 mb-2 min-w-full">
                 <div>
                   <div className="flex justify-between">
                     <h3 className="text-lg font-semibold">{project.title}</h3>

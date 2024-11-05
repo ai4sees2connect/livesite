@@ -22,6 +22,14 @@ const Education = () => {
   const [editIndex, setEditIndex] = useState(null);
   const currentYear = new Date().getFullYear();
   const startYears = Array.from({ length: 50 }, (_, i) => currentYear - i);
+// <<<<<<< bapi
+//   const endYears = Array.from(
+//     { length: 50 },
+//     (_, i) => currentYear - 40 + i
+//   ).reverse();
+//   //reverse this array
+
+// =======
   const endYears = Array.from({ length: 50 }, (_, i) => currentYear - 40 + i).reverse();
   //reverse this array
 
@@ -213,6 +221,7 @@ const Education = () => {
   
 
 
+// >>>>>>> main
   const userId = getUserIdFromToken();
 
   useEffect(() => {
@@ -347,14 +356,18 @@ const Education = () => {
   console.log(fieldOfStudy);
 
   return (
+// <<<<<<< bapi
+//     <div className="container mx-auto p-4 border-b shadow-md mt-[68px] w-full lg:w-[80%]">
+// =======
     <div className="container mx-auto p-4 border-b shadow-md mt-[68px] w-full lg:w-2/3">
+// >>>>>>> main
       <h2 className="text-xl font-outfit font-semibold flex justify-between">
         Education
         <button
           onClick={() => setIsEditing(true)}
           className="text-blue-500  flex items-center space-x-1"
         >
-          <span>Add</span>   <FontAwesomeIcon icon={faPlus} />
+          <span>Add</span> <FontAwesomeIcon icon={faPlus} />
         </button>
       </h2>
 
@@ -475,9 +488,7 @@ const Education = () => {
                     </div>
                   </div>
                   <div className="text-gray-600">
-                    <p>
-                      {edu.fieldOfStudy}
-                    </p>
+                    <p>{edu.fieldOfStudy}</p>
                     <p>{edu.institution}</p>
                     <p>Start Year: {edu.startYear}</p>
                     <p>Year of Completion: {edu.endYear}</p>

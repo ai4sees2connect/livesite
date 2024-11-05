@@ -2,7 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCloudArrowUp, faCheck, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCloudArrowUp,
+  faCheck,
+  faArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
 import { FaTrash, FaDownload } from "react-icons/fa";
 import getUserIdFromToken from "./auth/authUtils.js";
 import { useParams } from "react-router-dom";
@@ -48,7 +52,7 @@ const Resume = () => {
         const contentDisposition = response.headers["content-disposition"];
         const createdAt = response.headers["resume-created-at"];
         if (createdAt) setResumeCreatedAt(new Date(createdAt));
-        
+
         if (contentDisposition) {
           const matches = /filename="([^"]*)"/.exec(contentDisposition);
           if (matches) setResumeFilename(matches[1]);
@@ -86,12 +90,15 @@ const Resume = () => {
       return;
     }
 
-    if (!["application/pdf", "application/msword"].includes(selectedFile.type)) {
+    if (
+      !["application/pdf", "application/msword"].includes(selectedFile.type)
+    ) {
       toast.error("Only PDF and DOC files are supported.");
       return;
     }
 
-    if (selectedFile.size > 5 * 1024 * 1024) { // 5 MB size limit
+    if (selectedFile.size > 5 * 1024 * 1024) {
+      // 5 MB size limit
       toast.error("File size should not exceed 5 MB.");
       return;
     }
@@ -114,7 +121,7 @@ const Resume = () => {
   };
 
   return (
-    <div className="w-full lg:w-[60%] h-[70%] mx-auto p-4 border-b ">
+    <div className="w-full mx-auto p-4">
       <h1 className="text-xl font-outfit font-semibold">Resume</h1>
       <h2 className="text-gray-700">
         Your resume is the first impression you make on potential employers.
@@ -141,7 +148,7 @@ const Resume = () => {
         )}
       </div>
 
-      <div className="flex flex-col items-center space-y-4 py-4 w-[60%] mx-auto">
+      <div className="flex flex-col items-center space-y-3 py-3 mx-auto">
         <input
           ref={fileInputRef}
           type="file"
@@ -151,12 +158,14 @@ const Resume = () => {
         />
         <button
           onClick={handleFileClick}
-          className="border-2 border-blue-500 text-blue-500 font-semibold rounded-full px-2 py-1"
+          className="border-2 border-blue-500 text-blue-500 font-semibold rounded-full px-2 py-1 hover:bg-green-500 hover:text-white"
         >
           Upload Resume
         </button>
         <div className="text-gray-600">Supported formats: PDF, DOC</div>
-        {!resumeFilename && <div className="text-red-400">No resume uploaded</div>}
+        {!resumeFilename && (
+          <div className="text-red-400">No resume uploaded</div>
+        )}
       </div>
       <ToastContainer />
     </div>
