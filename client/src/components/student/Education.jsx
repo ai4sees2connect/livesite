@@ -143,7 +143,7 @@ const Education = () => {
           onClick={() => setIsEditing(true)}
           className="text-blue-500  flex items-center space-x-1"
         >
-          <span>Add</span> 
+          <span>Add</span>   <FontAwesomeIcon icon={faPlus} />
         </button>
       </h2>
 
@@ -193,8 +193,8 @@ const Education = () => {
             onChange={(e) => setStartYear(e.target.value)}
             className="border p-2 mb-2 w-full"
           >
-            <option value="">Select Start Year</option>
-            {startYears.map((year) => (
+            <option value="">Start Year</option>
+            {years.map((year) => (
               <option key={year} value={year}>
                 {year}
               </option>
@@ -206,8 +206,8 @@ const Education = () => {
             onChange={(e) => setEndYear(e.target.value)}
             className="border p-2 mb-2 w-full"
           >
-            <option value="">Select End Year</option>
-            {endYears.map((year) => (
+            <option value="">End Year</option>
+            {years.map((year) => (
               <option key={year} value={year}>
                 {year}
               </option>
