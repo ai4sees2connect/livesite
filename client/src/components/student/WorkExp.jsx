@@ -241,6 +241,10 @@ const WorkExp = () => {
               // =======
               <div key={index} className="border  p-5 mb-2 w-[90%]">
                 <div className="">
+// <<<<<<< bapi
+// =======
+{/* // >>>>>>> main */}
+// >>>>>>> main
                   <div className="flex justify-between">
                     <h3 className="text-lg font-semibold">
                       {work.role} at : {work.company}

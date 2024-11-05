@@ -175,8 +175,8 @@ const Profile = () => {
   return !student ? (
     <Spinner />
   ) : (
-    <div className=" mx-auto p-4 mt-[68px] flex flex-col lg:flex-row max-w-[1170px]">
-      <div className="border-b pb-3 mt-10 text-center border-2 p-5 rounded-lg h-full w-full lg:w-[280px]">
+    <div className=" mx-auto p-4 mt-[48px] flex flex-col lg:flex-row lg:w-full  ">
+      <div className="border-b  pb-3 mt-10 text-center border-2 p-5 rounded-lg h-full w-full lg:w-[380px]">
         <div className="flex justify-center">
           <img
             className="h-14 w-14 rounded-full bg-green-300 border-2 mb-3"
@@ -356,7 +356,7 @@ const Profile = () => {
         </section>
       </div>
 
-      <div className="flex-1">
+      <div className="flex-1 lg:w-[30%]  overflow-y-auto h-screen">
         <section className="mb-8">
           <Education />
         </section>
