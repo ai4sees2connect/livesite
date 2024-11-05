@@ -30,6 +30,11 @@ const studentSchema = new mongoose.Schema(
       type: String,
       
     },
+    profilePic: {
+      data: Buffer,        
+      contentType: String, 
+      filename: String,     
+    },
     resume: {
       data: Buffer, // Store the file data as binary
       contentType: String, // Store the MIME type

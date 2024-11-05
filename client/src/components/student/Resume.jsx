@@ -122,7 +122,7 @@ const Resume = () => {
 
   return (
     <div className="w-full mx-auto p-4">
-      <h1 className="text-xl font-outfit ">Resume</h1>
+      <h1 className="text-xl  ">Resume</h1>
       <h2 className="text-gray-700 my-2">
         Your resume is the first impression you make on potential employers.
         Craft it carefully to secure your desired job or internship.

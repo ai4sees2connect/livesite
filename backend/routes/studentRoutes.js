@@ -323,6 +323,65 @@ router.get('/details', async (req, res) => {
   }
 });
 
+router.post(
+  "/upload-picture/:studentId",
+  upload.single("profPicture"),
+  async (req, res) => {
+    try {
+      // Find the student by ID and update their document with the resume file
+      const student = await Student.findById(req.params.studentId);
+      if (!student) {
+        return res.status(404).send("student not found.");
+      }
+    
+
+      student.profilePic = {
+        data: req.file.buffer, // The actual logo data
+        contentType: req.file.mimetype, // The content type (e.g., image/jpeg, image/png)
+        filename: req.file.originalname, // The original filename
+      };
+      await student.save();
+
+      res.send("profilePic uploaded and saved successfully.");
+    } catch (error) {
+      console.error("Error saving profilePic:", error);
+      res.status(500).send("Error saving profilePic.");
+    }
+  }
+);
+
+router.get("/get-picture/:studentId", async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.studentId);
+    if (!student || !student.profilePic || !student.profilePic.data) {
+      return res.status(404).json({ message: "profilePic not found." });
+    }
+
+    res.set("Content-Type", student.profilePic.contentType);
+    res.status(200).send(student.profilePic.data);
+    // reres.status(200).send('success');
+  } catch (error) {
+    console.error("Error fetching profilePic:", error);
+    res.status(500).send("Error fetching profilePic.");
+  }
+});
+
+router.delete("/delete-picture/:studentId", async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.studentId);
+    if (!student)
+      return res.status(404).json({ message: "Student not found" });
+    await Student.updateOne(
+      { _id: req.params.studentId },
+      { $unset: { profilePic: "" } } // This removes the companyLogo field entirely
+    );
+    return res.status(200).json({ message: "Picture deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("server error", error);
+  }
+});
+
 router.put('/api/:studentId/save-location',async(req,res)=>{
   const {studentId}=req.params;
   const {homeLocation,yearsOfExp}=req.body;

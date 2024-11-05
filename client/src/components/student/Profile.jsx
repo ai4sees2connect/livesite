@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Education from "./Education";
 import getUserIdFromToken from "./auth/authUtils";
 import { useNavigate, useParams } from "react-router-dom";
@@ -13,11 +13,12 @@ import axios from "axios";
 import api from "../common/server_url";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import { FaPen } from "react-icons/fa";
+import { FaBuilding, FaPen, FaUser } from "react-icons/fa";
 import Resume from "./Resume";
 
 const Profile = () => {
   const idFromToken = getUserIdFromToken();
+  const fileInputRef = useRef(null);
   const { userId } = useParams();
   const navigate = useNavigate();
   const { logout, student } = useStudent();
@@ -30,6 +31,10 @@ const Profile = () => {
   const [exp, setExp] = useState(null);
   const [genderEdit, setGenderEdit] = useState(false);
   const [gender, setGender] = useState(null);
+
+  const [profPicture, setProfilePic] = useState(null);
+  const [picUrl, setPicUrl] = useState(null);
+
   const nums = [
     { value: "fresher", label: "fresher" },
     { value: "1", label: "1" },
@@ -120,6 +125,100 @@ const Profile = () => {
     fetchSkills();
   }, [userId, idFromToken, token]);
 
+  useEffect(() => {
+    const fetchPicture = async () => {
+      try {
+        const response = await axios.get(`${api}/student/get-picture/${idFromToken}`, {
+          responseType: 'blob' // Fetching as a blob for image rendering
+        });
+        console.log('response', response.status)
+
+        const picBlob = new Blob([response.data], { type: response.headers['content-type'] });
+        const Url = URL.createObjectURL(picBlob);
+        // console.log('picUrl', pic);
+        // console.log('logo', logo)
+        setPicUrl(Url);
+
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.log('Picture not found');
+          setPicUrl(null); // Set the logo URL to null if not found
+        } else {
+          console.error('Error fetching Picture:', error);
+        }
+      };
+    }
+    fetchPicture();
+
+    return () => {
+      if (!picUrl) {
+        URL.revokeObjectURL(picUrl);
+        console.log('Blob URL revoked on cleanup:', picUrl);  // Optional: Add a log to confirm revocation
+      }
+    };
+  }, [profPicture]);
+
+  const handleFileChange = (e) => {
+    setProfilePic(e.target.files[0]);
+  }
+
+  const handleFileClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handlePictureUpload = async (e) => {
+    // if (!logo) return;
+    const selectedPicture = e.target.files[0];
+    if (!selectedPicture) {
+      toast.error("Please select a Picture to upload.");
+      return;
+    }
+
+
+    const formData = new FormData();
+    formData.append('profPicture', selectedPicture);
+
+    try {
+      // setUploading(true);
+      const response = await axios.post(`${api}/student/upload-picture/${idFromToken}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`, // Include token if needed for authorization
+        },
+      });
+      // setUploading(false);
+      console.log('profPicture uploaded successfully', response.data);
+      toast.success('Profile Picture uploaded successfully');
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+
+    } catch (error) {
+      // setUploading(false);
+      console.error('Error uploading profPicture', error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`${api}/student/delete-picture/${idFromToken}`);
+
+      if (picUrl) {
+        URL.revokeObjectURL(picUrl);
+        console.log('Blob URL revoked:', picUrl);
+      }
+
+      setProfilePic(null);
+      setPicUrl(null);
+      toast.error('picture deleted successfully');
+    } catch (error) {
+      console.error('Error deleting picture', error);
+    }
+  }
+
+
+
   const handleSave = async () => {
     const cityName = selectedCity.value;
 
@@ -171,21 +270,26 @@ const Profile = () => {
 
   console.log("this is exp", exp);
   console.log("this is student", student);
+  console.log(picUrl);
 
   return !student ? (
     <Spinner />
   ) : (
     <div className=" mx-auto p-4 mt-[48px] flex flex-col lg:flex-row lg:w-full  ">
       <div className="border-b  pb-3 mt-10 text-center border-2 p-5 rounded-lg h-full w-full lg:w-[380px]">
-        <div className="flex justify-center">
-          <img
-            className="h-14 w-14 rounded-full bg-green-300 border-2 mb-3"
-            src=""
-            alt=""
-          />
+        <div className="flex justify-center ">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center ">
+            {picUrl? (<img src={picUrl}/>):(<div className="w-14 h-14 rounded-full border flex items-center justify-center border-black"><FaUser className="w-9 h-9 "/></div>)}
+          </div>
+        </div>
+        {!picUrl && <button className="text-blue-500" onClick={handleFileClick}>Upload profile picture</button>}
+        <input ref={fileInputRef} onChange={handlePictureUpload} type="file" className='my-2 hover:cursor-pointer w-full hidden' />
+        <div className="flex flex-col">
+        {picUrl && <button className="text-blue-500 " onClick={handleFileClick}>Change profile picture</button>}
+        {picUrl && <button className="text-red-400 mb-3" onClick={handleDelete}>Delete picture</button>}
         </div>
         {/* <h1 className="text-2xl font-bold mb-2 text-center">Your Profile</h1> */}
-        <h1 className=" text-xl capitalize text-center text-gray-600">
+        <h1 className=" text-xl capitalize text-center ">
           {student.firstname} {student.lastname}
         </h1>
         <h1 className=" text-gray-600 text-center">{student.email}</h1>

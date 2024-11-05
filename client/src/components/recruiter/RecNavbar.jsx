@@ -46,7 +46,7 @@ const RecNavbar = () => {
         {/* Logo */}
         <Link to={`/recruiter/dashboard/${userId}`}>
           <div className="inline-flex items-center ">
-            <img src={internsnestLogo} alt="" className="h-16 lg:h-[60px] w-24 lg:w-20" />
+            <img src={internsnestLogo} alt="" className="h-16 lg:h-[60px] w-24 lg:w-16" />
           </div>
         </Link>
 
