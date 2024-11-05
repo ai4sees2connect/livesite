@@ -139,6 +139,7 @@ const PersonalProjects = () => {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Project Title"
             className="border p-2 mb-2 w-full"
+            required
           />
 
           <textarea
@@ -147,6 +148,7 @@ const PersonalProjects = () => {
             placeholder="Description (100 words max)"
             className="border p-2 mb-2 w-full"
             rows="4"
+            required
           />
 
           <input
@@ -155,6 +157,7 @@ const PersonalProjects = () => {
             onChange={(e) => setLink(e.target.value)}
             placeholder="GitHub Link"
             className="border p-2 mb-2 w-full"
+            required
           />
 
           <button

@@ -133,6 +133,7 @@ const Certificates = () => {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Certificate Title"
             className="border p-2 mb-2 w-full"
+            required
           />
 
           <input
@@ -141,6 +142,7 @@ const Certificates = () => {
             onChange={(e) => setIssuingOrganization(e.target.value)}
             placeholder="Issuing Organization"
             className="border p-2 mb-2 w-full"
+            required
           />
 
           <input
@@ -149,6 +151,7 @@ const Certificates = () => {
             onChange={(e) => setIssueDate(e.target.value)}
             placeholder="Issue Date (e.g., 2024)"
             className="border p-2 mb-2 w-full"
+            required
           />
 
           <textarea
@@ -157,6 +160,7 @@ const Certificates = () => {
             placeholder="Description (up to 100 words)"
             className="border p-2 mb-2 w-full"
             rows="4"
+            required
           />
 
           <button

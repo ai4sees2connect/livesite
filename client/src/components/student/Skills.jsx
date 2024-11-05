@@ -128,6 +128,7 @@ const Skills = ({ skillSet }) => {
             options={skillSet}
             placeholder="Select or type skills"
             className="w-full mb-3 shadow-md"
+            required
           />
           <select
             type="text"
@@ -135,6 +136,7 @@ const Skills = ({ skillSet }) => {
             onChange={(e) => setProficiency(e.target.value)}
             placeholder="Skill Name"
             className="border p-2 mb-2 w-full shadow-md"
+            required
           >
             <option value="">Select Proficiency</option>
             <option value="Beginner">Beginner</option>
