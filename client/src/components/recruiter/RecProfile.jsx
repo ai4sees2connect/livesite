@@ -398,7 +398,7 @@ const RecProfile = () => {
               </select>
             </div>
 
-            {/* Phone Number Input */}
+            {/* Phone Number */}
             <div className="flex items-center">
               <label className="text-gray-500 mr-2">Phone</label>
               <input
