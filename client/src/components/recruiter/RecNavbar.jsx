@@ -94,7 +94,7 @@ const RecNavbar = () => {
 
                 <li className={`py-2 px-4 hover:text-blue-500 ${navbarState === 'Profile' && 'text-blue-500'}`}>
                   <NavLink to={`/recruiter/profile/${userId}`} className={({ isActive }) =>
-                    `hover:text-blue-500 p-2 md:p-5 ${isActive ? 'text-blue-500' : ''}`
+                    `hover:text-blue-500 ${isActive ? 'text-blue-500' : ''}`
                   }>Profile</NavLink>
                 </li>
                 <li className={`py-2 px-4 hover:text-blue-500 `}>

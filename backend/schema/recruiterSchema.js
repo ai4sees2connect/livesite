@@ -51,6 +51,10 @@ const recruiterSchema = new mongoose.Schema({
   phone: {
     type: Number,
   },
+  countryCode:{
+    type:String,
+    required: true
+  },
   password: { 
     type: String,
   },

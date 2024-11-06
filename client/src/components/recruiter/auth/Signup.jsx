@@ -28,6 +28,7 @@ function Signup() {
   const [phoneError, setPhoneError] = useState("");
   const navigate = useNavigate();
   const userId = getUserIdFromToken();
+  const [countryCode, setCountryCode] = useState('+91');
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -60,7 +61,12 @@ function Signup() {
       setEmailError("The email does not look right. Try again.");
       return;
     }
+    if (phone.length < 10){
+      setPhoneError("Please enter a valid phone number.");
+      return;
+    }
     setEmailError("");
+    console.log('new phone no is',countryCode+' '+ phone);
     try {
       // Send a POST request to the backend
       const response = await axios.post(`${api}/recruiter/signup`, {
@@ -68,6 +74,7 @@ function Signup() {
         lastname,
         email,
         phone,
+        countryCode,
         password,
       });
 
@@ -110,6 +117,12 @@ function Signup() {
     } catch (error) {
       console.error("Error signing in with Google", error);
     }
+  };
+
+ 
+
+  const handleCountryChange = (e) => {
+    setCountryCode(e.target.value);
   };
 
   return (
@@ -198,7 +211,7 @@ function Signup() {
                 )}
               </div>
 
-              <div className="flex flex-col items-center">
+              {/* <div className="flex flex-col items-center">
                 <input
                   type="number"
                   id="phone"
@@ -213,6 +226,41 @@ function Signup() {
                   className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                   required
                 />
+                {phoneError && (
+                  <p className="text-red-500 text-left w-full">{phoneError}</p>
+                )}
+              </div> */}
+              <div className="flex flex-col items-start ">
+                <div className="flex  justify-start md:flex-row gap-2 mt-2">
+                  {/* Country Code Dropdown */}
+                  <div className="flex items-center">
+                    <select
+                      value={countryCode}
+                      onChange={handleCountryChange}
+                      className="text-sm outline-none rounded-lg h-full border border-gray-300 p-2"
+                    >
+                      <option value="+1">US (+1)</option>
+                      <option value="+91">IND (+91)</option>
+                      <option value="+44">EU (+44)</option>
+                    </select>
+                  </div>
+
+                  {/* Phone Number */}
+                  <div className="flex items-center">
+                   
+                    <input
+                      type="number"
+                      className="w-full p-2 border border-gray-300 rounded-lg outline-none"
+                      placeholder="Phone number"
+                      onChange={(e) => {
+                        setPhone(e.target.value);
+                        if (e.target.value.trim().length < 10) {
+                          setPhoneError("Enter a valid phone number");
+                        } else setPhoneError("");
+                      }}
+                    />
+                  </div>
+                </div>
                 {phoneError && (
                   <p className="text-red-500 text-left w-full">{phoneError}</p>
                 )}
@@ -262,9 +310,8 @@ function Signup() {
 
               <button
                 type="submit"
-                className={`w-full py-2 bg-[rgb(129,41,217)] border-none h-[50px] text-white rounded-full ${
-                  !isFormValid ? `bg-[rgb(224,226,217)]` : ""
-                } `}
+                className={`w-full py-2 bg-[rgb(129,41,217)] border-none h-[50px] text-white rounded-full ${!isFormValid ? `bg-[rgb(224,226,217)]` : ""
+                  } `}
                 disabled={!isFormValid}
               >
                 Create Account
