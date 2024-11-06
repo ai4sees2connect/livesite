@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import internsnestlogo2 from '../../images/internsnest_pic2.jpg'
 import internsnestLogo from '../../images/internnest_logo.png'
@@ -55,17 +55,39 @@ const Navbar = () => {
         <div className={`hidden sm:flex items-center sm:space-x-4 text-sm
         md:text-base lg:space-x-8 text-gray-800 lg:tracking-wider font-semibold `}>
 
-           <Link to={`/student/dashboard/${userId}`} onClick={() => setNavbarState(null)} className={`hover:text-blue-500 p-2 md:p-5 ${!navbarState && 'text-blue-500'}`}>Home</Link>
+          <NavLink
+            to={`/student/dashboard/${userId}`}
+            className={({ isActive }) =>
+              `hover:text-blue-500 p-2 md:p-5 ${isActive ? 'text-blue-500' : ''}`
+            }
+          >
+            Home
+          </NavLink>
 
-          <Link to={`/student/internships/${userId}`} onClick={() => setNavbarState('Internships')} className={`hover:text-blue-500 p-2 md:p-5 ${navbarState === 'Internships' && 'text-blue-500'}`}>
+          <NavLink
+            to={`/student/internships/${userId}`}
+            className={({ isActive }) =>
+              `hover:text-blue-500 p-2 md:p-5 ${isActive ? 'text-blue-500' : ''}`
+            }
+          >
             Internships
-          </Link>
-          <Link to={`/student/${userId}/chats`} onClick={() => setNavbarState("Messages")} className={`hover:text-blue-500 p-2 md:p-5 ${navbarState === 'Messages' && 'text-blue-500'}`}>
+          </NavLink>
+          <NavLink
+            to={`/student/${userId}/chats`}
+            className={({ isActive }) =>
+              `hover:text-blue-500 p-2 md:p-5 ${isActive ? 'text-blue-500' : ''}`
+            }
+          >
             Messages
-          </Link>
-          <Link to={`/student/myApplications/${userId}`} onClick={() => setNavbarState("Applications")} className={`hover:text-blue-500 p-2 md:p-5 ${navbarState === 'Applications' && 'text-blue-500'}`}>
+          </NavLink>
+          <NavLink
+            to={`/student/myApplications/${userId}`}
+            className={({ isActive }) =>
+              `hover:text-blue-500 p-2 md:p-5 ${isActive ? 'text-blue-500' : ''}`
+            }
+          >
             My Applications
-          </Link>
+          </NavLink>
 
           {/* User Icon */}
           <div className="relative group px-0 mx-0 ">
@@ -75,15 +97,17 @@ const Navbar = () => {
 
             <div className="absolute right-0 top-10 w-48 bg-white shadow-lg border border-gray-200 rounded-md hidden group-hover:block">
               <ul className="list-none p-2 m-0">
-                
+
                 <li className={`py-2 px-4 hover:text-blue-500  ${navbarState === 'Profile' && 'text-blue-500'}`}>
-                  <Link to={`/student/profile/${userId}`} onClick={() => setNavbarState("Profile")}>Profile</Link>
+                  <NavLink to={`/student/profile/${userId}`} className={({ isActive }) =>
+                    `hover:text-blue-500 ${isActive ? 'text-blue-500' : ''}`
+                  }>Profile</NavLink>
                 </li>
                 {/* <li className="py-2 px-4 hover:text-blue-500">
                   <Link to={`/student/resume/${userId}`}>Resume</Link>
                 </li> */}
                 <li className="py-2 px-4 hover:text-blue-500">
-                  <button onClick={() => { handleLogout(); setNavbarState(null) }}>Logout</button>
+                  <button onClick={() => handleLogout()}>Logout</button>
                 </li>
               </ul>
             </div>
@@ -102,28 +126,52 @@ const Navbar = () => {
           </button>
         </div>
         <div className="flex flex-col p-4">
-          <Link to={`/student/dashboard/${userId}`} onClick={() => { toggleSidebar(); setNavbarState(null) }} className={`py-2 hover:text-blue-500 ${!navbarState && 'text-blue-500'}`}>
+          <NavLink to={`/student/dashboard/${userId}`} className={({ isActive }) =>
+            `hover:text-blue-500 ${isActive ? 'text-blue-500' : ''}`
+          }>
             Home
-          </Link>
+          </NavLink>
 
-          <Link to={`/student/internships/${userId}`} onClick={() => { toggleSidebar(); setNavbarState('Internships') }} className={`py-2 hover:text-blue-500 ${navbarState === 'Internships' && 'text-blue-500'}`}>
+          <NavLink
+            to={`/student/internships/${userId}`}
+            onClick={() => { toggleSidebar(); }}
+            className={({ isActive }) =>
+              `py-2 hover:text-blue-500 ${isActive ? 'text-blue-500' : ''}`
+            }
+          >
             Internship
-          </Link>
-          <Link to={`/student/${userId}/chats`} onClick={() => { toggleSidebar(); setNavbarState('Messages') }} className={`py-2 hover:text-blue-500 ${navbarState === 'Messages' && 'text-blue-500'}`}>
+          </NavLink>
+          <NavLink
+            to={`/student/${userId}/chats`}
+            onClick={() => { toggleSidebar(); }}
+            className={({ isActive }) =>
+              `py-2 hover:text-blue-500 ${isActive ? 'text-blue-500' : ''}`
+            }
+          >
             Messages
-          </Link>
-          <Link to={`/student/myApplications/${userId}`} onClick={() => { toggleSidebar(); setNavbarState('Applications') }} className={`py-2 hover:text-blue-500 ${navbarState === 'Applications' && 'text-blue-500'}`}>
+          </NavLink>
+          <NavLink
+            to={`/student/myApplications/${userId}`}
+            onClick={() => { toggleSidebar(); }}
+            className={({ isActive }) =>
+              `py-2 hover:text-blue-500 ${isActive ? 'text-blue-500' : ''}`
+            }
+          >
             My Applications
-          </Link>
-          <Link to={`/student/profile/${userId}`} onClick={() => { toggleSidebar(); setNavbarState('Profile') }} className={`py-2 hover:text-blue-500 ${navbarState === 'Profile' && 'text-blue-500'}`}>
-            Profile
-          </Link>
-          {/* <Link to={`/student/resume/${userId}`} className="py-2 hover:text-blue-500">
-              Resume
-            </Link> */}
-          <button onClick={() => { handleLogout(); setNavbarState(null) }} className="py-2 hover:text-blue-500 text-left">
-            Logout
-          </button>
+          </NavLink>
+          <NavLink
+        to={`/student/profile/${userId}`}
+        onClick={() => { toggleSidebar(); }}
+        className={({ isActive }) => 
+          `py-2 hover:text-blue-500 ${isActive ? 'text-blue-500' : ''}`
+        }
+      >
+        Profile
+      </NavLink>
+
+            <button onClick={() => { handleLogout(); setNavbarState(null) }} className="py-2 hover:text-blue-500 text-left">
+              Logout
+            </button>
         </div>
       </div>
 
