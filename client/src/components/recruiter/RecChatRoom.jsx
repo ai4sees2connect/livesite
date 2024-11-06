@@ -642,6 +642,12 @@ const RecChatRoom = () => {
     return () => clearTimeout(timer); // Cleanup on component unmount
 }, []);
 
+const handleKeyDown = (e) => {
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
+};
+
 if(loading){
   return <Spinner/>
 }
@@ -651,12 +657,12 @@ if(shortlistedStudents.length==0){
 }
 
   return (
-    <div className="flex justify-end h-[90vh]  mt-20 relative w-[100%]">
+    <div className="flex justify-center h-[90vh]  mt-16 relative w-[100%] bg-gray-200 ">
       {/* Left Column - Shortlisted Students */}
-      <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center  absolute  top-0 left-5 lg:left-4 md:left-20 w-[90%]  lg:w-[36%] xl:w-[30%] bg-gray-100 py-4 lg:px-1 shadow-lg overflow-y-auto h-[90%] md:h-[80vh]`}>
-        <h2 className="text-xl font-semibold mb-4">Messages from all internships</h2>
+      <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center   w-[90%]  lg:w-[36%] xl:w-[37%] bg-blue-500 py-4  shadow-2xl overflow-y-scroll  scrollbar-thin h-[99%] md:h-[100%]`}>
+        <h2 className="text-xl text-white w-fit font-semibold mb-2">Messages from all internships</h2>
 
-        <div className='flex flex-col justify-center w-full'>
+        <div className='flex flex-col justify-center w-[80%]'>
 
           <div className='mx-auto p-2 rounded-lg w-full'>
             <Dropdown
@@ -670,7 +676,7 @@ if(shortlistedStudents.length==0){
           </div>
         </div>
 
-        <div className='flex items-center space-x-7 mx-auto p-2 rounded-lg w-full text-sm'>
+        <div className='flex items-center space-x-7 mx-auto p-2 rounded-lg w-[80%] text-sm'>
 
           <input
             type="text"
@@ -681,22 +687,22 @@ if(shortlistedStudents.length==0){
           />
         </div>
 
-        <div className="flex items-center justify-center text-sm lg:text-base  space-x-1 lg:space-x-2  border-2 rounded-md w-fit sm:rounded-full mb-4">
+        <div className="flex items-center justify-center text-sm lg:text-base  space-x-1 lg:space-x-2 rounded-md w-fit sm:rounded-full mb-4">
           <button
-            className={`text-sm sm:text-base py-2 px-3 rounded-full ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            className={`text-sm sm:text-base py-2 px-3 rounded-full text-white box-content  ${activeFilter === 'all' ? 'bg-blue-400 ' : 'bg-blue-500 border-2 '}`}
             onClick={() => handleFilterChange('all')}
           >
             All Messages
           </button>
           <button
-            className={`py-2 px-4 rounded-full ${activeFilter === 'unread' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            className={`py-2 px-4 rounded-full text-white box-content ${activeFilter === 'unread' ? 'bg-blue-400 ' : 'bg-blue-500 border-2'}`}
             onClick={() => handleFilterChange('unread')}
           >
             Unread({`${unreadCount}`})
           </button>
 
           <button
-            className={`py-2 px-3 rounded-full ${activeFilter === 'important' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            className={`py-2 px-3 rounded-full text-white box-content ${activeFilter === 'important' ? 'bg-blue-400 ' : 'bg-blue-500 border-2'}`}
             onClick={() => handleFilterChange('important')}
           >
             Important
@@ -704,7 +710,7 @@ if(shortlistedStudents.length==0){
 
         </div>
 
-        <ul className="w-[80%] space-y-2">
+        <ul className="w-[98%] pl-4">
           {extraFilteredStudents.map((student) => {
             const { studentId, internshipId, firstname, lastname, internshipName, statusUpdatedAt, isActive, studentStatus } = student;
 
@@ -724,24 +730,24 @@ if(shortlistedStudents.length==0){
             return (
               <div
                 key={`${studentId}-${internshipId}`}
-                className={`student-internship-entry bg-white shadow-md rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship === internshipId && 'border-blue-500  '} hover:scale-105 duration-300 w-full`}
+                className={`student-internship-entry  shadow-lg rounded-lg p-4 mb-4 flex items-start space-x-4  hover:cursor-pointer hover:bg-blue-400 ${selectedInternship === internshipId ? 'bg-blue-400':'bg-blue-500'} w-full`}
                 onClick={() => { handleStudentClick(studentId, internshipId); handleInfoSetter(firstname, lastname, internshipName, isActive) }}
               >
                 <div className="flex-grow">
-                  <div className="text-lg font-semibold text-gray-800 flex items-center relative">
-                    <span className='capitalize flex items-center'>{student.importantForRecruiter && <FaStar className='mr-2 text-yellow-400' />}{firstname} {lastname}</span>
-                    {isActive && (<div className='ml-2 bg-green-500 rounded-full w-2 h-2'></div>)}
-                    {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
+                  <div className="text-lg font-semibold text-white flex items-center relative">
+                    <span className='capitalize flex items-center text-xl '>{firstname} {lastname}</span>
+                    {isActive && (<div className='ml-2 bg-green-300 rounded-full w-2 h-2'></div>)}
+                    {lastMessage && <span className='absolute flex items-center right-0 text-sm font-normal text-white'>{student.importantForRecruiter && <FaStar className='mr-2 text-yellow-400' />}{formatSentAt(lastMessage.sentAt)}</span>}
                   </div>
-                  <p className="text-sm text-gray-500">{internshipName}</p>
+                  <p className="text-sm text-white">{internshipName}</p>
                   {lastMessage && !latestMessagesSeenStatus[`${studentId}_${internshipId}`] && lastMessage.senderId !== recruiterId && (
-                    <div className="text-blue-500 font-semibold text-xs">New mesage</div>
+                    <div className="text-white font-semibold text-xs">New mesage</div>
                   )}
 
                   {/* Display the most recent message */}
                   {lastMessage && <p className="text-md text-gray-800">
-                    <span className='font-semibold text-blue-400'>{lastMessage.senderId === recruiterId ? 'You:  ' : ''}</span>
-                    <span className={`${lastMessage.senderId !== recruiterId && !latestMessagesSeenStatus[`${studentId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-500'} text-md`}>
+                    <span className='font-semibold text-white'>{lastMessage.senderId === recruiterId ? 'You:  ' : ''}</span>
+                    <span className={`${lastMessage.senderId !== recruiterId && !latestMessagesSeenStatus[`${studentId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-white'} text-md`}>
                       {lastMessage ? (lastMessage.messageContent.slice(0, 20) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
 
@@ -775,7 +781,7 @@ if(shortlistedStudents.length==0){
 
       {/* Right Column - Chat Interface */}
 
-      <div className={`${chatListOpen && 'hidden'} w-[95%] lg:w-[63%] p-4 flex flex-col mx-2 h-[84vh] `}>
+      <div className={`${chatListOpen && 'hidden'} w-[95%] lg:w-[70%] p-4 flex flex-col mx-2 h-[84vh] mt-5`}>
         <div className='w-full h-[15%] lg:h-[10%] -mt-5  relative '>
         <button onClick={()=>setChatListOpen(true)} className='flex lg:hidden space-x-1 text-blue-400 items-center'>
             <FaArrowLeft/>
@@ -809,7 +815,7 @@ if(shortlistedStudents.length==0){
           </div>
         </div>
 
-        <div className={`flex-grow mt-5 md:mt-7 p-4 rounded-lg bg-white shadow-lg border-2 relative overflow-y-auto `}>
+        <div className={`flex-grow mt-5 md:mt-7 p-4 rounded-lg bg-gray-100 shadow-lg border-2 relative overflow-y-scroll  scrollbar-thin `}>
           <div className="flex flex-col space-y-4 ">
 
             {chatHistories[`${selectedStudent}_${selectedInternship}`]?.map((msg, index, arr) => {
@@ -829,12 +835,12 @@ if(shortlistedStudents.length==0){
                   )}
 
                   {!msg.isAssignment && !msg.isAttachment && <div
-                    className={`py-2 px-3 rounded inline-block break-words ${msg.senderId === recruiterId ? 'bg-[#DBEAFE] self-end text-right  ' : 'bg-gray-100 '} `}
+                    className={`py-2 px-3 rounded inline-block break-words shadow-lg ${msg.senderId === recruiterId ? 'bg-[#ffffff] self-end text-right  ' : 'bg-blue-400 text-white '} `}
                     style={{ maxWidth: 'fit-content' }}
                   >
                     <p className='max-w-[230px] md:max-w-[400px] min-w-[70px]'>{msg.messageContent}</p>
                     <p className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right  text-gray-500`}>
-                      <span>{formatSentAt(msg.sentAt)}</span>
+                      <span className={`${msg.senderId !== recruiterId ? 'text-white' : 'text-gray-600'}`}>{formatSentAt(msg.sentAt)}</span>
                       {msg.senderId === recruiterId && <span><MdDoneAll className={`w-5 h-5 ${msg.seenStatus && 'text-blue-500'}`} /></span>}
                     </p>
                     {/* <p>{msg.senderId === recruiterId && msg.seenStatus && 'Seen'}</p> */}
@@ -842,12 +848,12 @@ if(shortlistedStudents.length==0){
                   </div>}
 
                   {msg.isAssignment && msg.senderId === recruiterId &&
-                    <div className=' break-words rounded-full bg-blue-400 self-end text-right max-w-[260px] md:max-w-[400px] text-white' >
+                    <div className=' break-words  shadow-lg  self-end text-right max-w-[260px] md:max-w-[400px] text-white' >
                       <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
                         <FaCheckCircle className='absolute top-4 left-4 text-white' />
                         <h1 className='ml-8 text-white font-bold'>Assignment Sent</h1>
                       </div>
-                      <div className={`py-2 px-3  inline-block text-black bg-gray-100 `} >
+                      <div className={`py-2 px-3 w-full inline-block text-black bg-gray-200  `} >
                         <p className='max-w-[230px] md:max-w-[400px] min-w-[150px]'>{msg.assignmentDetails.description}</p>
                         <p className='text-blue-500 font-semibold mt-5'>Deadline- {new Date(msg.assignmentDetails.deadline).toLocaleDateString('en-GB')}</p>
 
@@ -913,7 +919,7 @@ if(shortlistedStudents.length==0){
 
                     <div
                       key={index}
-                      className={`p-2 rounded bg-gray-100 max-w-[240px]`}
+                      className={`p-2 rounded bg-gray-200 border shadow-lg max-w-[240px]`}
 
                     >
                       <div className='flex justify-center h-[100%] relative group'>
@@ -979,6 +985,7 @@ if(shortlistedStudents.length==0){
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="w-full p-2 border-2 rounded-lg"
               placeholder="Type a message..."
 

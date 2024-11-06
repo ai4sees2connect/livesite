@@ -235,8 +235,8 @@ const Profile = () => {
     <div className=" mx-auto p-4 mt-[48px] flex flex-col lg:flex-row lg:w-full  ">
       <div className="border-b  pb-3 mt-10 text-center border-2 p-5 rounded-lg h-full w-full lg:w-[380px]">
         <div className="flex justify-center ">
-          <div className="w-20 h-20 rounded-full flex items-center justify-center ">
-            {picUrl? (<img src={picUrl}/>):(<div className="w-14 h-14 rounded-full border flex items-center justify-center border-black"><FaUser className="w-9 h-9 "/></div>)}
+          <div className="max-w-20 max-h-28  flex items-center justify-center ">
+            {picUrl? (<img src={picUrl} className="w-fit h-fit"/>):(<div className="w-14 h-14 rounded-full border flex items-center justify-center border-black"><FaUser className="w-9 h-9 "/></div>)}
           </div>
         </div>
         {!picUrl && <button className="text-blue-500" onClick={handleFileClick}>Upload profile picture</button>}
