@@ -519,6 +519,7 @@ const RecProfile = () => {
                     : ""
                 }`}
               >
+
                 {recruiter.companyCertificate.status}
               </span>
             </p>
@@ -555,6 +556,13 @@ const RecProfile = () => {
             )}
           </div>
         )}
+
+         
+
+
+
+
+
       </div>
     </div>
   );
