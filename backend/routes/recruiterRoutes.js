@@ -16,7 +16,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 router.post("/signup", async (req, res) => {
-  const { firstname, lastname, email, phone, password } = req.body;
+  const { firstname, lastname, email, phone, countryCode, password } = req.body;
 
   try {
     let recruiter = await Recruiter.findOne({ email });
@@ -32,6 +32,7 @@ router.post("/signup", async (req, res) => {
       lastname,
       email,
       phone,
+      countryCode,
       password,
       subscription: { // Initialize the subscription field
         planType: 'free', // You can set a default plan type
@@ -181,6 +182,7 @@ router.get("/details", async (req, res) => {
         lastname: recruiter.lastname,
         email: recruiter.email,
         phone: recruiter.phone,
+        countryCode:recruiter.countryCode,
         companyLogo: recruiter.companyLogo,
         subscription:recruiter.subscription,
         companyName: recruiter.companyName,
@@ -195,6 +197,29 @@ router.get("/details", async (req, res) => {
   } catch (error) {
     console.error("Error fetching user data:", error);
     res.sendStatus(500); // Internal server error
+  }
+});
+
+router.put('/update-Contact/:recruiterId', async (req, res) => {
+  const { phoneNumber, countryCode } = req.body;
+  const recruiterId= req.params.recruiterId; // Assuming the user ID is stored in req.user
+
+  try {
+    // Update the user contact information in the database
+    const recruiter = await Recruiter.findByIdAndUpdate(
+      recruiterId,
+      { phone:phoneNumber, countryCode },
+      { new: true } // returns the updated document
+    );
+
+    if (!recruiter) {
+      return res.status(404).json({ message: 'recruiter not found' });
+    }
+
+    res.json({ message: 'Contact updated successfully', user: recruiter });
+  } catch (error) {
+    console.error('Error updating contact:', error);
+    res.status(500).json({ message: 'Server error', error });
   }
 });
 

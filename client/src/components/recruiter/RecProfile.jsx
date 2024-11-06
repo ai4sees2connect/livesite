@@ -30,6 +30,19 @@ const RecProfile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [companyUrl, setCompanyUrl] = useState("");
   const [pdfUrl, setPdfUrl] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [countryCode, setCountryCode] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+
+  useEffect(() => {
+    if (recruiter?.phone) {
+      setPhoneNumber(recruiter.phone); // Set phoneNumber once recruiter data is loaded
+    }
+    if(recruiter?.countryCode){
+      setCountryCode(recruiter.countryCode); 
+    }
+  }, [recruiter]); 
+
 
   useEffect(() => {
     if (!token) {
@@ -224,12 +237,31 @@ const RecProfile = () => {
     }
   };
   // Separate state for country code and phone number
-  const [countryCode, setCountryCode] = useState(
-    recruiter?.countryCode || "+91"
-  );
+
 
   const handleCountryChange = (e) => {
     setCountryCode(e.target.value);
+  };
+
+  console.log(countryCode)
+  console.log(phoneNumber)
+
+  const handleContactUpdate = async () => {
+    try {
+      const response = await axios.put(`${api}/recruiter/update-Contact/${idFromToken}`, {
+        phoneNumber,
+        countryCode
+      });
+  
+      // Handle success response (e.g., show success message, update UI, etc.)
+      console.log('Contact updated:', response.data);
+      toast.success('Contact updated successfully');
+      window.location.reload();
+    } catch (error) {
+      // Handle error (e.g., show error message)
+      console.error('Error updating contact:', error);
+      toast.error('Failed to update contact. Please try again.');
+    }
   };
 
   console.log(recruiter);
@@ -311,7 +343,7 @@ const RecProfile = () => {
         </div>
 
         {/* recruiter email & company name */}
-        <div className="flex flex-col md:flex-row gap-5 w-full  lg:w-[70%] px-3 lg:px-0">
+        <div className="flex flex-col items-end md:flex-row gap-5 w-full  lg:w-[70%] px-3 lg:px-0">
           {/* <h1 className=" text-gray-600 ">{recruiter.email}</h1> */}
           <div className="flex flex-col w-full">
             <label>Recruiter Email</label>
@@ -346,7 +378,7 @@ const RecProfile = () => {
             {!isCompanyEdit && !recruiter.companyName && (
               <button
                 onClick={() => setIsCompanyEdit(true)}
-                className="text-red-500"
+                className="bg-blue-500 text-white px-2 py-1"
               >
                 Add Company Name
               </button>
@@ -389,7 +421,10 @@ const RecProfile = () => {
               <label className="text-gray-500 mr-2">Country Code</label>
               <select
                 value={countryCode}
-                onChange={handleCountryChange}
+                onChange={(e) => {
+                  setCountryCode(e.target.value);
+                  setPhoneNumber(phoneNumber); // Triggers a re-render
+                }}
                 className="text-sm outline-none rounded-lg h-full border border-gray-300 p-2"
               >
                 <option value="+1">US (+1)</option>
@@ -402,17 +437,31 @@ const RecProfile = () => {
             <div className="flex items-center">
               <label className="text-gray-500 mr-2">Phone</label>
               <input
-                type="text"
+                type="number"
                 defaultValue={recruiter?.phone}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-lg outline-none"
                 placeholder="Phone number"
               />
+            </div>
+
+            <div>
+              <button
+                onClick={handleContactUpdate}
+                disabled={phoneNumber?.length < 10 || !phoneNumber}
+                className={`px-6 py-2 rounded-lg font-semibold text-white transition duration-200 
+                ${phoneNumber?.length < 10
+                    ? 'bg-gray-300 cursor-not-allowed'
+                    : 'bg-blue-500 hover:bg-blue-600 cursor-pointer'}`}
+              >
+                Update
+              </button>
             </div>
           </div>
         </div>
 
         {!recruiter.companyWebsite && !recruiter.companyCertificate && (
-          <div className="flex flex-col space-y-3 justify-center">
+          <div className="flex flex-col space-y-3  justify-center">
             {/* Trigger button to open popup */}
             <p className="text-red-400">
               Upload company's incorporation certificate or Official website
@@ -509,15 +558,14 @@ const RecProfile = () => {
             <p className="text-gray-600">
               Verification:
               <span
-                className={`${
-                  recruiter.companyCertificate.status === "pending"
+                className={`${recruiter.companyCertificate.status === "pending"
                     ? "text-yellow-500"
                     : recruiter.companyCertificate.status === "Verified"
-                    ? "text-green-500"
-                    : recruiter.companyCertificate.status === "Rejected"
-                    ? "text-red-500"
-                    : ""
-                }`}
+                      ? "text-green-500"
+                      : recruiter.companyCertificate.status === "Rejected"
+                        ? "text-red-500"
+                        : ""
+                  }`}
               >
 
                 {recruiter.companyCertificate.status}
@@ -557,7 +605,7 @@ const RecProfile = () => {
           </div>
         )}
 
-         
+
 
 
 
