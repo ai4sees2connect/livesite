@@ -6,7 +6,7 @@ import api from '../common/server_url';
 import TimeAgo from '../common/TimeAgo';
 import { io } from 'socket.io-client';
 import SubmitAssignment from './SubmitAssignment';
-import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots, FaEllipsisV, FaStar, FaBolt, FaExclamation, FaFile, FaArrowCircleDown, FaFilePdf ,FaArrowLeft } from 'react-icons/fa'
+import { FaCheckCircle, FaFileDownload, FaPaperclip, FaCommentDots, FaEllipsisV, FaStar, FaBolt, FaExclamation, FaFile, FaArrowCircleDown, FaFilePdf, FaArrowLeft } from 'react-icons/fa'
 import { MdDoneAll } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import Spinner from '../common/Spinner'
@@ -46,7 +46,7 @@ const Chats = () => {
   const [chatBlocked, setChatBlocked] = useState({});
   const [chatListOpen, setChatListOpen] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [internsFoundCheck,setInternsFoundCheck] = useState(true);
+  const [internsFoundCheck, setInternsFoundCheck] = useState(true);
 
 
 
@@ -57,7 +57,7 @@ const Chats = () => {
         const result = response.data;
         setShortlistedInternships(result);
         console.log('this is on initial fetching', response.data);
-        
+
 
 
         const socketConnection = io(api, {
@@ -159,7 +159,7 @@ const Chats = () => {
 
 
       } catch (err) {
-        if(err.response && err.response.status === 404){
+        if (err.response && err.response.status === 404) {
           setInternsFoundCheck(false);
           return;
         }
@@ -638,53 +638,69 @@ const Chats = () => {
 
 
   console.log('these are chat histories', chatHistories);
-  console.log('chat list',chatListOpen);
+  console.log('chat list', chatListOpen);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-        setLoading(false);
+      setLoading(false);
     }, 1500); // Set timer for 1 second
 
     return () => clearTimeout(timer); // Cleanup on component unmount
-}, []);
+  }, []);
 
-if(loading){
-  return <Spinner/>
-}
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  };
 
-console.log('internsFoundCheck',internsFoundCheck)
-if(!internsFoundCheck){
-  return <div className='h-screen flex items-center justify-center text-lg text-gray-600 tracking-wider font-semibold'>You are not shortlisted for any internship yet</div>
-}
+  if (loading) {
+    return <Spinner />
+  }
+
+  console.log('internsFoundCheck', internsFoundCheck)
+  if (!internsFoundCheck) {
+    return <div className='h-screen flex items-center justify-center text-lg text-gray-600 tracking-wider font-semibold'>You are not shortlisted for any internship yet</div>
+  }
 
   return (
-    <div className="flex justify-end h-[90vh]  w-[100%]  mt-20 relative">
-      {/* Left Column - Shortlisted Students */}
-      <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center  absolute  top-0 left-5 lg:left-4 md:left-20 w-[90%]  lg:w-[36%] xl:w-[30%] bg-gray-100 py-4 lg:px-1 shadow-lg overflow-y-auto h-[90%] md:h-[80vh]`}>
-        <h2 className="text-xl w-fit font-semibold mb-2 ">Shortlisted Internships</h2>
+    <div className="flex justify-center h-[90vh]  w-[100%]  mt-[66px] relative bg-gray-200">
 
-        <div className="flex items-center justify-center text-sm lg:text-base w-fit space-x-1 lg:space-x-2  border-2 rounded-md sm:rounded-full mb-4">
+
+
+
+
+      {/* Left Column - Shortlisted Students */}
+      <div className={`${!chatListOpen ? 'hidden' : 'flex'}  lg:flex  flex-col items-center   w-[90%]  lg:w-[36%] xl:w-[37%] bg-blue-500 py-4  shadow-2xl overflow-y-scroll  scrollbar-thin  h-[90%] md:h-[100%]`}>
+        {/* <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center  absolute  top-0 left-5 lg:left-4 md:left-20 w-[90%]  lg:w-[36%] xl:w-[30%] bg-gray-100 py-4 lg:px-1 shadow-lg overflow-y-auto h-[90%] md:h-[80vh]`}> */}
+        <h2 className="text-xl text-white w-fit font-semibold mb-2 ">Shortlisted Internships</h2>
+
+        <div className="flex items-center justify-center text-sm lg:text-base w-fit space-x-1 lg:space-x-2  rounded-md sm:rounded-full mb-4">
           <button
-            className={`text-sm sm:text-base py-2 px-3 rounded-full  ${activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            className={`text-sm sm:text-base py-2 px-3 rounded-full text-white box-content ${activeFilter === 'all'
+              ? '  bg-blue-400 '
+              : 'bg-blue-500 border-2 '
+              }`}
             onClick={() => handleFilterChange('all')}
           >
             All Messages
           </button>
           <button
-            className={`py-2 px-4 rounded-full ${activeFilter === 'unread' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            className={`text-sm sm:text-base py-2 px-4 rounded-full text-white box-content ${activeFilter === 'unread' ? '  bg-blue-400' : 'bg-blue-500 border-2'}`}
             onClick={() => handleFilterChange('unread')}
           >
             Unread({`${unreadCount}`})
           </button>
 
           <button
-            className={`py-2 px-3 rounded-full ${activeFilter === 'important' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+            className={`py-2 px-3 rounded-full text-white box-content ${activeFilter === 'important' ? 'bg-blue-400' : 'bg-blue-500 border-2'}`}
             onClick={() => handleFilterChange('important')}
           >
             Important
           </button>
         </div>
-        <ul className=" w-[90%] space-y-2">
+
+        <ul className=" w-[98%] pl-4">
           {filteredInternships.map((intern) => {
             const { internshipId, recruiterId, companyName, internshipName, statusUpdatedAt, isActive, studentStatus } = intern;
 
@@ -698,16 +714,16 @@ if(!internsFoundCheck){
             return (
               <div
                 key={`${recruiterId}-${internshipId}`}
-                className={`student-internship-entry bg-white  rounded-lg p-4 mb-4 flex items-start space-x-4  border-b-4 hover:cursor-pointer ${selectedInternship === internshipId && 'border-blue-500  '} hover:scale-105 duration-300 w-full`}
+                className={`student-internship-entry shadow-lg hover:bg-blue-400  p-4 mb-4 flex items-start space-x-4 rounded-lg  hover:cursor-pointer ${selectedInternship === internshipId ? 'bg-blue-400 ' : 'bg-blue-500 '}  w-full`}
                 onClick={() => { handleInternClick(internshipId, recruiterId); handleInfoSetter(companyName, internshipName, isActive) }}
               >
                 <div className="flex-grow">
-                  <h3 className="text-lg font-semibold text-gray-800 flex items-center relative">
-                    <span className='flex items-center'>{intern.importantForStudent && <FaStar className='mr-2 text-yellow-400' />}{companyName}</span>
-                    {isActive && (<div className='ml-2 bg-green-500 rounded-full w-2 h-2'></div>)}
-                    {lastMessage && <span className='absolute right-0 text-sm font-normal text-gray-400'>{formatSentAt(lastMessage.sentAt)}</span>}
+                  <h3 className="text-lg font-semibold text-white flex items-center relative">
+                    <span className='flex items-center text-xl capitalize'>{companyName}</span>
+                    {isActive && (<div className='ml-2 bg-green-300 rounded-full w-2 h-2'></div>)}
+                    {lastMessage && <span className='absolute flex items-center right-0 text-sm font-normal text-white'>{intern.importantForStudent && <FaStar className='mr-2 text-yellow-400' />}{formatSentAt(lastMessage.sentAt)}</span>}
                   </h3>
-                  <p className="text-sm text-gray-600">{internshipName}</p>
+                  <p className="text-sm text-white">{internshipName}</p>
                   {lastMessage && !latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] && lastMessage.senderId !== studentId && (
                     <div className="text-blue-500 font-semibold text-xs">New mesage</div>
                   )}
@@ -715,9 +731,9 @@ if(!internsFoundCheck){
 
                   {/* Display the most recent message */}
                   {lastMessage && <p className="text-sm text-gray-800">
-                    <span className='font-semibold text-sm md:text-base text-blue-400'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
-                    <span className={`${lastMessage.senderId !== studentId && !latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-gray-500'} text-md`}>
-                      {lastMessage ? (lastMessage.messageContent.slice(0, 20) + (lastMessage.messageContent.length >20 ? "..." : "")) : "No messages exchanged yet"}
+                    <span className='font-semibold text-sm md:text-base text-white'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
+                    <span className={`${lastMessage.senderId !== studentId && !latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] ? 'text-white font-semibold' : 'text-white'} text-md`}>
+                      {lastMessage ? (lastMessage.messageContent.slice(0, 20) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
                   </p>}
 
@@ -745,17 +761,25 @@ if(!internsFoundCheck){
         </ul>
       </div>
 
-      {/* Right Column - Chat Interface */}
-      <div className={`${chatListOpen && 'hidden'} w-[95%] lg:w-[63%] p-4 flex flex-col mx-2 h-[84vh] `}>
 
-        <div className='w-full h-[15%] lg:h-[10%]  relative '>
-          <button onClick={()=>setChatListOpen(true)} className='flex lg:hidden space-x-1 text-blue-400 items-center'>
-            <FaArrowLeft/>
+
+
+
+      {/* Right Column - Chat Interface */}
+      <div className={`${chatListOpen && 'hidden'} w-[95%] lg:w-[70%] p-4 flex flex-col  h-[84vh] `}>
+
+        <div className='w-full h-[15%] lg:h-[10%] my-4 ml-1 relative '>
+          <button onClick={() => setChatListOpen(true)} className='flex lg:hidden space-x-1 text-white items-center'>
+            <FaArrowLeft />
             <span>back</span>
           </button>
-          <p className='font-semibold capitalize text-2xl'>{companyName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
-          <p>{internshipName}</p>
-          <div className='absolute right-0 top-9 md:right-1 md:top-7 hover:cursor-pointer hover:text-blue-400' onClick={() => setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV /></div>
+          <p className='font-semibold flex items-center space-x-4 capitalize text-2xl text-black'><span>{companyName}</span> {activeStatus && <span className='text-sm text-green-500 flex mt-2 items-center space-x-2'>
+            <span>online</span>
+            <div className='ml-2 bg-green-500 rounded-full w-2 h-2'></div>
+          </span>
+          }</p>
+          <p className='text-black'>{internshipName}</p>
+          <div className='absolute right-0 top-9 md:right-1 md:top-7 hover:cursor-pointer text-black ' onClick={() => setIsOptionsOpen(!isOptionsOpen)}><FaEllipsisV /></div>
         </div>
 
         {isOptionsOpen && (
@@ -763,13 +787,13 @@ if(!internsFoundCheck){
             <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleMarkAsImportant}>Mark as important</div>
             {shortlistedInternships.map(intern => intern.internshipId === selectedInternship && intern.importantForStudent) && (<div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleRemoveImportant}>Remove from important</div>)}
             <div className='hover:text-blue-400 p-2 cursor-pointer' onClick={handleViewDetails}>View internship details</div>
-            
+
           </div>
         )}
 
-        <div className="flex-grow mt-0 bg-white p-4 rounded-lg shadow-lg overflow-y-auto border-2">
+        <div className="flex-grow mt-0 bg-gray-100 p-4 rounded-lg shadow-lg overflow-y-auto scrollbar-thin border-2">
           {/* Chat messages */}
-          <div className="flex flex-col space-y-4 overflow-y-auto">
+          <div className="flex flex-col space-y-4 overflow-y-auto bg-gray-100">
             {chatHistories[`${selectedRecruiter}_${selectedInternship}`]?.map((msg, index, arr) => {
 
               const currentDate = new Date(msg.sentAt);
@@ -791,12 +815,12 @@ if(!internsFoundCheck){
 
                     <div
                       key={index}
-                      className={`p-2 rounded  inline-block break-words  ${msg.senderId === studentId ? 'bg-[#DBEAFE] self-end text-right' : 'bg-gray-100'} `}
+                      className={`p-2 rounded  inline-block break-words shadow-lg  ${msg.senderId === studentId ? 'bg-gray-100 self-end text-right' : 'bg-blue-400 text-white'} `}
                       style={{ maxWidth: 'fit-content' }}
                     >
                       <p className='max-w-[230px] md:max-w-[400px]'>{msg.messageContent}</p>
                       <p className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right text-gray-500`}>
-                        <span>{formatSentAt(msg.sentAt)}</span>
+                        <span className={`${msg.senderId !== studentId ? 'text-white' : 'text-gray-600'}`}>{formatSentAt(msg.sentAt)}</span>
                         {msg.senderId === studentId && <span><MdDoneAll className={`w-5 h-5 ${msg.seenStatus && 'text-blue-500'}`} /></span>}
                       </p>
                     </div>
@@ -805,7 +829,7 @@ if(!internsFoundCheck){
 
                   {msg.isAssignment && msg.senderId === selectedRecruiter &&
                     <>
-                      <div className=' break-words rounded-full w-fit max-w-max' >
+                      <div className=' break-words rounded-full w-fit max-w-max shadow-lg' >
                         <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
                           <FaCheckCircle className='absolute top-4 left-4 text-white' />
                           <h1 className='ml-8 text-white font-bold'>Assignment Received</h1>
@@ -836,7 +860,7 @@ if(!internsFoundCheck){
 
                   {
                     msg.isAssignment && msg.senderId === studentId && (
-                      <div className='flex flex-col self-end items-end break-words max-w-[260px] md:max-w-[400px]'>
+                      <div className='flex flex-col self-end items-end break-words max-w-[260px] md:max-w-[400px] shadow-lg'>
                         <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
                           <FaCheckCircle className='absolute top-4 left-4 text-white' />
                           <h1 className='ml-8 text-white font-bold'>Assignment Submitted</h1>
@@ -854,7 +878,7 @@ if(!internsFoundCheck){
 
                                 </span>
                                 <span className='font-semibold text-sm md:text-base'>{file.fileName}</span>
-                                <span className='text-gray-500 text-sm md:text-base'>{file.fileSize}</span>
+                                <span className='text-gray-500 text-sm '>{file.fileSize}</span>
                               </div>
 
                             ))}
@@ -887,7 +911,7 @@ if(!internsFoundCheck){
 
                     <div
                       key={index}
-                      className={`p-2 rounded bg-[#DBEAFE] self-end text-right min-w-[240px] max-h-[200px]`}
+                      className={`p-2 rounded bg-[#DBEAFE] self-end text-right min-w-[240px] max-h-[200px] shadow-lg`}
 
                     >
                       <div className='flex justify-center h-[100%] w-full relative group'>
@@ -909,7 +933,7 @@ if(!internsFoundCheck){
 
 
 
-                <div ref={chatEndRef} />
+                  <div ref={chatEndRef} />
                 </React.Fragment>
               )
             })}
@@ -917,14 +941,14 @@ if(!internsFoundCheck){
             {chatBlocked[`${selectedRecruiter}_${selectedInternship}`] === 'recruiter' &&
               <>
                 <div className='flex justify-center items-center text-gray-500 font-semibold text-lg'>
-                  
+
                   <span>You can no longer send or receive messages</span>
                 </div>
               </>
             }
 
 
-            
+
           </div>
         </div>
 
@@ -935,10 +959,11 @@ if(!internsFoundCheck){
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="w-full p-2 border-2 rounded-lg"
             placeholder="Type a message..."
           />
-          <label htmlFor="fileUpload" className='my-auto text-gray-600 hover:cursor-pointer'><FaPaperclip className='w-5 h-5' /></label>
+          <label htmlFor="fileUpload" className='my-auto text-black hover:cursor-pointer'><FaPaperclip className='w-5 h-5' /></label>
           <input
             type="file"
             id="fileUpload"
@@ -962,7 +987,8 @@ if(!internsFoundCheck){
           )}
 
           <button
-            className="bg-blue-500 text-white border px-9 py-1 rounded-lg"
+          disabled={newMessage === '' ? true : false}
+            className={`g-blue-500 text-white border-2 font-semibold px-9 py-1 rounded-lg  ${newMessage === '' && 'bg-gray-300'}`}
             onClick={sendMessage}
           >
             Send

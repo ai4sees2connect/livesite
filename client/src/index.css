@@ -35,3 +35,19 @@
   background-size: cover;
   background-position: center;
 }
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 7px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #1ac2f0;
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+

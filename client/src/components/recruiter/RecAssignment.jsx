@@ -12,7 +12,7 @@ const RecAssignment = ({  onClose, sendAssignment }) => {
   return (
     <div className="assignment-modal relative">
       <h2 className="text-xl mb-4">New Assignment</h2>
-      <FaTimes className='absolute right-0 top-0 text-blue-500'/>
+      <FaTimes className='absolute right-0 top-0 text-blue-500 hover:cursor-pointer' onClick={onClose}/>
 
       <div className="mb-4">
         <label className="block">Assignment Description:</label>
