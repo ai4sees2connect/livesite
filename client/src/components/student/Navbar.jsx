@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { Link } from "react-router-dom";
 import internsnestlogo2 from "../../images/internsnest_pic2.jpg";
@@ -15,6 +15,9 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useStudent } from "./context/studentContext.js";
+import api from '../common/server_url.js'
+import axios from "axios";
+import { FaUser } from "react-icons/fa";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -22,6 +25,7 @@ const Navbar = () => {
   const { logout, student } = useStudent();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar
   const [navbarState, setNavbarState] = useState(null);
+  const [picUrl, setPicUrl] = useState(null);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -36,6 +40,43 @@ const Navbar = () => {
     navigate("/");
     setNavbarState(null);
   };
+
+
+  useEffect(() => {
+    const fetchPicture = async () => {
+      try {
+        const response = await axios.get(`${api}/student/get-picture/${userId}`, {
+          responseType: 'blob' // Fetching as a blob for image rendering
+        });
+        console.log('response', response.status)
+
+        const picBlob = new Blob([response.data], { type: response.headers['content-type'] });
+        const Url = URL.createObjectURL(picBlob);
+        // console.log('picUrl', pic);
+        // console.log('logo', logo)
+        setPicUrl(Url);
+        console.log(Url);
+
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.log('Picture not found');
+          setPicUrl(null); // Set the logo URL to null if not found
+        } else {
+          console.error('Error fetching Picture:', error);
+        }
+      };
+    }
+    fetchPicture();
+
+    return () => {
+      if (!picUrl) {
+        URL.revokeObjectURL(picUrl);
+        console.log('Blob URL revoked on cleanup:', picUrl);  // Optional: Add a log to confirm revocation
+      }
+    };
+  }, []);
+
+
 
   return (
     <nav className="bg-white fixed top-0 w-full shadow-md z-20">
@@ -108,8 +149,8 @@ const Navbar = () => {
 
           {/* User Icon */}
           <div className="relative group px-0 mx-0 ">
-            <div className="p-0   rounded-full h-10 w-10  flex items-center justify-center hover:text-blue-500">
-              <FontAwesomeIcon icon={faUser} size="1x" className="w-10" />
+            <div className="p-0    rounded-full h-10 w-10  flex items-center justify-center hover:text-blue-500">
+              {picUrl ? (<img src={picUrl} className="w-full h-full rounded-full object-contain hover:cursor-pointer " />) : (<div className="w-10 h-10 rounded-full flex items-center justify-center hover:cursor-pointer"><FaUser className="w-5 h-5 " /></div>)}
             </div>
 
             <div className="absolute right-0 top-10 w-48 bg-white shadow-lg border border-gray-200 rounded-md hidden group-hover:block">
@@ -199,15 +240,18 @@ const Navbar = () => {
           </NavLink>
           <NavLink
             to={`/student/profile/${userId}`}
+
             onClick={() => {
               toggleSidebar();
             }}
             className={({ isActive }) =>
               `py-2 hover:text-blue-500 ${isActive ? "text-blue-500" : ""}`
+
             }
           >
             Profile
           </NavLink>
+
 
           <button
             onClick={() => {
@@ -216,6 +260,8 @@ const Navbar = () => {
             }}
             className="py-2 hover:text-blue-500 text-left"
           >
+
+
             Logout
           </button>
         </div>
