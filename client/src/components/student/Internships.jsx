@@ -304,7 +304,7 @@ const Internships = () => {
   const [selectedLocation, setSelectedLocation] = useState([]);
   const [workType, setWorkType] = useState("All Internships");
   const [selectedStipend, setSelectedStipend] = useState(0);
-  const [isInterestedModalOpen, setIsInterestedModalOpen] = useState(false);
+  // const [isInterestedModalOpen, setIsInterestedModalOpen] = useState(false);
   const [availability, setAvailability] = useState(
     "Yes! Will join Immediately"
   );
@@ -519,7 +519,7 @@ const Internships = () => {
 
   const closeModal = () => {
     setSelectedInternship(null);
-    setIsInterestedModalOpen(false);
+    // setIsInterestedModalOpen(false);
   };
 
   const openInterestedModal = () => {
@@ -527,12 +527,12 @@ const Internships = () => {
       toast.error("Please complete your profile");
       return;
     }
-    setIsInterestedModalOpen(true);
+    // setIsInterestedModalOpen(true);
   };
 
-  const closeInterestedModal = () => {
-    setIsInterestedModalOpen(false);
-  };
+  // const closeInterestedModal = () => {
+  //   setIsInterestedModalOpen(false);
+  // };
 
   console.log("this is about text", aboutText);
 
@@ -555,7 +555,7 @@ const Internships = () => {
         if (response.data.success) {
           toast.success("You have already applied for this Internship");
           setTimeout(() => {
-            setIsInterestedModalOpen(false);
+            // setIsInterestedModalOpen(false);
             setSelectedInternship(null);
             window.location.reload();
           }, 1000);
@@ -564,7 +564,7 @@ const Internships = () => {
         }
         toast.success("Successfully applied to the internship");
         setTimeout(() => {
-          setIsInterestedModalOpen(false);
+          // setIsInterestedModalOpen(false);
           setSelectedInternship(null);
           window.location.reload();
         }, 1000);
@@ -740,7 +740,7 @@ const Internships = () => {
             {currentInternships.map((internship) => (
               <div
                 key={internship._id}
-                className="bg-white shadow-md rounded-lg px-3 py-3 w-full my-3 mx-auto relative"
+                className="bg-white shadow-md rounded-lg px-7 py-3 w-full my-3 mx-auto relative"
               >
                 <div className="flex justify-between items-center">
                   <div className="mb-4">
@@ -910,12 +910,12 @@ const Internships = () => {
                         <p className="text-gray-600 mb-1 lg:mb-4">
                           {selectedInternship.recruiter.companyName}
                         </p>
-                        <button
+                        {/* <button
                         onClick={openInterestedModal}
                         className="text-sm lg:text-base font-semibold px-2 py-2 bg-blue-100  lg:py-2 lg:px-5 rounded-lg text-blue-500 mb-2"
                       >
                         I'm Interested
-                      </button>
+                      </button> */}
                         </div>
                       </div>
 
@@ -988,12 +988,106 @@ const Internships = () => {
                           </span>
                         ))}
                       </div>
+
+                      <div>
+                      <div className="resume-box mt-4">
+                        <h1 className="text-lg sm:text-xl font-semibold">Your Resume</h1>
+
+                        <div className="flex flex-col sm:flex-row sm:space-x-2">
+                          <h1 className="text-gray-600">
+                            This Resume will be submitted along with you
+                            application
+                          </h1>
+                          {resumeUrl && (
+                            <a
+                              href={resumeUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-400"
+                              download={resumeFilename}
+                            >
+                              Click to view
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="about-yourself-box mt-9">
+                        <h1 className="text-lg sm:text-xl font-semibold">
+                          Tell us about yourself
+                        </h1>
+                        <textarea
+                          value={aboutText}
+                          onChange={(e) => setAboutText(e.target.value)}
+                          className="my-3 w-[90%] sm:w-[80%] p-2 border-2"
+                          placeholder="Mention your skills, your interests, your previous experience in my company, achievements and Why do you want to work with us."
+                          rows={4}
+                        ></textarea>
+                      </div>
+
+                      <div className="availability-check mt-4">
+                        <h1>Can you join Immediately?</h1>
+                        <div className="flex flex-col text-gray-600 my-2">
+                          <label>
+                            <input
+                              type="radio"
+                              value="Yes"
+                              checked={
+                                availability === "Yes! Will join Immediately"
+                              }
+                              onChange={handleRadioChange}
+                            />
+                            <span className="mx-1">Yes</span>
+                          </label>
+                          <label>
+                            <input
+                              type="radio"
+                              value="No"
+                              checked={
+                                availability === "No! Cannot Join immediately"
+                              }
+                              onChange={handleRadioChange}
+                            />
+                            <span className="mx-1">No</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {selectedInternship.assessment && (
+                        <div className="assessment-box mt-4">
+                          <h1 className="text-lg sm:text-xl font-semibold mb-2">
+                            Assessment
+                          </h1>
+                          <div className="text-gray-600 mb-2">
+                            Q {selectedInternship.assessment}
+                          </div>
+                          <textarea
+                            value={assessmentAns}
+                            onChange={(e) => setAssessmentAns(e.target.value)}
+                            className="w-[90%] sm:w-[80%] border-2 p-2"
+                            rows={4}
+                            name=""
+                            id=""
+                            placeholder="Write your answer here..."
+                          ></textarea>
+                        </div>
+                      )}
+
+                      <button
+                        onClick={() =>
+                          applyToInternship(selectedInternship._id)
+                        }
+                        className="bg-blue-400 hover:bg-blue-500 rounded-lg px-3 py-2 mt-7 text-white"
+                      >
+                        Apply
+                      </button>
+                    </div>
                     </div>
                   </div>
                 </>
               )}
 
-            {isInterestedModalOpen && (
+            {/* {isInterestedModalOpen && (
               <>
                 <div
                   className="fixed inset-0 bg-black bg-opacity-5 z-40"
@@ -1128,7 +1222,7 @@ const Internships = () => {
                   </div>
                 </div>
               </>
-            )}
+            )} */}
           </div>
         </div>
       </div>
