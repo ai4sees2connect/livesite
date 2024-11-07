@@ -68,13 +68,20 @@ const MyApplications = () => {
     return <Spinner />;
   }
 
-  if(appliedInternships.length==0){
-    
-    return (<div className="h-screen flex flex-col items-center justify-center space-y-4">
-      <h1 className="text-lg text-gray-600 tracking-wider">You have not applied to any internship..</h1>
-        <Link to={`/student/internships/${userId}`} className="border-2 border-blue-500 rounded-lg px-3 py-1 text-blue-500 font-semibold ">Browse Internships</Link>
-    </div>)
-    
+  if (appliedInternships.length == 0) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center space-y-4">
+        <h1 className="text-lg text-gray-600 tracking-wider">
+          You have not applied to any internship..
+        </h1>
+        <Link
+          to={`/student/internships/${userId}`}
+          className="border-2 border-blue-500 rounded-lg px-3 py-1 text-blue-500 font-semibold "
+        >
+          Browse Internships
+        </Link>
+      </div>
+    );
   }
 
   if (error) {
@@ -85,10 +92,9 @@ const MyApplications = () => {
     <div className="py-10 px-5 mt-10 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold text-center mb-8">My Applications</h1>
 
-      
       {/* Bapi Used Table */}
       <div className=" hidden lg:block">
-        <table className="min-w-full table-auto border-collapse">
+        <table className="min-w-full table-auto border-collapse border-spacing-2">
           <thead>
             <tr className="bg-gray-200 text-center font-semibold border-b">
               <th className="px-4 py-2 w-[170px]">COMPANY</th>
@@ -103,7 +109,7 @@ const MyApplications = () => {
             {appliedInternships.map((applied) => (
               <tr
                 key={applied._id}
-                className="text-center text-gray-600 border-b"
+                className="text-center text-gray-600 lg:border-b-2"
               >
                 <td className="px-4 py-2 w-[170px]">
                   {applied.recruiter.companyName}
@@ -117,14 +123,15 @@ const MyApplications = () => {
                 <td className="px-4 py-2 w-[130px]">{applied.studentCount}</td>
                 <td className="px-4 py-2 w-[100px]">
                   <span
-                    className={`rounded-xl py-1 px-2 ${applied.internshipStatus.status === "Viewed" &&
+                    className={`rounded-xl py-1 px-2 ${
+                      applied.internshipStatus.status === "Viewed" &&
                       "text-yellow-400"
-                      } 
-              ${applied.internshipStatus.status === "Rejected" && "text-red-500"
-                      } 
-              ${applied.internshipStatus.status === "Shortlisted" &&
-                      "text-green-600"
-                      }`}
+                    } 
+            ${applied.internshipStatus.status === "Rejected" && "text-red-500"} 
+            ${
+              applied.internshipStatus.status === "Shortlisted" &&
+              "text-green-600"
+            }`}
                   >
                     {applied.internshipStatus.status}
                   </span>
@@ -159,28 +166,47 @@ const MyApplications = () => {
               Applied: {TimeAgo(applied.appliedAt)}
             </div>
             <div className="flex  items-center text-gray-600">
-              <span className="font-semibold"><FaUserFriends className="mr-2" /></span> {applied.studentCount} Applicants
+              <span className="font-semibold">
+                <FaUserFriends className="mr-2" />
+              </span>{" "}
+              {applied.studentCount} Applicants
             </div>
             <div>
-
               <span
-                className={` py-1 flex items-center ${applied.internshipStatus.status === "Viewed" && "text-yellow-500"
-                  } ${applied.internshipStatus.status === "Rejected" && "text-red-500"
-                  } ${applied.internshipStatus.status === "Shortlisted" && "text-green-600"
-                  }`}
+                className={` py-1 flex items-center ${
+                  applied.internshipStatus.status === "Viewed" &&
+                  "text-yellow-500"
+                } ${
+                  applied.internshipStatus.status === "Rejected" &&
+                  "text-red-500"
+                } ${
+                  applied.internshipStatus.status === "Shortlisted" &&
+                  "text-green-600"
+                }`}
               >
-                {applied.internshipStatus.status === 'Viewed' && <FaEye className=" mr-2" />} {applied.internshipStatus.status === 'Shortlisted' && <FaCheckCircle className="mr-2" />} {applied.internshipStatus.status === 'Rejected' && <FaTimes className="mr-2" />}{applied.internshipStatus.status}
+                {applied.internshipStatus.status === "Viewed" && (
+                  <FaEye className=" mr-2" />
+                )}{" "}
+                {applied.internshipStatus.status === "Shortlisted" && (
+                  <FaCheckCircle className="mr-2" />
+                )}{" "}
+                {applied.internshipStatus.status === "Rejected" && (
+                  <FaTimes className="mr-2" />
+                )}
+                {applied.internshipStatus.status}
               </span>
             </div>
             <div className="absolute right-2 top-4">
-              <button onClick={() => setSelectedInternship(applied)} className="text-blue-400 hover:underline">
+              <button
+                onClick={() => setSelectedInternship(applied)}
+                className="text-blue-400 hover:underline"
+              >
                 View details
               </button>
             </div>
           </div>
         ))}
       </div>
-
 
       {selectedInternship && (
         <>
@@ -257,7 +283,9 @@ const MyApplications = () => {
                 }}
               ></div>
 
-              <h3 className="md:text-lg font-medium mb-2">Perks and Benefits</h3>
+              <h3 className="md:text-lg font-medium mb-2">
+                Perks and Benefits
+              </h3>
               <div className="flex flex-wrap mb-4">
                 {selectedInternship.internship.perks.map((perk, index) => (
                   <span
