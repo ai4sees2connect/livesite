@@ -57,25 +57,7 @@ const Contact = () => {
         <p className="text-lg text-gray-700 mb-2">
           <span className="font-semibold">Address:</span> 9th Main Road, Vysya Bank Colony, New Gurappana Palya, 1st Stage, BTM 1st Stage, Bengaluru, Karnataka
         </p>
-        <div className="flex flex-col items-center justify-center p-6 bg-gray-100">
-      <h2 className="text-2xl font-bold mb-4">Our Location</h2>
-
-      <div className="w-full max-w-4xl h-96 overflow-hidden rounded-lg shadow-lg">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.854688773672!2d77.60144997454579!3d12.917059516072813!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1500239a42f7%3A0x3ffdd23e902910b!2sAI4SEE%20PVT%20LTD.!5e0!3m2!1sen!2sin!4v1729145310055!5m2!1sen!2sin"
-          width="100%"
-          height="100%"
-          allowFullScreen=""
-          loading="lazy"
-          title="Google Map"
-          className="border-0"
-        />
-      </div>
-
-      {/* <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.854688773672!2d77.60144997454579!3d12.917059516072813!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1500239a42f7%3A0x3ffdd23e902910b!2sAI4SEE%20PVT%20LTD.!5e0!3m2!1sen!2sin!4v1729145310055!5m2!1sen!2sin" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> */}
-
-
-    </div>
+       
       </div>
     </div>
   );
