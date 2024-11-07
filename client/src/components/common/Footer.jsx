@@ -20,16 +20,14 @@ const Footer = () => {
           <Link to='/cancellation' className='px-1 md:px-2 hover:text-blue-300'>Cancellation policy</Link>
         </div>
         <div className="flex space-x-10">
-          <FaInstagram className='w-7 h-7 hover:text-pink-500'/>
-          <FaFacebook className='w-7 h-7 hover:text-blue-400'/>
-          <FaLinkedin className='w-7 h-7 hover:text-blue-500'/>
-          <FontAwesomeIcon icon={faXTwitter} className='w-7 h-7 hover:text-black'/>
+          <FaInstagram className='w-7 h-8 hover:text-pink-500'/>
+          <FaFacebook className='w-7 h-8 hover:text-blue-400'/>
+          <FaLinkedin className='w-7 h-8 hover:text-blue-500'/>
+          <FontAwesomeIcon icon={faXTwitter} className='w-7 h-8 hover:text-black'/>
           
 
         </div>
-        <div>
-        © 2024 InternsNest. All rights reserved. A project by AI4SEE PVT LTD.
-        </div>
+      
       </div>
     </footer>
   );
