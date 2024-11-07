@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -45,6 +45,7 @@ const InternshipsUniversal = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const internshipsPerPage = 9;
+  const scrollableRef = useRef(null);
 
   const statesAndUTs = [
     { value: "All Locations", label: "All Locations" },
@@ -443,8 +444,8 @@ const InternshipsUniversal = () => {
   // console.log('this is selected location', selectedLocation);
   console.log("this is filtered internships", filteredInternships);
 
-  
-  
+
+
   const indexOfLastInternship = currentPage * internshipsPerPage;
   const indexOfFirstInternship = indexOfLastInternship - internshipsPerPage;
   const currentInternships = filteredInternships.slice(
@@ -458,6 +459,7 @@ const InternshipsUniversal = () => {
       setCurrentPage(currentPage + 1);
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        scrollToTop();
       }, 500);
     }
   };
@@ -467,10 +469,18 @@ const InternshipsUniversal = () => {
       setCurrentPage(currentPage - 1);
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        scrollToTop();
       }, 500);
     }
+    
   };
 
+  const scrollToTop = () => {
+    scrollableRef.current.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
 
   const handleChange = (value) => {
@@ -515,8 +525,8 @@ const InternshipsUniversal = () => {
           <FaFilter className="hover:cursor-pointer text-blue-500" />
         </div>
 
-        {/* this below div is filter box */}
-        <div className={` ${filterOpen ? 'block' : 'hidden'} w-[84%] md:w-[70%] mx-auto lg:w-[30%] h-full lg:max-h-screen lg:mt-12 px-6 shadow-xl border-t py-6 overflow-y-hidden bg-white  relative`}>
+        {/* this below div is filter options */}
+        <div className={` ${filterOpen ? 'block' : 'hidden'} w-[84%] md:w-[90%] mx-auto lg:w-[30%] xl:w-[23%] h-full lg:max-h-screen lg:mt-0 px-6 shadow-xl border-t py-6 overflow-y-hidden bg-white  relative`}>
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
           </h1>
@@ -618,14 +628,14 @@ const InternshipsUniversal = () => {
         </h1>
 
 
-        <div className="flex-1  lg:mt-10 ">
+        <div  ref={scrollableRef} className="flex-1  lg:mt-0  overflow-scroll overflow-x-hidden h-screen scrollbar-thin">
           <div className="flex flex-col justify-center bg-gray-100">
 
             {/* this below div is list of internships */}
             {currentInternships.map((internship) => (
               <div
                 key={internship._id}
-                className="bg-white shadow-md rounded-lg px-3 py-3 w-full my-3 mx-auto relative"
+                className="bg-white shadow-md rounded-lg px-3 py-3 w-full mb-3 mx-auto relative"
               >
                 <div className="flex justify-between items-center">
                   <div className="mb-4">
@@ -725,7 +735,16 @@ const InternshipsUniversal = () => {
                   Posted: {TimeAgo(internship.createdAt)}
                 </p>
 
-                <button onClick={handleRedirect} className="bg-blue-500 text-white px-4 py-1 rounded-md">Apply</button>
+                {/* <button onClick={handleRedirect} className="bg-blue-500 text-white px-4 py-1 rounded-md">Apply</button> */}
+
+                <button
+                   onClick={handleRedirect}
+                  class="flex justify-center text-white ml-0 gap-2 items-center mx-auto  text-md bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-6 py-1 overflow-hidden border-2 rounded-md group"
+                >
+                  Apply
+                
+                </button>
+
 
 
 
@@ -741,14 +760,14 @@ const InternshipsUniversal = () => {
               >
                 <FaAngleLeft />
               </button>
-              
+
               <span>{currentPage} / {totalPages}</span>
               <button
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
                 className={`px-4 py-2 rounded-md ${currentPage === Math.ceil(filteredInternships.length / internshipsPerPage)
-                    ? 'bg-gray-300'
-                    : 'bg-blue-500 text-white'
+                  ? 'bg-gray-300'
+                  : 'bg-blue-500 text-white'
                   }`}
               >
                 <FaAngleRight />

@@ -169,6 +169,7 @@ const Profile = () => {
       setProfilePic(null);
       setPicUrl(null);
       toast.error('picture deleted successfully');
+      window.location.reload();
     } catch (error) {
       console.error('Error deleting picture', error);
     }

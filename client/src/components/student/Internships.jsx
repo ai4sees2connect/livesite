@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import {
@@ -17,7 +17,7 @@ import {
   FaFilter,
   FaAngleRight,
   FaAngleLeft
-  
+
 } from "react-icons/fa";
 import Spinner from "../common/Spinner";
 import getUserIdFromToken from "./auth/authUtils";
@@ -40,9 +40,10 @@ const Internships = () => {
   const [selectedProfile, setSelectedProfile] = useState([]);
   const { student } = useStudent();
   const userId = getUserIdFromToken();
-  const [filterOpen, setFilterOpen]=useState(true);
+  const [filterOpen, setFilterOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const internshipsPerPage = 9;
+  const scrollableRef = useRef(null);
 
   const statesAndUTs = [
     { value: "All Locations", label: "All Locations" },
@@ -299,7 +300,7 @@ const Internships = () => {
   useEffect(() => {
     const isLargeScreen = window.matchMedia("(min-width: 1024px)").matches;
     setFilterOpen(isLargeScreen);
-}, []);
+  }, []);
 
   const [selectedLocation, setSelectedLocation] = useState([]);
   const [workType, setWorkType] = useState("All Internships");
@@ -430,13 +431,13 @@ const Internships = () => {
       }
     };
 
-    if(student?.resume){
-    fetchResume();
+    if (student?.resume) {
+      fetchResume();
     }
   }, [userId]);
   console.log("this is resume", resumeUrl);
 
-  
+
 
   const filteredInternships = internships.filter((internship) => {
     // Matches Work Type
@@ -453,7 +454,7 @@ const Internships = () => {
           profile?.label?.toLowerCase()
       );
 
-      
+
 
     const matchesLocation =
       selectedLocation.length == 0 ||
@@ -479,30 +480,40 @@ const Internships = () => {
   console.log("this is filtered internships", filteredInternships);
 
   const indexOfLastInternship = currentPage * internshipsPerPage;
-      const indexOfFirstInternship = indexOfLastInternship - internshipsPerPage;
-      const currentInternships = filteredInternships.slice(
-        indexOfFirstInternship,
-        indexOfLastInternship
-      );
-      const totalPages = Math.ceil(filteredInternships.length / internshipsPerPage);
+  const indexOfFirstInternship = indexOfLastInternship - internshipsPerPage;
+  const currentInternships = filteredInternships.slice(
+    indexOfFirstInternship,
+    indexOfLastInternship
+  );
+  const totalPages = Math.ceil(filteredInternships.length / internshipsPerPage);
 
-      const handleNextPage = () => {
-        if (currentPage < Math.ceil(filteredInternships.length / internshipsPerPage)) {
-          setCurrentPage(currentPage + 1);
-          setTimeout(() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }, 500);
-        }
-      };
+  const handleNextPage = () => {
+    if (currentPage < Math.ceil(filteredInternships.length / internshipsPerPage)) {
+      setCurrentPage(currentPage + 1);
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        scrollToTop();
+      }, 500);
+    }
+  };
 
-      const handlePreviousPage = () => {
-        if (currentPage > 1) {
-          setCurrentPage(currentPage - 1);
-          setTimeout(() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }, 500);
-        }
-      };
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        scrollToTop();
+      }, 500);
+    }
+
+  };
+
+  const scrollToTop = () => {
+    scrollableRef.current.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   const openModal = async (internship) => {
     setSelectedInternship(internship);
@@ -522,13 +533,13 @@ const Internships = () => {
     // setIsInterestedModalOpen(false);
   };
 
-  const openInterestedModal = () => {
-    if( student.education.length==0 || student.personalProjects.length==0 || student.portfolioLink.length==0 || student.skills.length==0 || !student.gender || !student.homeLocation || !student.yearsOfExp || !student.resume ){
-      toast.error("Please complete your profile");
-      return;
-    }
-    // setIsInterestedModalOpen(true);
-  };
+  // const openInterestedModal = () => {
+  //   if( student.education.length==0 || student.personalProjects.length==0 || student.portfolioLink.length==0 || student.skills.length==0 || !student.gender || !student.homeLocation || !student.yearsOfExp || !student.resume ){
+  //     toast.error("Please complete your profile");
+  //     return;
+  //   }
+  //   // setIsInterestedModalOpen(true);
+  // };
 
   // const closeInterestedModal = () => {
   //   setIsInterestedModalOpen(false);
@@ -617,25 +628,25 @@ const Internships = () => {
   }
 
   return (
-    <div className="py-10 px-5 mt-10 min-h-screen bg-gray-100">
+    <div className="py-5 px-5 mt-10 min-h-screen bg-gray-100">
       <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
         {filteredInternships.length} Total Internships
       </h1>
 
-      <div className="flex flex-col lg:flex-row w-[90%] mx-auto lg:mx-0 gap-10">
+      <div className="flex flex-col lg:flex-row w-[90%] mx-auto lg:mx-0 gap-10 ">
 
         {/* this below div is filter button */}
-        <div className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${filterOpen &&'border-blue-400'}`} onClick={()=>setFilterOpen(!filterOpen)}>
+        <div className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${filterOpen && 'border-blue-400'}`} onClick={() => setFilterOpen(!filterOpen)}>
           <span>Filters</span>
-          <FaFilter  className="hover:cursor-pointer text-blue-500"/>
+          <FaFilter className="hover:cursor-pointer text-blue-500" />
         </div>
 
         {/* this below div is filter box */}
-        <div className={` ${filterOpen? 'block':'hidden'} w-[84%] sm:w-[90%]  lg:ml-10 mx-auto lg:w-[30%] xl:w-[23%] h-full lg:max-h-screen lg:mt-4 px-6 shadow-xl border-t py-6 overflow-y-hidden bg-white  relative`}>
+        <div className={` ${filterOpen ? 'block' : 'hidden'} w-[84%] sm:w-[90%]  lg:ml-10 mx-auto lg:w-[30%] xl:w-[23%] h-full lg:max-h-screen lg:mt-0 px-6 shadow-xl rounded-md border-t py-6 overflow-y-hidden bg-white  relative`}>
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
           </h1>
-          <FaTimes onClick={()=>setFilterOpen(false)} className="absolute right-3 top-5 lg:hidden text-blue-500 hover:cursor-pointer"/>
+          <FaTimes onClick={() => setFilterOpen(false)} className="absolute right-3 top-5 lg:hidden text-blue-500 hover:cursor-pointer" />
 
           <p className="mb-4 mt-6">Type of Internship:</p>
           <button
@@ -729,18 +740,18 @@ const Internships = () => {
         </div>
 
         <h1 className="text-3xl font-bold mb-8 mt-8 text-center lg:hidden">
-        {filteredInternships.length} Total Internships
+          {filteredInternships.length} Total Internships
         </h1>
 
 
-        <div className="flex-1 lg:mt-0 ">
+        <div ref={scrollableRef} className="flex-1 lg:mt-0 overflow-scroll overflow-x-hidden h-screen scrollbar-thin relative">
           <div className="flex flex-col justify-center bg-gray-100">
 
             {/* this below div is list of internships */}
             {currentInternships.map((internship) => (
               <div
                 key={internship._id}
-                className="bg-white shadow-md rounded-lg px-7 py-3 w-full my-3 mx-auto relative"
+                className="bg-white shadow-md rounded-lg px-7 py-3 w-full mb-3 mx-auto relative "
               >
                 <div className="flex justify-between items-center">
                   <div className="mb-4">
@@ -818,11 +829,10 @@ const Internships = () => {
                 )}
                 <div className="flex text-sm md:text-base space-x-4 items-center">
                   <div
-                    className={`${
-                      internship.studentCount < 20
+                    className={`${internship.studentCount < 20
                         ? "text-green-500"
                         : "text-gray-500"
-                    } my-2 w-[30%] md:w-auto`}
+                      } my-2 w-[30%] md:w-auto`}
                   >
                     {internship.studentCount} Applicants
                   </div>
@@ -865,7 +875,7 @@ const Internships = () => {
               </div>
             ))}
 
-<div className="flex justify-center my-4 space-x-4">
+            <div className="flex  justify-center my-4 space-x-4">
               <button
                 onClick={handlePreviousPage}
                 disabled={currentPage === 1}
@@ -878,8 +888,8 @@ const Internships = () => {
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
                 className={`px-4 py-2 rounded-md ${currentPage === Math.ceil(filteredInternships.length / internshipsPerPage)
-                    ? 'bg-gray-300'
-                    : 'bg-blue-500 text-white'
+                  ? 'bg-gray-300'
+                  : 'bg-blue-500 text-white'
                   }`}
               >
                 <FaAngleRight />
@@ -907,10 +917,10 @@ const Internships = () => {
                           <FaTimes />
                         </button>
                         <div>
-                        <p className="text-gray-600 mb-1 lg:mb-4">
-                          {selectedInternship.recruiter.companyName}
-                        </p>
-                        {/* <button
+                          <p className="text-gray-600 mb-1 lg:mb-4">
+                            {selectedInternship.recruiter.companyName}
+                          </p>
+                          {/* <button
                         onClick={openInterestedModal}
                         className="text-sm lg:text-base font-semibold px-2 py-2 bg-blue-100  lg:py-2 lg:px-5 rounded-lg text-blue-500 mb-2"
                       >
@@ -919,7 +929,7 @@ const Internships = () => {
                         </div>
                       </div>
 
-                      
+
 
                       <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
                         <FaMapMarkerAlt className="mr-2" />
@@ -990,98 +1000,98 @@ const Internships = () => {
                       </div>
 
                       <div>
-                      <div className="resume-box mt-4">
-                        <h1 className="text-lg sm:text-xl font-semibold">Your Resume</h1>
+                        <div className="resume-box mt-4">
+                          <h1 className="text-lg sm:text-xl font-semibold">Your Resume</h1>
 
-                        <div className="flex flex-col sm:flex-row sm:space-x-2">
-                          <h1 className="text-gray-600">
-                            This Resume will be submitted along with you
-                            application
-                          </h1>
-                          {resumeUrl && (
-                            <a
-                              href={resumeUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-400"
-                              download={resumeFilename}
-                            >
-                              Click to view
-                            </a>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="about-yourself-box mt-9">
-                        <h1 className="text-lg sm:text-xl font-semibold">
-                          Tell us about yourself
-                        </h1>
-                        <textarea
-                          value={aboutText}
-                          onChange={(e) => setAboutText(e.target.value)}
-                          className="my-3 w-[90%] sm:w-[80%] p-2 border-2"
-                          placeholder="Mention your skills, your interests, your previous experience in my company, achievements and Why do you want to work with us."
-                          rows={4}
-                        ></textarea>
-                      </div>
-
-                      <div className="availability-check mt-4">
-                        <h1>Can you join Immediately?</h1>
-                        <div className="flex flex-col text-gray-600 my-2">
-                          <label>
-                            <input
-                              type="radio"
-                              value="Yes"
-                              checked={
-                                availability === "Yes! Will join Immediately"
-                              }
-                              onChange={handleRadioChange}
-                            />
-                            <span className="mx-1">Yes</span>
-                          </label>
-                          <label>
-                            <input
-                              type="radio"
-                              value="No"
-                              checked={
-                                availability === "No! Cannot Join immediately"
-                              }
-                              onChange={handleRadioChange}
-                            />
-                            <span className="mx-1">No</span>
-                          </label>
-                        </div>
-                      </div>
-
-                      {selectedInternship.assessment && (
-                        <div className="assessment-box mt-4">
-                          <h1 className="text-lg sm:text-xl font-semibold mb-2">
-                            Assessment
-                          </h1>
-                          <div className="text-gray-600 mb-2">
-                            Q {selectedInternship.assessment}
+                          <div className="flex flex-col sm:flex-row sm:space-x-2">
+                            <h1 className="text-gray-600">
+                              This Resume will be submitted along with you
+                              application
+                            </h1>
+                            {resumeUrl && (
+                              <a
+                                href={resumeUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400"
+                                download={resumeFilename}
+                              >
+                                Click to view
+                              </a>
+                            )}
                           </div>
+                        </div>
+
+                        <div className="about-yourself-box mt-9">
+                          <h1 className="text-lg sm:text-xl font-semibold">
+                            Tell us about yourself
+                          </h1>
                           <textarea
-                            value={assessmentAns}
-                            onChange={(e) => setAssessmentAns(e.target.value)}
-                            className="w-[90%] sm:w-[80%] border-2 p-2"
+                            value={aboutText}
+                            onChange={(e) => setAboutText(e.target.value)}
+                            className="my-3 w-[90%] sm:w-[80%] p-2 border-2"
+                            placeholder="Mention your skills, your interests, your previous experience in my company, achievements and Why do you want to work with us."
                             rows={4}
-                            name=""
-                            id=""
-                            placeholder="Write your answer here..."
                           ></textarea>
                         </div>
-                      )}
 
-                      <button
-                        onClick={() =>
-                          applyToInternship(selectedInternship._id)
-                        }
-                        className="bg-blue-400 hover:bg-blue-500 rounded-lg px-3 py-2 mt-7 text-white"
-                      >
-                        Apply
-                      </button>
-                    </div>
+                        <div className="availability-check mt-4">
+                          <h1>Can you join Immediately?</h1>
+                          <div className="flex flex-col text-gray-600 my-2">
+                            <label>
+                              <input
+                                type="radio"
+                                value="Yes"
+                                checked={
+                                  availability === "Yes! Will join Immediately"
+                                }
+                                onChange={handleRadioChange}
+                              />
+                              <span className="mx-1">Yes</span>
+                            </label>
+                            <label>
+                              <input
+                                type="radio"
+                                value="No"
+                                checked={
+                                  availability === "No! Cannot Join immediately"
+                                }
+                                onChange={handleRadioChange}
+                              />
+                              <span className="mx-1">No</span>
+                            </label>
+                          </div>
+                        </div>
+
+                        {selectedInternship.assessment && (
+                          <div className="assessment-box mt-4">
+                            <h1 className="text-lg sm:text-xl font-semibold mb-2">
+                              Assessment
+                            </h1>
+                            <div className="text-gray-600 mb-2">
+                              Q {selectedInternship.assessment}
+                            </div>
+                            <textarea
+                              value={assessmentAns}
+                              onChange={(e) => setAssessmentAns(e.target.value)}
+                              className="w-[90%] sm:w-[80%] border-2 p-2"
+                              rows={4}
+                              name=""
+                              id=""
+                              placeholder="Write your answer here..."
+                            ></textarea>
+                          </div>
+                        )}
+
+                        <button
+                          onClick={() =>
+                            applyToInternship(selectedInternship._id)
+                          }
+                          className="bg-blue-400 hover:bg-blue-500 rounded-lg px-3 py-2 mt-7 text-white"
+                        >
+                          Apply
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </>

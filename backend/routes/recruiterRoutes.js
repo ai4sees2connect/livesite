@@ -200,15 +200,15 @@ router.get("/details", async (req, res) => {
   }
 });
 
-router.put('/update-Contact/:recruiterId', async (req, res) => {
-  const { phoneNumber, countryCode } = req.body;
+router.put('/update-details/:recruiterId', async (req, res) => {
+  const { phone, countryCode,firstname,lastname, companyName} = req.body;
   const recruiterId= req.params.recruiterId; // Assuming the user ID is stored in req.user
 
   try {
     // Update the user contact information in the database
     const recruiter = await Recruiter.findByIdAndUpdate(
       recruiterId,
-      { phone:phoneNumber, countryCode },
+      { phone, countryCode,firstname,lastname, companyName },
       { new: true } // returns the updated document
     );
 
@@ -216,9 +216,9 @@ router.put('/update-Contact/:recruiterId', async (req, res) => {
       return res.status(404).json({ message: 'recruiter not found' });
     }
 
-    res.json({ message: 'Contact updated successfully', user: recruiter });
+    res.json({ message: 'details updated successfully', user: recruiter });
   } catch (error) {
-    console.error('Error updating contact:', error);
+    console.error('Error updating details:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 });
