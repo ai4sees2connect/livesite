@@ -31,18 +31,17 @@ const RecProfile = () => {
   const [companyUrl, setCompanyUrl] = useState("");
   const [pdfUrl, setPdfUrl] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const [countryCode, setCountryCode] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [countryCode, setCountryCode] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   useEffect(() => {
     if (recruiter?.phone) {
       setPhoneNumber(recruiter.phone); // Set phoneNumber once recruiter data is loaded
     }
-    if(recruiter?.countryCode){
-      setCountryCode(recruiter.countryCode); 
+    if (recruiter?.countryCode) {
+      setCountryCode(recruiter.countryCode);
     }
-  }, [recruiter]); 
-
+  }, [recruiter]);
 
   useEffect(() => {
     if (!token) {
@@ -238,29 +237,31 @@ const RecProfile = () => {
   };
   // Separate state for country code and phone number
 
-
   const handleCountryChange = (e) => {
     setCountryCode(e.target.value);
   };
 
-  console.log(countryCode)
-  console.log(phoneNumber)
+  console.log(countryCode);
+  console.log(phoneNumber);
 
   const handleContactUpdate = async () => {
     try {
-      const response = await axios.put(`${api}/recruiter/update-Contact/${idFromToken}`, {
-        phoneNumber,
-        countryCode
-      });
-  
+      const response = await axios.put(
+        `${api}/recruiter/update-Contact/${idFromToken}`,
+        {
+          phoneNumber,
+          countryCode,
+        }
+      );
+
       // Handle success response (e.g., show success message, update UI, etc.)
-      console.log('Contact updated:', response.data);
-      toast.success('Contact updated successfully');
+      console.log("Contact updated:", response.data);
+      toast.success("Contact updated successfully");
       window.location.reload();
     } catch (error) {
       // Handle error (e.g., show error message)
-      console.error('Error updating contact:', error);
-      toast.error('Failed to update contact. Please try again.');
+      console.error("Error updating contact:", error);
+      toast.error("Failed to update contact. Please try again.");
     }
   };
 
@@ -319,46 +320,62 @@ const RecProfile = () => {
           )}
         </div>
         {/* box */}
-        {/* <h1 className=" text-2xl capitalize  text-gray-600">
-          {recruiter.firstname} {recruiter.lastname}
-        </h1> */}
         {/* firstname and lastname */}
         <div className="flex flex-col md:flex-row gap-5 w-full  lg:w-[70%] px-3 lg:px-0">
-          <div className="flex flex-col w-full">
-            <label>First Name</label>
-            <input
-              className="border-2 rounded-lg px-3 py-1"
-              defaultValue={recruiter?.firstname}
-              type="text"
-            />
+          {/* first name */}
+          <div className="relative w-full">
+            <div className="flex flex-col">
+              <label>First Name</label>
+              <input
+                className="border-2 rounded-lg px-3 py-1"
+                defaultValue={recruiter?.firstname}
+                type="text"
+              />
+            </div>
+            {/* change button for first name */}
+            <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
+              <FaPen className="text-sm text-gray-600 hover:cursor-pointer " />
+            </div>
           </div>
-          <div className="flex flex-col w-full">
-            <label>Last Name</label>
-            <input
-              className="border-2 rounded-lg px-3 py-1"
-              defaultValue={recruiter?.lastname}
-              type="text"
-            />
+          {/* Last Name */}
+          <div className="relative w-full">
+            <div className="flex flex-col w-full">
+              <label>Last Name</label>
+              <input
+                className="border-2 rounded-lg px-3 py-1"
+                defaultValue={recruiter?.lastname}
+                type="text"
+              />
+            </div>
+            {/* chnage button for last name */}
+            <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
+              <FaPen className="text-sm text-gray-600 hover:cursor-pointer " />
+            </div>
           </div>
         </div>
 
         {/* recruiter email & company name */}
         <div className="flex flex-col items-end md:flex-row gap-5 w-full  lg:w-[70%] px-3 lg:px-0">
-          {/* <h1 className=" text-gray-600 ">{recruiter.email}</h1> */}
-          <div className="flex flex-col w-full">
-            <label>Recruiter Email</label>
-            <input
-              className="border-2 rounded-lg px-3 py-1"
-              defaultValue={recruiter?.email}
-              type="text"
-              readOnly
-            />
+          {/* Recruiter email */}
+          <div className="relative w-full">
+            <div className="flex flex-col">
+              <label>Recruiter Email</label>
+              <input
+                className="border-2 rounded-lg px-3 py-1"
+                defaultValue={recruiter?.email}
+                type="text"
+              />
+            </div>
+            {/* change button for recruiter email */}
+            <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
+              <FaPen className="text-sm text-gray-600 hover:cursor-pointer " />
+            </div>
           </div>
 
+          {/* company name */}
           <div className="w-full">
             {recruiter.companyName && (
               <div className="relative">
-                {/* <h1 className="text-gray-600">{recruiter.companyName}</h1> */}
                 <div className="flex flex-col">
                   <label>Company Name</label>
                   <input
@@ -367,6 +384,7 @@ const RecProfile = () => {
                     type="text"
                   />
                 </div>
+                {/* change button for company */}
                 <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
                   <FaPen
                     onClick={() => setIsCompanyEdit(true)}
@@ -414,8 +432,9 @@ const RecProfile = () => {
         {/* phone number */}
         {/* <h1 className=" text-gray-600 ">Ph no- {recruiter.phone}</h1> */}
         {/* country code */}
+
         <div className="bg-white rounded-lg w-full lg:w-[70%]">
-          <div className="flex flex-col justify-center md:flex-row gap-2 mt-2">
+          <div className="flex flex-col justify-center md:flex-row gap-2 mt-2 px-3 md:px-0 border-2 md:border-0 py-2 md:py-0 mx-3 rounded-lg">
             {/* Country Code Dropdown */}
             <div className="flex items-center">
               <label className="text-gray-500 mr-2">Country Code</label>
@@ -449,10 +468,12 @@ const RecProfile = () => {
               <button
                 onClick={handleContactUpdate}
                 disabled={phoneNumber?.length < 10 || !phoneNumber}
-                className={`px-6 py-2 rounded-lg font-semibold text-white transition duration-200 
-                ${phoneNumber?.length < 10
-                    ? 'bg-gray-300 cursor-not-allowed'
-                    : 'bg-blue-500 hover:bg-blue-600 cursor-pointer'}`}
+                className={`px-6 py-2 rounded-lg font-semibold text-white transition duration-200 w-full mt-3 md:mt-0
+                ${
+                  phoneNumber?.length < 10
+                    ? "bg-gray-300 cursor-not-allowed"
+                    : "bg-blue-500 hover:bg-blue-600 cursor-pointer"
+                }`}
               >
                 Update
               </button>
@@ -558,16 +579,16 @@ const RecProfile = () => {
             <p className="text-gray-600">
               Verification:
               <span
-                className={`${recruiter.companyCertificate.status === "pending"
+                className={`${
+                  recruiter.companyCertificate.status === "pending"
                     ? "text-yellow-500"
                     : recruiter.companyCertificate.status === "Verified"
-                      ? "text-green-500"
-                      : recruiter.companyCertificate.status === "Rejected"
-                        ? "text-red-500"
-                        : ""
-                  }`}
+                    ? "text-green-500"
+                    : recruiter.companyCertificate.status === "Rejected"
+                    ? "text-red-500"
+                    : ""
+                }`}
               >
-
                 {recruiter.companyCertificate.status}
               </span>
             </p>
@@ -604,13 +625,6 @@ const RecProfile = () => {
             )}
           </div>
         )}
-
-
-
-
-
-
-
       </div>
     </div>
   );
