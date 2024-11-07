@@ -15,26 +15,22 @@ const Education = () => {
   const [fieldOfStudy, setFieldOfStudy] = useState(null);
   const [otherField, setOtherField] = useState(null);
   const [institution, setInstitution] = useState("");
-  const [startYear, setStartYear] = useState("");
-  const [endYear, setEndYear] = useState("");
+  
   const [score, setScore] = useState("");
   const [educationDetails, setEducationDetails] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
+  const [gradeType, setGradeType] = useState("CGPA");
   const currentYear = new Date().getFullYear();
+  const [startYear, setStartYear] = useState(currentYear);
+  const [endYear, setEndYear] = useState(currentYear);
   const startYears = Array.from({ length: 50 }, (_, i) => currentYear - i);
-  // <<<<<<< bapi
-  //   const endYears = Array.from(
-  //     { length: 50 },
-  //     (_, i) => currentYear - 40 + i
-  //   ).reverse();
-  //   //reverse this array
 
-  // =======
-  const endYears = Array.from(
-    { length: 50 },
-    (_, i) => currentYear - 40 + i
-  ).reverse();
-  //reverse this array
+  // const endYears = Array.from(
+  //   { length: 50 },
+  //   (_, i) => currentYear - 40 + i
+  // ).reverse();
+
+  const endYears = Array.from({ length: 11 }, (_, i) => parseInt(startYear) + i).reverse();
 
   const degreeOptions = [
     { value: "B.Tech", label: "B.Tech" },
@@ -295,7 +291,7 @@ const Education = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  // console.log(score+gradeType)
     const educationData = {
       degree,
       fieldOfStudy:
@@ -303,7 +299,7 @@ const Education = () => {
       institution,
       startYear,
       endYear,
-      score,
+      score:score+' '+ gradeType,
     };
 
     console.log("educationData", educationData);
@@ -400,22 +396,17 @@ const Education = () => {
     setEditIndex(index);
   };
 
+  const handleGradeChange = (event) => {
+    setGradeType(event.target.value);
+  };
+
   console.log(degree);
   console.log(fieldOfStudy);
 
   return (
-// <<<<<<< bapi
-    // <<<<<<< bapi
-    //     <div className="container mx-auto p-4 border-b shadow-md mt-[68px] w-full lg:w-[80%]">
-    // =======
-//     <div className="container mx-auto p-4 border-b shadow-md mt-[68px] w-full lg:w-[80%]">
-// =======
-// <<<<<<< bapi
-    <div className="container mx-auto p-4 border-b shadow-md mt-[68px] w-full lg:w-[80%]">
-{/* // ======= */}
-    {/* // <div className="container mx-auto p-4 border-b shadow-md mt-[68px] w-full lg:w-2/3"> */}
 
-// >>>>>>> main
+    <div className="container mx-auto p-4 border-b shadow-md mt-[68px] w-full lg:w-[80%]">
+
       <h2 className="text-xl font-outfit font-semibold flex justify-between">
         Education
         <button
@@ -517,9 +508,17 @@ const Education = () => {
               ))}
             </select>
           </div>
+
+          <div className="flex space-x-4 md:space-x-4 px-2 items-center mb-2 w-[50%] md:w-[40%]">
+            <label htmlFor="gradeSelect">Select Grade Type:</label>
+            <select id="gradeSelect" value={gradeType} onChange={handleGradeChange} className="mx-3 border p-2 w-fit">
+              <option value="CGPA">CGPA</option>
+              <option value="%">Percentage</option>
+            </select>
+          </div>
           <input
             type="number"
-            placeholder="Enter Percentage/CGPA scored"
+            placeholder={`Enter ${gradeType} scored`}
             value={score}
             onChange={(e) => setScore(e.target.value)}
             className="border p-2 mb-2 w-full"
@@ -568,7 +567,7 @@ const Education = () => {
                     <p>{edu?.institution}</p>
                     <p>Start Year: {edu?.startYear}</p>
                     <p>Year of Completion: {edu?.endYear}</p>
-                    <p>Percentage/CGPA: {edu?.score}</p>
+                    <p>Score: {edu?.score}</p>
                   </div>
                 </div>
               </div>
