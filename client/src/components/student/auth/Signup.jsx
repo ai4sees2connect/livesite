@@ -35,6 +35,7 @@ function Signup() {
   const [otp, setOtp] = useState("");
   const [sendingOtp, setSendingOtp] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
+  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -46,6 +47,24 @@ function Signup() {
 
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+
+    // Define the regex pattern
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (newPassword.trim().length < 8) {
+      setPasswordError("Password must be at least 8 characters");
+    } else if (!passwordPattern.test(newPassword)) {
+      setPasswordError(
+        "Password must contain at least one uppercase , one lowercase , one number, and one special character"
+      );
+    } else {
+      setPasswordError("");
+    }
   };
 
   const validateEmail = (email) => {
@@ -193,7 +212,7 @@ function Signup() {
           {/* form starts from here */}
 
           <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full ">
-            <form className="space-y-4 w-full lg:w-[60%]  md:max-w-xl px-5 lg:px-0">
+            <form className="space-y-4 w-[80%] lg:w-[60%]  md:max-w-xl px-5 lg:px-0">
               <div className="mx-auto md:max-w-xl">
                 <input
                   type="text"
@@ -252,7 +271,7 @@ function Signup() {
                   />
                   {validateEmail(email) && !sendingOtp && (
                     <button
-                      className="text-blue-500 text-left absolute -right-[67px] sm:-right-[73px] text-sm sm:text-base top-3"
+                      className="text-blue-500 text-left absolute right-3  sm:-right-[73px] sm:top-3 text-xs sm:text-base top-4"
                       onClick={handleSendOtp}
                     >
                       Send OTP
@@ -296,14 +315,7 @@ function Signup() {
                   id="password"
                   value={password}
                   placeholder="Password"
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (e.target.value.trim().length < 8)
-                      setPasswordError(
-                        "Password must be at least 8 characters"
-                      );
-                    else setPasswordError("");
-                  }}
+                  onChange={handlePasswordChange}
                   className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-10 w-full"
                   required
                 />

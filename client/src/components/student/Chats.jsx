@@ -960,7 +960,7 @@ const Chats = () => {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full p-2 border-2 rounded-lg"
+            className="w-full p-2 border-2 rounded-lg shadow-md"
             placeholder="Type a message..."
           />
           <label htmlFor="fileUpload" className='my-auto text-black hover:cursor-pointer'><FaPaperclip className='w-5 h-5' /></label>
@@ -988,7 +988,7 @@ const Chats = () => {
 
           <button
           disabled={newMessage === '' ? true : false}
-            className={`g-blue-500 text-white border-2 font-semibold px-9 py-1 rounded-lg  ${newMessage === '' && 'bg-gray-300'}`}
+            className={`bg-blue-500 text-white border-2 font-semibold px-9 py-1 rounded-lg shadow-md ${newMessage === '' && 'bg-gray-300'}`}
             onClick={sendMessage}
           >
             Send

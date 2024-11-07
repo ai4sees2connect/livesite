@@ -33,6 +33,9 @@ const RecProfile = () => {
   const [phoneError, setPhoneError] = useState("");
   const [countryCode, setCountryCode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [company, setCompany] = useState("");
 
   useEffect(() => {
     if (recruiter?.phone) {
@@ -40,6 +43,16 @@ const RecProfile = () => {
     }
     if (recruiter?.countryCode) {
       setCountryCode(recruiter.countryCode);
+    }
+    if (recruiter?.firstname) {
+      setFirstName(recruiter.firstname)
+    }
+    if (recruiter?.lastname) {
+      setLastName(recruiter.lastname);
+    }
+
+    if (recruiter?.companyName) {
+      setCompany(recruiter.companyName);
     }
   }, [recruiter]);
 
@@ -244,28 +257,45 @@ const RecProfile = () => {
   console.log(countryCode);
   console.log(phoneNumber);
 
-  const handleContactUpdate = async () => {
+  const handleDetailsUpdate = async () => {
     try {
-      const response = await axios.put(
-        `${api}/recruiter/update-Contact/${idFromToken}`,
-        {
-          phoneNumber,
-          countryCode,
-        }
-      );
+      // const [contactResponse, nameResponse, companyResponse] = await Promise.all([
+      //   axios.put(`${api}/recruiter/update-Contact/${idFromToken}`, {
+      //     phoneNumber,
+      //     countryCode,
+      //   }),
+      //   axios.put(`${api}/recruiter/update-name/${idFromToken}`, {
+      //     firstname: firstName,
+      //     lastnaem: lastName,
+      //   }),
+      //   axios.put(`${api}/recruiter/update-company/${idFromToken}`, {
+      //     companyName: company,
+      //   })
+      // ]);
+
+      const response = await axios.put(`${api}/recruiter/update-details/${idFromToken}`, {
+        phone: phoneNumber,
+        countryCode,
+        firstname: firstName,
+        lastname: lastName,
+        companyName: company,
+      })
 
       // Handle success response (e.g., show success message, update UI, etc.)
-      console.log("Contact updated:", response.data);
-      toast.success("Contact updated successfully");
+      console.log("Details updated:", response.data);
+      toast.success("Details updated successfully");
       window.location.reload();
     } catch (error) {
       // Handle error (e.g., show error message)
-      console.error("Error updating contact:", error);
-      toast.error("Failed to update contact. Please try again.");
+      console.error("Error updating Details:", error);
+      toast.error("Failed to update Details. Please try again.");
     }
   };
 
   console.log(recruiter);
+  console.log(firstName);
+  console.log(lastName);
+  console.log(company);
 
   return !recruiter ? (
     <Spinner />
@@ -328,29 +358,31 @@ const RecProfile = () => {
               <label>First Name</label>
               <input
                 className="border-2 rounded-lg px-3 py-1"
-                defaultValue={recruiter?.firstname}
+                defaultValue={firstName}
                 type="text"
+                onChange={(e) => setFirstName(e.target.value)}
               />
             </div>
             {/* change button for first name */}
-            <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
+            {/* <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
               <FaPen className="text-sm text-gray-600 hover:cursor-pointer " />
-            </div>
+            </div> */}
           </div>
           {/* Last Name */}
           <div className="relative w-full">
             <div className="flex flex-col w-full">
               <label>Last Name</label>
               <input
+                onChange={(e) => setLastName(e.target.value)}
                 className="border-2 rounded-lg px-3 py-1"
-                defaultValue={recruiter?.lastname}
+                defaultValue={lastName}
                 type="text"
               />
             </div>
             {/* chnage button for last name */}
-            <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
+            {/* <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
               <FaPen className="text-sm text-gray-600 hover:cursor-pointer " />
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -364,12 +396,13 @@ const RecProfile = () => {
                 className="border-2 rounded-lg px-3 py-1"
                 defaultValue={recruiter?.email}
                 type="text"
+                readOnly
               />
             </div>
             {/* change button for recruiter email */}
-            <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
+            {/* <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
               <FaPen className="text-sm text-gray-600 hover:cursor-pointer " />
-            </div>
+            </div> */}
           </div>
 
           {/* company name */}
@@ -379,18 +412,13 @@ const RecProfile = () => {
                 <div className="flex flex-col">
                   <label>Company Name</label>
                   <input
+                    onChange={(e) => setCompany(e.target.value)}
                     className="border-2 rounded-lg px-3 py-1"
                     defaultValue={recruiter?.companyName}
                     type="text"
                   />
                 </div>
-                {/* change button for company */}
-                <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
-                  <FaPen
-                    onClick={() => setIsCompanyEdit(true)}
-                    className="text-sm text-gray-600 hover:cursor-pointer "
-                  />
-                </div>
+               
               </div>
             )}
             {!isCompanyEdit && !recruiter.companyName && (
@@ -464,22 +492,23 @@ const RecProfile = () => {
               />
             </div>
 
-            <div>
+            
+          </div>
+        </div>
+
+        <div>
               <button
-                onClick={handleContactUpdate}
+                onClick={handleDetailsUpdate}
                 disabled={phoneNumber?.length < 10 || !phoneNumber}
                 className={`px-6 py-2 rounded-lg font-semibold text-white transition duration-200 w-full mt-3 md:mt-0
-                ${
-                  phoneNumber?.length < 10
+                ${phoneNumber?.length < 10
                     ? "bg-gray-300 cursor-not-allowed"
                     : "bg-blue-500 hover:bg-blue-600 cursor-pointer"
-                }`}
+                  }`}
               >
                 Update
               </button>
             </div>
-          </div>
-        </div>
 
         {!recruiter.companyWebsite && !recruiter.companyCertificate && (
           <div className="flex flex-col space-y-3  justify-center">
@@ -579,15 +608,14 @@ const RecProfile = () => {
             <p className="text-gray-600">
               Verification:
               <span
-                className={`${
-                  recruiter.companyCertificate.status === "pending"
+                className={`${recruiter.companyCertificate.status === "pending"
                     ? "text-yellow-500"
                     : recruiter.companyCertificate.status === "Verified"
-                    ? "text-green-500"
-                    : recruiter.companyCertificate.status === "Rejected"
-                    ? "text-red-500"
-                    : ""
-                }`}
+                      ? "text-green-500"
+                      : recruiter.companyCertificate.status === "Rejected"
+                        ? "text-red-500"
+                        : ""
+                  }`}
               >
                 {recruiter.companyCertificate.status}
               </span>
