@@ -116,6 +116,7 @@ const RecDashboard = () => {
   );
 
   const totalPages = Math.ceil(internships.length / itemsPerPage);
+  console.log('these are internships:', paginatedInternships);
 
   if(internships.length===0){
     return (
@@ -140,7 +141,7 @@ const RecDashboard = () => {
           <div className="text-xs ml-6 lg:text-base lg:w-[90px] lg:ml-20 pr-2">View Details</div>
         </div>
 
-        {paginatedInternships.map((internship) => (
+        {paginatedInternships.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((internship) => (
           <div key={internship._id} className="grid grid-cols-5 gap-2 py-2 border-b-2">
             <div className="text-xs text-left ml-0 my-3 w-[80%] sm:text-center sm:text-sm sm:ml-2 lg:text-base lg:ml-10 lg:w-[190px]">
               {internship.internshipName}
