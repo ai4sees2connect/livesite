@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import google_pic from "../../../images/google_pic.png";
 import recruiter_bg from "../../../images/recruiter_bg.jpeg";
 import axios from "axios";
@@ -29,6 +29,10 @@ function Signup() {
   const navigate = useNavigate();
   const userId = getUserIdFromToken();
   const [countryCode, setCountryCode] = useState('+91');
+  const [otpInput, setIsOtpInput] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -66,11 +70,64 @@ function Signup() {
     return emailRegex.test(email);
   };
 
+  const handleVerifyOtp = async (e) => {
+    try {
+      e.preventDefault();
+      const response = await axios.post(`${api}/recruiter/verify-otp`, {
+        email: email,
+        otp: otp,
+      });
+
+      if (response.status === 200) {
+        // OTP verified successfully
+        toast.success("OTP verified successfully!");
+        setOtpVerified(true);
+      } else {
+        // Something went wrong, show the error message
+        toast.error(response.data.message);
+        setOtpVerified(false);
+      }
+    } catch (error) {
+      if (error.response) {
+        // If the request was made and the server responded with a status code that falls out of the range of 2xx
+        toast.error(error.response.data.message);
+      } else {
+        // Something else went wrong (e.g., network error)
+        toast.error("An error occurred while verifying the OTP");
+      }
+      console.error("Error verifying OTP:", error);
+    }
+  };
+
+  const handleSendOtp = async (e) => {
+    try {
+      e.preventDefault();
+      if (!validateEmail(email)) {
+        setEmailError("The email does not look right. Try again.");
+        return;
+      }
+      setEmailError("");
+      setSendingOtp(true);
+      const response = await axios.post(`${api}/recruiter/send-otp`, { email });
+
+      // Prompt user to enter the OTP
+      toast.success("OTP sent to your email.");
+      setSendingOtp(false);
+
+      // Store email and other form data temporarily
+      setIsOtpInput(true); // Show OTP input field
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error sending OTP");
+    }
+  };
+
   const isFormValid =
     email.trim() !== "" &&
     password.trim() !== "" &&
     firstname.trim() !== "" &&
-    lastname.trim() !== "";
+    lastname.trim() !== "" &&
+    otp.trim() !== "" &&
+    otpVerified;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,12 +137,12 @@ function Signup() {
       setEmailError("The email does not look right. Try again.");
       return;
     }
-    if (phone.length < 10){
+    if (phone.length < 10) {
       setPhoneError("Please enter a valid phone number.");
       return;
     }
     setEmailError("");
-    console.log('new phone no is',countryCode+' '+ phone);
+    console.log('new phone no is', countryCode + ' ' + phone);
     try {
       // Send a POST request to the backend
       const response = await axios.post(`${api}/recruiter/signup`, {
@@ -138,7 +195,7 @@ function Signup() {
     }
   };
 
- 
+
 
   const handleCountryChange = (e) => {
     setCountryCode(e.target.value);
@@ -208,7 +265,7 @@ function Signup() {
                 )}
               </div>
 
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center relative">
                 <input
                   type="email"
                   id="email"
@@ -225,30 +282,49 @@ function Signup() {
                   className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                   required
                 />
-                {emailError && (
-                  <p className="text-red-500 text-left w-full">{emailError}</p>
-                )}
-              </div>
 
-              {/* <div className="flex flex-col items-center">
-                <input
-                  type="number"
-                  id="phone"
-                  value={phone}
-                  placeholder="Phone no"
-                  onChange={(e) => {
-                    setPhone(e.target.value);
-                    if (e.target.value.trim().length < 10) {
-                      setPhoneError("Enter a valid phone number");
-                    } else setPhoneError("");
-                  }}
-                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
-                  required
-                />
-                {phoneError && (
-                  <p className="text-red-500 text-left w-full">{phoneError}</p>
+                {validateEmail(email) && !sendingOtp && (
+                  <button
+                    className="text-blue-500 text-left absolute right-3  sm:-right-[73px] sm:top-3 text-xs sm:text-base top-4"
+                    onClick={handleSendOtp}
+                  >
+                    Send OTP
+                  </button>
                 )}
-              </div> */}
+
+                {sendingOtp && (
+                  <FontAwesomeIcon
+                    icon={faSpinner}
+                    spin
+                    className="h-5 w-5 text-black absolute right-2 top-4"
+                  />
+                )}
+
+                {otpInput && (
+                  <div className="relative my-3 w-full">
+                    <input
+                      type="text"
+                      id="otp"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter otp"
+                      className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-20 w-full"
+                    />
+                    <button
+                      onClick={handleVerifyOtp}
+                      className="absolute -right-[40px] top-3 text-blue-500 text-sm"
+                    >
+                      Verify
+                    </button>
+                  </div>
+                )}
+
+              </div>
+              {emailError && (
+                <p className="text-red-500 text-left w-full">{emailError}</p>
+              )}
+
+
               <div className="flex flex-col items-start ">
                 <div className="flex  justify-start md:flex-row gap-2 mt-2">
                   {/* Country Code Dropdown */}
@@ -266,7 +342,7 @@ function Signup() {
 
                   {/* Phone Number */}
                   <div className="flex items-center">
-                   
+
                     <input
                       type="number"
                       className="w-full p-2 border border-gray-300 rounded-lg outline-none"

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   FaMapMarkerAlt,
@@ -38,12 +38,13 @@ const Internships = () => {
   const [error, setError] = useState(null);
   const [selectedInternship, setSelectedInternship] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState([]);
-  const { student } = useStudent();
+  const { logout, student,refreshData } = useStudent();
   const userId = getUserIdFromToken();
   const [filterOpen, setFilterOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const internshipsPerPage = 9;
   const scrollableRef = useRef(null);
+  const navigate=useNavigate();
 
   const statesAndUTs = [
     { value: "All Locations", label: "All Locations" },
@@ -516,6 +517,7 @@ const Internships = () => {
   };
 
   const openModal = async (internship) => {
+    refreshData();
     setSelectedInternship(internship);
     console.log("selected internship", internship);
     try {
@@ -549,6 +551,14 @@ const Internships = () => {
 
   const applyToInternship = async (internshipId) => {
     try {
+      
+      if( student.education.length==0  || student.skills.length==0 || !student.gender || !student.homeLocation || !student.yearsOfExp || !student.resume ){
+            // toast.error("Please complete your profile");
+            navigate(`/student/profile/${userId}`);
+            return;
+          }
+
+
       if (!availability || !aboutText) {
         toast.error("Please Enter all fields");
         return;
@@ -628,12 +638,10 @@ const Internships = () => {
   }
 
   return (
-    <div className="py-5 px-5 mt-10 min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
-        {filteredInternships.length} Total Internships
-      </h1>
+    <div className="py-5 px-5 mt-16 min-h-screen bg-gray-100">
 
-      <div className="flex flex-col lg:flex-row w-[90%] mx-auto lg:mx-0 gap-10 ">
+
+      <div className="flex flex-col lg:flex-row w-full lg:w-[90%] mx-auto  gap-10 ">
 
         {/* this below div is filter button */}
         <div className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${filterOpen && 'border-blue-400'}`} onClick={() => setFilterOpen(!filterOpen)}>
@@ -641,8 +649,8 @@ const Internships = () => {
           <FaFilter className="hover:cursor-pointer text-blue-500" />
         </div>
 
-        {/* this below div is filter box */}
-        <div className={` ${filterOpen ? 'block' : 'hidden'} w-[84%] sm:w-[90%]  lg:ml-10 mx-auto lg:w-[30%] xl:w-[23%] h-full lg:max-h-screen lg:mt-0 px-6 shadow-xl rounded-md border-t py-6 overflow-y-hidden bg-white  relative`}>
+        {/* this below div is filter div */}
+        <div className={` ${filterOpen ? 'block' : 'hidden'} w-[84%] md:w-[90%]  lg:ml-10 mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl rounded-md border-t py-6 overflow-y-auto scrollbar-thin bg-white  relative`}>
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
           </h1>
@@ -703,6 +711,10 @@ const Internships = () => {
               <span className="">Hybrid</span>
             </label>
           </div>
+          <StipendSlider
+            selectedStipend={selectedStipend}
+            setSelectedStipend={setSelectedStipend}
+          />
           <div className="my-4">
             <p>Profile</p>
             <Select
@@ -715,13 +727,11 @@ const Internships = () => {
               isMulti
               placeholder="e.g Marketing"
               className="w-full mb-3 shadow-md"
+              classNamePrefix="custom-select-dropdown"
             />
           </div>
 
-          <StipendSlider
-            selectedStipend={selectedStipend}
-            setSelectedStipend={setSelectedStipend}
-          />
+          
 
           {(workType === "Work from Office" || workType === "Hybrid") && (
             <div className="mt-7">
@@ -739,365 +749,368 @@ const Internships = () => {
           )}
         </div>
 
-        <h1 className="text-3xl font-bold mb-8 mt-8 text-center lg:hidden">
+        <h1 className="text-3xl font-bold mb-1 mt-1 text-center lg:hidden">
           {filteredInternships.length} Total Internships
         </h1>
 
+        <div className="w-full  lg:w-[79%]">
+          <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
+            {filteredInternships.length} Total Internships
+          </h1>
+          <div ref={scrollableRef} className="flex-1 lg:mt-0 overflow-scroll overflow-x-hidden h-screen scrollbar-thin relative">
+            <div className="flex flex-col justify-center bg-gray-100">
 
-        <div ref={scrollableRef} className="flex-1 lg:mt-0 overflow-scroll overflow-x-hidden h-screen scrollbar-thin relative">
-          <div className="flex flex-col justify-center bg-gray-100">
-
-            {/* this below div is list of internships */}
-            {currentInternships.map((internship) => (
-              <div
-                key={internship._id}
-                className="bg-white shadow-md rounded-lg px-7 py-3 w-full mb-3 mx-auto relative "
-              >
-                <div className="flex justify-between items-center">
-                  <div className="mb-4">
-                    <h2 className="text-lg lg:text-2xl font-semibold md:mb-2">
-                      {internship.internshipName}
-                    </h2>
-                    <p className="text-gray-600">
-                      {internship.recruiter.companyName}
-                    </p>
-                  </div>
-
-                  {internship.logoUrl ? (
-                    <img
-                      src={internship.logoUrl}
-                      alt={internship.logoUrl}
-                      className=" w-20 h-20"
-                    />
-                  ) : (
-                    <FaBuilding />
-                  )}
-                </div>
-
-                <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row ">
-                  <div className="flex  items-center text-gray-700 mb-2">
-                    <FaMapMarkerAlt className="mr-1" />
-                    <span>
-                      {internship.internLocation
-                        ? `${internship.internLocation}`
-                        : "Remote"}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center text-gray-700 mb-2">
-                    <FaClock className="mr-2" />
-                    <span>{internship.duration} Months</span>
-                  </div>
-
-                  {internship.stipendType === "unpaid" && (
-                    <div className="flex items-center text-gray-700 mb-2">
-                      <FaMoneyBillWave className="mr-1" />
-                      <span>Unpaid</span>
+              {/* this below div is list of internships */}
+              {currentInternships.map((internship) => (
+                <div
+                  key={internship._id}
+                  className="bg-white shadow-md rounded-lg px-7 py-3 w-full lg:w-[90%] mb-3 mx-auto relative "
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="mb-4">
+                      <h2 className="text-lg lg:text-2xl font-semibold md:mb-2">
+                        {internship.internshipName}
+                      </h2>
+                      <p className="text-gray-600">
+                        {internship.recruiter.companyName}
+                      </p>
                     </div>
-                  )}
 
-                  {internship.stipendType !== "unpaid" && (
-                    <div className="flex items-center space-x-1">
-                      <div className="flex items-center text-gray-700 mb-2">
-                        <FaMoneyBillWave className="mr-1" />
-                        <span>
-                          {internship.currency} {internship.stipend} /month
-                        </span>
-                      </div>
-
-                      {internship.stipendType === "performance-based" && (
-                        <div className="flex items-center mb-2 text-gray-700">
-                          <span>+ incentives</span>
-                          <div className="relative group ">
-                            <FaQuestion className="border border-black p-1 mx-1 rounded-full hover:cursor-pointer" />
-                            <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
-                              This is a Performance Based internship.{" "}
-                              {internship.incentiveDescription}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {isAlreadyApplied(internship._id) && (
-                  <p className="text-green-600 text-sm md:text-base inline-flex rounded-xl border border-green-600 px-2 py-1">
-                    Applied
-                    <FaCheck className="ml-2 mt-1" />
-                  </p>
-                )}
-                <div className="flex text-sm md:text-base space-x-4 items-center">
-                  <div
-                    className={`${internship.studentCount < 20
-                        ? "text-green-500"
-                        : "text-gray-500"
-                      } my-2 w-[30%] md:w-auto`}
-                  >
-                    {internship.studentCount} Applicants
+                    {internship.logoUrl ? (
+                      <img
+                        src={internship.logoUrl}
+                        alt={internship.logoUrl}
+                        className=" w-20 h-20"
+                      />
+                    ) : (
+                      <FaBuilding className=" w-16 h-16 text-gray-600"/>
+                    )}
                   </div>
 
-                  {internship.studentCount < 20 && (
-                    <div className="flex  space-x-2 items-center">
-                      <FaRunning className="text-yellow-500  w-5 h-5" />
-                      <span className="text-gray-500">
-                        Be an early Applicant
+                  <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row ">
+                    <div className="flex  items-center text-gray-700 mb-2">
+                      <FaMapMarkerAlt className="mr-1" />
+                      <span>
+                        {internship.internLocation
+                          ? `${internship.internLocation}`
+                          : "Remote"}
                       </span>
                     </div>
-                  )}
 
-                  {internship.ppoCheck === "yes" && (
-                    <div className="text-gray-500 flex space-x-2 items-center">
-                      <FaStar /> <span>Internship with job offer</span>
+                    <div className="flex items-center text-gray-700 mb-2">
+                      <FaClock className="mr-2" />
+                      <span>{internship.duration} Months</span>
                     </div>
+
+                    {internship.stipendType === "unpaid" && (
+                      <div className="flex items-center text-gray-700 mb-2">
+                        <FaMoneyBillWave className="mr-1" />
+                        <span>Unpaid</span>
+                      </div>
+                    )}
+
+                    {internship.stipendType !== "unpaid" && (
+                      <div className="flex items-center space-x-1">
+                        <div className="flex items-center text-gray-700 mb-2">
+                          <FaMoneyBillWave className="mr-1" />
+                          <span>
+                            {internship.currency} {internship.stipend} /month
+                          </span>
+                        </div>
+
+                        {internship.stipendType === "performance-based" && (
+                          <div className="flex items-center mb-2 text-gray-700">
+                            <span>+ incentives</span>
+                            <div className="relative group ">
+                              <FaQuestion className="border border-black p-1 mx-1 rounded-full hover:cursor-pointer" />
+                              <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
+                                This is a Performance Based internship.{" "}
+                                {internship.incentiveDescription}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {isAlreadyApplied(internship._id) && (
+                    <p className="text-green-600 text-sm md:text-base inline-flex rounded-xl border border-green-600 px-2 py-1">
+                      Applied
+                      <FaCheck className="ml-2 mt-1" />
+                    </p>
+                  )}
+                  <div className="flex text-sm md:text-base space-x-4 items-center">
+                    <div
+                      className={`${internship.studentCount < 20
+                        ? "text-green-500"
+                        : "text-gray-500"
+                        } my-2 w-[30%] md:w-auto`}
+                    >
+                      {internship.studentCount} Applicants
+                    </div>
+
+                    {internship.studentCount < 20 && (
+                      <div className="flex  space-x-2 items-center">
+                        <FaRunning className="text-yellow-500  w-5 h-5" />
+                        <span className="text-gray-500">
+                          Be an early Applicant
+                        </span>
+                      </div>
+                    )}
+
+                    {internship.ppoCheck === "yes" && (
+                      <div className="text-gray-500 flex space-x-2 items-center">
+                        <FaStar /> <span>Internship with job offer</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-gray-500 mb-2 md:mb-4 text-sm md:text-base">
+                    Posted: {TimeAgo(internship.createdAt)}
+                  </p>
+
+                  {!isAlreadyApplied(internship._id) ? (
+                    <button
+                      onClick={() => openModal(internship)}
+                      className=" w-auto md:my-2 text-sm md:text-base rounded-md text-blue-500 hover:scale-105 duration-300"
+                    >
+                      View details
+                    </button>
+                  ) : (
+                    <Link
+                      to={`/student/myApplications/${userId}`}
+                      className=" w-auto text-sm md:text-base my-2 rounded-md text-blue-500 hover:scale-105 duration-300"
+                    >
+                      Check Status
+                    </Link>
                   )}
                 </div>
+              ))}
 
-                <p className="text-gray-500 mb-2 md:mb-4 text-sm md:text-base">
-                  Posted: {TimeAgo(internship.createdAt)}
-                </p>
-
-                {!isAlreadyApplied(internship._id) ? (
-                  <button
-                    onClick={() => openModal(internship)}
-                    className=" w-auto md:my-2 text-sm md:text-base rounded-md text-blue-500 hover:scale-105 duration-300"
-                  >
-                    View details
-                  </button>
-                ) : (
-                  <Link
-                    to={`/student/myApplications/${userId}`}
-                    className=" w-auto text-sm md:text-base my-2 rounded-md text-blue-500 hover:scale-105 duration-300"
-                  >
-                    Check Status
-                  </Link>
-                )}
+              <div className="flex  justify-center my-4 space-x-4">
+                <button
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-md ${currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'}`}
+                >
+                  <FaAngleLeft />
+                </button>
+                <span>{currentPage} / {totalPages}</span>
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-md ${currentPage === Math.ceil(filteredInternships.length / internshipsPerPage)
+                    ? 'bg-gray-300'
+                    : 'bg-blue-500 text-white'
+                    }`}
+                >
+                  <FaAngleRight />
+                </button>
               </div>
-            ))}
-
-            <div className="flex  justify-center my-4 space-x-4">
-              <button
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-md ${currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'}`}
-              >
-                <FaAngleLeft />
-              </button>
-              <span>{currentPage} / {totalPages}</span>
-              <button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-                className={`px-4 py-2 rounded-md ${currentPage === Math.ceil(filteredInternships.length / internshipsPerPage)
-                  ? 'bg-gray-300'
-                  : 'bg-blue-500 text-white'
-                  }`}
-              >
-                <FaAngleRight />
-              </button>
-            </div>
 
 
-            {selectedInternship &&
-              !isAlreadyApplied(selectedInternship._id) && (
-                <>
-                  <div
-                    className="fixed inset-0 bg-black bg-opacity-50 z-40 "
-                    onClick={closeModal}
-                  ></div>
-                  <div className="fixed inset-0 flex items-center justify-center z-50 ">
-                    <div className="bg-white border border-gray-600 rounded-lg shadow-3xl w-[90%] lg:w-[60%] h-[90%] p-6 relative overflow-auto">
-                      <div className="border-b">
-                        <h2 className=" text-lg lg:text-2xl font-semibold lg:mb-4">
-                          Applying for {selectedInternship.internshipName}
-                        </h2>
-                        <button
-                          onClick={closeModal}
-                          className="absolute top-7 right-4 text-blue-500 hover:text-blue-700 focus:outline-none"
-                        >
-                          <FaTimes />
-                        </button>
-                        <div>
-                          <p className="text-gray-600 mb-1 lg:mb-4">
-                            {selectedInternship.recruiter.companyName}
-                          </p>
-                          {/* <button
+              {selectedInternship &&
+                !isAlreadyApplied(selectedInternship._id) && (
+                  <>
+                    <div
+                      className="fixed inset-0 bg-black bg-opacity-50 z-40 "
+                      onClick={closeModal}
+                    ></div>
+                    <div className="fixed inset-0 flex items-center justify-center z-50 ">
+                      <div className="bg-white border border-gray-600 rounded-lg shadow-3xl w-[90%] lg:w-[60%] h-[90%] p-6 relative overflow-auto">
+                        <div className="border-b">
+                          <h2 className=" text-lg lg:text-2xl font-semibold lg:mb-4">
+                            Applying for {selectedInternship.internshipName}
+                          </h2>
+                          <button
+                            onClick={closeModal}
+                            className="absolute top-7 right-4 text-blue-500 hover:text-blue-700 focus:outline-none"
+                          >
+                            <FaTimes />
+                          </button>
+                          <div>
+                            <p className="text-gray-600 mb-1 lg:mb-4">
+                              {selectedInternship.recruiter.companyName}
+                            </p>
+                            {/* <button
                         onClick={openInterestedModal}
                         className="text-sm lg:text-base font-semibold px-2 py-2 bg-blue-100  lg:py-2 lg:px-5 rounded-lg text-blue-500 mb-2"
                       >
                         I'm Interested
                       </button> */}
+                          </div>
                         </div>
-                      </div>
 
 
 
-                      <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
-                        <FaMapMarkerAlt className="mr-2" />
-                        <span>
-                          {selectedInternship.internLocation
-                            ? `${selectedInternship.internLocation}`
-                            : "Remote"}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
-                        <FaMoneyBillWave className="mr-2" />
-                        <span>₹ {selectedInternship.stipend}</span>
-                      </div>
-                      <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
-                        <FaClock className="mr-2" />
-                        <span>{selectedInternship.duration} Months</span>
-                      </div>
-
-                      <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
-                        <FaUsers className="mr-2" />
-                        <span>
-                          {selectedInternship.numberOfOpenings} Openings
-                        </span>
-                      </div>
-
-                      {selectedInternship.internLocation && (
                         <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
-                          <FaClipboardList className="mr-2" />
-                          <span>{selectedInternship.internshipType}</span>
-                        </div>
-                      )}
-
-                      <h3 className=" text-base lg:text-lg font-medium mb-2">
-                        Skills Required:
-                      </h3>
-                      <div className="flex flex-wrap mb-4">
-                        {selectedInternship.skills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
-                          >
-                            {skill}
+                          <FaMapMarkerAlt className="mr-2" />
+                          <span>
+                            {selectedInternship.internLocation
+                              ? `${selectedInternship.internLocation}`
+                              : "Remote"}
                           </span>
-                        ))}
-                      </div>
+                        </div>
 
-                      <h3 className="text-base lg:text-lg font-medium mb-2">Description:</h3>
-                      <div
-                        className="text-sm lg:text-base text-gray-700 mb-4"
-                        dangerouslySetInnerHTML={{
-                          __html: selectedInternship.description,
-                        }}
-                      ></div>
+                        <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
+                          <FaMoneyBillWave className="mr-2" />
+                          <span>₹ {selectedInternship.stipend}</span>
+                        </div>
+                        <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
+                          <FaClock className="mr-2" />
+                          <span>{selectedInternship.duration} Months</span>
+                        </div>
 
-                      <h3 className="text-lg font-medium mb-2">
-                        Perks and Benefits
-                      </h3>
-                      <div className="flex flex-wrap mb-4">
-                        {selectedInternship.perks.map((perk, index) => (
-                          <span
-                            key={index}
-                            className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
-                          >
-                            {perk}
+                        <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
+                          <FaUsers className="mr-2" />
+                          <span>
+                            {selectedInternship.numberOfOpenings} Openings
                           </span>
-                        ))}
-                      </div>
-
-                      <div>
-                        <div className="resume-box mt-4">
-                          <h1 className="text-lg sm:text-xl font-semibold">Your Resume</h1>
-
-                          <div className="flex flex-col sm:flex-row sm:space-x-2">
-                            <h1 className="text-gray-600">
-                              This Resume will be submitted along with you
-                              application
-                            </h1>
-                            {resumeUrl && (
-                              <a
-                                href={resumeUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-400"
-                                download={resumeFilename}
-                              >
-                                Click to view
-                              </a>
-                            )}
-                          </div>
                         </div>
 
-                        <div className="about-yourself-box mt-9">
-                          <h1 className="text-lg sm:text-xl font-semibold">
-                            Tell us about yourself
-                          </h1>
-                          <textarea
-                            value={aboutText}
-                            onChange={(e) => setAboutText(e.target.value)}
-                            className="my-3 w-[90%] sm:w-[80%] p-2 border-2"
-                            placeholder="Mention your skills, your interests, your previous experience in my company, achievements and Why do you want to work with us."
-                            rows={4}
-                          ></textarea>
-                        </div>
-
-                        <div className="availability-check mt-4">
-                          <h1>Can you join Immediately?</h1>
-                          <div className="flex flex-col text-gray-600 my-2">
-                            <label>
-                              <input
-                                type="radio"
-                                value="Yes"
-                                checked={
-                                  availability === "Yes! Will join Immediately"
-                                }
-                                onChange={handleRadioChange}
-                              />
-                              <span className="mx-1">Yes</span>
-                            </label>
-                            <label>
-                              <input
-                                type="radio"
-                                value="No"
-                                checked={
-                                  availability === "No! Cannot Join immediately"
-                                }
-                                onChange={handleRadioChange}
-                              />
-                              <span className="mx-1">No</span>
-                            </label>
-                          </div>
-                        </div>
-
-                        {selectedInternship.assessment && (
-                          <div className="assessment-box mt-4">
-                            <h1 className="text-lg sm:text-xl font-semibold mb-2">
-                              Assessment
-                            </h1>
-                            <div className="text-gray-600 mb-2">
-                              Q {selectedInternship.assessment}
-                            </div>
-                            <textarea
-                              value={assessmentAns}
-                              onChange={(e) => setAssessmentAns(e.target.value)}
-                              className="w-[90%] sm:w-[80%] border-2 p-2"
-                              rows={4}
-                              name=""
-                              id=""
-                              placeholder="Write your answer here..."
-                            ></textarea>
+                        {selectedInternship.internLocation && (
+                          <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
+                            <FaClipboardList className="mr-2" />
+                            <span>{selectedInternship.internshipType}</span>
                           </div>
                         )}
 
-                        <button
-                          onClick={() =>
-                            applyToInternship(selectedInternship._id)
-                          }
-                          className="bg-blue-400 hover:bg-blue-500 rounded-lg px-3 py-2 mt-7 text-white"
-                        >
-                          Apply
-                        </button>
+                        <h3 className=" text-base lg:text-lg font-medium mb-2">
+                          Skills Required:
+                        </h3>
+                        <div className="flex flex-wrap mb-4">
+                          {selectedInternship.skills.map((skill, index) => (
+                            <span
+                              key={index}
+                              className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+
+                        <h3 className="text-base lg:text-lg font-medium mb-2">Description:</h3>
+                        <div
+                          className="text-sm lg:text-base text-gray-700 mb-4"
+                          dangerouslySetInnerHTML={{
+                            __html: selectedInternship.description,
+                          }}
+                        ></div>
+
+                        <h3 className="text-lg font-medium mb-2">
+                          Perks and Benefits
+                        </h3>
+                        <div className="flex flex-wrap mb-4">
+                          {selectedInternship.perks.map((perk, index) => (
+                            <span
+                              key={index}
+                              className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
+                            >
+                              {perk}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div>
+                          <div className="resume-box mt-4">
+                            <h1 className="text-lg sm:text-xl font-semibold">Your Resume</h1>
+
+                            <div className="flex flex-col sm:flex-row sm:space-x-2">
+                              <h1 className="text-gray-600">
+                                This Resume will be submitted along with you
+                                application
+                              </h1>
+                              {resumeUrl && (
+                                <a
+                                  href={resumeUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-400"
+                                  download={resumeFilename}
+                                >
+                                  Click to view
+                                </a>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="about-yourself-box mt-9">
+                            <h1 className="text-lg sm:text-xl font-semibold">
+                              Tell us about yourself
+                            </h1>
+                            <textarea
+                              value={aboutText}
+                              onChange={(e) => setAboutText(e.target.value)}
+                              className="my-3 w-[90%] sm:w-[80%] p-2 border-2"
+                              placeholder="Mention your skills, your interests, your previous experience in my company, achievements and Why do you want to work with us."
+                              rows={4}
+                            ></textarea>
+                          </div>
+
+                          <div className="availability-check mt-4">
+                            <h1>Can you join Immediately?</h1>
+                            <div className="flex flex-col text-gray-600 my-2">
+                              <label>
+                                <input
+                                  type="radio"
+                                  value="Yes"
+                                  checked={
+                                    availability === "Yes! Will join Immediately"
+                                  }
+                                  onChange={handleRadioChange}
+                                />
+                                <span className="mx-1">Yes</span>
+                              </label>
+                              <label>
+                                <input
+                                  type="radio"
+                                  value="No"
+                                  checked={
+                                    availability === "No! Cannot Join immediately"
+                                  }
+                                  onChange={handleRadioChange}
+                                />
+                                <span className="mx-1">No</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {selectedInternship.assessment && (
+                            <div className="assessment-box mt-4">
+                              <h1 className="text-lg sm:text-xl font-semibold mb-2">
+                                Assessment
+                              </h1>
+                              <div className="text-gray-600 mb-2">
+                                Q {selectedInternship.assessment}
+                              </div>
+                              <textarea
+                                value={assessmentAns}
+                                onChange={(e) => setAssessmentAns(e.target.value)}
+                                className="w-[90%] sm:w-[80%] border-2 p-2"
+                                rows={4}
+                                name=""
+                                id=""
+                                placeholder="Write your answer here..."
+                              ></textarea>
+                            </div>
+                          )}
+
+                          <button
+                            onClick={() =>
+                              applyToInternship(selectedInternship._id)
+                            }
+                            className="bg-blue-400 hover:bg-blue-500 rounded-lg px-3 py-2 mt-7 text-white"
+                          >
+                            Apply
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
 
-            {/* {isInterestedModalOpen && (
+              {/* {isInterestedModalOpen && (
               <>
                 <div
                   className="fixed inset-0 bg-black bg-opacity-5 z-40"
@@ -1233,6 +1246,7 @@ const Internships = () => {
                 </div>
               </>
             )} */}
+            </div>
           </div>
         </div>
       </div>

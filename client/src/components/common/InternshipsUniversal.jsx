@@ -472,7 +472,7 @@ const InternshipsUniversal = () => {
         scrollToTop();
       }, 500);
     }
-    
+
   };
 
   const scrollToTop = () => {
@@ -513,11 +513,9 @@ const InternshipsUniversal = () => {
 
 
 
-      <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
-        {filteredInternships.length} Total Internships
-      </h1>
 
-      <div className="flex flex-col lg:flex-row max-w-[1170px] mx-auto gap-10">
+
+      <div className="flex flex-col lg:flex-row w-full lg:w-[90%] mx-auto gap-10">
 
         {/* this below div is filter button */}
         <div className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400 mt-5 ${filterOpen && 'border-blue-400'}`} onClick={() => setFilterOpen(!filterOpen)}>
@@ -526,7 +524,7 @@ const InternshipsUniversal = () => {
         </div>
 
         {/* this below div is filter options */}
-        <div className={` ${filterOpen ? 'block' : 'hidden'} w-[84%] md:w-[90%] mx-auto lg:w-[30%] xl:w-[23%] h-full lg:max-h-screen lg:mt-0 px-6 shadow-xl border-t py-6 overflow-y-hidden bg-white  relative`}>
+        <div className={` ${filterOpen ? 'block' : 'hidden'} w-[84%] md:w-[90%] mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl border-t py-6 overflow-y-auto scrollbar-thin bg-white rounded-lg relative `}>
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
           </h1>
@@ -587,7 +585,12 @@ const InternshipsUniversal = () => {
               <span className="">Hybrid</span>
             </label>
           </div>
-          <div className="my-4">
+
+          <StipendSlider
+            selectedStipend={selectedStipend}
+            setSelectedStipend={setSelectedStipend}
+          />
+          <div className="my-4 ">
             <p>Profile</p>
             <Select
               value={selectedProfile}
@@ -598,14 +601,12 @@ const InternshipsUniversal = () => {
               }))}
               isMulti
               placeholder="e.g Marketing"
-              className="w-full mb-3 shadow-md"
+              className="w-full mb-3 shadow-md  "
+              classNamePrefix="custom-select-dropdown"
             />
           </div>
 
-          <StipendSlider
-            selectedStipend={selectedStipend}
-            setSelectedStipend={setSelectedStipend}
-          />
+
 
           {(workType === "Work from Office" || workType === "Hybrid") && (
             <div className="mt-7">
@@ -628,152 +629,158 @@ const InternshipsUniversal = () => {
         </h1>
 
 
-        <div  ref={scrollableRef} className="flex-1  lg:mt-0  overflow-scroll overflow-x-hidden h-screen scrollbar-thin">
-          <div className="flex flex-col justify-center bg-gray-100">
+        <div className="w-full lg:w-[79%]">
+          <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
+            {filteredInternships.length} Total Internships
+          </h1>
+          <div ref={scrollableRef} className="flex-1  lg:mt-0  overflow-scroll overflow-x-hidden h-screen scrollbar-thin">
 
-            {/* this below div is list of internships */}
-            {currentInternships.map((internship) => (
-              <div
-                key={internship._id}
-                className="bg-white shadow-md rounded-lg px-3 py-3 w-full mb-3 mx-auto relative"
-              >
-                <div className="flex justify-between items-center">
-                  <div className="mb-4">
-                    <h2 className="text-lg lg:text-2xl font-semibold md:mb-2">
-                      {internship.internshipName}
-                    </h2>
-                    <p className="text-gray-600">
-                      {internship.recruiter.companyName}
-                    </p>
-                  </div>
+            <div className="flex flex-col justify-center bg-gray-100">
 
-                  {internship.logoUrl ? (
-                    <img
-                      src={internship.logoUrl}
-                      alt={internship.logoUrl}
-                      className=" w-20 h-20"
-                    />
-                  ) : (
-                    <FaBuilding />
-                  )}
-                </div>
-
-                <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row ">
-                  <div className="flex  items-center text-gray-700 mb-2">
-                    <FaMapMarkerAlt className="mr-1" />
-                    <span>
-                      {internship.internLocation
-                        ? `${internship.internLocation}`
-                        : "Remote"}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center text-gray-700 mb-2">
-                    <FaClock className="mr-2" />
-                    <span>{internship.duration} Months</span>
-                  </div>
-
-                  {internship.stipendType === "unpaid" && (
-                    <div className="flex items-center text-gray-700 mb-2">
-                      <FaMoneyBillWave className="mr-1" />
-                      <span>Unpaid</span>
+              {/* this below div is list of internships */}
+              {currentInternships.map((internship) => (
+                <div
+                  key={internship._id}
+                  className="bg-white shadow-md rounded-lg px-3 py-3 w-full lg:w-[90%] mb-3 mx-auto relative"
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="mb-4">
+                      <h2 className="text-lg lg:text-2xl font-semibold md:mb-2">
+                        {internship.internshipName}
+                      </h2>
+                      <p className="text-gray-600">
+                        {internship.recruiter.companyName}
+                      </p>
                     </div>
-                  )}
 
-                  {internship.stipendType !== "unpaid" && (
-                    <div className="flex items-center space-x-1">
-                      <div className="flex items-center text-gray-700 mb-2">
-                        <FaMoneyBillWave className="mr-1" />
-                        <span>
-                          {internship.currency} {internship.stipend} /month
-                        </span>
-                      </div>
-
-                      {internship.stipendType === "performance-based" && (
-                        <div className="flex items-center mb-2 text-gray-700">
-                          <span>+ incentives</span>
-                          <div className="relative group ">
-                            <FaQuestion className="border border-black p-1 mx-1 rounded-full hover:cursor-pointer" />
-                            <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
-                              This is a Performance Based internship.{" "}
-                              {internship.incentiveDescription}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex text-sm md:text-base space-x-4 items-center">
-                  <div
-                    className={`${internship.studentCount < 20
-                      ? "text-green-500"
-                      : "text-gray-500"
-                      } my-2 w-[30%] md:w-auto`}
-                  >
-                    {internship.studentCount} Applicants
+                    {internship.logoUrl ? (
+                      <img
+                        src={internship.logoUrl}
+                        alt={internship.logoUrl}
+                        className=" w-20 h-20"
+                      />
+                    ) : (
+                      <FaBuilding  className=" w-16 h-16 text-gray-600"/>
+                    )}
                   </div>
 
-                  {internship.studentCount < 20 && (
-                    <div className="flex  space-x-2 items-center">
-                      <FaRunning className="text-yellow-500  w-5 h-5" />
-                      <span className="text-gray-500">
-                        Be an early Applicant
+                  <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row ">
+                    <div className="flex  items-center text-gray-700 mb-2">
+                      <FaMapMarkerAlt className="mr-1" />
+                      <span>
+                        {internship.internLocation
+                          ? `${internship.internLocation}`
+                          : "Remote"}
                       </span>
                     </div>
-                  )}
 
-                  {internship.ppoCheck === "yes" && (
-                    <div className="text-gray-500 flex space-x-2 items-center">
-                      <FaStar /> <span>Internship with job offer</span>
+                    <div className="flex items-center text-gray-700 mb-2">
+                      <FaClock className="mr-2" />
+                      <span>{internship.duration} Months</span>
                     </div>
-                  )}
+
+                    {internship.stipendType === "unpaid" && (
+                      <div className="flex items-center text-gray-700 mb-2">
+                        <FaMoneyBillWave className="mr-1" />
+                        <span>Unpaid</span>
+                      </div>
+                    )}
+
+                    {internship.stipendType !== "unpaid" && (
+                      <div className="flex items-center space-x-1">
+                        <div className="flex items-center text-gray-700 mb-2">
+                          <FaMoneyBillWave className="mr-1" />
+                          <span>
+                            {internship.currency} {internship.stipend} /month
+                          </span>
+                        </div>
+
+                        {internship.stipendType === "performance-based" && (
+                          <div className="flex items-center mb-2 text-gray-700">
+                            <span>+ incentives</span>
+                            <div className="relative group ">
+                              <FaQuestion className="border border-black p-1 mx-1 rounded-full hover:cursor-pointer" />
+                              <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
+                                This is a Performance Based internship.{" "}
+                                {internship.incentiveDescription}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex text-sm md:text-base space-x-4 items-center">
+                    <div
+                      className={`${internship.studentCount < 20
+                        ? "text-green-500"
+                        : "text-gray-500"
+                        } my-2 w-[30%] md:w-auto`}
+                    >
+                      {internship.studentCount} Applicants
+                    </div>
+
+                    {internship.studentCount < 20 && (
+                      <div className="flex  space-x-2 items-center">
+                        <FaRunning className="text-yellow-500  w-5 h-5" />
+                        <span className="text-gray-500">
+                          Be an early Applicant
+                        </span>
+                      </div>
+                    )}
+
+                    {internship.ppoCheck === "yes" && (
+                      <div className="text-gray-500 flex space-x-2 items-center">
+                        <FaStar /> <span>Internship with job offer</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-gray-500 mb-2 md:mb-4 text-sm md:text-base">
+                    Posted: {TimeAgo(internship.createdAt)}
+                  </p>
+
+                  {/* <button onClick={handleRedirect} className="bg-blue-500 text-white px-4 py-1 rounded-md">Apply</button> */}
+
+                  <button
+                    onClick={handleRedirect}
+                    class="flex justify-center text-white ml-0 gap-2 items-center mx-auto  text-md bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-6 py-1 overflow-hidden border-2 rounded-md group"
+                  >
+                    Apply
+
+                  </button>
+
+
+
+
+
                 </div>
+              ))}
 
-                <p className="text-gray-500 mb-2 md:mb-4 text-sm md:text-base">
-                  Posted: {TimeAgo(internship.createdAt)}
-                </p>
-
-                {/* <button onClick={handleRedirect} className="bg-blue-500 text-white px-4 py-1 rounded-md">Apply</button> */}
-
+              {currentInternships.length > 0 && <div className="flex justify-center my-4 space-x-4">
                 <button
-                   onClick={handleRedirect}
-                  class="flex justify-center text-white ml-0 gap-2 items-center mx-auto  text-md bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-6 py-1 overflow-hidden border-2 rounded-md group"
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-md ${currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'}`}
                 >
-                  Apply
-                
+                  <FaAngleLeft />
                 </button>
 
+                <span>{currentPage} / {totalPages}</span>
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-md ${currentPage === Math.ceil(filteredInternships.length / internshipsPerPage)
+                    ? 'bg-gray-300'
+                    : 'bg-blue-500 text-white'
+                    }`}
+                >
+                  <FaAngleRight />
+                </button>
+              </div>}
 
-
-
-
-              </div>
-            ))}
-
-            <div className="flex justify-center my-4 space-x-4">
-              <button
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-md ${currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'}`}
-              >
-                <FaAngleLeft />
-              </button>
-
-              <span>{currentPage} / {totalPages}</span>
-              <button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-                className={`px-4 py-2 rounded-md ${currentPage === Math.ceil(filteredInternships.length / internshipsPerPage)
-                  ? 'bg-gray-300'
-                  : 'bg-blue-500 text-white'
-                  }`}
-              >
-                <FaAngleRight />
-              </button>
             </div>
-
           </div>
         </div>
       </div>

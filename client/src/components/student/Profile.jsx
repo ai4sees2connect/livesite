@@ -16,13 +16,14 @@ import { toast } from "react-toastify";
 import { FaBuilding, FaPen, FaUser } from "react-icons/fa";
 import Resume from "./Resume";
 import statesAndCities from "../common/statesAndCities";
+import { FaArrowLeft } from "react-icons/fa";
 
 const Profile = () => {
   const idFromToken = getUserIdFromToken();
   const fileInputRef = useRef(null);
   const { userId } = useParams();
   const navigate = useNavigate();
-  const { logout, student } = useStudent();
+  const { logout, student,refreshData } = useStudent();
   const token = localStorage.getItem("token");
   const [skills, setSkills] = useState([]);
   // const [selectedSkills, setSelectedSkills] = useState([]);
@@ -50,6 +51,17 @@ const Profile = () => {
     { value: "10", label: "10+" },
   ];
   
+ useEffect(()=>{
+  if(student){
+      if(student.homeLocation==='') toast.info('Please add your current location');
+      if(student.gender==='') toast.info('Please specify your gender');
+      if(student.education.length===0) toast.info('Please add your education');
+      if(student.skills.length===0) toast.info('Please add some of your skills');
+      if(student.yearsOfExp==='') toast.info('Please specify years of experience');
+      // if(student.yearsOfExp==='') toast.info('Please specify years of experience');
+  }
+ },[student])
+
 
   useEffect(() => {
     if (!token) {
@@ -229,11 +241,16 @@ const Profile = () => {
   console.log("this is exp", exp);
   console.log("this is student", student);
   console.log(picUrl);
+  console.log('this is student',student);
 
   return !student ? (
     <Spinner />
   ) : (
-    <div className=" mx-auto p-4 mt-[48px] flex flex-col lg:flex-row lg:w-full  ">
+    <div className=" mx-auto p-4 mt-[48px] flex flex-col lg:flex-row lg:w-full  relative">
+      <div className="absolute top-7 font-semibold  w-fit px-2 ">
+          <button  onClick={() => navigate(-1)} className="flex space-x-2 items-center text-blue-500"><FaArrowLeft/><span>back</span></button>
+        </div>
+
       <div className="border-b  pb-3 mt-10 text-center border-2 p-5 rounded-lg h-full w-full lg:w-[380px]">
         <div className="flex justify-center ">
           <div className="max-w-20 max-h-28  flex items-center justify-center ">
@@ -413,13 +430,14 @@ const Profile = () => {
             </div>
           )}
         </div>
-        <section className="mb-8">
+        <section className="mb-4">
           <Resume />
         </section>
       </div>
 
-      <div className="flex-1 lg:w-[30%]  overflow-y-auto h-screen">
-        <section className="mb-8">
+      <div className="flex-1 lg:w-[30%]  overflow-y-auto scrollbar-thin h-screen relative">
+        
+        <section className="mb-8 ">
           <Education />
         </section>
         <section className="mb-8">
