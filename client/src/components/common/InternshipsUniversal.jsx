@@ -524,7 +524,7 @@ const InternshipsUniversal = () => {
         </div>
 
         {/* this below div is filter options */}
-        <div className={` ${filterOpen ? 'block' : 'hidden'} w-[84%] md:w-[90%] mx-auto lg:w-[30%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl border-t py-6 overflow-y-auto scrollbar-thin bg-white rounded-lg relative `}>
+        <div className={` ${filterOpen ? 'block' : 'hidden'} w-[84%] md:w-[90%] mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl border-t py-6 overflow-y-auto scrollbar-thin bg-white rounded-lg relative `}>
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
           </h1>
@@ -660,7 +660,7 @@ const InternshipsUniversal = () => {
                         className=" w-20 h-20"
                       />
                     ) : (
-                      <FaBuilding />
+                      <FaBuilding  className=" w-16 h-16 text-gray-600"/>
                     )}
                   </div>
 
