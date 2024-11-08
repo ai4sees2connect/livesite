@@ -119,7 +119,7 @@ const PersonalProjects = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 border-b shadow-lg mt-[68px] w-full lg:w-[80%]">
+    <div className="container mx-auto p-4 border shadow-lg mt-[68px] w-full lg:w-[80%]">
       <h2 className="text-xl font-semibold flex justify-between font-outfit">
         Personal Projects(Optional)
         <button

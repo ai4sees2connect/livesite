@@ -39,6 +39,8 @@ const Resume = () => {
     }
   }, [userId, idFromToken, navigate]);
 
+
+
   useEffect(() => {
     const fetchResume = async () => {
       try {
@@ -59,6 +61,7 @@ const Resume = () => {
         }
       } catch (error) {
         console.error("Error fetching resume:", error);
+        toast.info('Please upload your resume');
       }
     };
 
@@ -158,7 +161,7 @@ const Resume = () => {
         />
         <button
           onClick={handleFileClick}
-          className="border-2 border-blue-500 text-blue-500 font-semibold rounded-full px-2 py-1 hover:bg-green-500 hover:text-white"
+          className="border-2 border-blue-500 text-blue-500 font-semibold rounded-full px-2 py-1 hover:bg-blue-500 hover:text-white"
         >
           Upload Resume
         </button>

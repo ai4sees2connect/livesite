@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   FaMapMarkerAlt,
@@ -44,6 +44,7 @@ const Internships = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const internshipsPerPage = 9;
   const scrollableRef = useRef(null);
+  const navigate=useNavigate();
 
   const statesAndUTs = [
     { value: "All Locations", label: "All Locations" },
@@ -549,6 +550,14 @@ const Internships = () => {
 
   const applyToInternship = async (internshipId) => {
     try {
+
+      if( student.education.length==0  || student.skills.length==0 || !student.gender || !student.homeLocation || !student.yearsOfExp || !student.resume ){
+            // toast.error("Please complete your profile");
+            navigate(`/student/profile/${userId}`);
+            return;
+          }
+
+
       if (!availability || !aboutText) {
         toast.error("Please Enter all fields");
         return;
@@ -639,8 +648,8 @@ const Internships = () => {
           <FaFilter className="hover:cursor-pointer text-blue-500" />
         </div>
 
-        {/* this below div is filter box */}
-        <div className={` ${filterOpen ? 'block' : 'hidden'} w-[84%] md:w-[90%]  lg:ml-10 mx-auto lg:w-[30%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl rounded-md border-t py-6 overflow-y-auto scrollbar-thin bg-white  relative`}>
+        {/* this below div is filter div */}
+        <div className={` ${filterOpen ? 'block' : 'hidden'} w-[84%] md:w-[90%]  lg:ml-10 mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl rounded-md border-t py-6 overflow-y-auto scrollbar-thin bg-white  relative`}>
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
           </h1>
@@ -743,7 +752,7 @@ const Internships = () => {
           {filteredInternships.length} Total Internships
         </h1>
 
-        <div className="w-full border border-black lg:w-[79%]">
+        <div className="w-full  lg:w-[79%]">
           <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
             {filteredInternships.length} Total Internships
           </h1>
@@ -773,7 +782,7 @@ const Internships = () => {
                         className=" w-20 h-20"
                       />
                     ) : (
-                      <FaBuilding />
+                      <FaBuilding className=" w-16 h-16 text-gray-600"/>
                     )}
                   </div>
 
