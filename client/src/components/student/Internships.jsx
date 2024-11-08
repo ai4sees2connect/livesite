@@ -631,7 +631,7 @@ const Internships = () => {
     <div className="py-5 px-5 mt-16 min-h-screen bg-gray-100">
 
 
-      <div className="flex flex-col lg:flex-row w-[90%] mx-auto lg:mx-0 gap-10 ">
+      <div className="flex flex-col lg:flex-row w-full lg:w-[90%] mx-auto  gap-10 ">
 
         {/* this below div is filter button */}
         <div className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${filterOpen && 'border-blue-400'}`} onClick={() => setFilterOpen(!filterOpen)}>
@@ -739,11 +739,11 @@ const Internships = () => {
           )}
         </div>
 
-        <h1 className="text-3xl font-bold mb-8 mt-5 text-center lg:hidden">
+        <h1 className="text-3xl font-bold mb-1 mt-1 text-center lg:hidden">
           {filteredInternships.length} Total Internships
         </h1>
 
-        <div className="w-full lg:w-[79%]">
+        <div className="w-full border border-black lg:w-[79%]">
           <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
             {filteredInternships.length} Total Internships
           </h1>
@@ -754,7 +754,7 @@ const Internships = () => {
               {currentInternships.map((internship) => (
                 <div
                   key={internship._id}
-                  className="bg-white shadow-md rounded-lg px-7 py-3 w-[90%] mb-3 mx-auto relative "
+                  className="bg-white shadow-md rounded-lg px-7 py-3 w-full lg:w-[90%] mb-3 mx-auto relative "
                 >
                   <div className="flex justify-between items-center">
                     <div className="mb-4">
