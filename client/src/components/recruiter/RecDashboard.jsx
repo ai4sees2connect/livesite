@@ -10,6 +10,8 @@ import {
   FaClipboardList,
   FaTimes,
   FaClock,
+  FaAngleLeft,
+  FaAngleRight,
 } from "react-icons/fa";
 import TimeAgo from "../common/TimeAgo";
 import { Link, useNavigate } from "react-router-dom";
@@ -26,13 +28,14 @@ const RecDashboard = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   useEffect(() => {
     if (!token) {
       navigate("/");
     }
   }, [token]);
+
 
   useEffect(() => {
     const fetchInternships = async () => {
@@ -113,6 +116,16 @@ const RecDashboard = () => {
   );
 
   const totalPages = Math.ceil(internships.length / itemsPerPage);
+  console.log('these are internships:', paginatedInternships);
+
+  if(internships.length===0){
+    return (
+      <div className="flex flex-col justify-center items-center h-screen space-y-4">
+        <p className="text-xl font-semibold text-gray-500">No internships found.</p>
+        <Link to={`/recruiter/posting/${recruiterId}`} className="px-2 py-1 bg-blue-500 text-white rounded-md">Post internship</Link>
+      </div>
+    );
+  }
 
   return (
     <div className="py-10 px-3 lg:px-5 mt-10 bg-gray-100 min-h-screen">
@@ -128,7 +141,7 @@ const RecDashboard = () => {
           <div className="text-xs ml-6 lg:text-base lg:w-[90px] lg:ml-20 pr-2">View Details</div>
         </div>
 
-        {paginatedInternships.map((internship) => (
+        {paginatedInternships.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((internship) => (
           <div key={internship._id} className="grid grid-cols-5 gap-2 py-2 border-b-2">
             <div className="text-xs text-left ml-0 my-3 w-[80%] sm:text-center sm:text-sm sm:ml-2 lg:text-base lg:ml-10 lg:w-[190px]">
               {internship.internshipName}
@@ -136,9 +149,8 @@ const RecDashboard = () => {
             <div className="relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-3 lg:ml-28 group">
               <div className="flex items-center text-xs sm:text-base">
                 <span
-                  className={`${
-                    internship.status === "On Hold" && "bg-orange-300"
-                  } ${internship.status === "Fulfilled" && "bg-green-400"} bg-gray-200 rounded-lg px-2 py-1`}
+                  className={`${internship.status === "On Hold" && "bg-orange-300"
+                    } ${internship.status === "Fulfilled" && "bg-green-400"} bg-gray-200 rounded-lg px-2 py-1`}
                 >
                   {internship.status}
                 </span>
@@ -188,22 +200,22 @@ const RecDashboard = () => {
 
         {/* Pagination Controls */}
         <div className="flex justify-center items-center mt-6">
-  <button
-    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-    disabled={currentPage === 1}
-    className="px-3 py-1 bg-blue-500 text-white rounded-l-md disabled:bg-blue-300"
-  >
-    &lt;
-  </button>
-  <span className="px-4 text-white-600">{`< ${currentPage} / ${totalPages} >`}</span>
-  <button
-    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-    disabled={currentPage === totalPages}
-    className="px-3 py-1 bg-blue-500 text-white rounded-r-md disabled:bg-blue-300"
-  >
-    &gt;
-  </button>
-</div>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-2 bg-blue-500 text-white rounded-md disabled:bg-blue-300"
+          >
+            <FaAngleLeft />
+          </button>
+          <span className="px-4 text-white-600">{` ${currentPage} / ${totalPages} `}</span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-2 bg-blue-500 text-white rounded-md disabled:bg-blue-300"
+          >
+            <FaAngleRight />
+          </button>
+        </div>
 
 
         {selectedInternship && (

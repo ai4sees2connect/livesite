@@ -457,7 +457,7 @@ const RecPosting = () => {
 
   if (!recruiter?.companyCertificate && !recruiter?.companyWebsite) {
     return (
-      <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
+      <div className="flex items-center justify-center  text-gray-700 text-lg font-semibold h-screen">
         Verification pending in profile section
       </div>
     );
@@ -467,7 +467,7 @@ const RecPosting = () => {
       recruiter?.subscription.postsRemaining < 1
     ) {
       return (
-        <div className="flex flex-col space-y-3">
+        <div className="flex flex-col  items-center justify-center space-y-3">
           <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
             You have used your monthly available free postings
           </div>
