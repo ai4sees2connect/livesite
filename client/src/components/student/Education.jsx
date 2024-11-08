@@ -15,6 +15,7 @@ const Education = () => {
   const [fieldOfStudy, setFieldOfStudy] = useState(null);
   const [otherField, setOtherField] = useState(null);
   const [institution, setInstitution] = useState("");
+ 
   
   const [score, setScore] = useState("");
   const [educationDetails, setEducationDetails] = useState([]);
@@ -264,7 +265,7 @@ const Education = () => {
     "X Standard": [{ value: "Core", label: "Core" }],
   };
 
-  // >>>>>>> main
+
   const userId = getUserIdFromToken();
 
   useEffect(() => {
@@ -347,6 +348,7 @@ const Education = () => {
       setScore("");
       setEditIndex(null);
       setIsEditing(false);
+      // refreshData();
     } catch (error) {
       console.error("Error saving the education details:", error);
       toast.error("Failed to update details");

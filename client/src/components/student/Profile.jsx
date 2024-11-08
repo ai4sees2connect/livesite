@@ -23,7 +23,7 @@ const Profile = () => {
   const fileInputRef = useRef(null);
   const { userId } = useParams();
   const navigate = useNavigate();
-  const { logout, student } = useStudent();
+  const { logout, student,refreshData } = useStudent();
   const token = localStorage.getItem("token");
   const [skills, setSkills] = useState([]);
   // const [selectedSkills, setSelectedSkills] = useState([]);

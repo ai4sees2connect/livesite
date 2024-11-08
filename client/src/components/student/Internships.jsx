@@ -38,7 +38,7 @@ const Internships = () => {
   const [error, setError] = useState(null);
   const [selectedInternship, setSelectedInternship] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState([]);
-  const { student } = useStudent();
+  const { logout, student,refreshData } = useStudent();
   const userId = getUserIdFromToken();
   const [filterOpen, setFilterOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -517,6 +517,7 @@ const Internships = () => {
   };
 
   const openModal = async (internship) => {
+    refreshData();
     setSelectedInternship(internship);
     console.log("selected internship", internship);
     try {
@@ -550,7 +551,7 @@ const Internships = () => {
 
   const applyToInternship = async (internshipId) => {
     try {
-
+      
       if( student.education.length==0  || student.skills.length==0 || !student.gender || !student.homeLocation || !student.yearsOfExp || !student.resume ){
             // toast.error("Please complete your profile");
             navigate(`/student/profile/${userId}`);
