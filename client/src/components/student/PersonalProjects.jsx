@@ -121,7 +121,7 @@ const PersonalProjects = () => {
   return (
     <div className="container mx-auto p-4 border-b shadow-lg mt-[68px] w-full lg:w-[80%]">
       <h2 className="text-xl font-semibold flex justify-between font-outfit">
-        Personal Projects
+        Personal Projects(Optional)
         <button
           onClick={() => setIsEditing(true)}
           className="text-blue-500 flex items-center space-x-1"

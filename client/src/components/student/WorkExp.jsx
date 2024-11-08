@@ -61,7 +61,6 @@ const WorkExp = () => {
 
     try {
       if (currentEditIndex !== null) {
-        // Edit existing experience
         await axios.put(
           `${api}/student/profile/${userId}/work-experience/${currentEditIndex}`,
           workExpData
@@ -71,8 +70,6 @@ const WorkExp = () => {
         setWorkExperiences(updatedExperiences);
         toast.success("Experience updated successfully");
       } else {
-        console.log(workExpData);
-        // Add new experience
         const response = await axios.post(
           `${api}/student/profile/${userId}/work-experience`,
           workExpData
@@ -140,10 +137,10 @@ const WorkExp = () => {
   return (
     <div className="container mx-auto p-4 border-b shadow-lg mt-[68px] w-full lg:w-[80%]">
       <h2 className="text-xl font-semibold flex justify-between font-outfit">
-        Work Experience / Internship
+        Work Experience / Internship (Optional)
         <button
           onClick={() => setIsEditing(true)}
-          className="text-blue-500  flex items-center space-x-1"
+          className="text-blue-500 flex items-center space-x-1"
         >
           <span>Add</span>
           <FontAwesomeIcon icon={faPlus} />
@@ -170,12 +167,12 @@ const WorkExp = () => {
           />
 
           <div className="flex items-center space-x-4">
-            <label className="text-gray-500 mx-2 px-1">Start Date </label>
+            <label className="text-gray-500 mx-2 px-1">Start Date</label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="border p-2 mb-2 "
+              className="border p-2 mb-2"
               required
             />
           </div>
@@ -186,17 +183,15 @@ const WorkExp = () => {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="border p-2 mb-2 "
+              className="border p-2 mb-2"
               required
             />
           </div>
 
-          {/* <input type="text" value={type} onChange={(e) => setType(e.target.value)} placeholder="Type (e.g., Internship, Job)" className="border p-2 mb-2 w-full" /> */}
           <select
             type="text"
             value={typeofwork}
             onChange={(e) => setTypeOfWork(e.target.value)}
-            placeholder="Type (e.g., Internship, Job)"
             className="border p-2 mb-2 w-full"
             required
           >
@@ -235,36 +230,33 @@ const WorkExp = () => {
         <div className="flex gap-5 flex-col items-center mt-10">
           {workExperiences.length > 0 ? (
             workExperiences.map((work, index) => (
-              <div key={index} className="border  p-5 mb-2 w-[90%]">
-                <div className="">
-
-                  <div className="flex justify-between">
-                    <h3 className="text-lg font-semibold">
-                      {work.role} at : {work.company}
-                    </h3>
-                    <div className="flex space-x-5">
-                      <FontAwesomeIcon
-                        icon={faPen}
-                        onClick={() => handleEdit(index)}
-                        className="hover:scale-125 duration-300 text-blue-500 hover:cursor-pointer"
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        onClick={() => handleDelete(index)}
-                        className="hover:scale-125 duration-300 text-red-500 hover:cursor-pointer"
-                      />
-                    </div>
+              <div key={index} className="border p-5 mb-2 w-[90%]">
+                <div className="flex justify-between">
+                  <h3 className="text-lg font-semibold">
+                    {work.role} at: {work.company}
+                  </h3>
+                  <div className="flex space-x-5">
+                    <FontAwesomeIcon
+                      icon={faPen}
+                      onClick={() => handleEdit(index)}
+                      className="hover:scale-125 duration-300 text-blue-500 hover:cursor-pointer"
+                    />
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      onClick={() => handleDelete(index)}
+                      className="hover:scale-125 duration-300 text-red-500 hover:cursor-pointer"
+                    />
                   </div>
-                  <div className="text-gray-600  max-w-[80%]">
-                    <p> ({work.typeofwork})</p>
-                    <p>
-                      Duration: {formatDate(work.startDate)} -{" "}
-                      {formatDate(work.endDate)}
-                    </p>
-                    <p className="w-[90%]  break-words">
-                      Details: {work.description}
-                    </p>
-                  </div>
+                </div>
+                <div className="text-gray-600 max-w-[80%]">
+                  <p>({work.typeofwork})</p>
+                  <p>
+                    Duration: {formatDate(work.startDate)} -{" "}
+                    {formatDate(work.endDate)}
+                  </p>
+                  <p className="w-[90%] break-words">
+                    Details: {work.description}
+                  </p>
                 </div>
               </div>
             ))
