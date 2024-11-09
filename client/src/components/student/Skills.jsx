@@ -158,19 +158,19 @@ const Skills = ({ skillSet }) => {
           </button>
         </form>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 justify-center items-center mt-10 p-3 gap-5 text-sm md:text-base">
+        <div className="grid grid-cols-1 md:grid-cols-2 justify-center items-center mt-10 p-3 gap-5 text-sm md:text-base">
           {skills.length > 0 ? (
             skills.map((skill, index) => (
               <div
                 key={index}
-                className="border hover:border-blue-500 rounded-2xl p-3 mb-2"
+                className="border hover:border-blue-500  p-3 mb-2 min-h-[100px]"
               >
                 <div>
                   <div className="flex justify-between">
                     <h3 className="text-sm md:text-lg font-semibold">
                       {skill.skillName}
                     </h3>
-                    <div className="flex gap-3">
+                    <div className="flex gap-5">
                       <FontAwesomeIcon
                         icon={faPen}
                         onClick={() => handleEdit(index)}

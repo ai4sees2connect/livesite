@@ -154,55 +154,59 @@ const MyApplications = () => {
         {appliedInternships.map((applied) => (
           <div
             key={applied._id}
-            className="border-2 shadow-lg py-4 px-4  flex flex-col space-y-1 md:space-y-2 w-[95%] md:w-[83%] mx-auto relative"
+            className="border-2 shadow-lg py-4 px-4 space-y-1 md:space-y-2 w-full md:w-[83%] mx-auto "
           >
-            <div className="font-bold text-2xl capitalize">
-              {applied.recruiter.companyName}
-            </div>
-            <div className="text-gray-600">
-              {applied.internship.internshipName}
-            </div>
-            <div className="text-gray-600">
-              Applied: {TimeAgo(applied.appliedAt)}
-            </div>
-            <div className="flex  items-center text-gray-600">
-              <span className="font-semibold">
-                <FaUserFriends className="mr-2" />
-              </span>{" "}
-              {applied.studentCount} Applicants
-            </div>
             <div>
-              <span
-                className={` py-1 flex items-center ${
-                  applied.internshipStatus.status === "Viewed" &&
-                  "text-yellow-500"
-                } ${
-                  applied.internshipStatus.status === "Rejected" &&
-                  "text-red-500"
-                } ${
-                  applied.internshipStatus.status === "Shortlisted" &&
-                  "text-green-600"
-                }`}
-              >
-                {applied.internshipStatus.status === "Viewed" && (
-                  <FaEye className=" mr-2" />
-                )}{" "}
-                {applied.internshipStatus.status === "Shortlisted" && (
-                  <FaCheckCircle className="mr-2" />
-                )}{" "}
-                {applied.internshipStatus.status === "Rejected" && (
-                  <FaTimes className="mr-2" />
-                )}
-                {applied.internshipStatus.status}
-              </span>
-            </div>
-            <div className="absolute right-2 top-4">
-              <button
-                onClick={() => setSelectedInternship(applied)}
-                className="text-blue-400 hover:underline"
-              >
-                View details
-              </button>
+              <div className="md:flex md:justify-between md:items-center">
+                <div className="font-bold text-xl capitalize">
+                  {applied.recruiter.companyName}
+                </div>
+                <div className="">
+                  <button
+                    onClick={() => setSelectedInternship(applied)}
+                    className="text-blue-400 hover:underline"
+                  >
+                    View details
+                  </button>
+                </div>
+              </div>
+              <div className="text-gray-600">
+                {applied.internship.internshipName}
+              </div>
+              <div className="text-gray-600">
+                Applied: {TimeAgo(applied.appliedAt)}
+              </div>
+              <div className="flex  items-center text-gray-600">
+                <span className="font-semibold">
+                  <FaUserFriends className="mr-2" />
+                </span>{" "}
+                {applied.studentCount} Applicants
+              </div>
+              <div>
+                <span
+                  className={` py-1 flex items-center ${
+                    applied.internshipStatus.status === "Viewed" &&
+                    "text-yellow-500"
+                  } ${
+                    applied.internshipStatus.status === "Rejected" &&
+                    "text-red-500"
+                  } ${
+                    applied.internshipStatus.status === "Shortlisted" &&
+                    "text-green-600"
+                  }`}
+                >
+                  {applied.internshipStatus.status === "Viewed" && (
+                    <FaEye className=" mr-2" />
+                  )}{" "}
+                  {applied.internshipStatus.status === "Shortlisted" && (
+                    <FaCheckCircle className="mr-2" />
+                  )}{" "}
+                  {applied.internshipStatus.status === "Rejected" && (
+                    <FaTimes className="mr-2" />
+                  )}
+                  {applied.internshipStatus.status}
+                </span>
+              </div>
             </div>
           </div>
         ))}

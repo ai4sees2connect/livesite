@@ -366,7 +366,7 @@ const Portfolio = () => {
             portfolioLinks.map((portfolioLink, index) => (
               <div
                 key={index}
-                className="border-2 shadow-lg p-5 mb-2 flex justify-between w-[70%]"
+                className="border-2 shadow-lg p-5 mb-2 flex justify-between w-full md:w-[70%]"
               >
                 <div>
                   <h3 className="text-lg font-semibold">
@@ -384,7 +384,7 @@ const Portfolio = () => {
                     </a>
                   </p>
                 </div>
-                <div className="space-x-5">
+                <div className="flex gap-5">
                   <FontAwesomeIcon
                     icon={faPen}
                     onClick={() => handleEdit(index)}
