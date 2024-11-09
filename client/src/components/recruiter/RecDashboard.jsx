@@ -97,7 +97,7 @@ const RecDashboard = () => {
     }
   };
 
-  
+
 
   if (loading) {
     return <Spinner />;
@@ -123,12 +123,12 @@ const RecDashboard = () => {
 
 
   const filteredInternships = paginatedInternships
-  .filter((internship) =>
-    internship.internshipName.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    .filter((internship) =>
+      internship.internshipName.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  if(internships.length===0){
+  if (internships.length === 0) {
 
 
     return (
@@ -152,16 +152,16 @@ const RecDashboard = () => {
         My Posted Internships
       </h1>
       <div className="relative">
-      <FaSearch className="absolute left-4 top-[13px]"/>
-      <div className="mb-4 lg:w-[30%]">
-        <input
-          type="text"
-          placeholder="Search by internship name"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 border pl-10 border-gray-300 rounded-lg text-sm lg:text-base"
-        />
-      </div>
+        <FaSearch className="absolute left-4 top-[13px]" />
+        <div className="mb-4 lg:w-[30%]">
+          <input
+            type="text"
+            placeholder="Search by internship name"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 border pl-10 border-gray-300 rounded-lg text-sm lg:text-base"
+          />
+        </div>
       </div>
       <div className="bg-white w-full shadow-md rounded-lg p-2 lg:p-6 my-3 sm:mx-auto">
         <div className="grid grid-cols-5 font-semibold mb-2 border-b-2 pb-2 text-center">
@@ -201,11 +201,9 @@ const RecDashboard = () => {
               <div className="relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-3 lg:ml-28 group">
                 <div className="flex items-center text-xs sm:text-base">
                   <span
-                    className={`${
-                      internship.status === "On Hold" && "bg-orange-300"
-                    } ${
-                      internship.status === "Fulfilled" && "bg-green-400"
-                    } bg-gray-200 rounded-lg px-2 py-1`}
+                    className={`${internship.status === "On Hold" && "bg-orange-300"
+                      } ${internship.status === "Fulfilled" && "bg-green-400"
+                      } bg-gray-200 rounded-lg px-2 py-1`}
                   >
                     {internship.status}
                   </span>
@@ -251,7 +249,8 @@ const RecDashboard = () => {
                 </button>
               </div>
             </div>
-          ))}
+          </div>
+        ))}
 
         {/* Pagination Controls */}
         <div className="flex justify-center items-center mt-6">
