@@ -97,8 +97,6 @@ const RecDashboard = () => {
     }
   };
 
-
-
   if (loading) {
     return <Spinner />;
   }
@@ -121,7 +119,6 @@ const RecDashboard = () => {
   const totalPages = Math.ceil(internships.length / itemsPerPage);
   console.log("these are internships:", paginatedInternships);
 
-
   const filteredInternships = paginatedInternships
     .filter((internship) =>
       internship.internshipName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -129,8 +126,6 @@ const RecDashboard = () => {
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   if (internships.length === 0) {
-
-
     return (
       <div className="flex flex-col justify-center items-center h-screen space-y-4">
         <p className="text-xl font-semibold text-gray-500">
@@ -182,72 +177,66 @@ const RecDashboard = () => {
           </div>
         </div>
 
-
         {filteredInternships.map((internship) => (
-          <div key={internship._id} className="grid grid-cols-5 gap-2 py-2 border-b-2">
+          <div
+            key={internship._id}
+            className="grid grid-cols-5 gap-2 py-2 border-b-2"
+          >
             <div className="text-xs text-left ml-0 my-3 w-[80%] sm:text-center sm:text-sm sm:ml-2 lg:text-base lg:ml-10 lg:w-[190px]">
               {internship.internshipName}
             </div>
+
             <div className="relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-3 lg:ml-28 group">
               <div className="flex items-center text-xs sm:text-base">
                 <span
-                  className={`${internship.status === "On Hold" && "bg-orange-300"
-                    } ${internship.status === "Fulfilled" && "bg-green-400"} bg-gray-200 rounded-lg px-2 py-1`}
+                  className={`${
+                    internship.status === "On Hold" && "bg-orange-300"
+                  } ${
+                    internship.status === "Fulfilled" && "bg-green-400"
+                  } bg-gray-200 rounded-lg px-2 py-1`}
                 >
                   {internship.status}
                 </span>
-
               </div>
-              <div className="relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-3 lg:ml-28 group">
-                <div className="flex items-center text-xs sm:text-base">
-                  <span
-                    className={`${internship.status === "On Hold" && "bg-orange-300"
-                      } ${internship.status === "Fulfilled" && "bg-green-400"
-                      } bg-gray-200 rounded-lg px-2 py-1`}
+              <div className="absolute top-[90%] left-0 mt-1 text-sm lg:text-base hidden w-20 lg:w-32 bg-white border rounded shadow-md group-hover:block z-10">
+                <ul className="text-gray-700">
+                  <li
+                    className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => updateStatus("Active", internship._id)}
                   >
-                    {internship.status}
-                  </span>
-                </div>
-                <div className="absolute top-[90%] left-0 mt-1 text-sm lg:text-base hidden w-20 lg:w-32 bg-white border rounded shadow-md group-hover:block z-10">
-                  <ul className="text-gray-700">
-                    <li
-                      className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => updateStatus("Active", internship._id)}
-                    >
-                      Active
-                    </li>
-                    <li
-                      className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => updateStatus("On Hold", internship._id)}
-                    >
-                      On Hold
-                    </li>
-                    <li
-                      className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => updateStatus("Fulfilled", internship._id)}
-                    >
-                      Fulfilled
-                    </li>
-                  </ul>
-                </div>
+                    Active
+                  </li>
+                  <li
+                    className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => updateStatus("On Hold", internship._id)}
+                  >
+                    On Hold
+                  </li>
+                  <li
+                    className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => updateStatus("Fulfilled", internship._id)}
+                  >
+                    Fulfilled
+                  </li>
+                </ul>
               </div>
-              <div className="w-[80%] text-xs sm:text-base lg:w-[80px] mx-auto text-center h-6 my-auto ml-3 lg:ml-20">
-                {internship.views}
-              </div>
-              <Link
-                to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}`}
-                className="sm:ml-3 md:mx-auto text-xs px-1 sm:text-base lg:ml-4 text-center my-auto rounded-xl bg-blue-400 text-white w-20 md:w-24 lg:w-[190px] hover:bg-blue-700 hover:cursor-pointer py-1"
+            </div>
+            <div className="w-[80%] text-xs sm:text-base lg:w-[80px] mx-auto text-center h-6 my-auto ml-3 lg:ml-20">
+              {internship.views}
+            </div>
+            <Link
+              to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}`}
+              className="sm:ml-3 md:mx-auto text-xs px-1 sm:text-base lg:ml-4 text-center my-auto rounded-xl bg-blue-400 text-white w-20 md:w-24 lg:w-[190px] hover:bg-blue-700 hover:cursor-pointer py-1"
+            >
+              Applications ({internship.applicantCount})
+            </Link>
+            <div className="text-center text-xs sm:text-base ml-8 sm:ml-12 lg:w-36 mx-auto my-auto">
+              <button
+                onClick={() => openModal(internship)}
+                className="text-blue-500 hover:underline"
               >
-                Applications ({internship.applicantCount})
-              </Link>
-              <div className="text-center text-xs sm:text-base ml-8 sm:ml-12 lg:w-36 mx-auto my-auto">
-                <button
-                  onClick={() => openModal(internship)}
-                  className="text-blue-500 hover:underline"
-                >
-                  View
-                </button>
-              </div>
+                View
+              </button>
             </div>
           </div>
         ))}
