@@ -31,7 +31,10 @@ const Education = () => {
   //   (_, i) => currentYear - 40 + i
   // ).reverse();
 
-  const endYears = Array.from({ length: 11 }, (_, i) => parseInt(startYear) + i).reverse();
+  const endYears = Array.from(
+    { length: 11 },
+    (_, i) => parseInt(startYear) + i
+  ).reverse();
 
   const degreeOptions = [
     { value: "B.Tech", label: "B.Tech" },
@@ -265,7 +268,6 @@ const Education = () => {
     "X Standard": [{ value: "Core", label: "Core" }],
   };
 
-
   const userId = getUserIdFromToken();
 
   useEffect(() => {
@@ -300,7 +302,9 @@ const Education = () => {
       institution,
       startYear,
       endYear,
-      score: score + ' ' + gradeType,
+
+      score: score + " " + gradeType,
+
     };
 
     console.log("educationData", educationData);
@@ -406,9 +410,7 @@ const Education = () => {
   console.log(fieldOfStudy);
 
   return (
-
     <div className="container mx-auto p-4 border shadow-md mt-[68px] w-full lg:w-[80%]">
-
       <h2 className="text-xl font-outfit font-semibold flex justify-between">
         Education
         <button
@@ -513,7 +515,12 @@ const Education = () => {
 
           <div className="flex space-x-4 md:space-x-4 px-2 items-center mb-2 w-[50%] md:w-[40%]">
             <label htmlFor="gradeSelect">Select Grade Type:</label>
-            <select id="gradeSelect" value={gradeType} onChange={handleGradeChange} className="mx-3 border p-2 w-fit">
+            <select
+              id="gradeSelect"
+              value={gradeType}
+              onChange={handleGradeChange}
+              className="mx-3 border p-2 w-fit"
+            >
               <option value="CGPA">CGPA</option>
               <option value="%">Percentage</option>
             </select>
@@ -525,9 +532,20 @@ const Education = () => {
             onChange={(e) => {
               const value = e.target.value;
 
-              // Check if the input is a valid number with one decimal place or an empty string
-              if (/^\d*\.?\d?$/.test(value)) {
-                setScore(value);
+              if (gradeType === "CGPA") {
+                if (/^\d{0,2}(\.\d{0,2})?$/.test(value)) {
+                  setScore(value);
+                }
+              } else if (gradeType === "%") {
+                if (/^\d{0,3}(\.\d{0,2})?$/.test(value)) {
+                  setScore(value);
+                }
+              }
+            }}
+            onBlur={() => {
+              if (gradeType === "%" && parseFloat(score) > 100) {
+                setScore("100");
+
               }
             }}
             className="border p-2 mb-2 w-full"
