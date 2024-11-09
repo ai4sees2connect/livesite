@@ -42,6 +42,11 @@ import HomeUniversal from "./components/common/HomeUniversal";
 import NavbarUniversal from "./components/common/NavbarUniversal";
 import InternDetails from "./components/student/InternDetails";
 import InternshipsUniversal from './components/common/InternshipsUniversal'
+// import forgetPassword from "./components/common/forgetPassword";
+// import ForgetPassword from "./components/common/ForgetPassword";
+import ForgetPasswordRecruiter from "./components/common/ForgetPasswordRecruiter";
+import ForgetPasswordStudent from "./components/common/ForgetPasswordStudent";
+
 
 // import InternshipDetails from "./components/student/InternshipDetails";
 
@@ -104,6 +109,8 @@ function App() {
         <Route path='/privacy-policy' element={<Privacy/>}/>
         <Route path='/terms-conditions' element={<Terms/>}/>
         <Route path='/Cancellation' element={<Cancellation/>}/>
+        <Route path='/recruiter/forget-pass' element={<ForgetPasswordRecruiter/>}/>
+        <Route path='/student/forget-pass' element={<ForgetPasswordStudent/>}/>
         
       </Routes>
       <Footer />

@@ -30,6 +30,7 @@ import Select from "react-select";
 import CustomRadio from "../student/utils/CustomRadio";
 import StipendSlider from "../student/utils/StipendSlider";
 import { useStudent } from "../student/context/studentContext";
+import statesAndCities from "../common/statesAndCities";
 // import CustomRadio from './utils/CustomRadio';
 
 const InternshipsUniversal = () => {
@@ -612,13 +613,14 @@ const InternshipsUniversal = () => {
             <div className="mt-7">
               <p className="mt-6 mb-2 font-bold">Location</p>
               <Select
-                options={statesAndUTs}
+                options={statesAndCities}
                 values={selectedLocation}
                 onChange={handleChange}
                 placeholder="Select a location"
                 searchable={true}
                 isMulti
                 className="w-full shadow-md"
+                classNamePrefix="custom-select-dropdown"
               />
             </div>
           )}

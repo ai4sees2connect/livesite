@@ -30,6 +30,7 @@ import CustomRadio from "./utils/CustomRadio";
 import StipendSlider from "./utils/StipendSlider";
 import { useStudent } from "./context/studentContext";
 // import CustomRadio from './utils/CustomRadio';
+import statesAndCities from "../common/statesAndCities";
 
 const Internships = () => {
   const [internships, setInternships] = useState([]);
@@ -737,13 +738,14 @@ const Internships = () => {
             <div className="mt-7">
               <p className="mt-6 mb-2 font-bold">Location</p>
               <Select
-                options={statesAndUTs}
+                options={statesAndCities}
                 values={selectedLocation}
                 onChange={handleChange}
                 placeholder="Select a location"
                 searchable={true}
                 isMulti
                 className="w-full shadow-md"
+                 classNamePrefix="custom-select-dropdown"
               />
             </div>
           )}

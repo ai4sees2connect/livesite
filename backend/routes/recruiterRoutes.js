@@ -21,6 +21,119 @@ const generateOtp = () => {
   return crypto.randomInt(100000, 999999).toString();
 };
 
+router.post('/forget-pass/verify-otp', async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({ message: 'Email and OTP are required' });
+  }
+
+  try {
+    // Find the OTP entry in the database
+    const otpEntry = await Otp.findOne({ email, otp });
+
+    if (!otpEntry) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    // Check if the OTP is expired
+    if (otpEntry.expiresAt < Date.now()) {
+      return res.status(400).json({ message: 'OTP has expired' });
+    }
+
+    // OTP is valid, proceed to the next step (e.g., complete signup)
+
+    return res.status(200).json({ message: 'OTP verified successfully' });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+router.post('/forget-pass/send-otp', async (req, res) => {
+  const { email } = req.body;
+  
+  const recruiter=await Recruiter.findOne({email:email});
+  if(!recruiter){
+    return res.status(404).json({message: 'This email does not exist'});
+  }
+  // console.log('founddd');
+
+  try {
+    // Step 1: Generate a random OTP and set expiration time (10 minutes)
+    const otp = generateOtp();
+    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes expiration
+
+    // Step 2: Save OTP to the database
+    await Otp.create({ email, otp, expiresAt: new Date(expiresAt) });
+
+    // Step 3: Configure nodemailer to send the OTP email
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: process.env.EMAIL_USER, // Use environment variables
+        pass: process.env.EMAIL_PASS, // App-specific password
+      },
+    });
+
+    console.log('Email User:', process.env.EMAIL_USER);
+    console.log('Email Pass:', process.env.EMAIL_PASS);
+
+    transporter.verify((error, success) => {
+      if (error) {
+        console.error('Transporter verification failed:', error);
+      } else {
+        console.log('Server is ready to send messages');
+      }
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Your OTP Code',
+      text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
+    };
+
+    console.log(mailOptions);
+    // Step 4: Send email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return res.status(500).json({ message: 'Error sending OTP email' });
+      }
+      return res.status(200).json({ message: 'OTP sent successfully' });
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+router.put('/update-password', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find the student by email
+    const recruiter = await Recruiter.findOne({ email });
+
+    if (!recruiter) {
+      return res.status(404).json({ message: 'recruiter not found' });
+    }
+
+    // Set the new password (will be hashed automatically)
+    recruiter.password = password;
+
+    // Save the student with the new password
+    await recruiter.save();
+
+    return res.status(200).json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Error updating password:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 router.post("/signup", async (req, res) => {
   const { firstname, lastname, email, phone, countryCode, password } = req.body;
 

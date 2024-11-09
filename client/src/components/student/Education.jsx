@@ -15,8 +15,8 @@ const Education = () => {
   const [fieldOfStudy, setFieldOfStudy] = useState(null);
   const [otherField, setOtherField] = useState(null);
   const [institution, setInstitution] = useState("");
- 
-  
+
+
   const [score, setScore] = useState("");
   const [educationDetails, setEducationDetails] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
@@ -292,7 +292,7 @@ const Education = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  // console.log(score+gradeType)
+    // console.log(score+gradeType)
     const educationData = {
       degree,
       fieldOfStudy:
@@ -300,7 +300,7 @@ const Education = () => {
       institution,
       startYear,
       endYear,
-      score:score+' '+ gradeType,
+      score: score + ' ' + gradeType,
     };
 
     console.log("educationData", educationData);
@@ -519,12 +519,14 @@ const Education = () => {
             </select>
           </div>
           <input
-            type="number"
+            type="text"
             placeholder={`Enter ${gradeType} scored`}
             value={score}
             onChange={(e) => {
               const value = e.target.value;
-              if (value.length <= 2) {
+
+              // Check if the input is a valid number with one decimal place or an empty string
+              if (/^\d*\.?\d?$/.test(value)) {
                 setScore(value);
               }
             }}
