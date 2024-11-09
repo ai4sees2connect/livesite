@@ -169,6 +169,9 @@ function Login() {
                   )}
                 </button>
               </div>
+              <div>
+                <Link  to='/recruiter/forget-pass' className="text-sm px-2 text-blue-500">Forget password</Link>
+              </div>
 
               <button
                 type="submit"

@@ -16,6 +16,7 @@ const Education = () => {
   const [otherField, setOtherField] = useState(null);
   const [institution, setInstitution] = useState("");
 
+
   const [score, setScore] = useState("");
   const [educationDetails, setEducationDetails] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
@@ -301,7 +302,9 @@ const Education = () => {
       institution,
       startYear,
       endYear,
+
       score: score + " " + gradeType,
+
     };
 
     console.log("educationData", educationData);
@@ -523,11 +526,12 @@ const Education = () => {
             </select>
           </div>
           <input
-            type="number"
+            type="text"
             placeholder={`Enter ${gradeType} scored`}
             value={score}
             onChange={(e) => {
               const value = e.target.value;
+
               if (gradeType === "CGPA") {
                 if (/^\d{0,2}(\.\d{0,2})?$/.test(value)) {
                   setScore(value);
@@ -541,6 +545,7 @@ const Education = () => {
             onBlur={() => {
               if (gradeType === "%" && parseFloat(score) > 100) {
                 setScore("100");
+
               }
             }}
             className="border p-2 mb-2 w-full"
