@@ -41,6 +41,45 @@ const Navbar = () => {
     setNavbarState(null);
   };
 
+  useEffect(() => {
+    const fetchPicture = async () => {
+      try {
+        const response = await axios.get(
+          `${api}/student/get-picture/${userId}`,
+          {
+            responseType: "blob", // Fetching as a blob for image rendering
+          }
+        );
+        console.log("response", response.status);
+
+        const picBlob = new Blob([response.data], {
+          type: response.headers["content-type"],
+        });
+        const Url = URL.createObjectURL(picBlob);
+        // console.log('picUrl', pic);
+        // console.log('logo', logo)
+        setPicUrl(Url);
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.log("Picture not found");
+          setPicUrl(null); // Set the logo URL to null if not found
+        } else {
+          console.error("Error fetching Picture:", error);
+        }
+      }
+    };
+    fetchPicture();
+
+    return () => {
+      if (!picUrl) {
+        URL.revokeObjectURL(picUrl);
+        console.log("Blob URL revoked on cleanup:", picUrl); // Optional: Add a log to confirm revocation
+      }
+    };
+  }, []);
+
+  console.log(picUrl);
+
   return (
     <nav className="bg-white fixed top-0 w-full shadow-md z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">

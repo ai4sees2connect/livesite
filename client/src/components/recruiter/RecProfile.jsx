@@ -119,15 +119,20 @@ const RecProfile = () => {
     }
   }, [recruiter]);
 
-  const handleFileChange = (e) => {
-    setLogo(e.target.files[0]);
-  };
+  // const handleFileChange = (e) => {
+  //   setLogo(e.target.files[0]);
+  // };
 
   const handleFileUpload = async (e) => {
     // if (!logo) return;
+    const selectedPicture = e.target.files[0];
+    if (!selectedPicture) {
+      toast.error("Please select a Picture to upload.");
+      return;
+    }
 
     const formData = new FormData();
-    formData.append("logo", logo);
+    formData.append("logo", selectedPicture);
 
     try {
       // setUploading(true);
@@ -325,7 +330,7 @@ const RecProfile = () => {
               </button>
               <input
                 ref={fileInputRef}
-                onChange={handleFileChange}
+                onChange={handleFileUpload}
                 type="file"
                 className="my-2 hover:cursor-pointer w-full hidden"
               />
