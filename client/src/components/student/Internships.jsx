@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   FaMapMarkerAlt,
@@ -16,8 +16,7 @@ import {
   FaQuestion,
   FaFilter,
   FaAngleRight,
-  FaAngleLeft
-
+  FaAngleLeft,
 } from "react-icons/fa";
 import Spinner from "../common/Spinner";
 import getUserIdFromToken from "./auth/authUtils";
@@ -38,13 +37,13 @@ const Internships = () => {
   const [error, setError] = useState(null);
   const [selectedInternship, setSelectedInternship] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState([]);
-  const { logout, student,refreshData } = useStudent();
+  const { logout, student, refreshData } = useStudent();
   const userId = getUserIdFromToken();
   const [filterOpen, setFilterOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const internshipsPerPage = 9;
   const scrollableRef = useRef(null);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   const statesAndUTs = [
     { value: "All Locations", label: "All Locations" },
@@ -438,8 +437,6 @@ const Internships = () => {
   }, [userId]);
   console.log("this is resume", resumeUrl);
 
-
-
   const filteredInternships = internships.filter((internship) => {
     // Matches Work Type
     const matchesWorkType =
@@ -454,8 +451,6 @@ const Internships = () => {
           internship?.jobProfile?.toLowerCase() ===
           profile?.label?.toLowerCase()
       );
-
-
 
     const matchesLocation =
       selectedLocation.length == 0 ||
@@ -489,10 +484,12 @@ const Internships = () => {
   const totalPages = Math.ceil(filteredInternships.length / internshipsPerPage);
 
   const handleNextPage = () => {
-    if (currentPage < Math.ceil(filteredInternships.length / internshipsPerPage)) {
+    if (
+      currentPage < Math.ceil(filteredInternships.length / internshipsPerPage)
+    ) {
       setCurrentPage(currentPage + 1);
       setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: "smooth" });
         scrollToTop();
       }, 500);
     }
@@ -502,17 +499,16 @@ const Internships = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
       setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: "smooth" });
         scrollToTop();
       }, 500);
     }
-
   };
 
   const scrollToTop = () => {
     scrollableRef.current.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: "smooth",
     });
   };
 
@@ -551,13 +547,18 @@ const Internships = () => {
 
   const applyToInternship = async (internshipId) => {
     try {
-      
-      if( student.education.length==0  || student.skills.length==0 || !student.gender || !student.homeLocation || !student.yearsOfExp || !student.resume ){
-            // toast.error("Please complete your profile");
-            navigate(`/student/profile/${userId}`);
-            return;
-          }
-
+      if (
+        student.education.length == 0 ||
+        student.skills.length == 0 ||
+        !student.gender ||
+        !student.homeLocation ||
+        !student.yearsOfExp ||
+        !student.resume
+      ) {
+        // toast.error("Please complete your profile");
+        navigate(`/student/profile/${userId}`);
+        return;
+      }
 
       if (!availability || !aboutText) {
         toast.error("Please Enter all fields");
@@ -639,22 +640,31 @@ const Internships = () => {
 
   return (
     <div className="py-5 px-5 mt-16 min-h-screen bg-gray-100">
-
-
       <div className="flex flex-col lg:flex-row w-full lg:w-[90%] mx-auto  gap-10 ">
-
         {/* this below div is filter button */}
-        <div className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${filterOpen && 'border-blue-400'}`} onClick={() => setFilterOpen(!filterOpen)}>
+        <div
+          className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${
+            filterOpen && "border-blue-400"
+          }`}
+          onClick={() => setFilterOpen(!filterOpen)}
+        >
           <span>Filters</span>
           <FaFilter className="hover:cursor-pointer text-blue-500" />
         </div>
 
         {/* this below div is filter div */}
-        <div className={` ${filterOpen ? 'block' : 'hidden'} w-[84%] md:w-[90%]  lg:ml-10 mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl rounded-md border-t py-6 overflow-y-auto scrollbar-thin bg-white  relative`}>
+        <div
+          className={` ${
+            filterOpen ? "block" : "hidden"
+          } w-[84%] md:w-[90%]  lg:ml-10 mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl rounded-md border-t py-6 overflow-y-auto scrollbar-thin bg-white  relative`}
+        >
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
           </h1>
-          <FaTimes onClick={() => setFilterOpen(false)} className="absolute right-3 top-5 lg:hidden text-blue-500 hover:cursor-pointer" />
+          <FaTimes
+            onClick={() => setFilterOpen(false)}
+            className="absolute right-3 top-5 lg:hidden text-blue-500 hover:cursor-pointer"
+          />
 
           <p className="mb-4 mt-6">Type of Internship:</p>
           <button
@@ -731,8 +741,6 @@ const Internships = () => {
             />
           </div>
 
-          
-
           {(workType === "Work from Office" || workType === "Hybrid") && (
             <div className="mt-7">
               <p className="mt-6 mb-2 font-bold">Location</p>
@@ -757,9 +765,11 @@ const Internships = () => {
           <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
             {filteredInternships.length} Total Internships
           </h1>
-          <div ref={scrollableRef} className="flex-1 lg:mt-0 overflow-scroll overflow-x-hidden h-screen scrollbar-thin relative">
+          <div
+            ref={scrollableRef}
+            className="flex-1 lg:mt-0 overflow-scroll overflow-x-hidden h-screen scrollbar-thin relative"
+          >
             <div className="flex flex-col justify-center bg-gray-100">
-
               {/* this below div is list of internships */}
               {currentInternships.map((internship) => (
                 <div
@@ -783,7 +793,7 @@ const Internships = () => {
                         className=" w-20 h-20"
                       />
                     ) : (
-                      <FaBuilding className=" w-16 h-16 text-gray-600"/>
+                      <FaBuilding className=" w-16 h-16 text-gray-600" />
                     )}
                   </div>
 
@@ -842,10 +852,11 @@ const Internships = () => {
                   )}
                   <div className="flex text-sm md:text-base space-x-4 items-center">
                     <div
-                      className={`${internship.studentCount < 20
-                        ? "text-green-500"
-                        : "text-gray-500"
-                        } my-2 w-[30%] md:w-auto`}
+                      className={`${
+                        internship.studentCount < 20
+                          ? "text-green-500"
+                          : "text-gray-500"
+                      } my-2 w-[30%] md:w-auto`}
                     >
                       {internship.studentCount} Applicants
                     </div>
@@ -887,28 +898,33 @@ const Internships = () => {
                   )}
                 </div>
               ))}
-
+              {/* pagination */}
               <div className="flex  justify-center my-4 space-x-4">
                 <button
                   onClick={handlePreviousPage}
                   disabled={currentPage === 1}
-                  className={`px-4 py-2 rounded-md ${currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'}`}
+                  className={`px-4 py-2 rounded-md ${
+                    currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
+                  }`}
                 >
                   <FaAngleLeft />
                 </button>
-                <span>{currentPage} / {totalPages}</span>
+                <span>
+                  {currentPage} / {totalPages}
+                </span>
                 <button
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
-                  className={`px-4 py-2 rounded-md ${currentPage === Math.ceil(filteredInternships.length / internshipsPerPage)
-                    ? 'bg-gray-300'
-                    : 'bg-blue-500 text-white'
-                    }`}
+                  className={`px-4 py-2 rounded-md ${
+                    currentPage ===
+                    Math.ceil(filteredInternships.length / internshipsPerPage)
+                      ? "bg-gray-300"
+                      : "bg-blue-500 text-white"
+                  }`}
                 >
                   <FaAngleRight />
                 </button>
               </div>
-
 
               {selectedInternship &&
                 !isAlreadyApplied(selectedInternship._id) && (
@@ -941,8 +957,6 @@ const Internships = () => {
                       </button> */}
                           </div>
                         </div>
-
-
 
                         <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
                           <FaMapMarkerAlt className="mr-2" />
@@ -990,7 +1004,9 @@ const Internships = () => {
                           ))}
                         </div>
 
-                        <h3 className="text-base lg:text-lg font-medium mb-2">Description:</h3>
+                        <h3 className="text-base lg:text-lg font-medium mb-2">
+                          Description:
+                        </h3>
                         <div
                           className="text-sm lg:text-base text-gray-700 mb-4"
                           dangerouslySetInnerHTML={{
@@ -1014,7 +1030,9 @@ const Internships = () => {
 
                         <div>
                           <div className="resume-box mt-4">
-                            <h1 className="text-lg sm:text-xl font-semibold">Your Resume</h1>
+                            <h1 className="text-lg sm:text-xl font-semibold">
+                              Your Resume
+                            </h1>
 
                             <div className="flex flex-col sm:flex-row sm:space-x-2">
                               <h1 className="text-gray-600">
@@ -1056,7 +1074,8 @@ const Internships = () => {
                                   type="radio"
                                   value="Yes"
                                   checked={
-                                    availability === "Yes! Will join Immediately"
+                                    availability ===
+                                    "Yes! Will join Immediately"
                                   }
                                   onChange={handleRadioChange}
                                 />
@@ -1067,7 +1086,8 @@ const Internships = () => {
                                   type="radio"
                                   value="No"
                                   checked={
-                                    availability === "No! Cannot Join immediately"
+                                    availability ===
+                                    "No! Cannot Join immediately"
                                   }
                                   onChange={handleRadioChange}
                                 />
@@ -1086,7 +1106,9 @@ const Internships = () => {
                               </div>
                               <textarea
                                 value={assessmentAns}
-                                onChange={(e) => setAssessmentAns(e.target.value)}
+                                onChange={(e) =>
+                                  setAssessmentAns(e.target.value)
+                                }
                                 className="w-[90%] sm:w-[80%] border-2 p-2"
                                 rows={4}
                                 name=""
