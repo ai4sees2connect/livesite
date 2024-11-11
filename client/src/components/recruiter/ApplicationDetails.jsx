@@ -85,6 +85,30 @@ const ApplicationDetails = () => {
   const { aboutText, appliedAt, assessmentAns, availability, } = studentDetails.appliedInternships[0]
   const { assessment } = internshipDetails;
 
+  const handleDownload = (file) => {
+    console.log('this is file', file);
+    
+    // Decode base64 string to binary
+    const byteCharacters = atob(file.data); // Decode base64 data
+    const byteNumbers = new Array(byteCharacters.length);
+    
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: file.contentType });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = file.filename;
+    link.click();
+    
+    // Clean up the URL object after download
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <h1 className='mt-20 text-sm sm:text-base text-gray-600 mx-auto w-[96%] sm:w-[70%] font-[500] capitalize'>Dashboard &gt; Applications Received &gt; <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internshipId}`}>{internshipDetails.internshipName}</Link> &gt; {firstname} {lastname}</h1>
@@ -183,7 +207,7 @@ const ApplicationDetails = () => {
                   <li key={index}>
                     {exp.role} at {exp.company} ({exp.startDate} - {exp.endDate})
                     <br />
-                    <span className='ml-5'>Desc: {exp.description}</span>
+                    <span className='ml-5 break-words'>Desc: {exp.description}</span>
                   </li>
                 ))}
               </ul>
@@ -202,6 +226,15 @@ const ApplicationDetails = () => {
                     {cert.title} - {cert.issuingOrganization} (Issued on: {cert.issueDate})
                     <br />
                     <span className='ml-5'>Desc: {cert.description}</span>
+                    <br />
+                    {cert.fileUpload && (
+                      <button
+                        onClick={() => handleDownload(cert.fileUpload)}
+                        className="text-blue-500 underline ml-5"
+                      >
+                        Download Certificate
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>

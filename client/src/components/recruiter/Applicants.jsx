@@ -250,7 +250,7 @@ const Applicants = () => {
       );
 
     let studentExperience;
-    if (student.yearsOfExp === "no experience") {
+    if (student.yearsOfExp === "no experience" || student.yearsOfExp==='fresher') {
       studentExperience = 0;
     } else if (student.yearsOfExp === "10+") {
       studentExperience = 10;
