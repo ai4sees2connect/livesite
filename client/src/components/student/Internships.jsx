@@ -765,40 +765,62 @@ const Internships = () => {
           {filteredInternships.length} Total Internships
         </h1>
 
+        {/* internships div */}
         <div className="w-full  lg:w-[79%]">
           <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
             {filteredInternships.length} Total Internships
           </h1>
+
+          {/* list of internships */}
           <div
-            ref={scrollableRef}
-            className="flex-1 lg:mt-0 overflow-scroll overflow-x-hidden h-screen scrollbar-thin relative"
+            
+            className="flex-1 lg:mt-0  h-screen scrollbar-thin relative"
           >
             <div className="flex flex-col justify-center bg-gray-100">
               {/* this below div is list of internships */}
+              <div ref={scrollableRef} className="overflow-scroll scrollbar-thin h-[90vh] overflow-x-hidden ">
               {currentInternships.map((internship) => (
                 <div
                   key={internship._id}
-                  className="bg-white shadow-md rounded-lg px-7 py-3 w-full lg:w-[90%] mb-3 mx-auto relative "
+                  className="bg-white shadow-md rounded-lg px-7 py-2 w-full lg:w-[90%] mb-3 mx-auto relative "
                 >
                   <div className="flex justify-between items-center">
-                    <div className="mb-4">
-                      <h2 className="text-lg lg:text-2xl font-semibold md:mb-2">
+                    <div className="mb-0">
+                      <h2 className="text-lg lg:text-2xl font-semibold md:mb-0">
                         {internship.internshipName}
                       </h2>
                       <p className="text-gray-600">
                         {internship.recruiter.companyName}
                       </p>
                     </div>
-
+                    
+                    <div className="flex items-center space-x-3">
+                    {!isAlreadyApplied(internship._id) ? (
+                    <button
+                      onClick={() => openModal(internship)}
+                      className=" md:w-auto block md:hidden  text-sm md:text-base rounded-md text-blue-500 "
+                    >
+                      View details
+                    </button>
+                  ) : (
+                    <Link
+                      to={`/student/myApplications/${userId}`}
+                      className=" w-auto md:hidden block text-sm md:text-base  rounded-md text-blue-500 "
+                    >
+                      Check Status
+                    </Link>
+                  )}
                     {internship.logoUrl ? (
                       <img
                         src={internship.logoUrl}
                         alt={internship.logoUrl}
-                        className=" w-20 h-20"
+                        className=" w-16 h-16"
                       />
                     ) : (
                       <FaBuilding className=" w-16 h-16 text-gray-600" />
                     )}
+                    </div>
+
                   </div>
 
                   <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row ">
@@ -849,7 +871,7 @@ const Internships = () => {
                   </div>
 
                   {isAlreadyApplied(internship._id) && (
-                    <p className="text-green-600 text-sm md:text-base inline-flex rounded-xl border border-green-600 px-2 py-1">
+                    <p className="text-green-500 text-sm md:text-base inline-flex rounded-xl border border-green-500 px-2 py-1">
                       Applied
                       <FaCheck className="ml-2 mt-1" />
                     </p>
@@ -860,7 +882,7 @@ const Internships = () => {
                         internship.studentCount < 20
                           ? "text-green-500"
                           : "text-gray-500"
-                      } my-2 w-[30%] md:w-auto`}
+                      } my-1 w-fit md:w-auto`}
                     >
                       {internship.studentCount} Applicants
                     </div>
@@ -869,39 +891,40 @@ const Internships = () => {
                       <div className="flex  space-x-2 items-center">
                         <FaRunning className="text-yellow-500  w-5 h-5" />
                         <span className="text-gray-500">
-                          Be an early Applicant
+                        Early Applicant
                         </span>
                       </div>
                     )}
 
                     {internship.ppoCheck === "yes" && (
                       <div className="text-gray-500 flex space-x-2 items-center">
-                        <FaStar /> <span>Internship with job offer</span>
+                        <FaStar /> <span>Job offer available</span>
                       </div>
                     )}
                   </div>
 
-                  <p className="text-gray-500 mb-2 md:mb-4 text-sm md:text-base">
+                  <p className="text-gray-500 mb-2  text-sm md:text-base">
                     Posted: {TimeAgo(internship.createdAt)}
                   </p>
 
                   {!isAlreadyApplied(internship._id) ? (
                     <button
                       onClick={() => openModal(internship)}
-                      className=" w-auto md:my-2 text-sm md:text-base rounded-md text-blue-500 hover:scale-105 duration-300"
+                      className=" w-auto hidden md:block mb-1 text-sm md:text-base rounded-md text-blue-500 "
                     >
                       View details
                     </button>
                   ) : (
                     <Link
                       to={`/student/myApplications/${userId}`}
-                      className=" w-auto text-sm md:text-base my-2 rounded-md text-blue-500 hover:scale-105 duration-300"
+                      className=" w-auto hidden md:block mb-1 text-sm md:text-base  rounded-md text-blue-500 "
                     >
                       Check Status
                     </Link>
                   )}
                 </div>
               ))}
+              </div>
               {/* pagination */}
               <div className="flex  justify-center my-4 space-x-4">
                 <button
