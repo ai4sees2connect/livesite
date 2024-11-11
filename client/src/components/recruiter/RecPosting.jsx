@@ -353,6 +353,23 @@ const RecPosting = () => {
       return perk.value;
     });
 
+    if (
+      !formData.internshipName ||
+      !formData.internshipType ||
+      !formData.internshipStartQues ||
+      !formData.stipendType ||
+      !formData.ppoCheck ||
+      perksSet.length == 0 ||
+      !selectedProfile.value ||
+      !formData.duration ||
+      !formData.numberOfOpenings ||
+      !formData.description ||
+      skillSet.length == 0
+    ) {
+      toast.error("Please enter all fields");
+      return;
+    }
+
     const postData = {
       internshipName: formData.internshipName,
       skills: skillSet,
@@ -372,23 +389,22 @@ const RecPosting = () => {
       assessment: formData.assessment,
     };
     console.log(postData);
-    if (
-      !postData.internshipName ||
-      !postData.internshipType ||
-      !postData.internshipStartQues ||
-      !postData.stipendType ||
-      !postData.ppoCheck ||
-      !postData.assessment ||
-      postData.perks.length == 0 ||
-      !postData.jobProfile ||
-      !postData.duration ||
-      !postData.numberOfOpenings ||
-      !postData.description ||
-      postData.skills.length == 0
-    ) {
-      toast.error("Please enter all fields");
-      return;
-    }
+    // if (
+    //   !postData.internshipName ||
+    //   !postData.internshipType ||
+    //   !postData.internshipStartQues ||
+    //   !postData.stipendType ||
+    //   !postData.ppoCheck ||
+    //   postData.perks.length == 0 ||
+    //   !postData.jobProfile ||
+    //   !postData.duration ||
+    //   !postData.numberOfOpenings ||
+    //   !postData.description ||
+    //   postData.skills.length == 0
+    // ) {
+    //   toast.error("Please enter all fields");
+    //   return;
+    // }
 
     if (postData.internshipType === "Remote") {
       // setFormData({...formData,internshipType: 'Work from Home'})
@@ -521,6 +537,7 @@ const RecPosting = () => {
               onChange={handleChange}
               className="p-2 border text-gray-600 shadow-md border-gray-300 rounded-md"
               placeholder="e.g Angular Development"
+              required
             />
           </div>
 
@@ -534,6 +551,7 @@ const RecPosting = () => {
                 options={skills}
                 placeholder="Select or type skills "
                 className="w-60 shadow-md"
+                required
               />
             </div>
           </div>

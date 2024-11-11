@@ -21,6 +21,8 @@ const generateOtp = () => {
   return crypto.randomInt(100000, 999999).toString();
 };
 
+
+
 router.post('/forget-pass/verify-otp', async (req, res) => {
   const { email, otp } = req.body;
 

@@ -24,6 +24,7 @@ const Education = () => {
   const [startYear, setStartYear] = useState(currentYear);
   const [endYear, setEndYear] = useState(currentYear);
   const startYears = Array.from({ length: 50 }, (_, i) => currentYear - i);
+  const [scoreError, setScoreError] = useState('');
 
   // const endYears = Array.from(
   //   { length: 50 },
@@ -403,6 +404,40 @@ const Education = () => {
     setGradeType(event.target.value);
   };
 
+  const handleChangeScore = (e) => {
+    const value = e.target.value;
+
+    if (gradeType === "CGPA") {
+      // Allow up to 10.00 with 2 decimal places
+      if (/^\d{0,2}(\.\d{0,2})?$/.test(value)) {
+        if (parseFloat(value) <= 10) {
+          setScore(value);
+          setScoreError(''); // Clear error if value is valid
+        } else {
+          setScore(''); // Reset the field
+          setScoreError('CGPA should not exceed 10.00');
+        }
+      } else {
+        setScore(''); // Reset the field for invalid input
+        setScoreError('Enter a valid CGPA up to 2 decimal places');
+      }
+    } else if (gradeType === "%") {
+      // Allow up to 100.00 with 2 decimal places
+      if (/^\d{0,3}(\.\d{0,2})?$/.test(value)) {
+        if (parseFloat(value) <= 100) {
+          setScore(value);
+          setScoreError(''); // Clear error if value is valid
+        } else {
+          setScore(''); // Reset the field
+          setScoreError('Percentage should not exceed 100');
+        }
+      } else {
+        setScore(''); // Reset the field for invalid input
+        setScoreError('Enter a valid percentage up to 2 decimal places');
+      }
+    }
+  };
+
   console.log(degree);
   console.log(fieldOfStudy);
 
@@ -523,29 +558,14 @@ const Education = () => {
             </select>
           </div>
           <input
-            type="number"
+            type="text"
             placeholder={`Enter ${gradeType} scored`}
             value={score}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (gradeType === "CGPA") {
-                if (/^\d{0,2}(\.\d{0,2})?$/.test(value)) {
-                  setScore(value);
-                }
-              } else if (gradeType === "%") {
-                if (/^\d{0,3}(\.\d{0,2})?$/.test(value)) {
-                  setScore(value);
-                }
-              }
-            }}
-            onBlur={() => {
-              if (gradeType === "%" && parseFloat(score) > 100) {
-                setScore("100");
-              }
-            }}
+            onChange={handleChangeScore}
             className="border p-2 mb-2 w-full"
             required
           />
+          {scoreError && <p className="text-red-500 text-sm mt-1">{scoreError}</p>}
 
           <button
             type="submit"

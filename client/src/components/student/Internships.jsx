@@ -548,12 +548,14 @@ const Internships = () => {
 
   const applyToInternship = async (internshipId) => {
     try {
+
+      console.log('this is student',student);
       if (
         student.education.length == 0 ||
         student.skills.length == 0 ||
         !student.gender ||
         !student.homeLocation ||
-        !student.yearsOfExp ||
+        // !student.yearsOfExp ||
         !student.resume
       ) {
         // toast.error("Please complete your profile");
@@ -1031,7 +1033,7 @@ const Internships = () => {
                         </div>
 
                         <div>
-                          <div className="resume-box mt-4">
+                          {resumeUrl && <div className="resume-box mt-4">
                             <h1 className="text-lg sm:text-xl font-semibold">
                               Your Resume
                             </h1>
@@ -1041,19 +1043,25 @@ const Internships = () => {
                                 This Resume will be submitted along with you
                                 application
                               </h1>
-                              {resumeUrl && (
+                             
                                 <a
                                   href={resumeUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-blue-400"
+                                  className="text-blue-500"
                                   download={resumeFilename}
                                 >
                                   Click to view
                                 </a>
-                              )}
+                              
                             </div>
-                          </div>
+                          </div>}
+
+                          {!resumeUrl && <div className="flex space-x-3 items-center">
+                            <span className="text-red-500">Upload resume</span>
+                            <Link to={`/student/profile/${userId}`} className="bg-blue-500 text-white px-2
+                            py-1 rounded-md">Go to profile</Link>
+                          </div>}
 
                           <div className="about-yourself-box mt-9">
                             <h1 className="text-lg sm:text-xl font-semibold">
