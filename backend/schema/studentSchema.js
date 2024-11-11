@@ -24,6 +24,7 @@ const studentSchema = new mongoose.Schema(
     },
     yearsOfExp: {
       type: String,
+      default:'no experience'
       
     },
     homeLocation: {

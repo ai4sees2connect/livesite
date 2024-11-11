@@ -38,7 +38,7 @@ const Profile = () => {
   const [picUrl, setPicUrl] = useState(null);
 
   const nums = [
-    { value: "fresher", label: "fresher" },
+    { value: "no experience", label: "no experience" },
     { value: "1", label: "1" },
     { value: "2", label: "2" },
     { value: "3", label: "3" },
@@ -367,8 +367,8 @@ const Profile = () => {
           {!expEdit && student.yearsOfExp && (
             <div className="flex space-x-3 justify-center items-center">
               <h1 className="text-gray-600 text-center">
-                {student.yearsOfExp === "fresher"
-                  ? "Fresher"
+                {student.yearsOfExp === "no experience"
+                  ? "no experience"
                   : `${student.yearsOfExp} years of Experience`}
               </h1>
               {student.yearsOfExp && (
