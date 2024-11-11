@@ -70,6 +70,15 @@ const studentSchema = new mongoose.Schema(
         issuingOrganization: String,
         issueDate: String,
         description: String, // Added description field
+        fileUpload: {
+          data: Buffer,         // Binary data for storing the PDF
+          contentType: String,  // MIME type, e.g., "application/pdf"
+          filename: String,     // Original filename of the PDF
+          createdAt: {
+            type: Date,
+            default: Date.now // Automatically sets the creation date
+          }
+        },
       },
     ],
     personalProjects: [

@@ -62,7 +62,7 @@ const Profile = () => {
         toast.info("Please add some of your skills");
       if (student.yearsOfExp === "")
         toast.info("Please specify years of experience");
-      // if(student.yearsOfExp==='') toast.info('Please specify years of experience');
+      if(student.yearsOfExp==='') toast.info('Please specify years of experience');
     }
   }, [student]);
 
