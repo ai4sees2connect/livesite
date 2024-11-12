@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Spinner from "../common/Spinner"; // Assuming you have a spinner component
 import getUserIdFromToken from "./auth/authUtilsRecr"; // Utility to get user ID from token
@@ -31,6 +31,7 @@ const RecDashboard = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const scrollRef=useRef();
 
   useEffect(() => {
     if (!token) {
@@ -96,6 +97,16 @@ const RecDashboard = () => {
       toast.error("Some error occurred");
     }
   };
+
+  const handleScroll=()=>{
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 1000);
+    scrollRef.current.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
 
   if (loading) {
     return <Spinner />;
@@ -176,7 +187,8 @@ const RecDashboard = () => {
             View Details
           </div>
         </div>
-
+        
+        <div ref={scrollRef} className="overflow-y-auto h-screen scrollbar-thin">
         {filteredInternships.map((internship) => (
           <div
             key={internship._id}
@@ -240,11 +252,12 @@ const RecDashboard = () => {
             </div>
           </div>
         ))}
+        </div>
 
         {/* Pagination Controls */}
         <div className="flex justify-center items-center mt-6">
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            onClick={() => {setCurrentPage((prev) => Math.max(prev - 1, 1)); handleScroll()}}
             disabled={currentPage === 1}
             className="px-3 py-2 bg-blue-500 text-white rounded-md disabled:bg-blue-300"
           >
@@ -253,7 +266,7 @@ const RecDashboard = () => {
           <span className="px-4 text-white-600">{` ${currentPage} / ${totalPages} `}</span>
           <button
             onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              {setCurrentPage((prev) => Math.min(prev + 1, totalPages));handleScroll()}
             }
             disabled={currentPage === totalPages}
             className="px-3 py-2 bg-blue-500 text-white rounded-md disabled:bg-blue-300"
