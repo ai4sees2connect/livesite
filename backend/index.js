@@ -83,11 +83,3 @@ const startServer= async()=>{
 }
 startServer();
 
-cron.schedule('*/15 * * * *', async () => {
-  try {
-    await axios.get('https://livesite-vvgu.onrender.com'); // Replace with your actual URL
-    console.log('Pinged server to keep it awake.');
-  } catch (error) {
-    console.error('Error pinging the server:', error.message);
-  }
-});
