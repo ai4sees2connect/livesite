@@ -1,5 +1,7 @@
-import cron from 'cron';
-import https from 'https';
+// import cron from 'cron';
+const cron =require('cron');
+const https=require('https');
+// import https from 'https';
 
 const backendURL="https://livesite-vvgu.onrender.com";
 const job=new cron.CronJob('*/14 * * * *',function(){
@@ -17,4 +19,4 @@ const job=new cron.CronJob('*/14 * * * *',function(){
   });
 });
 
-export default job;
+module.exports= job;
