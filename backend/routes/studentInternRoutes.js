@@ -254,7 +254,7 @@ router.get('/:studentId/shortlisted-internships', async (req, res) => {
           isActive: false,
           importantForStudent: chatRoom ? chatRoom.importantForStudent : false, // Check if it's important for the student
           importantForRecruiter: chatRoom ? chatRoom.importantForRecruiter : false, // Check if it's important for the recruiter
-          studentStatus:chatRoom.studentStatus
+          studentStatus:chatRoom ? chatRoom.studentStatus: 'inTouch'
         };
       })
     );
