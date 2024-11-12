@@ -15,8 +15,12 @@ const paymentRoutes=require('./routes/paymentRoutes')
 const  internRoutes=require('./routes/internRoutes')
 const initSocket= require('./socket');
 const http = require('http');
+// const cron = require('node-cron');
+const axios = require('axios');
+const job =require('./cron')
 
 
+job.start();
 const app = express();
 const PORT=process.env.PORT || 4000;
 dotenv.config();
@@ -78,3 +82,12 @@ const startServer= async()=>{
   }
 }
 startServer();
+
+cron.schedule('*/15 * * * *', async () => {
+  try {
+    await axios.get('https://livesite-vvgu.onrender.com'); // Replace with your actual URL
+    console.log('Pinged server to keep it awake.');
+  } catch (error) {
+    console.error('Error pinging the server:', error.message);
+  }
+});
