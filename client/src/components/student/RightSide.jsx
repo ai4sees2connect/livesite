@@ -10,6 +10,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import "../student/utilscss/swiper.css";
+import { FaLongArrowAltRight } from "react-icons/fa";
 
 // Import Swiper styles
 import "swiper/css";
@@ -228,11 +229,33 @@ const RightSide = () => {
           </video>
         </div> */}
       </div>
+      {/* Quick Links */}
+      <div className=" my-10 px-3 lg:px-0 rounded-md mx-auto lg:w-[90%]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 items-center gap-5 justify-center">
+          <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 hover:transition-0.5s  text-black font-semibold justify-between">
+            <span> Remote</span> <FaLongArrowAltRight />
+          </button>
+          <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 hover:transition-0.5s  text-black font-semibold justify-between">
+            <span> Work At Office</span> <FaLongArrowAltRight />
+          </button>
+          <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 hover:transition-0.5s  text-black font-semibold justify-between">
+            <span> Hybrid</span> <FaLongArrowAltRight />
+          </button>
+          <button className="flex items-center px-5 py-2 rounded-md border-2  text-xl hover:scale-105 hover:transition-0.5s  text-white font-semibold justify-between bg-gray-800 hover:bg-[#475865] border-1 border-white  transition-0.5s">
+            <span> All Internships</span> <FaLongArrowAltRight />
+          </button>
+          <button className="flex items-center px-5 py-2 rounded-md border-2 text-xl hover:transition-0.5s  font-semibold justify-between bg-blue-500 border-1 border-white hover:scale-105 hover:transition-0.5s hover:bg-blue-600 text-white">
+            <span>Want To Hire</span> <FaLongArrowAltRight />
+          </button>
+        </div>
+      </div>
       {/* Recommended jobs */}
       <div className="my-5 px-3 lg:px-5 py-10 bg-[#f0fbff] rounded-xl">
         <div className="text-center mb-10">
-          <h1 className=" text-2xl font-bold px-9">Recommended for you</h1>
-          <p className=" text-blue-600 ml-2">Latest internships</p>
+          <h1 className=" text-2xl lg:text-3xl font-bold px-9">
+            Recommended For You
+          </h1>
+          <p className=" text-blue-600 ml-2 text-xl">Latest internships</p>
         </div>
 
         <div className="z-0 ">
