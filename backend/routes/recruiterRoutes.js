@@ -296,6 +296,7 @@ router.get("/details", async (req, res) => {
 
     await refreshPostsForNewMonth(recruiter);
     // Send user data as response
+    console.log(recruiter);
     res.status(200).json({
       success: true,
       recruiter: {
@@ -303,7 +304,15 @@ router.get("/details", async (req, res) => {
         lastname: recruiter.lastname,
         email: recruiter.email,
         phone: recruiter.phone,
+        designation:recruiter.designation,
+        industryType:recruiter.industryType,
+        numOfEmployees:recruiter.numOfEmployees,
+        orgDescription:recruiter.orgDescription,
+        independentRec:recruiter.independentRec,
+        industryType:recruiter.industryType,
+        numOfEmployees:recruiter.numOfEmployees,
         countryCode:recruiter.countryCode,
+        companyCity:recruiter.companyCity,
         companyLogo: recruiter.companyLogo,
         subscription:recruiter.subscription,
         companyName: recruiter.companyName,
@@ -322,14 +331,36 @@ router.get("/details", async (req, res) => {
 });
 
 router.put('/update-details/:recruiterId', async (req, res) => {
-  const { phone, countryCode,firstname,lastname, companyName} = req.body;
+  const { phone, countryCode,firstname,lastname, designation} = req.body;
   const recruiterId= req.params.recruiterId; // Assuming the user ID is stored in req.user
 
   try {
     // Update the user contact information in the database
     const recruiter = await Recruiter.findByIdAndUpdate(
       recruiterId,
-      { phone, countryCode,firstname,lastname, companyName },
+      { phone, countryCode,firstname,lastname,designation },
+      { new: true } // returns the updated document
+    );
+
+    if (!recruiter) {
+      return res.status(404).json({ message: 'recruiter not found' });
+    }
+
+    res.json({ message: 'details updated successfully', user: recruiter });
+  } catch (error) {
+    console.error('Error updating details:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+router.put('/update-details-2/:recruiterId', async (req, res) => {
+  const { companyName, independentRec,orgDescription,companyCity, industryType, numOfEmployees} = req.body;
+  const recruiterId= req.params.recruiterId; // Assuming the user ID is stored in req.user
+
+  try {
+    // Update the user contact information in the database
+    const recruiter = await Recruiter.findByIdAndUpdate(
+      recruiterId,
+      { companyName, independentRec,orgDescription,companyCity, industryType,numOfEmployees},
       { new: true } // returns the updated document
     );
 
