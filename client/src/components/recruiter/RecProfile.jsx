@@ -312,7 +312,7 @@ const RecProfile = () => {
   console.log(lastName);
   console.log(company);
 
-  // new recruiter profile  functionalities
+  // new recruiter profile  functionalities*******
   const [activeTab, setActiveTab] = useState("Tab1");
   // State for the checkbox
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
