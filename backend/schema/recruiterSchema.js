@@ -48,17 +48,42 @@ const recruiterSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  designation:{
+    type: String,
+    default:"hr"
+  },
   phone: {
     type: Number,
   },
   countryCode:{
     type:String,
+    default:""
+  },
+  orgDescription:{
+    type: String,
+    default:""
+  },
+  companyCity:{
+    type:String,
+    default:""
+  },
+  industryType:{
+    type: String,
+    default:""
+  },
+  numOfEmployees:{
+    type:String,
+    default:""
   },
   password: { 
     type: String,
   },
   companyName: {
     type: String,
+  },
+  independentRec:{
+    type:Boolean,
+    default:false
   },
   internships: [{
     type: mongoose.Schema.Types.ObjectId,
