@@ -548,8 +548,7 @@ const Internships = () => {
 
   const applyToInternship = async (internshipId) => {
     try {
-
-      console.log('this is student',student);
+      console.log("this is student", student);
       if (
         student.education.length == 0 ||
         student.skills.length == 0 ||
@@ -755,7 +754,7 @@ const Internships = () => {
                 searchable={true}
                 isMulti
                 className="w-full shadow-md"
-                 classNamePrefix="custom-select-dropdown"
+                classNamePrefix="custom-select-dropdown"
               />
             </div>
           )}
@@ -766,164 +765,161 @@ const Internships = () => {
         </h1>
 
         {/* internships div */}
-        <div className="w-full  lg:w-[79%]">
+        <div className="w-full  lg:w-[79%] mt-5">
           <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
             {filteredInternships.length} Total Internships
           </h1>
 
           {/* list of internships */}
-          <div
-            
-            className="flex-1 lg:mt-0  h-screen scrollbar-thin relative"
-          >
+          <div className="flex-1 lg:mt-0  h-screen scrollbar-thin relative">
             <div className="flex flex-col justify-center bg-gray-100">
               {/* this below div is list of internships */}
-              <div ref={scrollableRef} className="overflow-scroll scrollbar-thin h-[90vh] overflow-x-hidden ">
-              {currentInternships.map((internship) => (
-                <div
-                  key={internship._id}
-                  className="bg-white shadow-md rounded-lg px-7 py-2 w-full lg:w-[90%] mb-3 mx-auto relative "
-                >
-                  <div className="flex justify-between items-center">
-                    <div className="mb-0">
-                      <h2 className="text-lg lg:text-2xl font-semibold md:mb-0">
-                        {internship.internshipName}
-                      </h2>
-                      <p className="text-gray-600">
-                        {internship.recruiter.companyName}
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center space-x-3">
-                    {!isAlreadyApplied(internship._id) ? (
-                    <button
-                      onClick={() => openModal(internship)}
-                      className=" md:w-auto block md:hidden  text-sm md:text-base rounded-md text-blue-500 "
-                    >
-                      View details
-                    </button>
-                  ) : (
-                    <Link
-                      to={`/student/myApplications/${userId}`}
-                      className=" w-auto md:hidden block text-sm md:text-base  rounded-md text-blue-500 "
-                    >
-                      Check Status
-                    </Link>
-                  )}
-                    {internship.logoUrl ? (
-                      <img
-                        src={internship.logoUrl}
-                        alt={internship.logoUrl}
-                        className=" w-16 h-16"
-                      />
-                    ) : (
-                      <FaBuilding className=" w-16 h-16 text-gray-600" />
-                    )}
-                    </div>
-
-                  </div>
-
-                  <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row ">
-                    <div className="flex  items-center text-gray-700 mb-2">
-                      <FaMapMarkerAlt className="mr-1" />
-                      <span>
-                        {internship.internLocation
-                          ? `${internship.internLocation}`
-                          : "Remote"}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center text-gray-700 mb-2">
-                      <FaClock className="mr-2" />
-                      <span>{internship.duration} Months</span>
-                    </div>
-
-                    {internship.stipendType === "unpaid" && (
-                      <div className="flex items-center text-gray-700 mb-2">
-                        <FaMoneyBillWave className="mr-1" />
-                        <span>Unpaid</span>
+              <div
+                ref={scrollableRef}
+                className="overflow-scroll scrollbar-thin h-[90vh] overflow-x-hidden "
+              >
+                {currentInternships.map((internship) => (
+                  <div
+                    key={internship._id}
+                    className="bg-white shadow-md rounded-lg px-7 py-2 w-full lg:w-[90%] mb-3 mx-auto relative "
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="mb-0">
+                        <h2 className="text-lg lg:text-2xl font-semibold md:mb-0">
+                          {internship.internshipName}
+                        </h2>
+                        <p className="text-gray-600">
+                          {internship.recruiter.companyName}
+                        </p>
                       </div>
-                    )}
 
-                    {internship.stipendType !== "unpaid" && (
-                      <div className="flex items-center space-x-1">
-                        <div className="flex items-center text-gray-700 mb-2">
-                          <FaMoneyBillWave className="mr-1" />
-                          <span>
-                            {internship.currency} {internship.stipend} /month
-                          </span>
-                        </div>
-
-                        {internship.stipendType === "performance-based" && (
-                          <div className="flex items-center mb-2 text-gray-700">
-                            <span>+ incentives</span>
-                            <div className="relative group ">
-                              <FaQuestion className="border border-black p-1 mx-1 rounded-full hover:cursor-pointer" />
-                              <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
-                                This is a Performance Based internship.{" "}
-                                {internship.incentiveDescription}
-                              </span>
-                            </div>
-                          </div>
+                      <div className="flex items-center space-x-3">
+                        {!isAlreadyApplied(internship._id) ? (
+                          <button
+                            onClick={() => openModal(internship)}
+                            className=" md:w-auto block md:hidden  text-sm md:text-base rounded-md text-blue-500 "
+                          >
+                            View details
+                          </button>
+                        ) : (
+                          <Link
+                            to={`/student/myApplications/${userId}`}
+                            className=" w-auto md:hidden block text-sm md:text-base  rounded-md text-blue-500 "
+                          >
+                            Check Status
+                          </Link>
+                        )}
+                        {internship.logoUrl ? (
+                          <img
+                            src={internship.logoUrl}
+                            alt={internship.logoUrl}
+                            className=" w-16 h-16"
+                          />
+                        ) : (
+                          <FaBuilding className=" w-16 h-16 text-gray-600" />
                         )}
                       </div>
-                    )}
-                  </div>
-
-                  {isAlreadyApplied(internship._id) && (
-                    <p className="text-green-500 text-sm md:text-base inline-flex rounded-xl border border-green-500 px-2 py-1">
-                      Applied
-                      <FaCheck className="ml-2 mt-1" />
-                    </p>
-                  )}
-                  <div className="flex text-sm md:text-base space-x-4 items-center">
-                    <div
-                      className={`${
-                        internship.studentCount < 20
-                          ? "text-green-500"
-                          : "text-gray-500"
-                      } my-1 w-fit md:w-auto`}
-                    >
-                      {internship.studentCount} Applicants
                     </div>
 
-                    {internship.studentCount < 20 && (
-                      <div className="flex  space-x-2 items-center">
-                        <FaRunning className="text-yellow-500  w-5 h-5" />
-                        <span className="text-gray-500">
-                        Early Applicant
+                    <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row ">
+                      <div className="flex  items-center text-gray-700 mb-2">
+                        <FaMapMarkerAlt className="mr-1" />
+                        <span>
+                          {internship.internLocation
+                            ? `${internship.internLocation}`
+                            : "Remote"}
                         </span>
                       </div>
-                    )}
 
-                    {internship.ppoCheck === "yes" && (
-                      <div className="text-gray-500 flex space-x-2 items-center">
-                        <FaStar /> <span>Job offer available</span>
+                      <div className="flex items-center text-gray-700 mb-2">
+                        <FaClock className="mr-2" />
+                        <span>{internship.duration} Months</span>
                       </div>
+
+                      {internship.stipendType === "unpaid" && (
+                        <div className="flex items-center text-gray-700 mb-2">
+                          <FaMoneyBillWave className="mr-1" />
+                          <span>Unpaid</span>
+                        </div>
+                      )}
+
+                      {internship.stipendType !== "unpaid" && (
+                        <div className="flex items-center space-x-1">
+                          <div className="flex items-center text-gray-700 mb-2">
+                            <FaMoneyBillWave className="mr-1" />
+                            <span>
+                              {internship.currency} {internship.stipend} /month
+                            </span>
+                          </div>
+
+                          {internship.stipendType === "performance-based" && (
+                            <div className="flex items-center mb-2 text-gray-700">
+                              <span>+ incentives</span>
+                              <div className="relative group ">
+                                <FaQuestion className="border border-black p-1 mx-1 rounded-full hover:cursor-pointer" />
+                                <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
+                                  This is a Performance Based internship.{" "}
+                                  {internship.incentiveDescription}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {isAlreadyApplied(internship._id) && (
+                      <p className="text-green-500 text-sm md:text-base inline-flex rounded-xl border border-green-500 px-2 py-1">
+                        Applied
+                        <FaCheck className="ml-2 mt-1" />
+                      </p>
+                    )}
+                    <div className="flex text-sm md:text-base space-x-4 items-center">
+                      <div
+                        className={`${
+                          internship.studentCount < 20
+                            ? "text-green-500"
+                            : "text-gray-500"
+                        } my-1 w-fit md:w-auto`}
+                      >
+                        {internship.studentCount} Applicants
+                      </div>
+
+                      {internship.studentCount < 20 && (
+                        <div className="flex  space-x-2 items-center">
+                          <FaRunning className="text-yellow-500  w-5 h-5" />
+                          <span className="text-gray-500">Early Applicant</span>
+                        </div>
+                      )}
+
+                      {internship.ppoCheck === "yes" && (
+                        <div className="text-gray-500 flex space-x-2 items-center">
+                          <FaStar /> <span>Job offer available</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <p className="text-gray-500 mb-2  text-sm md:text-base">
+                      Posted: {TimeAgo(internship.createdAt)}
+                    </p>
+
+                    {!isAlreadyApplied(internship._id) ? (
+                      <button
+                        onClick={() => openModal(internship)}
+                        className=" w-auto hidden md:block mb-1 text-sm md:text-base rounded-md text-blue-500 "
+                      >
+                        View details
+                      </button>
+                    ) : (
+                      <Link
+                        to={`/student/myApplications/${userId}`}
+                        className=" w-auto hidden md:block mb-1 text-sm md:text-base  rounded-md text-blue-500 "
+                      >
+                        Check Status
+                      </Link>
                     )}
                   </div>
-
-                  <p className="text-gray-500 mb-2  text-sm md:text-base">
-                    Posted: {TimeAgo(internship.createdAt)}
-                  </p>
-
-                  {!isAlreadyApplied(internship._id) ? (
-                    <button
-                      onClick={() => openModal(internship)}
-                      className=" w-auto hidden md:block mb-1 text-sm md:text-base rounded-md text-blue-500 "
-                    >
-                      View details
-                    </button>
-                  ) : (
-                    <Link
-                      to={`/student/myApplications/${userId}`}
-                      className=" w-auto hidden md:block mb-1 text-sm md:text-base  rounded-md text-blue-500 "
-                    >
-                      Check Status
-                    </Link>
-                  )}
-                </div>
-              ))}
+                ))}
               </div>
               {/* pagination */}
               <div className="flex  justify-center my-4 space-x-4">
@@ -1056,17 +1052,18 @@ const Internships = () => {
                         </div>
 
                         <div>
-                          {resumeUrl && <div className="resume-box mt-4">
-                            <h1 className="text-lg sm:text-xl font-semibold">
-                              Your Resume
-                            </h1>
-
-                            <div className="flex flex-col sm:flex-row sm:space-x-2">
-                              <h1 className="text-gray-600">
-                                This Resume will be submitted along with you
-                                application
+                          {resumeUrl && (
+                            <div className="resume-box mt-4">
+                              <h1 className="text-lg sm:text-xl font-semibold">
+                                Your Resume
                               </h1>
-                             
+
+                              <div className="flex flex-col sm:flex-row sm:space-x-2">
+                                <h1 className="text-gray-600">
+                                  This Resume will be submitted along with you
+                                  application
+                                </h1>
+
                                 <a
                                   href={resumeUrl}
                                   target="_blank"
@@ -1076,15 +1073,24 @@ const Internships = () => {
                                 >
                                   Click to view
                                 </a>
-                              
+                              </div>
                             </div>
-                          </div>}
+                          )}
 
-                          {!resumeUrl && <div className="flex space-x-3 items-center">
-                            <span className="text-red-500">Upload resume</span>
-                            <Link to={`/student/profile/${userId}`} className="bg-blue-500 text-white px-2
-                            py-1 rounded-md">Go to profile</Link>
-                          </div>}
+                          {!resumeUrl && (
+                            <div className="flex space-x-3 items-center">
+                              <span className="text-red-500">
+                                Upload resume
+                              </span>
+                              <Link
+                                to={`/student/profile/${userId}`}
+                                className="bg-blue-500 text-white px-2
+                            py-1 rounded-md"
+                              >
+                                Go to profile
+                              </Link>
+                            </div>
+                          )}
 
                           <div className="about-yourself-box mt-9">
                             <h1 className="text-lg sm:text-xl font-semibold">

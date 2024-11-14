@@ -407,7 +407,7 @@ console.log('this is location',companyLocation)
   // console.log('this is location', companyLocation);
   // console.log('this is employeesCount', employeesCount);
 
-  // new recruiter profile  functionalities
+  // new recruiter profile  functionalities*******
   const [activeTab, setActiveTab] = useState("Tab1");
   // State for the checkbox
   // const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);

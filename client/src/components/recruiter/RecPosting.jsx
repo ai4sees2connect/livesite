@@ -497,8 +497,8 @@ const RecPosting = () => {
       recruiter?.subscription.postsRemaining < 1
     ) {
       return (
-        <div className="flex flex-col  items-center justify-center space-y-3">
-          <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
+        <div className="flex flex-col  items-center justify-center space-y-3 h-screen">
+          <div className="text-center text-gray-700 text-lg font-semibold">
             You have used your monthly available free postings
           </div>
           <Link
@@ -516,8 +516,8 @@ const RecPosting = () => {
       recruiter?.subscription.postsRemaining < 1
     ) {
       return (
-        <div className="flex flex-col space-y-3 h-screen">
-          <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
+        <div className="flex flex-col space-y-3 h-screen items-center justify-center">
+          <div className="text-center text-gray-700 text-lg font-semibold">
             You have used your available postings
           </div>
           <Link
@@ -611,26 +611,26 @@ const RecPosting = () => {
 
           {(formData.internshipType === "Office" ||
             formData.internshipType === "Hybrid") && (
-              <div className="flex flex-col my-5">
-                {/* <input type="text"
+            <div className="flex flex-col my-5">
+              {/* <input type="text"
                 name="internLocation"
                 value={formData.internLocation}
                 onChange={handleChange}
                 className='p-2 border border-gray-300 rounded-md shadow-md'
                 placeholder='Enter Location e.g Delhi or Mumbai' /> */}
 
-                <Select
-                  options={statesAndUTs}
-                  values={formData.internLocation}
-                  onChange={(value) =>
-                    setFormData({ ...formData, internLocation: value.value })
-                  }
-                  placeholder="Select a location"
-                  searchable={true}
-                  className="w-full shadow-md"
-                />
-              </div>
-            )}
+              <Select
+                options={statesAndUTs}
+                values={formData.internLocation}
+                onChange={(value) =>
+                  setFormData({ ...formData, internLocation: value.value })
+                }
+                placeholder="Select a location"
+                searchable={true}
+                className="w-full shadow-md"
+              />
+            </div>
+          )}
 
           <div className="flex flex-col my-5 space-y-3">
             <p className="font-medium">Internship Start date</p>
@@ -658,7 +658,6 @@ const RecPosting = () => {
                 />
                 Later
               </label>
-
             </div>
           </div>
           {formData.internshipStartQues === "Later" && (
@@ -668,7 +667,9 @@ const RecPosting = () => {
                   type="radio"
                   name="startTime"
                   value="within a week"
-                  onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, startTime: e.target.value })
+                  }
                   className="mx-1"
                 />
                 Within a week
@@ -679,7 +680,9 @@ const RecPosting = () => {
                   type="radio"
                   name="startTime"
                   value="within 15 days"
-                  onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, startTime: e.target.value })
+                  }
                 />
                 Within 15 days
               </label>
@@ -689,13 +692,14 @@ const RecPosting = () => {
                   type="radio"
                   name="startTime"
                   value="more than 15 days"
-                  onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, startTime: e.target.value })
+                  }
                 />
                 More than 15 days
               </label>
             </div>
           )}
-
 
           <div className="flex flex-col my-5">
             <label className="mb-2 font-medium">No of Openings</label>
@@ -807,33 +811,33 @@ const RecPosting = () => {
             {(formData.stipendType === "fixed" ||
               formData.stipendType === "negotiable" ||
               formData.stipendType === "performance-based") && (
-                <div className="flex items-center mb-4">
-                  {/* Currency Selector */}
-                  <select
-                    name="currency"
-                    value={formData.currency}
-                    onChange={handleChange}
-                    className="p-1 border border-gray-300 rounded-md shadow-md mr-2"
-                  >
-                    <option value="₹">₹ (INR)</option>
-                    <option value="$">$ (USD)</option>
-                    <option value="€">€ (EUR)</option>
-                    <option value="£">£ (GBP)</option>
-                    <option value="¥">¥ (JPY)</option>
-                  </select>
-                  {/* Stipend Amount Input */}
-                  <input
-                    type="number"
-                    name="stipend"
-                    value={formData.stipend}
-                    onChange={handleChange}
-                    className="p-1 border w-28 border-gray-300 rounded-md shadow-md"
-                    placeholder="e.g 4000"
-                    required
-                  />{" "}
-                  /month
-                </div>
-              )}
+              <div className="flex items-center mb-4">
+                {/* Currency Selector */}
+                <select
+                  name="currency"
+                  value={formData.currency}
+                  onChange={handleChange}
+                  className="p-1 border border-gray-300 rounded-md shadow-md mr-2"
+                >
+                  <option value="₹">₹ (INR)</option>
+                  <option value="$">$ (USD)</option>
+                  <option value="€">€ (EUR)</option>
+                  <option value="£">£ (GBP)</option>
+                  <option value="¥">¥ (JPY)</option>
+                </select>
+                {/* Stipend Amount Input */}
+                <input
+                  type="number"
+                  name="stipend"
+                  value={formData.stipend}
+                  onChange={handleChange}
+                  className="p-1 border w-28 border-gray-300 rounded-md shadow-md"
+                  placeholder="e.g 4000"
+                  required
+                />{" "}
+                /month
+              </div>
+            )}
 
             {/* Conditionally render Incentive Description for Performance Based */}
             {formData.stipendType === "performance-based" && (
