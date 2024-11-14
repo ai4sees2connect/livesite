@@ -115,7 +115,7 @@ function App() {
       </Routes>
       <Footer />
       <ToastContainer
-      autoClose={1000}
+      autoClose={1500}
       position="top-center"
 
       />

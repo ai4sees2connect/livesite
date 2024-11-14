@@ -10,7 +10,7 @@ import api from "../common/server_url";
 import Select from "react-select";
 import { useRecruiter } from "./context/recruiterContext";
 import Spinner from "../common/Spinner";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const RecPosting = () => {
   const [formData, setFormData] = useState({
@@ -41,6 +41,7 @@ const RecPosting = () => {
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
   const [startQuesDays, setStartQuesDays] = useState(null);
   const { recruiter } = useRecruiter();
+  const navigate=useNavigate();
   const jobProfiles = [
     "3D Animation",
     "Account Management",
@@ -305,6 +306,18 @@ const RecPosting = () => {
   ];
 
   console.log("this is recruite data", recruiter);
+
+  useEffect(() => {
+    setTimeout(() => {
+      
+      if(recruiter?.companyName==='' || recruiter?.orgDescription==='' || recruiter?.companyCity==='' || recruiter?.industryType || recruiter?.numOfEmployees===''){
+       toast.info('Please complete your profile');
+       navigate(`/recruiter/profile/${userId}`)
+       return;
+      }
+    }, 1000);
+  }, [recruiter])
+  
 
   useEffect(() => {
     const fetchSkills = async () => {
