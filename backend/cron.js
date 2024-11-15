@@ -3,7 +3,7 @@ const cron =require('cron');
 const https=require('https');
 // import https from 'https';
 
-const backendURL="https://livesite-vvgu.onrender.com";
+const backendURL="https://livesite-backend-eyfd.onrender.com";
 const job=new cron.CronJob('*/14 * * * *',function(){
   console.log('Restarting server');
 
