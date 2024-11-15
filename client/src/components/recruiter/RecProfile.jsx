@@ -52,6 +52,8 @@ const RecProfile = () => {
   const [employeesCount, setEmployeesCount] = useState("");
   const [cityPresent, setCityPresent]=useState("");
 
+  console.log(recruiter);
+
   useEffect(() => {
     if (recruiter?.phone) {
       setPhoneNumber(recruiter.phone); // Set phoneNumber once recruiter data is loaded

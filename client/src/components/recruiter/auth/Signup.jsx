@@ -324,7 +324,7 @@ function Signup() {
                       className="absolute right-3 sm:-right-[45px] top-4 sm:top-3 text-blue-500 text-xs sm:text-base"
                     >
                       Verify
-                    </button>):(<div className="absolute flex items-center space-x-1 right-3 sm:-right-[70px] top-4 sm:top-3 text-green-500 text-xs sm:text-base"><FaCheckCircle/><span>Verified</span></div>)}
+                    </button>):(<div className="absolute flex items-center space-x-1 right-3 sm:-right-[78px] top-4 sm:top-3 text-green-500 text-xs sm:text-base"><FaCheckCircle/><span>Verified</span></div>)}
                   </div>
                 )}
 

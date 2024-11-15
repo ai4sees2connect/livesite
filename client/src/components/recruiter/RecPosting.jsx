@@ -40,7 +40,7 @@ const RecPosting = () => {
   const [selectedPerks, setSelectedPerks] = useState([]);
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
   const [startQuesDays, setStartQuesDays] = useState(null);
-  const { recruiter } = useRecruiter();
+  const { recruiter,refreshData } = useRecruiter();
   const navigate=useNavigate();
   const jobProfiles = [
     "3D Animation",
@@ -308,14 +308,19 @@ const RecPosting = () => {
   console.log("this is recruite data", recruiter);
 
   useEffect(() => {
-    setTimeout(() => {
+    // refreshData();
+    const getData=()=>{
       
-      if(recruiter?.companyName==='' || recruiter?.orgDescription==='' || recruiter?.companyCity==='' || recruiter?.industryType || recruiter?.numOfEmployees===''){
-       toast.info('Please complete your profile');
-       navigate(`/recruiter/profile/${userId}`)
-       return;
-      }
+        if( recruiter?.orgDescription==='' || recruiter?.companyCity==='' || recruiter?.industryType==='' || recruiter?.numOfEmployees===''){
+         toast.info('Please complete your profile');
+         navigate(`/recruiter/profile/${userId}`)
+         return;
+        }
+    }
+    setTimeout(() => {
+      getData();
     }, 1000);
+    
   }, [recruiter])
   
 

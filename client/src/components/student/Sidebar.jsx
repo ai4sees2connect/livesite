@@ -34,7 +34,7 @@ const Sidebar = ({ student }) => {
             <div className="relative w-fit mx-auto z-0 text-white">
               Transform Your Dream Job into Reality
               <div
-                className={`absolute left-0 -z-10 lg:left-0 -bottom-4 md:-bottom-3 lg:-bottom-2  h-[6px] lg:h-[8px] bg-orange-500 rounded-xl  animate-grow-width-lg
+                className={`absolute left-0 -z-10 lg:left-0 -bottom-4 md:-bottom-3 lg:-bottom-2  h-[6px] lg:h-[8px] bg-blue-400 rounded-xl  animate-grow-width-lg
                   `}
               ></div>
             </div>
