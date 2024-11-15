@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import api from "../common/server_url";
 import { useParams } from "react-router-dom";
@@ -12,12 +12,12 @@ const RecPricing = () => {
   const { recruiter } = useRecruiter();
   
 
+
   const handlePayment = async (amount, planType) => {
     try {
-      const {
-        data: { key: razorpayKey },
-      } = await axios.get(`${api}/payments/get-razorpay-key`);
+      const {data: { key: razorpayKey },} = await axios.get(`${api}/payments/get-razorpay-key`);
       // Step 1: Create an order by calling the backend
+      console.log('this is key',razorpayKey);
       const { data: orderData } = await axios.post(
         `${api}/payments/${recruiterId}/create-order`,
         { amount, recruiterId, planType }
@@ -41,6 +41,7 @@ const RecPricing = () => {
 
         handler: async (response) => {
           // Step 3: Verify payment after successful payment
+          console.log("Payment successful, response:", response);
           try {
             const { data: verifyData } = await axios.post(
               `${api}/payments/verify-payment`,
@@ -52,7 +53,7 @@ const RecPricing = () => {
                 planType, // Pass the plan type to update subscription
               }
             );
-
+            console.log("Verification response:", verifyData);
             if (verifyData.success) {
               toast.success("Payment successful");
               // You can redirect or update the UI to reflect the new subscription
