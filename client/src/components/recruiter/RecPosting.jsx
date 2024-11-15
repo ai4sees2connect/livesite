@@ -457,9 +457,21 @@ const RecPosting = () => {
 
   if (!recruiter?.companyCertificate && !recruiter?.companyWebsite) {
     return (
-      <div className="flex items-center justify-center  text-gray-700 text-lg font-semibold h-screen">
-        Verification pending in profile section
-      </div>
+      // <div className="flex items-center justify-center  text-gray-700 text-lg font-semibold h-screen">
+      //   Complete your profile section
+      //   <button>Back to profile</button>
+      // </div>
+       <div className="flex flex-col justify-center items-center h-screen space-y-4">
+       <p className="text-xl font-semibold text-gray-500">
+         Complete your profile.
+       </p>
+       <Link
+         to={`/recruiter/posting/${recruiter }`}
+         className="px-2 py-1 bg-blue-500 text-white rounded-md"
+       >
+         Back to profile
+       </Link>
+     </div>
     );
   } else if (recruiter?.subscription.planType !== "Unlimited") {
     if (
