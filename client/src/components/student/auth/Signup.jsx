@@ -18,6 +18,7 @@ import api from "../../common/server_url";
 import Spinner from "../../common/Spinner";
 
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import GoBackButton from "../../common/GoBackButton";
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -159,9 +160,9 @@ function Signup() {
     email.trim() !== "" &&
     password.trim() !== "" &&
     firstname.trim() !== "" &&
-    lastname.trim() !== "" 
-    // otp.trim() !== "" &&
-    // otpVerified;
+    lastname.trim() !== "" &&
+    otp.trim() !== "" &&
+    otpVerified;
 
   const handleGoogleClick = async (e) => {
     e.preventDefault();
@@ -200,12 +201,12 @@ function Signup() {
       </div>
       <div className="flex-1 mx-auto w-[90%] mb-20">
         {/* back button */}
-        <div className="">
-          <Link
+        <div className="absolute left-0 top-5  rounded-full">
+        <Link
             to="/"
-            className="px-5 py-1 text-blue-400 underline font-semibold"
+            className="px-5 py-1 text-blue-400  font-semibold"
           >
-            Go Back Home
+            <GoBackButton/>
           </Link>
         </div>
         <div className="flex flex-col items-center mt-[20px]">
@@ -278,27 +279,27 @@ function Signup() {
                     className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                     required
                   />
-                  {/* {validateEmail(email) && !sendingOtp && (
+                  {validateEmail(email) && !sendingOtp && (
                     <button
                       className="text-blue-500 text-left absolute right-3  sm:-right-[73px] sm:top-3 text-xs sm:text-base top-4"
                       onClick={handleSendOtp}
                     >
                       Send OTP
                     </button>
-                  )} */}
+                  )}
 
-                  {/* {sendingOtp && (
+                  {sendingOtp && (
                     <FontAwesomeIcon
                       icon={faSpinner}
                       spin
                       className="h-5 w-5 text-black absolute right-2 top-4"
                     />
-                  )} */}
+                  )}
                 </div>
                 {emailError && (
                   <p className="text-red-500 text-left w-full">{emailError}</p>
                 )}
-                {/* {otpInput && (
+                {otpInput && (
                   <div className="relative my-3 w-full">
                     <input
                       type="text"
@@ -315,7 +316,7 @@ function Signup() {
                       Verify
                     </button>
                   </div>
-                )} */}
+                )}
               </div>
 
               <div className="flex flex-col items-center relative">

@@ -22,6 +22,7 @@ import { useStudent } from "../context/studentContext";
 import ToggleButton from "../../common/ToggleButton";
 import ToggleButtonSecond from "../../common/ToogleButtonSecond";
 import api from "../../common/server_url";
+import GoBackButton from "../../common/GoBackButton";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -110,12 +111,12 @@ function Login() {
       </div>
       <div className="mb-20 w-full lg:w-[90%] flex-1">
         {/* back button */}
-        <div className="">
-          <Link
+        <div className="absolute left-0 top-5  rounded-full">
+        <Link
             to="/"
-            className="px-5 py-1 text-blue-400 underline font-semibold"
+            className="px-5 py-1 text-blue-400  font-semibold"
           >
-            Go Back Home
+            <GoBackButton/>
           </Link>
         </div>
         <div className="text-center flex flex-col justify-center items-center ">

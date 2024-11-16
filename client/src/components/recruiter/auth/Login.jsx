@@ -23,6 +23,7 @@ import { useRecruiter } from "../context/recruiterContext";
 import ToggleButton from "../../common/ToggleButton";
 import ToggleButtonSecond from "../../common/ToogleButtonSecond";
 import api from "../../common/server_url";
+import GoBackButton from "../../common/GoBackButton";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -111,12 +112,12 @@ function Login() {
 
       <div className="mx-auto flex-1  mb-20">
         {/* back button */}
-        <div className="">
+        <div className="absolute left-0 top-5  rounded-full ">
           <Link
             to="/"
-            className="px-5 py-1 text-blue-400 underline font-semibold"
+            className="px-5 py-1 text-blue-400  font-semibold"
           >
-            Go Back Home
+            <GoBackButton/>
           </Link>
         </div>
         <div className=" flex flex-col items-center mt-[20px]">
