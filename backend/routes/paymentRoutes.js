@@ -32,6 +32,8 @@ router.post('/:recruiterId/create-order', async (req, res) => {
     // Create order in Razorpay
     const order = await razorpay.orders.create(options);
 
+
+    console.log('order-created');
     // Send back the order, recruiterId, and planType to the frontend
     res.status(200).json({
       success: true,
@@ -46,6 +48,7 @@ router.post('/:recruiterId/create-order', async (req, res) => {
 
 router.post('/verify-payment', async (req, res) => {
   try {
+    console.log('hello')
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, planType, recruiterId } = req.body;
     // console.log(req.body);
     // console.log('this is recruiterId', recruiterId.recruiterId);
@@ -64,6 +67,7 @@ router.post('/verify-payment', async (req, res) => {
       case '1-year':
         posts="90"
     }
+    
 
     // Perform Razorpay payment verification
     const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -81,7 +85,7 @@ router.post('/verify-payment', async (req, res) => {
         '3-month': { duration: 3, unit: 'month' },
         '1-year': { duration: 12, unit: 'month' }
       };
-      // console.log('this is subscriptionPlans',subscriptionPlans);
+     
 
       const selectedPlan = subscriptionPlans[planType];
       const activationDate = new Date();
@@ -99,6 +103,7 @@ router.post('/verify-payment', async (req, res) => {
      
       
 
+      console.log('order-verified');
       res.status(200).json({ message: 'Payment verified and subscription updated.',success:true });
     } else {
       return res.status(400).json({ message: "Payment verification failed." , success:false});

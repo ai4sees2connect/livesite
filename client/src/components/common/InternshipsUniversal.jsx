@@ -331,10 +331,7 @@ const InternshipsUniversal = () => {
       // const cachedInternships = localStorage.getItem("cachedInternships");
 
       try {
-        console.log("LocationName", selectedLocation);
-        console.log("WorkType:", workType);
-        console.log("profile", selectedProfile);
-
+       
 
         const response = await axios.get(`${api}/student/internships`);
 
@@ -414,13 +411,7 @@ const InternshipsUniversal = () => {
           internship?.jobProfile?.toLowerCase() ===
           profile?.label?.toLowerCase()
       );
-    // internship?.jobProfile?.toLowerCase() === selectedProfile?.label?.toLowerCase()
-
-    // Matches Location
-    console.log("this is selected location", selectedLocation);
-    console.log("this is interns profile", internship.jobProfile);
-    console.log("this is selected profile", selectedProfile);
-    console.log("this is internship", internship);
+   
 
     const matchesLocation =
       selectedLocation.length == 0 ||
@@ -429,9 +420,7 @@ const InternshipsUniversal = () => {
           location?.label?.toLowerCase() ===
           internship?.internLocation?.toLowerCase()
       );
-    // const matchesLocation = selectedLocation==='All Locations' ||
-    //   selectedLocation.some(location => internship.internLocation.toLowerCase() === location.value.toLowerCase());
-
+ 
     // Matches Stipend
     const matchesStipend =
       selectedStipend === 0 || internship.stipend >= selectedStipend;
@@ -441,9 +430,6 @@ const InternshipsUniversal = () => {
       matchesWorkType && matchesJobProfile && matchesLocation && matchesStipend
     );
   });
-
-  // console.log('this is selected location', selectedLocation);
-  console.log("this is filtered internships", filteredInternships);
 
 
 
