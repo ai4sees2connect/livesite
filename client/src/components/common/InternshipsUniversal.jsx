@@ -48,8 +48,8 @@ const InternshipsUniversal = () => {
   const internshipsPerPage = 9;
   const scrollableRef = useRef(null);
   const [page, setPage] = useState(1);
-  const [totalPages,setTotalPages]=useState(null);
-  const [internshipsCount,setInternshipsCount]=useState(null);
+  const [totalPages, setTotalPages] = useState(null);
+  const [internshipsCount, setInternshipsCount] = useState(null);
 
   const jobProfiles = [
     "3D Animation",
@@ -275,7 +275,7 @@ const InternshipsUniversal = () => {
   const [workType, setWorkType] = useState("All Internships");
   const [selectedStipend, setSelectedStipend] = useState(0);
 
-  
+
   // state for country and state
 
   const [selectedProfile, setSelectedProfile] = useState([]);
@@ -293,7 +293,7 @@ const InternshipsUniversal = () => {
     let query = `page=${1}`;
     if (workType && workType !== 'All Internships') query += `&workType=${workType}`;
     if (selectedProfile.length > 0) query += `&jobProfile=${selectedProfile.join(',')}`;
-    if (selectedStipend!==0) query += `&stipend=${selectedStipend}`;
+    if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
     if (selectedLocation) query += `&location=${selectedLocation}`;
     return query;
   };
@@ -302,7 +302,7 @@ const InternshipsUniversal = () => {
     let query = `page=${page}`;
     if (workType && workType !== 'All Internships') query += `&workType=${workType}`;
     if (selectedProfile.length > 0) query += `&jobProfile=${selectedProfile.join(',')}`;
-    if (selectedStipend!==0) query += `&stipend=${selectedStipend}`;
+    if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
     if (selectedLocation) query += `&location=${selectedLocation}`;
     return query;
   };
@@ -312,8 +312,8 @@ const InternshipsUniversal = () => {
 
       try {
 
-       setLoading(true);
-       const queryString = constructQueryStringReset();
+        setLoading(true);
+        const queryString = constructQueryStringReset();
         const response = await axios.get(`${api}/student/internships?${queryString}`);
         setTotalPages(response.data.totalPages);
         setInternshipsCount(response.data.numOfInternships);
@@ -365,7 +365,7 @@ const InternshipsUniversal = () => {
         // localStorage.setItem('cachedInternships', JSON.stringify(internshipsWithLogo));
         console.log("internhsipswith logo", internshipsWithLogo);
         setLoading(false);
-        
+
       } catch (err) {
         console.error("Error fetching internships:", err);
         setError("Failed to fetch internships. Please try again later.");
@@ -374,16 +374,16 @@ const InternshipsUniversal = () => {
     };
 
     fetchInternships();
-    setPage(1); 
-  }, [ workType, selectedProfile, selectedStipend, selectedLocation]);
+    setPage(1);
+  }, [workType, selectedProfile, selectedStipend, selectedLocation]);
 
   useEffect(() => {
 
     const fetchInternships = async () => {
 
       try {
-       setLoading(true);
-       const queryString = constructQueryStringPageUpdation();
+        setLoading(true);
+        const queryString = constructQueryStringPageUpdation();
         const response = await axios.get(`${api}/student/internships?${queryString}`);
         setTotalPages(response.data.totalPages);
         setInternshipsCount(response.data.numOfInternships);
@@ -433,7 +433,7 @@ const InternshipsUniversal = () => {
         // localStorage.setItem('cachedInternships', JSON.stringify(internshipsWithLogo));
         console.log("internhsipswith logo", internshipsWithLogo);
         setLoading(false);
-        
+
       } catch (err) {
         console.error("Error fetching internships:", err);
         setError("Failed to fetch internships. Please try again later.");
@@ -441,7 +441,7 @@ const InternshipsUniversal = () => {
       }
     };
 
-    fetchInternships(); 
+    fetchInternships();
   }, [page]);
 
   const handleRedirect = () => {
@@ -458,34 +458,34 @@ const InternshipsUniversal = () => {
   // const totalPages = Math.ceil(filteredInternships.length / internshipsPerPage);
 
   const handleNextPage = () => {
-    
-      setPage(page + 1);
-      // setTimeout(() => {
-      //   window.scrollTo({ top: 0, behavior: 'smooth' });
-      //   scrollToTop();
-      // }, 500);
-    
+
+    setPage(page + 1);
+    // setTimeout(() => {
+    //   window.scrollTo({ top: 0, behavior: 'smooth' });
+    //   scrollToTop();
+    // }, 500);
+
   };
 
   const handlePreviousPage = () => {
     if (page > 1) {
       setPage(page - 1);
-    //   setTimeout(() => {
-    //     window.scrollTo({ top: 0, behavior: 'smooth' });
-    //     scrollToTop();
-    //   }, 500);
+      //   setTimeout(() => {
+      //     window.scrollTo({ top: 0, behavior: 'smooth' });
+      //     scrollToTop();
+      //   }, 500);
 
     }
   };
 
   useEffect(() => {
-    if(internships.length>0){
+    if (internships.length > 0) {
       scrollToTop();
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      
+
     }
   }, [internships])
-  
+
 
   const scrollToTop = () => {
     scrollableRef.current.scrollTo({
@@ -507,8 +507,8 @@ const InternshipsUniversal = () => {
   };
 
 
-console.log('this is location',selectedLocation)
-console.log('this is page no',page)
+  console.log('this is location', selectedLocation)
+  console.log('this is page no', page)
 
   if (loading) {
     return <Spinner />;
@@ -537,9 +537,8 @@ console.log('this is page no',page)
       <div className="flex flex-col lg:flex-row w-full lg:w-[90%] mx-auto gap-10">
         {/* this below div is filter button */}
         <div
-          className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400 mt-5 ${
-            filterOpen && "border-blue-400"
-          }`}
+          className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400 mt-5 ${filterOpen && "border-blue-400"
+            }`}
           onClick={() => setFilterOpen(!filterOpen)}
         >
           <span>Filters</span>
@@ -548,9 +547,8 @@ console.log('this is page no',page)
 
         {/* this below div is filter options */}
         <div
-          className={` ${
-            filterOpen ? "block" : "hidden"
-          } w-[84%] md:w-[90%] mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl border-t py-6 overflow-y-auto scrollbar-thin bg-white rounded-lg relative `}
+          className={` ${filterOpen ? "block" : "hidden"
+            } w-[84%] md:w-[90%] mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl border-t py-6 overflow-y-auto scrollbar-thin bg-white rounded-lg relative `}
         >
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
@@ -724,26 +722,10 @@ console.log('this is page no',page)
               {/* this below div is list of internships */}
 
               <div ref={scrollableRef} className="overflow-scroll scrollbar-thin h-[90vh] overflow-x-hidden ">
-              {internships.map((internship) => (
-                <div
-                  key={internship._id}
-                  className="bg-white shadow-md rounded-lg px-3 py-2 w-full  h-fit lg:w-[90%] mb-3 mx-auto relative "
-                >
-                  <div className="flex justify-between items-center">
-                    <div className="mb-0">
-                      <h2 className="text-lg lg:text-2xl font-semibold md:mb-0">
-                        {internship.internshipName}
-                      </h2>
-                      <p className="text-gray-600">
-                        {internship.recruiter.companyName!==''?internship.recruiter.companyName:internship.recruiter.firstname +' '+ internship.recruiter.lastname}
-                      </p>
-                    </div>
-                    
-                    <div className="flex space-x-3 items-center">
-                    <button
-                    onClick={handleRedirect}
-                    class="hidden sm:flex justify-center text-white ml-0 gap-2 items-center mx-auto  text-md bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-6 py-1 overflow-hidden border-2 rounded-md group h-fit  "
-
+                {internships.map((internship) => (
+                  <div
+                    key={internship._id}
+                    className="bg-white shadow-md rounded-lg px-3 py-2 w-full  h-fit lg:w-[90%] mb-3 mx-auto relative "
                   >
                     <div className="flex justify-between items-center">
                       <div className="mb-0">
@@ -751,7 +733,7 @@ console.log('this is page no',page)
                           {internship.internshipName}
                         </h2>
                         <p className="text-gray-600">
-                          {internship.recruiter.companyName}
+                          {internship.recruiter.companyName !== '' ? internship.recruiter.companyName : internship.recruiter.firstname + ' ' + internship.recruiter.lastname}
                         </p>
                       </div>
 
@@ -823,11 +805,10 @@ console.log('this is page no',page)
 
                     <div className="flex text-sm md:text-base space-x-4 items-center">
                       <div
-                        className={`${
-                          internship.studentCount < 20
+                        className={`${internship.studentCount < 20
                             ? "text-green-500"
                             : "text-gray-500"
-                        }  w-fit my-2 sm:my-0 md:w-auto`}
+                          }  w-fit my-2 sm:my-0 md:w-auto`}
                       >
                         {internship.studentCount} Applicants
                       </div>
@@ -850,8 +831,6 @@ console.log('this is page no',page)
                       Posted: {TimeAgo(internship.createdAt)}
                     </p>
 
-                    {/* <button onClick={handleRedirect} className="bg-blue-500 text-white px-4 py-1 rounded-md">Apply</button> */}
-
                     <button
                       onClick={handleRedirect}
                       className="flex sm:hidden justify-center text-white ml-0 gap-2 items-center mx-auto  text-md bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-6 py-1 overflow-hidden border-2 rounded-md group h-fit  "
@@ -862,47 +841,46 @@ console.log('this is page no',page)
                 ))}
               </div>
 
-      
-            
+
+              
               {internships.length > 0 && <div className="flex justify-center my-4 space-x-4">
-                <button
+                {/* <button
                   onClick={handlePreviousPage}
                   disabled={page === 1}
                   className={`px-4 py-2 rounded-md ${page === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'}`}
                 >
                   <FaAngleLeft />
-                </button>
+                </button> */}
 
-                <span>{page} / {totalPages}</span>
+                {/* <span>{page} / {totalPages}</span> */}
                 <button
-                  onClick={handleNextPage}
-                  disabled={page === totalPages}
-                  className={`px-4 py-2 rounded-md ${page === totalPages
+                  onClick={handlePreviousPage}
+                  disabled={page === 1}
+                  className={`px-4 py-2 rounded-md ${page === 1
                     ? 'bg-gray-300'
                     : 'bg-blue-500 text-white'
 
                     }`}
-                  >
-                    <FaAngleLeft />
-                  </button>
+                >
+                  <FaAngleLeft />
+                </button>
 
-                  <span>
-                    {currentPage} / {totalPages}
-                  </span>
-                  <button
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                    className={`px-4 py-2 rounded-md ${
-                      currentPage ===
-                      Math.ceil(filteredInternships.length / internshipsPerPage)
-                        ? "bg-gray-300"
-                        : "bg-blue-500 text-white"
+                <span>
+                  {page} / {totalPages}
+                </span>
+                <button
+                  onClick={handleNextPage}
+                  disabled={page === totalPages}
+                  className={`px-4 py-2 rounded-md ${page ===
+                     totalPages
+                      ? "bg-gray-300"
+                      : "bg-blue-500 text-white"
                     }`}
-                  >
-                    <FaAngleRight />
-                  </button>
-                </div>
-              )}
+                >
+                  <FaAngleRight />
+                </button>
+              </div>
+              }
             </div>
           </div>
         </div>
