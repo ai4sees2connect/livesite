@@ -296,17 +296,17 @@ function Signup() {
                   required
                 />
 
-                {validateEmail(email) && !sendingOtp && !otpInput && (
-                  <button
-                    className="text-blue-500 text-left absolute right-3  sm:-right-[73px] sm:top-3 text-xs sm:text-base top-4"
-                    onClick={handleSendOtp}
-                  >
-                    Send OTP
-                  </button>
-                )}
+{validateEmail(email) && !sendingOtp && !otpInput && (
+  <button
+    className="border border-blue-500 bg-white text-blue-500 text-left absolute right-3 sm:-right-[77px] sm:top-3 text-xxs sm:text-base top-3 rounded-md px-0.5 py-0.5 shadow-md hover:shadow-lg transition-shadow duration-200"
+    onClick={handleSendOtp}
+  >
+    Send OTP
+  </button>
+)}
                 {validateEmail(email) && !sendingOtp && otpInput && (
                   <button
-                    className="text-blue-500 text-left absolute right-3  sm:-right-[82px] sm:top-3 text-xs sm:text-base top-4"
+                    className="ml-2 h-12 border border-blue-500 bg-white text-blue-500 rounded-md px-4 shadow-sm text-xs sm:text-base"
                     onClick={handleSendOtp}
                   >
                     Resend otp
@@ -333,6 +333,7 @@ function Signup() {
                       placeholder="Enter otp"
                       className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-20 w-full"
                     />
+
                     {!otpVerified ? (
                       <button
                         onClick={handleVerifyOtp}
@@ -346,6 +347,7 @@ function Signup() {
                         <span>Verified</span>
                       </div>
                     )}
+
                   </div>
 
                 )}
