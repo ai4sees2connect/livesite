@@ -984,6 +984,7 @@ const Internships = () => {
                   </div>
                 ))}
               </div>
+              
               {/* pagination */}
               <div className="flex  justify-center my-4 space-x-4">
                 <button
