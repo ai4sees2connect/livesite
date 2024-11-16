@@ -331,10 +331,7 @@ const InternshipsUniversal = () => {
       // const cachedInternships = localStorage.getItem("cachedInternships");
 
       try {
-        console.log("LocationName", selectedLocation);
-        console.log("WorkType:", workType);
-        console.log("profile", selectedProfile);
-
+       
 
         const response = await axios.get(`${api}/student/internships`);
 
@@ -414,13 +411,7 @@ const InternshipsUniversal = () => {
           internship?.jobProfile?.toLowerCase() ===
           profile?.label?.toLowerCase()
       );
-    // internship?.jobProfile?.toLowerCase() === selectedProfile?.label?.toLowerCase()
-
-    // Matches Location
-    console.log("this is selected location", selectedLocation);
-    console.log("this is interns profile", internship.jobProfile);
-    console.log("this is selected profile", selectedProfile);
-    console.log("this is internship", internship);
+   
 
     const matchesLocation =
       selectedLocation.length == 0 ||
@@ -429,9 +420,7 @@ const InternshipsUniversal = () => {
           location?.label?.toLowerCase() ===
           internship?.internLocation?.toLowerCase()
       );
-    // const matchesLocation = selectedLocation==='All Locations' ||
-    //   selectedLocation.some(location => internship.internLocation.toLowerCase() === location.value.toLowerCase());
-
+ 
     // Matches Stipend
     const matchesStipend =
       selectedStipend === 0 || internship.stipend >= selectedStipend;
@@ -441,9 +430,6 @@ const InternshipsUniversal = () => {
       matchesWorkType && matchesJobProfile && matchesLocation && matchesStipend
     );
   });
-
-  // console.log('this is selected location', selectedLocation);
-  console.log("this is filtered internships", filteredInternships);
 
 
 
@@ -630,44 +616,57 @@ const InternshipsUniversal = () => {
           {filteredInternships.length} Total Internships
         </h1>
 
-
+        {/* internships div */}
         <div className="w-full lg:w-[79%]">
+
           <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
             {filteredInternships.length} Total Internships
           </h1>
-          <div ref={scrollableRef} className="flex-1  lg:mt-0  overflow-scroll overflow-x-hidden h-screen scrollbar-thin">
 
-            <div className="flex flex-col justify-center bg-gray-100">
+          {/* list of internships */}
+          <div  className="flex-1  lg:mt-0    h-screen scrollbar-thin">
+
+            <div className="flex flex-col justify-center bg-gray-100 ">
 
               {/* this below div is list of internships */}
+              <div ref={scrollableRef} className="overflow-scroll scrollbar-thin h-[90vh] overflow-x-hidden ">
               {currentInternships.map((internship) => (
                 <div
                   key={internship._id}
-                  className="bg-white shadow-md rounded-lg px-3 py-3 w-full lg:w-[90%] mb-3 mx-auto relative"
+                  className="bg-white shadow-md rounded-lg px-3 py-2 w-full  h-fit lg:w-[90%] mb-3 mx-auto relative "
                 >
                   <div className="flex justify-between items-center">
-                    <div className="mb-4">
-                      <h2 className="text-lg lg:text-2xl font-semibold md:mb-2">
+                    <div className="mb-0">
+                      <h2 className="text-lg lg:text-2xl font-semibold md:mb-0">
                         {internship.internshipName}
                       </h2>
                       <p className="text-gray-600">
                         {internship.recruiter.companyName}
                       </p>
                     </div>
+                    
+                    <div className="flex space-x-3 items-center">
+                    <button
+                    onClick={handleRedirect}
+                    class="hidden sm:flex justify-center text-white ml-0 gap-2 items-center mx-auto  text-md bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-6 py-1 overflow-hidden border-2 rounded-md group h-fit  "
+                  >
+                    Apply
 
+                  </button>
                     {internship.logoUrl ? (
                       <img
                         src={internship.logoUrl}
                         alt={internship.logoUrl}
-                        className=" w-20 h-20"
+                        className=" w-16 h-16"
                       />
                     ) : (
                       <FaBuilding  className=" w-16 h-16 text-gray-600"/>
                     )}
+                    </div>
                   </div>
 
                   <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row ">
-                    <div className="flex  items-center text-gray-700 mb-2">
+                    <div className="flex items-center text-gray-700 mb-2">
                       <FaMapMarkerAlt className="mr-1" />
                       <span>
                         {internship.internLocation
@@ -698,7 +697,7 @@ const InternshipsUniversal = () => {
                         </div>
 
                         {internship.stipendType === "performance-based" && (
-                          <div className="flex items-center mb-2 text-gray-700">
+                          <div className="flex items-center text-gray-700">
                             <span>+ incentives</span>
                             <div className="relative group ">
                               <FaQuestion className="border border-black p-1 mx-1 rounded-full hover:cursor-pointer" />
@@ -718,7 +717,7 @@ const InternshipsUniversal = () => {
                       className={`${internship.studentCount < 20
                         ? "text-green-500"
                         : "text-gray-500"
-                        } my-2 w-[30%] md:w-auto`}
+                        }  w-fit my-2 sm:my-0 md:w-auto`}
                     >
                       {internship.studentCount} Applicants
                     </div>
@@ -727,14 +726,14 @@ const InternshipsUniversal = () => {
                       <div className="flex  space-x-2 items-center">
                         <FaRunning className="text-yellow-500  w-5 h-5" />
                         <span className="text-gray-500">
-                          Be an early Applicant
+                           Early Applicant
                         </span>
                       </div>
                     )}
 
                     {internship.ppoCheck === "yes" && (
                       <div className="text-gray-500 flex space-x-2 items-center">
-                        <FaStar /> <span>Internship with job offer</span>
+                        <FaStar /> <span>Job offer Available</span>
                       </div>
                     )}
                   </div>
@@ -747,7 +746,7 @@ const InternshipsUniversal = () => {
 
                   <button
                     onClick={handleRedirect}
-                    class="flex justify-center text-white ml-0 gap-2 items-center mx-auto  text-md bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-6 py-1 overflow-hidden border-2 rounded-md group"
+                    class="flex sm:hidden justify-center text-white ml-0 gap-2 items-center mx-auto  text-md bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-6 py-1 overflow-hidden border-2 rounded-md group h-fit  "
                   >
                     Apply
 
@@ -759,7 +758,9 @@ const InternshipsUniversal = () => {
 
                 </div>
               ))}
-
+              </div>
+      
+              {/* pagination buttons */}
               {currentInternships.length > 0 && <div className="flex justify-center my-4 space-x-4">
                 <button
                   onClick={handlePreviousPage}

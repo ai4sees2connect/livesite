@@ -79,6 +79,35 @@ console.log('running')
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
+router.post('/verify-otp', async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({ message: 'Email and OTP are required' });
+  }
+
+  try {
+    // Find the OTP entry in the database
+    const otpEntry = await Otp.findOne({ email, otp });
+
+    if (!otpEntry) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    // Check if the OTP is expired
+    if (otpEntry.expiresAt < Date.now()) {
+      return res.status(400).json({ message: 'OTP has expired' });
+    }
+
+    // OTP is valid, proceed to the next step (e.g., complete signup)
+
+    return res.status(200).json({ message: 'OTP verified successfully' });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 router.post('/forget-pass/verify-otp', async (req, res) => {
   const { email, otp } = req.body;
@@ -212,7 +241,7 @@ router.post('/signup', async (req, res) => {
       firstname,
       lastname,
       email,
-      password,
+      password
     })
     
     const token = jwt.sign({ id: newStudent._id, userType: 'Student' }, process.env.JWT_SECRET_KEY, { expiresIn: '10d' });
@@ -235,7 +264,7 @@ router.post('/signup/googleauth', async (req, res) => {
       student = new Student({
         firstname,
         lastname,
-        email,
+        email
         // Password can be omitted or a default value if using Google Auth
       });
       await student.save();

@@ -19,7 +19,6 @@ const internshipSchema = new mongoose.Schema(
     },
     stipend: {
       type: String,
-      required: true,
     },
     stipendType:{
       type: String
@@ -47,7 +46,6 @@ const internshipSchema = new mongoose.Schema(
     
     assessment:{
       type:String,
-      required:true
     },
     perks:{
       type: [String],

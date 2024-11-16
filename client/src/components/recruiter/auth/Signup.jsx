@@ -14,6 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ToggleButton from "../../common/ToggleButton";
 import ToggleButtonSecond from "../../common/ToogleButtonSecond";
 import api from "../../common/server_url";
+import {FaCheckCircle} from "react-icons/fa";
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -283,12 +284,20 @@ function Signup() {
                   required
                 />
 
-                {validateEmail(email) && !sendingOtp && (
+                {validateEmail(email) && !sendingOtp && !otpInput && (
                   <button
                     className="text-blue-500 text-left absolute right-3  sm:-right-[73px] sm:top-3 text-xs sm:text-base top-4"
                     onClick={handleSendOtp}
                   >
                     Send OTP
+                  </button>
+                )}
+                {validateEmail(email) && !sendingOtp && otpInput && (
+                  <button
+                    className="text-blue-500 text-left absolute right-3  sm:-right-[82px] sm:top-3 text-xs sm:text-base top-4"
+                    onClick={handleSendOtp}
+                  >
+                    Resend otp
                   </button>
                 )}
 
@@ -300,7 +309,7 @@ function Signup() {
                   />
                 )}
 
-                {otpInput && (
+                {otpInput  && (
                   <div className="relative my-3 w-full">
                     <input
                       type="text"
@@ -310,12 +319,12 @@ function Signup() {
                       placeholder="Enter otp"
                       className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-20 w-full"
                     />
-                    <button
+                    {!otpVerified ?(<button
                       onClick={handleVerifyOtp}
-                      className="absolute -right-[40px] top-3 text-blue-500 text-sm"
+                      className="absolute right-3 sm:-right-[45px] top-4 sm:top-3 text-blue-500 text-xs sm:text-base"
                     >
                       Verify
-                    </button>
+                    </button>):(<div className="absolute flex items-center space-x-1 right-3 sm:-right-[78px] top-4 sm:top-3 text-green-500 text-xs sm:text-base"><FaCheckCircle/><span>Verified</span></div>)}
                   </div>
                 )}
 

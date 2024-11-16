@@ -15,8 +15,12 @@ const paymentRoutes=require('./routes/paymentRoutes')
 const  internRoutes=require('./routes/internRoutes')
 const initSocket= require('./socket');
 const http = require('http');
+// const cron = require('node-cron');
+const axios = require('axios');
+const job =require('./cron')
 
 
+job.start();
 const app = express();
 const PORT=process.env.PORT || 4000;
 dotenv.config();
@@ -78,3 +82,4 @@ const startServer= async()=>{
   }
 }
 startServer();
+

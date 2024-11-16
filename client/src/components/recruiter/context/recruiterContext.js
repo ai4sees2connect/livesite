@@ -12,39 +12,43 @@ export const RecruiterProvider = ({ children }) => {
   const [recruiter, setRecruiter] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const token = localStorage.getItem('token');
-      console.log('Inside useEffect of recruiterContext');
-      if (token) {
-        try {
-          const response = await axios.get(`${api}/recruiter/details`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          // console.log(response.data);
-          if(!response.data.success){
-            console.log('Recruiter is not associated with this token');
-            return;
-          }
-          if(response.data.success){
-          setRecruiter(response.data.recruiter);
-          console.log('Recruiter found');
-          }
-        } catch (error) {
-          console.error('Error fetching recruiter data:', error);
-          // Optionally handle errors (e.g., logout user)
+  const fetchUserData = async () => {
+    const token = localStorage.getItem('token');
+    console.log('Inside useEffect of recruiterContext');
+    if (token) {
+      try {
+        const response = await axios.get(`${api}/recruiter/details`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // console.log(response.data);
+        if(!response.data.success){
+          console.log('Recruiter is not associated with this token');
+          return;
         }
+        if(response.data.success){
+        setRecruiter(response.data.recruiter);
+        console.log('Recruiter found');
+        }
+      } catch (error) {
+        console.error('Error fetching recruiter data:', error);
+        // Optionally handle errors (e.g., logout user)
       }
-      else {
-        setRecruiter(null);
-      }
-    };
+    }
+    else {
+      setRecruiter(null);
+    }
+  };
 
+  useEffect(() => {
+  
     fetchUserData();
   }, [token]);
 
+  const refreshData=()=>{
+    fetchUserData();
+  }
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null); // Clear token to trigger refetch
@@ -56,7 +60,7 @@ export const RecruiterProvider = ({ children }) => {
   }
 
   return (
-    <RecruiterContext.Provider value={{recruiter, logout,login}}>
+    <RecruiterContext.Provider value={{recruiter, logout,login,refreshData}}>
       {children}
     </RecruiterContext.Provider>
   );

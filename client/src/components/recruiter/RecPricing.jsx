@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import api from "../common/server_url";
 import { useParams } from "react-router-dom";
@@ -12,12 +12,12 @@ const RecPricing = () => {
   const { recruiter } = useRecruiter();
   
 
+
   const handlePayment = async (amount, planType) => {
     try {
-      const {
-        data: { key: razorpayKey },
-      } = await axios.get(`${api}/payments/get-razorpay-key`);
+      const {data: { key: razorpayKey },} = await axios.get(`${api}/payments/get-razorpay-key`);
       // Step 1: Create an order by calling the backend
+      console.log('this is key',razorpayKey);
       const { data: orderData } = await axios.post(
         `${api}/payments/${recruiterId}/create-order`,
         { amount, recruiterId, planType }
@@ -41,6 +41,7 @@ const RecPricing = () => {
 
         handler: async (response) => {
           // Step 3: Verify payment after successful payment
+          console.log("Payment successful, response:", response);
           try {
             const { data: verifyData } = await axios.post(
               `${api}/payments/verify-payment`,
@@ -52,7 +53,7 @@ const RecPricing = () => {
                 planType, // Pass the plan type to update subscription
               }
             );
-
+            console.log("Verification response:", verifyData);
             if (verifyData.success) {
               toast.success("Payment successful");
               // You can redirect or update the UI to reflect the new subscription
@@ -124,7 +125,7 @@ const RecPricing = () => {
           <hr />
           <p className="text-gray-600 my-4">Best for trial period</p>
 
-          <p className="text-blue-600 mb-4">Total Posting: 1/month</p>
+          <p className="text-blue-600 mb-4">Total Posting: 1 per month</p>
           <p className="text-2xl font-bold">&#8377;0.00</p>
         </div>
 
@@ -135,7 +136,7 @@ const RecPricing = () => {
           <hr />
           <p className="text-gray-600 my-4">Best for short-term hiring.</p>
 
-          <p className="text-blue-600  mb-4">Total Posting: 3/month</p>
+          <p className="text-blue-600  mb-4">Total Posting: 3 per month</p>
           <p className="text-2xl font-bold">&#8377;1</p>
           </div>
 
@@ -155,7 +156,7 @@ const RecPricing = () => {
           <p className="text-gray-600 my-4">
             Popular choice for consistent hiring.
           </p>
-          <p className="text-blue-600  mb-4">Total Posting: 4/month</p>
+          <p className="text-blue-600  mb-4">Total Posting: 4 per month</p>
           <p className="text-2xl font-bold">&#8377;2</p>
           </div>
           <button
@@ -175,7 +176,7 @@ const RecPricing = () => {
           <p className="text-gray-600 my-4">
             Best value for long-term hiring needs.
           </p>
-          <p className="text-blue-600  mb-4">Total Posting: 10/month</p>
+          <p className="text-blue-600  mb-4">Total Posting: 10 per month</p>
           <p className="text-2xl font-bold">&#8377;3</p>
           </div>
           <button

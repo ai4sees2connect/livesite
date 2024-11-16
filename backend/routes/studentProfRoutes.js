@@ -1,7 +1,11 @@
 const express = require("express");
 const Student = require("../schema/studentSchema");
+const multer = require("multer");
 
 const router = express.Router();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 router.get("/:userId/education", async (req, res) => {
   try {
@@ -240,51 +244,84 @@ router.get("/:userId/certificates", async (req, res) => {
   }
 });
 
-router.post("/:userId/certificates", async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const { title, issuingOrganization, issueDate, description } = req.body;
-    const student = await Student.findById(userId);
-    if (!student) return res.status(404).json({ message: "User not found" });
-    student.certificates.push({
-      title,
-      issuingOrganization,
-      issueDate,
-      description,
-    });
-    await student.save();
-    res.status(200).json({
-      message: "Certificates details added successfully",
-      certificates: student.certificates,
-    });
-  } catch (error) {
-    console.error("Error adding certificate", error);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-});
+router.post(
+  "/:userId/certificates",
+  upload.single("certificateFile"),
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { title, issuingOrganization, issueDate, description } = req.body;
+      const file = req.file; // Get the uploaded file
 
-router.put("/:userId/certificates/:index", async (req, res) => {
-  try {
-    const { userId, index } = req.params;
-    const { title, issuingOrganization, issueDate, description } = req.body;
-    const student = await Student.findById(userId);
-    if (!student) return res.status(404).json({ message: "User not found" });
-    if (index < 0 || student.certificates.length <= index)
-      return res.status(400).json({ message: "Invalid education index" });
+      const student = await Student.findById(userId);
+      if (!student) return res.status(404).json({ message: "User not found" });
 
-    student.certificates[index] = {
-      title,
-      issuingOrganization,
-      issueDate,
-      description,
-    };
-    await student.save();
-    res.status(200).json(student.certificates[index]);
-  } catch (error) {
-    console.error("Error updating certificate details:", error);
-    res.status(500).json({ message: "Server error" });
+      // Construct certificate details, including fileUpload if the file exists
+      const certificate = {
+        title,
+        issuingOrganization,
+        issueDate,
+        description,
+        fileUpload: file
+          ? {
+              data: file.buffer, // Binary data of the PDF
+              contentType: file.mimetype, // MIME type, e.g., "application/pdf"
+              filename: file.originalname, // Original filename
+              createdAt: Date.now(),
+            }
+          : null,
+      };
+
+      student.certificates.push(certificate);
+      await student.save();
+
+      res.status(200).json({
+        message: "Certificate details added successfully",
+        certificates: student.certificates,
+      });
+    } catch (error) {
+      console.error("Error adding certificate", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
   }
-});
+);
+
+router.put(
+  "/:userId/certificates/:index",
+  upload.single("certificateFile"),
+  async (req, res) => {
+    try {
+      const { userId, index } = req.params;
+      const { title, issuingOrganization, issueDate, description } = req.body;
+      const file = req.file;
+      const student = await Student.findById(userId);
+      if (!student) return res.status(404).json({ message: "User not found" });
+      if (index < 0 || student.certificates.length <= index)
+        return res.status(400).json({ message: "Invalid education index" });
+
+      console.log("this is file", file);
+      student.certificates[index] = {
+        title,
+        issuingOrganization,
+        issueDate,
+        description,
+        fileUpload: file
+          ? {
+              data: file.buffer, // New binary data
+              contentType: file.mimetype, // New MIME type
+              filename: file.originalname, // New filename
+              createdAt: Date.now(), // New timestamp
+            }
+          : student.certificates[index].fileUpload, // Existing file data if no new file is uploaded
+      };
+      await student.save();
+      res.status(200).json(student.certificates[index]);
+    } catch (error) {
+      console.error("Error updating certificate details:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
 
 router.delete("/:userId/certificates/:index", async (req, res) => {
   try {
@@ -414,7 +451,9 @@ router.post("/:userId/skills", async (req, res) => {
     const student = await Student.findById(userId);
     if (!student) return res.status(404).json({ message: "User not found" });
 
-    const skillExists = student.skills.some(skill => skill.skillName === skillName);
+    const skillExists = student.skills.some(
+      (skill) => skill.skillName === skillName
+    );
 
     if (skillExists) {
       return res.status(400).json({ message: "Skill already exists" });
@@ -441,9 +480,11 @@ router.put("/:userId/skills/:index", async (req, res) => {
 
     if (index < 0 || student.skills.length <= index)
       return res.status(400).json({ message: "Invalid skills index" });
-    
-    const skillExists=student.skills.some(skill=> skill.skillName===skillName);
-    if(skillExists){
+
+    const skillExists = student.skills.some(
+      (skill) => skill.skillName === skillName
+    );
+    if (skillExists) {
       return res.status(400).json({ message: "Skill already exists" });
     }
     student.skills[index] = {
@@ -505,7 +546,7 @@ router.post("/:userId/portfolioLinks", async (req, res) => {
 
     await student.save();
     res.status(200).json({
-      portfolioLink: student.portfolioLink
+      portfolioLink: student.portfolioLink,
     });
   } catch (error) {
     console.error("Error adding portfolioLink", error);
@@ -534,7 +575,6 @@ router.put("/:userId/portfolioLinks/:index", async (req, res) => {
   }
 });
 
-
 router.delete("/:userId/portfolioLinks/:index", async (req, res) => {
   try {
     const { userId, index } = req.params;
@@ -554,6 +594,5 @@ router.delete("/:userId/portfolioLinks/:index", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 
 module.exports = router;
