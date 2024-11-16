@@ -159,9 +159,9 @@ function Signup() {
     email.trim() !== "" &&
     password.trim() !== "" &&
     firstname.trim() !== "" &&
-    lastname.trim() !== "" &&
-    otp.trim() !== "" &&
-    otpVerified;
+    lastname.trim() !== "" 
+    // otp.trim() !== "" &&
+    // otpVerified;
 
   const handleGoogleClick = async (e) => {
     e.preventDefault();
@@ -278,27 +278,27 @@ function Signup() {
                     className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                     required
                   />
-                  {validateEmail(email) && !sendingOtp && (
+                  {/* {validateEmail(email) && !sendingOtp && (
                     <button
                       className="text-blue-500 text-left absolute right-3  sm:-right-[73px] sm:top-3 text-xs sm:text-base top-4"
                       onClick={handleSendOtp}
                     >
                       Send OTP
                     </button>
-                  )}
+                  )} */}
 
-                  {sendingOtp && (
+                  {/* {sendingOtp && (
                     <FontAwesomeIcon
                       icon={faSpinner}
                       spin
                       className="h-5 w-5 text-black absolute right-2 top-4"
                     />
-                  )}
+                  )} */}
                 </div>
                 {emailError && (
                   <p className="text-red-500 text-left w-full">{emailError}</p>
                 )}
-                {otpInput && (
+                {/* {otpInput && (
                   <div className="relative my-3 w-full">
                     <input
                       type="text"
@@ -315,7 +315,7 @@ function Signup() {
                       Verify
                     </button>
                   </div>
-                )}
+                )} */}
               </div>
 
               <div className="flex flex-col items-center relative">
