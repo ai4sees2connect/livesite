@@ -10,8 +10,7 @@ import api from "../common/server_url";
 import Select from "react-select";
 import { useRecruiter } from "./context/recruiterContext";
 import Spinner from "../common/Spinner";
-import { Link, useNavigate } from "react-router-dom";
-import statesAndCities from "../common/statesAndCities";
+import { Link } from "react-router-dom";
 
 const RecPosting = () => {
   const [formData, setFormData] = useState({
@@ -40,9 +39,7 @@ const RecPosting = () => {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedPerks, setSelectedPerks] = useState([]);
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
-  const [startQuesDays, setStartQuesDays] = useState(null);
-  const { recruiter,refreshData } = useRecruiter();
-  const navigate=useNavigate();
+  const { recruiter } = useRecruiter();
   const jobProfiles = [
     "3D Animation",
     "Account Management",
@@ -249,52 +246,52 @@ const RecPosting = () => {
     "Web Development",
   ];
 
-  // const statesAndUTs = [
-  //   { value: "All Locations", label: "All Locations" },
-  //   { value: "Andhra Pradesh", label: "Andhra Pradesh" },
-  //   { value: "Arunachal Pradesh", label: "Arunachal Pradesh" },
-  //   { value: "Assam", label: "Assam" },
-  //   { value: "Bihar", label: "Bihar" },
-  //   { value: "Chhattisgarh", label: "Chhattisgarh" },
-  //   { value: "Chennai", label: "Chennai" },
-  //   { value: "Goa", label: "Goa" },
-  //   { value: "Gujarat", label: "Gujarat" },
-  //   { value: "Haryana", label: "Haryana" },
-  //   { value: "Himachal Pradesh", label: "Himachal Pradesh" },
-  //   { value: "Jharkhand", label: "Jharkhand" },
-  //   { value: "Karnataka", label: "Karnataka" },
-  //   { value: "Kerala", label: "Kerala" },
-  //   { value: "Madhya Pradesh", label: "Madhya Pradesh" },
-  //   { value: "Maharashtra", label: "Maharashtra" },
-  //   { value: "Manipur", label: "Manipur" },
-  //   { value: "Meghalaya", label: "Meghalaya" },
-  //   { value: "Mizoram", label: "Mizoram" },
-  //   { value: "Nagaland", label: "Nagaland" },
-  //   { value: "Odisha", label: "Odisha" },
-  //   { value: "Punjab", label: "Punjab" },
-  //   { value: "Rajasthan", label: "Rajasthan" },
-  //   { value: "Sikkim", label: "Sikkim" },
-  //   { value: "Tamil Nadu", label: "Tamil Nadu" },
-  //   { value: "Telangana", label: "Telangana" },
-  //   { value: "Tripura", label: "Tripura" },
-  //   { value: "Uttar Pradesh", label: "Uttar Pradesh" },
-  //   { value: "Uttarakhand", label: "Uttarakhand" },
-  //   { value: "West Bengal", label: "West Bengal" },
-  //   {
-  //     value: "Andaman and Nicobar Islands",
-  //     label: "Andaman and Nicobar Islands",
-  //   },
-  //   { value: "Chandigarh", label: "Chandigarh" },
-  //   {
-  //     value: "Dadra and Nagar Haveli and Daman and Diu",
-  //     label: "Dadra and Nagar Haveli and Daman and Diu",
-  //   },
-  //   { value: "Lakshadweep", label: "Lakshadweep" },
-  //   { value: "Delhi", label: "Delhi" },
-  //   { value: "Puducherry", label: "Puducherry" },
-  //   { value: "Jammu and Kashmir", label: "Jammu and Kashmir" },
-  //   { value: "Ladakh", label: "Ladakh" },
-  // ];
+  const statesAndUTs = [
+    { value: "All Locations", label: "All Locations" },
+    { value: "Andhra Pradesh", label: "Andhra Pradesh" },
+    { value: "Arunachal Pradesh", label: "Arunachal Pradesh" },
+    { value: "Assam", label: "Assam" },
+    { value: "Bihar", label: "Bihar" },
+    { value: "Chhattisgarh", label: "Chhattisgarh" },
+    { value: "Chennai", label: "Chennai" },
+    { value: "Goa", label: "Goa" },
+    { value: "Gujarat", label: "Gujarat" },
+    { value: "Haryana", label: "Haryana" },
+    { value: "Himachal Pradesh", label: "Himachal Pradesh" },
+    { value: "Jharkhand", label: "Jharkhand" },
+    { value: "Karnataka", label: "Karnataka" },
+    { value: "Kerala", label: "Kerala" },
+    { value: "Madhya Pradesh", label: "Madhya Pradesh" },
+    { value: "Maharashtra", label: "Maharashtra" },
+    { value: "Manipur", label: "Manipur" },
+    { value: "Meghalaya", label: "Meghalaya" },
+    { value: "Mizoram", label: "Mizoram" },
+    { value: "Nagaland", label: "Nagaland" },
+    { value: "Odisha", label: "Odisha" },
+    { value: "Punjab", label: "Punjab" },
+    { value: "Rajasthan", label: "Rajasthan" },
+    { value: "Sikkim", label: "Sikkim" },
+    { value: "Tamil Nadu", label: "Tamil Nadu" },
+    { value: "Telangana", label: "Telangana" },
+    { value: "Tripura", label: "Tripura" },
+    { value: "Uttar Pradesh", label: "Uttar Pradesh" },
+    { value: "Uttarakhand", label: "Uttarakhand" },
+    { value: "West Bengal", label: "West Bengal" },
+    {
+      value: "Andaman and Nicobar Islands",
+      label: "Andaman and Nicobar Islands",
+    },
+    { value: "Chandigarh", label: "Chandigarh" },
+    {
+      value: "Dadra and Nagar Haveli and Daman and Diu",
+      label: "Dadra and Nagar Haveli and Daman and Diu",
+    },
+    { value: "Lakshadweep", label: "Lakshadweep" },
+    { value: "Delhi", label: "Delhi" },
+    { value: "Puducherry", label: "Puducherry" },
+    { value: "Jammu and Kashmir", label: "Jammu and Kashmir" },
+    { value: "Ladakh", label: "Ladakh" },
+  ];
 
   const perks = [
     "Letter of recommendation",
@@ -307,23 +304,6 @@ const RecPosting = () => {
   ];
 
   console.log("this is recruite data", recruiter);
-
-  useEffect(() => {
-    // refreshData();
-    const getData=()=>{
-      
-        if( recruiter?.orgDescription==='' || recruiter?.companyCity==='' || recruiter?.industryType==='' || recruiter?.numOfEmployees===''){
-         toast.info('Please complete your profile');
-         navigate(`/recruiter/profile/${userId}`)
-         return;
-        }
-    }
-    setTimeout(() => {
-      getData();
-    }, 1000);
-    
-  }, [recruiter])
-  
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -493,21 +473,17 @@ const RecPosting = () => {
 
   if (!recruiter?.companyCertificate && !recruiter?.companyWebsite) {
     return (
-      // <div className="flex items-center justify-center  text-gray-700 text-lg font-semibold h-screen">
-      //   Complete your profile section
-      //   <button>Back to profile</button>
-      // </div>
-       <div className="flex flex-col justify-center items-center h-screen space-y-4">
-       <p className="text-xl font-semibold text-gray-500">
-         Complete your profile.
-       </p>
-       <Link
-         to={`/recruiter/posting/${recruiter }`}
-         className="px-2 py-1 bg-blue-500 text-white rounded-md"
-       >
-         Back to profile
-       </Link>
-     </div>
+      <div className="flex flex-col justify-center items-center h-screen space-y-4">
+      <p className="text-xl font-semibold text-gray-500">
+        Complete your profile.
+      </p>
+      <Link
+        to={`/recruiter/profile/${userId}`}
+        className="px-2 py-1 bg-blue-500 text-white rounded-md"
+      >
+        Back to profile
+      </Link>
+    </div>
     );
   } else if (recruiter?.subscription.planType !== "Unlimited") {
     if (
@@ -515,8 +491,8 @@ const RecPosting = () => {
       recruiter?.subscription.postsRemaining < 1
     ) {
       return (
-        <div className="flex flex-col  items-center justify-center space-y-3 h-screen">
-          <div className="text-center text-gray-700 text-lg font-semibold">
+        <div className="flex flex-col  items-center justify-center space-y-3">
+          <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
             You have used your monthly available free postings
           </div>
           <Link
@@ -534,8 +510,8 @@ const RecPosting = () => {
       recruiter?.subscription.postsRemaining < 1
     ) {
       return (
-        <div className="flex flex-col space-y-3 h-screen items-center justify-center">
-          <div className="text-center text-gray-700 text-lg font-semibold">
+        <div className="flex flex-col space-y-3 h-screen">
+          <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
             You have used your available postings
           </div>
           <Link
@@ -638,7 +614,7 @@ const RecPosting = () => {
                 placeholder='Enter Location e.g Delhi or Mumbai' /> */}
 
               <Select
-                options={statesAndCities}
+                options={statesAndUTs}
                 values={formData.internLocation}
                 onChange={(value) =>
                   setFormData({ ...formData, internLocation: value.value })
@@ -678,46 +654,6 @@ const RecPosting = () => {
               </label>
             </div>
           </div>
-          {formData.internshipStartQues === "Later" && (
-            <div className="flex space-x-4">
-              <label>
-                <input
-                  type="radio"
-                  name="startTime"
-                  value="within a week"
-                  onChange={(e) =>
-                    setFormData({ ...formData, startTime: e.target.value })
-                  }
-                  className="mx-1"
-                />
-                Within a week
-              </label>
-
-              <label>
-                <input
-                  type="radio"
-                  name="startTime"
-                  value="within 15 days"
-                  onChange={(e) =>
-                    setFormData({ ...formData, startTime: e.target.value })
-                  }
-                />
-                Within 15 days
-              </label>
-
-              <label>
-                <input
-                  type="radio"
-                  name="startTime"
-                  value="more than 15 days"
-                  onChange={(e) =>
-                    setFormData({ ...formData, startTime: e.target.value })
-                  }
-                />
-                More than 15 days
-              </label>
-            </div>
-          )}
 
           <div className="flex flex-col my-5">
             <label className="mb-2 font-medium">No of Openings</label>

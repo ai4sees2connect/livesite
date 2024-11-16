@@ -284,17 +284,17 @@ function Signup() {
                   required
                 />
 
-                {validateEmail(email) && !sendingOtp && !otpInput && (
-                  <button
-                    className="text-blue-500 text-left absolute right-3  sm:-right-[73px] sm:top-3 text-xs sm:text-base top-4"
-                    onClick={handleSendOtp}
-                  >
-                    Send OTP
-                  </button>
-                )}
+{validateEmail(email) && !sendingOtp && !otpInput && (
+  <button
+    className="border border-blue-500 bg-white text-blue-500 text-left absolute right-3 sm:-right-[77px] sm:top-3 text-xxs sm:text-base top-3 rounded-md px-0.5 py-0.5 shadow-md hover:shadow-lg transition-shadow duration-200"
+    onClick={handleSendOtp}
+  >
+    Send OTP
+  </button>
+)}
                 {validateEmail(email) && !sendingOtp && otpInput && (
                   <button
-                    className="text-blue-500 text-left absolute right-3  sm:-right-[82px] sm:top-3 text-xs sm:text-base top-4"
+                    className="ml-2 h-12 border border-blue-500 bg-white text-blue-500 rounded-md px-4 shadow-sm text-xs sm:text-base"
                     onClick={handleSendOtp}
                   >
                     Resend otp
@@ -321,7 +321,7 @@ function Signup() {
                     />
                     {!otpVerified ?(<button
                       onClick={handleVerifyOtp}
-                      className="absolute right-3 sm:-right-[45px] top-4 sm:top-3 text-blue-500 text-xs sm:text-base"
+                      className="border-border-blue-500 absolute right-3 sm:-right-[45px] top-4 sm:top-3 text-blue-500 sm:-right-[77px] sm:top-3 text-xxs sm:text-base top-3 rounded-md px-0.5 py-0.5 shadow-md hover:shadow-lg transition-shadow duration-200"
                     >
                       Verify
                     </button>):(<div className="absolute flex items-center space-x-1 right-3 sm:-right-[78px] top-4 sm:top-3 text-green-500 text-xs sm:text-base"><FaCheckCircle/><span>Verified</span></div>)}
