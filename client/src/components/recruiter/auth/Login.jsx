@@ -10,7 +10,7 @@ import {
   faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import google_pic from "../../../images/google_pic.png";
-import recruiter_bg from "../../../images/recruiter_bg.jpeg";
+import recruiter_bg from "../../../images/intern_pic.jpeg";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import getUserIdFromToken from "../auth/authUtilsRecr";
@@ -105,11 +105,20 @@ function Login() {
         <img
           src={recruiter_bg}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full"
         />
       </div>
 
-      <div className="mx-auto flex-1 md:mt-10 mb-20">
+      <div className="mx-auto flex-1  mb-20">
+        {/* back button */}
+        <div className="">
+          <Link
+            to="/"
+            className="px-5 py-1 text-blue-400 underline font-semibold"
+          >
+            Go Back Home
+          </Link>
+        </div>
         <div className=" flex flex-col items-center mt-[20px]">
           <p className="text-5xl font-extrabold mb-8 md:mb-6">Login</p>
           <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center">
@@ -170,7 +179,12 @@ function Login() {
                 </button>
               </div>
               <div>
-                <Link  to='/recruiter/forget-pass' className="text-sm px-2 text-blue-500">Forget password</Link>
+                <Link
+                  to="/recruiter/forget-pass"
+                  className="text-sm px-2 text-blue-500"
+                >
+                  Forget password
+                </Link>
               </div>
 
               <button

@@ -30,6 +30,8 @@ import StipendSlider from "./utils/StipendSlider";
 import { useStudent } from "./context/studentContext";
 // import CustomRadio from './utils/CustomRadio';
 import statesAndCities from "../common/statesAndCities";
+// country
+import countryData from "../TESTJSONS/countries+states+cities.json";
 
 const Internships = () => {
   const [internships, setInternships] = useState([]);
@@ -45,6 +47,9 @@ const Internships = () => {
   const internshipsPerPage = 9;
   const scrollableRef = useRef(null);
   const navigate = useNavigate();
+  // state for country and state
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
 
   const statesAndUTs = [
     { value: "All Locations", label: "All Locations" },
@@ -639,6 +644,15 @@ const Internships = () => {
       </div>
     );
   }
+  // country state city Api
+
+  // Get available states and cities based on selections
+  const states = selectedCountry
+    ? countryData.find((c) => c.name === selectedCountry)?.states
+    : [];
+  const cities = selectedState
+    ? states.find((s) => s.name === selectedState)?.cities
+    : [];
 
   return (
     <div className="py-5 px-5 mt-16 min-h-screen bg-gray-100">
@@ -746,7 +760,7 @@ const Internships = () => {
           {(workType === "Work from Office" || workType === "Hybrid") && (
             <div className="mt-7">
               <p className="mt-6 mb-2 font-bold">Location</p>
-              <Select
+              {/* <Select
                 options={statesAndCities}
                 values={selectedLocation}
                 onChange={handleChange}
@@ -755,7 +769,56 @@ const Internships = () => {
                 isMulti
                 className="w-full shadow-md"
                 classNamePrefix="custom-select-dropdown"
-              />
+              /> */}
+              <div className="flex flex-col gap-3">
+                {/* Country Dropdown */}
+                <select
+                  className="border-2 py-1 rounded-md px-2"
+                  id="country"
+                  value={selectedCountry}
+                  onChange={(e) => {
+                    setSelectedCountry(e.target.value);
+                    setSelectedState(""); // Reset state and cities dropdowns
+                  }}
+                >
+                  <option value="">-- Select Country --</option>
+                  {countryData.map((country) => (
+                    <option key={country.id} value={country.name}>
+                      {country.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* State Dropdown */}
+                <select
+                  className="border-2 py-1 rounded-md px-2"
+                  id="state"
+                  value={selectedState}
+                  onChange={(e) => setSelectedState(e.target.value)}
+                  disabled={!selectedCountry}
+                >
+                  <option value="">-- Select State --</option>
+                  {states?.map((state) => (
+                    <option key={state.id} value={state.name}>
+                      {state.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* City Dropdown */}
+                <select
+                  id="city"
+                  disabled={!selectedState}
+                  className="border-2 py-1 rounded-md px-2"
+                >
+                  <option value="">-- Select City --</option>
+                  {cities?.map((city) => (
+                    <option key={city.id} value={city.name}>
+                      {city.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
         </div>

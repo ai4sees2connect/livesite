@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEye,
+  faEyeSlash,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
 import google_pic from "../../../images/google_pic.png";
-import recruiter_bg from "../../../images/recruiter_bg.jpeg";
+import recruiter_bg from "../../../images/intern_pic.jpeg";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import getUserIdFromToken from "../auth/authUtilsRecr";
@@ -14,7 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ToggleButton from "../../common/ToggleButton";
 import ToggleButtonSecond from "../../common/ToogleButtonSecond";
 import api from "../../common/server_url";
-import {FaCheckCircle} from "react-icons/fa";
+import { FaCheckCircle } from "react-icons/fa";
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -29,7 +33,7 @@ function Signup() {
   const [phoneError, setPhoneError] = useState("");
   const navigate = useNavigate();
   const userId = getUserIdFromToken();
-  const [countryCode, setCountryCode] = useState('+91');
+  const [countryCode, setCountryCode] = useState("+91");
   const [otpInput, setIsOtpInput] = useState(false);
   const [otp, setOtp] = useState("");
   const [sendingOtp, setSendingOtp] = useState(false);
@@ -51,19 +55,19 @@ function Signup() {
     setPassword(newPassword);
 
     // Define the regex pattern
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordPattern =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (newPassword.trim().length < 8) {
       setPasswordError("Password must be at least 8 characters");
     } else if (!passwordPattern.test(newPassword)) {
       setPasswordError(
-        "Password must contain at least one uppercase , one lowercase , one number, and one special character"
+        "Password must contain at least one uppercase , one lowercase , one number, and any one of special characters from @,$,!,%,*,?,&"
       );
     } else {
       setPasswordError("");
     }
   };
-
 
   const validateEmail = (email) => {
     // Basic email validation
@@ -143,7 +147,7 @@ function Signup() {
       return;
     }
     setEmailError("");
-    console.log('new phone no is', countryCode + ' ' + phone);
+    console.log("new phone no is", countryCode + " " + phone);
     try {
       // Send a POST request to the backend
       const response = await axios.post(`${api}/recruiter/signup`, {
@@ -196,8 +200,6 @@ function Signup() {
     }
   };
 
-
-
   const handleCountryChange = (e) => {
     setCountryCode(e.target.value);
   };
@@ -211,7 +213,16 @@ function Signup() {
           className="absolute inset-0 w-full h-full"
         />
       </div>
-      <div className="mx-auto flex-1 w-[90%] md:mt-10 mb-20">
+      <div className="mx-auto flex-1 w-[90%]  mb-20">
+        {/* back button */}
+        <div className="">
+          <Link
+            to="/"
+            className="px-5 py-1 text-blue-400 underline font-semibold"
+          >
+            Go Back Home
+          </Link>
+        </div>
         <div className=" flex flex-col items-center mt-[20px]">
           <p className="text-5xl font-extrabold mb-8 md:mb-6">Sign up</p>
           <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center">
@@ -309,7 +320,7 @@ function Signup() {
                   />
                 )}
 
-                {otpInput  && (
+                {otpInput && (
                   <div className="relative my-3 w-full">
                     <input
                       type="text"
@@ -319,20 +330,25 @@ function Signup() {
                       placeholder="Enter otp"
                       className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-20 w-full"
                     />
-                    {!otpVerified ?(<button
-                      onClick={handleVerifyOtp}
-                      className="absolute right-3 sm:-right-[45px] top-4 sm:top-3 text-blue-500 text-xs sm:text-base"
-                    >
-                      Verify
-                    </button>):(<div className="absolute flex items-center space-x-1 right-3 sm:-right-[78px] top-4 sm:top-3 text-green-500 text-xs sm:text-base"><FaCheckCircle/><span>Verified</span></div>)}
+                    {!otpVerified ? (
+                      <button
+                        onClick={handleVerifyOtp}
+                        className="absolute right-3 sm:-right-[45px] top-4 sm:top-3 text-blue-500 text-xs sm:text-base"
+                      >
+                        Verify
+                      </button>
+                    ) : (
+                      <div className="absolute flex items-center space-x-1 right-3 sm:-right-[78px] top-4 sm:top-3 text-green-500 text-xs sm:text-base">
+                        <FaCheckCircle />
+                        <span>Verified</span>
+                      </div>
+                    )}
                   </div>
                 )}
-
               </div>
               {emailError && (
                 <p className="text-red-500 text-left w-full">{emailError}</p>
               )}
-
 
               <div className="flex flex-col items-start ">
                 <div className="flex  justify-start md:flex-row gap-2 mt-2">
@@ -351,7 +367,6 @@ function Signup() {
 
                   {/* Phone Number */}
                   <div className="flex items-center">
-
                     <input
                       type="number"
                       className="w-full p-2 border border-gray-300 rounded-lg outline-none"
@@ -407,8 +422,9 @@ function Signup() {
 
               <button
                 type="submit"
-                className={`w-full py-2 bg-[rgb(129,41,217)] border-none h-[50px] text-white rounded-full ${!isFormValid ? `bg-[rgb(224,226,217)]` : ""
-                  } `}
+                className={`w-full py-2 bg-[rgb(129,41,217)] border-none h-[50px] text-white rounded-full ${
+                  !isFormValid ? `bg-[rgb(224,226,217)]` : ""
+                } `}
                 disabled={!isFormValid}
               >
                 Create Account
