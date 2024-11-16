@@ -19,6 +19,7 @@ import ToggleButton from "../../common/ToggleButton";
 import ToggleButtonSecond from "../../common/ToogleButtonSecond";
 import api from "../../common/server_url";
 import { FaCheckCircle } from "react-icons/fa";
+import GoBackButton from "../../common/GoBackButton";
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -130,9 +131,9 @@ function Signup() {
     email.trim() !== "" &&
     password.trim() !== "" &&
     firstname.trim() !== "" &&
-    lastname.trim() !== "" 
-    // otp.trim() !== "" &&
-    // otpVerified;
+    lastname.trim() !== "" &&
+    otp.trim() !== "" &&
+    otpVerified;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -215,12 +216,12 @@ function Signup() {
       </div>
       <div className="mx-auto flex-1 w-[90%]  mb-20">
         {/* back button */}
-        <div className="">
+        <div className="absolute left-0 top-5  rounded-full">
           <Link
             to="/"
-            className="px-5 py-1 text-blue-400 underline font-semibold"
+            className="px-5 py-1 text-blue-400  font-semibold"
           >
-            Go Back Home
+            <GoBackButton/>
           </Link>
         </div>
         <div className=" flex flex-col items-center mt-[20px]">
@@ -295,33 +296,33 @@ function Signup() {
                   required
                 />
 
-                {/* {validateEmail(email) && !sendingOtp && !otpInput && (
+                {validateEmail(email) && !sendingOtp && !otpInput && (
                   <button
                     className="text-blue-500 text-left absolute right-3  sm:-right-[73px] sm:top-3 text-xs sm:text-base top-4"
                     onClick={handleSendOtp}
                   >
                     Send OTP
                   </button>
-                )} */}
-                {/* {validateEmail(email) && !sendingOtp && otpInput && (
+                )}
+                {validateEmail(email) && !sendingOtp && otpInput && (
                   <button
                     className="text-blue-500 text-left absolute right-3  sm:-right-[82px] sm:top-3 text-xs sm:text-base top-4"
                     onClick={handleSendOtp}
                   >
                     Resend otp
                   </button>
-                )} */}
+                )}
 
-                {/* {sendingOtp && (
+                {sendingOtp && (
                   <FontAwesomeIcon
                     icon={faSpinner}
                     spin
                     className="h-5 w-5 text-black absolute right-2 top-4"
                   />
-                )} */}
+                )}
 
 
-                {/* {otpInput  && (
+                {otpInput  && (
 
                   <div className="relative my-3 w-full">
                     <input
@@ -347,7 +348,7 @@ function Signup() {
                     )}
                   </div>
 
-                )} */}
+                )}
 
 
               </div>
@@ -390,7 +391,7 @@ function Signup() {
                 )}
               </div>
 
-              <div className="flex flex-col items-center relative">
+              {otpVerified &&<div className="flex flex-col items-center relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
@@ -423,7 +424,7 @@ function Signup() {
                     />
                   )}
                 </button>
-              </div>
+              </div>}
 
               <button
                 type="submit"
