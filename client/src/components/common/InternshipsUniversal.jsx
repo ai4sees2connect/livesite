@@ -844,7 +844,15 @@ const InternshipsUniversal = () => {
 
               
               {internships.length > 0 && <div className="flex justify-center my-4 space-x-4">
-              
+                {/* <button
+                  onClick={handlePreviousPage}
+                  disabled={page === 1}
+                  className={`px-4 py-2 rounded-md ${page === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'}`}
+                >
+                  <FaAngleLeft />
+                </button> */}
+
+                {/* <span>{page} / {totalPages}</span> */}
                 <button
                   onClick={handlePreviousPage}
                   disabled={page === 1}
