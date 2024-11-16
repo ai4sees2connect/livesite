@@ -3,12 +3,20 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import Spinner from "../common/Spinner";
 import api from "../common/server_url";
-import { FaTimes, FaFilter, FaAngleUp, FaAngleDown, FaAudible } from "react-icons/fa";
+import {
+  FaTimes,
+  FaFilter,
+  FaAngleUp,
+  FaAngleDown,
+  FaAudible,
+} from "react-icons/fa";
 import Select from "react-select";
 import ExperienceSlider from "./common/ExperienceSlider";
 import MatchingSlider from "./common/MatchingSlider";
 import PerformanceSlider from "./common/PerformanceSlider";
 import { toast } from "react-toastify";
+// country
+import countryData from "../TESTJSONS/countries+states+cities.json";
 
 const Applicants = () => {
   const { recruiterId, internshipId } = useParams(); // Get recruiterId and internshipId from URL
@@ -30,6 +38,9 @@ const Applicants = () => {
   const [selectedStatus, setSelectedStatus] = useState("Applications Received");
   const [showOptions, setShowOptions] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+  // state for country and state
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
 
   const yearOptions = [
     { value: "2024", label: "2024" },
@@ -250,7 +261,10 @@ const Applicants = () => {
       );
 
     let studentExperience;
-    if (student.yearsOfExp === "no experience" || student.yearsOfExp==='fresher') {
+    if (
+      student.yearsOfExp === "no experience" ||
+      student.yearsOfExp === "fresher"
+    ) {
       studentExperience = 0;
     } else if (student.yearsOfExp === "10+") {
       studentExperience = 10;
@@ -313,7 +327,7 @@ const Applicants = () => {
           studentGraduationYear === selectedYear.value ||
           (selectedYear.value.includes("before") &&
             parseInt(studentGraduationYear) <=
-            parseInt(selectedYear.value.split(" ")[0]))
+              parseInt(selectedYear.value.split(" ")[0]))
         );
       });
 
@@ -445,6 +459,15 @@ const Applicants = () => {
       </div>
     );
   }
+  // country state city Api
+
+  // Get available states and cities based on selections
+  const states = selectedCountry
+    ? countryData.find((c) => c.name === selectedCountry)?.states
+    : [];
+  const cities = selectedState
+    ? states.find((s) => s.name === selectedState)?.cities
+    : [];
 
   return (
     <div className="py-10 px-5 mt-10 bg-gray-100 min-h-screen ">
@@ -463,47 +486,90 @@ const Applicants = () => {
       <div className="fixed w-full h-fit bottom-0 left-0 lg:hidden  bg-gray-200 z-20">
         <div className="relative flex border-t ">
           <div className="w-[70%] border-2 shadow-lg">
-            <button onClick={toggleOptions} className="px-4 py-2 bg-white text-blue-500 rounded w-full flex space-x-2 items-center justify-center font-bold">
+            <button
+              onClick={toggleOptions}
+              className="px-4 py-2 bg-white text-blue-500 rounded w-full flex space-x-2 items-center justify-center font-bold"
+            >
               <span>
                 {selectedStatus} ({filteredApplicants.length})
               </span>
-              {showOptions ? (<FaAngleDown className="w-5 h-5" />) : (<FaAngleUp className="w-5 h-5" />)}
+              {showOptions ? (
+                <FaAngleDown className="w-5 h-5" />
+              ) : (
+                <FaAngleUp className="w-5 h-5" />
+              )}
             </button>
 
-
-            <div className={`absolute z-10 mb-2 left-0 h-full w-full  bg-white border rounded shadow-lg transition-all duration-300 ease-in-out ${showOptions ? 'bottom-[138px] opacity-100' : '-bottom-12 opacity-0'} `}>
-
+            <div
+              className={`absolute z-10 mb-2 left-0 h-full w-full  bg-white border rounded shadow-lg transition-all duration-300 ease-in-out ${
+                showOptions
+                  ? "bottom-[138px] opacity-100"
+                  : "-bottom-12 opacity-0"
+              } `}
+            >
               <ul className="text-left bg-white">
-                <li onClick={() => { setSelectedStatus("Applications Received"); setShowOptions(false) }} className={`py-3 px-2 hover:text-blue-300 cursor-pointer  ${selectedStatus === "Applications Received"
-                  ? "text-blue-500 font-semibold"
-                  : "text-gray-800"
-                  }`}>Applications Received ({filteredApplicants.length})</li>
-                <li onClick={() => { setSelectedStatus("Shortlisted"); setShowOptions(false) }} className={`py-3 px-2 hover:text-blue-300 cursor-pointer  ${selectedStatus === "Shortlisted"
-                  ? "text-blue-500 font-semibold"
-                  : "text-gray-800"
-                  }`}>Shortlisted ({shortlistedApplicants.length})</li>
-                <li onClick={() => { setSelectedStatus("Not Interested"); setShowOptions(false) }} className={`py-3 px-2 hover:text-blue-300 cursor-pointer ${selectedStatus === "Not Interested"
-                  ? "text-blue-500 font-semibold"
-                  : "text-gray-800"
-                  }`}>Not selected ({rejectedApplicants.length})</li>
+                <li
+                  onClick={() => {
+                    setSelectedStatus("Applications Received");
+                    setShowOptions(false);
+                  }}
+                  className={`py-3 px-2 hover:text-blue-300 cursor-pointer  ${
+                    selectedStatus === "Applications Received"
+                      ? "text-blue-500 font-semibold"
+                      : "text-gray-800"
+                  }`}
+                >
+                  Applications Received ({filteredApplicants.length})
+                </li>
+                <li
+                  onClick={() => {
+                    setSelectedStatus("Shortlisted");
+                    setShowOptions(false);
+                  }}
+                  className={`py-3 px-2 hover:text-blue-300 cursor-pointer  ${
+                    selectedStatus === "Shortlisted"
+                      ? "text-blue-500 font-semibold"
+                      : "text-gray-800"
+                  }`}
+                >
+                  Shortlisted ({shortlistedApplicants.length})
+                </li>
+                <li
+                  onClick={() => {
+                    setSelectedStatus("Not Interested");
+                    setShowOptions(false);
+                  }}
+                  className={`py-3 px-2 hover:text-blue-300 cursor-pointer ${
+                    selectedStatus === "Not Interested"
+                      ? "text-blue-500 font-semibold"
+                      : "text-gray-800"
+                  }`}
+                >
+                  Not selected ({rejectedApplicants.length})
+                </li>
               </ul>
             </div>
-
           </div>
 
           <div className="bg-white w-[30%] border-2 py-2 text-blue-500 rounded shadow-lg">
-            <button onClick={() => setFilterOpen(!filterOpen)} className="flex space-x-1 items-center justify-center font-semibold w-full">
+            <button
+              onClick={() => setFilterOpen(!filterOpen)}
+              className="flex space-x-1 items-center justify-center font-semibold w-full"
+            >
               <span>Filters</span>
               <FaFilter />
             </button>
           </div>
         </div>
-
       </div>
 
       <div className="flex flex-col lg:flex-row items-start gap-5">
         {/*filter  */}
-        <div className={`${filterOpen ? 'block opacity-100' : 'hidden opacity-0'} lg:block w-full mt-0 px-6 transition-all duration-300 ease-in-out rounded-md border right-2 shadow-xl border-t py-6 overflow-y-scroll bg-white lg:max-w-[300px]`}>
+        <div
+          className={`${
+            filterOpen ? "block opacity-100" : "hidden opacity-0"
+          } lg:block w-full mt-0 px-6 transition-all duration-300 ease-in-out rounded-md border right-2 shadow-xl border-t py-6 overflow-y-scroll bg-white lg:max-w-[300px]`}
+        >
           <input
             type="text"
             placeholder="Search by name..."
@@ -519,7 +585,8 @@ const Applicants = () => {
             Reset filters
           </button>
           <div className="flex flex-col space-y-4">
-            <Select
+            <label>Location:</label>
+            {/* <Select
               isMulti
               options={statesAndUTs}
               values={locationFilter}
@@ -527,8 +594,56 @@ const Applicants = () => {
               placeholder="Select a location"
               searchable={true}
               className="w-full shadow-md "
-            />
+            /> */}
+            <div className="flex flex-col gap-3 w-full">
+              {/* Country Dropdown */}
+              <select
+                className="border-2 py-1 rounded-md px-2 w-full"
+                id="country"
+                value={selectedCountry}
+                onChange={(e) => {
+                  setSelectedCountry(e.target.value);
+                  setSelectedState(""); // Reset state and cities dropdowns
+                }}
+              >
+                <option value="">-- Select Country --</option>
+                {countryData.map((country) => (
+                  <option key={country.id} value={country.name}>
+                    {country.name}
+                  </option>
+                ))}
+              </select>
 
+              {/* State Dropdown */}
+              <select
+                className="border-2 py-1 rounded-md px-2 w-full"
+                id="state"
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                disabled={!selectedCountry}
+              >
+                <option value="">-- Select State --</option>
+                {states?.map((state) => (
+                  <option key={state.id} value={state.name}>
+                    {state.name}
+                  </option>
+                ))}
+              </select>
+
+              {/* City Dropdown */}
+              <select
+                id="city"
+                disabled={!selectedState}
+                className="border-2 py-1 rounded-md px-2 w-full"
+              >
+                <option value="">-- Select City --</option>
+                {cities?.map((city) => (
+                  <option key={city.id} value={city.name}>
+                    {city.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div>
               <ExperienceSlider
                 expFilter={expFilter}
@@ -623,9 +738,6 @@ const Applicants = () => {
           </div>
         </div>
         <div className="w-full flex flex-row">
-
-
-
           {/* applicants */}
           <div className="overflow-y-auto  w-full ">
             {selectedStatus === "Applications Received" && (
@@ -650,7 +762,7 @@ const Applicants = () => {
 
                         <p key={student.appliedInternships.internship}>
                           {student.appliedInternships[0].availability ===
-                            "Yes! Will join Immediately" ? (
+                          "Yes! Will join Immediately" ? (
                             <span className="text-green-600">
                               Immediate Joiner
                             </span>
@@ -677,30 +789,28 @@ const Applicants = () => {
                             </button>
                           )}
 
-                        {student.appliedInternships[0].internshipStatus.status ===
-                          "Shortlisted" && (
-                            <h2 className="text-sm md:text-base font-semibold absolute right-3 top-2  text-green-500">
-                              Shortlisted
-                            </h2>
-                          )}
-                        {student.appliedInternships[0].internshipStatus.status ===
-                          "Rejected" && (
-                            <h2 className="text-sm md:text-base absolute right-3 top-2  text-red-500">
-                              Rejected
-                            </h2>
-                          )}
+                        {student.appliedInternships[0].internshipStatus
+                          .status === "Shortlisted" && (
+                          <h2 className="text-sm md:text-base font-semibold absolute right-3 top-2  text-green-500">
+                            Shortlisted
+                          </h2>
+                        )}
+                        {student.appliedInternships[0].internshipStatus
+                          .status === "Rejected" && (
+                          <h2 className="text-sm md:text-base absolute right-3 top-2  text-red-500">
+                            Rejected
+                          </h2>
+                        )}
 
-                        {student.appliedInternships[0].internshipStatus.status ===
-                          "Shortlisted" && (
-                            <Link
-                              to={`/recruiter/${recruiterId}/chatroom`}
-                              className="text-sm md:text-base text-blue-400 font-semibold underline absolute right-3 top-10"
-                            >
-                              View messages
-                            </Link>
-                          )}
-
-                        
+                        {student.appliedInternships[0].internshipStatus
+                          .status === "Shortlisted" && (
+                          <Link
+                            to={`/recruiter/${recruiterId}/chatroom`}
+                            className="text-sm md:text-base text-blue-400 font-semibold underline absolute right-3 top-10"
+                          >
+                            View messages
+                          </Link>
+                        )}
 
                         {isOpen && (
                           <div className="flex absolute right-3 top-2 space-x-4">
@@ -718,31 +828,32 @@ const Applicants = () => {
                         {/* Match Percentage */}
                         <div className="mb-2">
                           <p
-                            className={`font-semibold ${calculateMatchPercentage(
-                              student.skills,
-                              internship?.skills
-                            ) < 20
-                              ? "text-red-500"
-                              : calculateMatchPercentage(
+                            className={`font-semibold ${
+                              calculateMatchPercentage(
                                 student.skills,
                                 internship?.skills
-                              ) >= 20 &&
-                                calculateMatchPercentage(
-                                  student.skills,
-                                  internship?.skills
-                                ) <= 60
+                              ) < 20
+                                ? "text-red-500"
+                                : calculateMatchPercentage(
+                                    student.skills,
+                                    internship?.skills
+                                  ) >= 20 &&
+                                  calculateMatchPercentage(
+                                    student.skills,
+                                    internship?.skills
+                                  ) <= 60
                                 ? "text-orange-300"
                                 : calculateMatchPercentage(
-                                  student.skills,
-                                  internship?.skills
-                                ) > 60 &&
+                                    student.skills,
+                                    internship?.skills
+                                  ) > 60 &&
                                   calculateMatchPercentage(
                                     student.skills,
                                     internship?.skills
                                   ) <= 90
-                                  ? "text-yellow-500"
-                                  : "text-green-500"
-                              }`}
+                                ? "text-yellow-500"
+                                : "text-green-500"
+                            }`}
                           >
                             {calculateMatchPercentage(
                               student.skills,
@@ -772,12 +883,12 @@ const Applicants = () => {
                         </div>
 
                         <div className="mb-2 mt-2">
-                        <Link
-                          to={`/recruiter/${student.appliedInternships[0].internship}/application-details/${student._id}`}
-                          className="text-sm md:text-base text-blue-400 font-semibold underline "
-                        >
-                          View Application
-                        </Link>
+                          <Link
+                            to={`/recruiter/${student.appliedInternships[0].internship}/application-details/${student._id}`}
+                            className="text-sm md:text-base text-blue-400 font-semibold underline "
+                          >
+                            View Application
+                          </Link>
                         </div>
 
                         {isOpen && (
@@ -791,7 +902,7 @@ const Applicants = () => {
                                 {student.appliedInternships.map(
                                   (appliedInternship) =>
                                     appliedInternship.internship ===
-                                      internship._id ? (
+                                    internship._id ? (
                                       <p
                                         key={appliedInternship.internship}
                                         className="text-gray-600"
@@ -808,7 +919,7 @@ const Applicants = () => {
                               {student.appliedInternships.map(
                                 (appliedInternship) =>
                                   appliedInternship.internship ===
-                                    internship._id ? (
+                                  internship._id ? (
                                     <p
                                       key={appliedInternship.internship}
                                       className="text-gray-600"
@@ -834,11 +945,13 @@ const Applicants = () => {
 
                             {/* Work Experience */}
                             <div className="mb-2">
-                              <h3 className="font-semibold">Work Experience:</h3>
+                              <h3 className="font-semibold">
+                                Work Experience:
+                              </h3>
                               {student.workExperience.map((work, index) => (
                                 <p key={index} className="text-gray-600">
-                                  {work.role} at {work.company} ({work.startDate}{" "}
-                                  - {work.endDate})
+                                  {work.role} at {work.company} (
+                                  {work.startDate} - {work.endDate})
                                 </p>
                               ))}
                             </div>
@@ -859,16 +972,20 @@ const Applicants = () => {
                               <h3 className="font-semibold">
                                 Personal Projects:
                               </h3>
-                              {student.personalProjects.map((project, index) => (
-                                <p key={index} className="text-gray-600">
-                                  {project.title} - {project.description}
-                                </p>
-                              ))}
+                              {student.personalProjects.map(
+                                (project, index) => (
+                                  <p key={index} className="text-gray-600">
+                                    {project.title} - {project.description}
+                                  </p>
+                                )
+                              )}
                             </div>
 
                             {/* Portfolio Links */}
                             <div className="mb-2">
-                              <h3 className="font-semibold">Portfolio Links:</h3>
+                              <h3 className="font-semibold">
+                                Portfolio Links:
+                              </h3>
                               {student.portfolioLink.map((link, index) => (
                                 <p key={index}>
                                   {link.linkType}:{" "}
@@ -888,12 +1005,13 @@ const Applicants = () => {
                             <div className="mb-2">
                               <h3 className="font-semibold">Resume:</h3>
                               <a
-                                href={`data:${student.resume.contentType
-                                  };base64,${btoa(
-                                    String.fromCharCode(
-                                      ...new Uint8Array(student.resume.data.data)
-                                    )
-                                  )}`}
+                                href={`data:${
+                                  student.resume.contentType
+                                };base64,${btoa(
+                                  String.fromCharCode(
+                                    ...new Uint8Array(student.resume.data.data)
+                                  )
+                                )}`}
                                 download={student.resume.filename}
                                 className="text-blue-500 hover:underline"
                               >
@@ -904,23 +1022,25 @@ const Applicants = () => {
                               .status === "Applied" ||
                               student.appliedInternships[0].internshipStatus
                                 .status === "Viewed") && (
-                                <div className="absolute bottom-5 right-5 space-x-4">
-                                  <button
-                                    onClick={() =>
-                                      handleShortlistProfile(student._id)
-                                    }
-                                    className=" rounded-lg font-semibold text-green-600 shadow-md hover:scale-105 duration-300 px-2 py-1"
-                                  >
-                                    Shortlist
-                                  </button>
-                                  <button
-                                    onClick={() => handleRejectProfile(student._id)}
-                                    className=" rounded-lg font-semibold text-red-600 shadow-md hover:scale-105 duration-300 px-2 py-1"
-                                  >
-                                    Reject
-                                  </button>
-                                </div>
-                              )}
+                              <div className="absolute bottom-5 right-5 space-x-4">
+                                <button
+                                  onClick={() =>
+                                    handleShortlistProfile(student._id)
+                                  }
+                                  className=" rounded-lg font-semibold text-green-600 shadow-md hover:scale-105 duration-300 px-2 py-1"
+                                >
+                                  Shortlist
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleRejectProfile(student._id)
+                                  }
+                                  className=" rounded-lg font-semibold text-red-600 shadow-md hover:scale-105 duration-300 px-2 py-1"
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -950,7 +1070,7 @@ const Applicants = () => {
 
                         <p key={student.appliedInternships.internship}>
                           {student.appliedInternships[0].availability ===
-                            "Yes! Will join Immediately" ? (
+                          "Yes! Will join Immediately" ? (
                             <span className="text-green-500">
                               Immediate Joiner
                             </span>
@@ -983,31 +1103,32 @@ const Applicants = () => {
                         {/* Match Percentage */}
                         <div className="mb-2">
                           <p
-                            className={`font-semibold ${calculateMatchPercentage(
-                              student.skills,
-                              internship?.skills
-                            ) < 20
-                              ? "text-red-500"
-                              : calculateMatchPercentage(
+                            className={`font-semibold ${
+                              calculateMatchPercentage(
                                 student.skills,
                                 internship?.skills
-                              ) >= 20 &&
-                                calculateMatchPercentage(
-                                  student.skills,
-                                  internship?.skills
-                                ) <= 60
+                              ) < 20
+                                ? "text-red-500"
+                                : calculateMatchPercentage(
+                                    student.skills,
+                                    internship?.skills
+                                  ) >= 20 &&
+                                  calculateMatchPercentage(
+                                    student.skills,
+                                    internship?.skills
+                                  ) <= 60
                                 ? "text-orange-300"
                                 : calculateMatchPercentage(
-                                  student.skills,
-                                  internship?.skills
-                                ) > 60 &&
+                                    student.skills,
+                                    internship?.skills
+                                  ) > 60 &&
                                   calculateMatchPercentage(
                                     student.skills,
                                     internship?.skills
                                   ) <= 90
-                                  ? "text-yellow-500"
-                                  : "text-green-500"
-                              }`}
+                                ? "text-yellow-500"
+                                : "text-green-500"
+                            }`}
                           >
                             {calculateMatchPercentage(
                               student.skills,
@@ -1042,7 +1163,7 @@ const Applicants = () => {
                                 {student.appliedInternships.map(
                                   (appliedInternship) =>
                                     appliedInternship.internship ===
-                                      internship._id ? (
+                                    internship._id ? (
                                       <p
                                         key={appliedInternship.internship}
                                         className="text-gray-600"
@@ -1059,7 +1180,7 @@ const Applicants = () => {
                               {student.appliedInternships.map(
                                 (appliedInternship) =>
                                   appliedInternship.internship ===
-                                    internship._id ? (
+                                  internship._id ? (
                                     <p
                                       key={appliedInternship.internship}
                                       className="text-gray-600"
@@ -1085,11 +1206,13 @@ const Applicants = () => {
 
                             {/* Work Experience */}
                             <div className="mb-2">
-                              <h3 className="font-semibold">Work Experience:</h3>
+                              <h3 className="font-semibold">
+                                Work Experience:
+                              </h3>
                               {student.workExperience.map((work, index) => (
                                 <p key={index} className="text-gray-600">
-                                  {work.role} at {work.company} ({work.startDate}{" "}
-                                  - {work.endDate})
+                                  {work.role} at {work.company} (
+                                  {work.startDate} - {work.endDate})
                                 </p>
                               ))}
                             </div>
@@ -1110,16 +1233,20 @@ const Applicants = () => {
                               <h3 className="font-semibold">
                                 Personal Projects:
                               </h3>
-                              {student.personalProjects.map((project, index) => (
-                                <p key={index} className="text-gray-600">
-                                  {project.title} - {project.description}
-                                </p>
-                              ))}
+                              {student.personalProjects.map(
+                                (project, index) => (
+                                  <p key={index} className="text-gray-600">
+                                    {project.title} - {project.description}
+                                  </p>
+                                )
+                              )}
                             </div>
 
                             {/* Portfolio Links */}
                             <div className="mb-2">
-                              <h3 className="font-semibold">Portfolio Links:</h3>
+                              <h3 className="font-semibold">
+                                Portfolio Links:
+                              </h3>
                               {student.portfolioLink.map((link, index) => (
                                 <p key={index}>
                                   {link.linkType}:{" "}
@@ -1139,12 +1266,13 @@ const Applicants = () => {
                             <div className="mb-2">
                               <h3 className="font-semibold">Resume:</h3>
                               <a
-                                href={`data:${student.resume.contentType
-                                  };base64,${btoa(
-                                    String.fromCharCode(
-                                      ...new Uint8Array(student.resume.data.data)
-                                    )
-                                  )}`}
+                                href={`data:${
+                                  student.resume.contentType
+                                };base64,${btoa(
+                                  String.fromCharCode(
+                                    ...new Uint8Array(student.resume.data.data)
+                                  )
+                                )}`}
                                 download={student.resume.filename}
                                 className="text-blue-500 hover:underline"
                               >
@@ -1184,7 +1312,7 @@ const Applicants = () => {
 
                         <p key={student.appliedInternships.internship}>
                           {student.appliedInternships[0].availability ===
-                            "Yes! Will join Immediately" ? (
+                          "Yes! Will join Immediately" ? (
                             <span className="text-green-500">
                               Immediate Joiner
                             </span>
@@ -1217,31 +1345,32 @@ const Applicants = () => {
                         {/* Match Percentage */}
                         <div className="mb-2">
                           <p
-                            className={`font-semibold ${calculateMatchPercentage(
-                              student.skills,
-                              internship?.skills
-                            ) < 20
-                              ? "text-red-500"
-                              : calculateMatchPercentage(
+                            className={`font-semibold ${
+                              calculateMatchPercentage(
                                 student.skills,
                                 internship?.skills
-                              ) >= 20 &&
-                                calculateMatchPercentage(
-                                  student.skills,
-                                  internship?.skills
-                                ) <= 60
+                              ) < 20
+                                ? "text-red-500"
+                                : calculateMatchPercentage(
+                                    student.skills,
+                                    internship?.skills
+                                  ) >= 20 &&
+                                  calculateMatchPercentage(
+                                    student.skills,
+                                    internship?.skills
+                                  ) <= 60
                                 ? "text-orange-300"
                                 : calculateMatchPercentage(
-                                  student.skills,
-                                  internship?.skills
-                                ) > 60 &&
+                                    student.skills,
+                                    internship?.skills
+                                  ) > 60 &&
                                   calculateMatchPercentage(
                                     student.skills,
                                     internship?.skills
                                   ) <= 90
-                                  ? "text-yellow-500"
-                                  : "text-green-500"
-                              }`}
+                                ? "text-yellow-500"
+                                : "text-green-500"
+                            }`}
                           >
                             {calculateMatchPercentage(
                               student.skills,
@@ -1276,7 +1405,7 @@ const Applicants = () => {
                                 {student.appliedInternships.map(
                                   (appliedInternship) =>
                                     appliedInternship.internship ===
-                                      internship._id ? (
+                                    internship._id ? (
                                       <p
                                         key={appliedInternship.internship}
                                         className="text-gray-600"
@@ -1293,7 +1422,7 @@ const Applicants = () => {
                               {student.appliedInternships.map(
                                 (appliedInternship) =>
                                   appliedInternship.internship ===
-                                    internship._id ? (
+                                  internship._id ? (
                                     <p
                                       key={appliedInternship.internship}
                                       className="text-gray-600"
@@ -1319,11 +1448,13 @@ const Applicants = () => {
 
                             {/* Work Experience */}
                             <div className="mb-2">
-                              <h3 className="font-semibold">Work Experience:</h3>
+                              <h3 className="font-semibold">
+                                Work Experience:
+                              </h3>
                               {student.workExperience.map((work, index) => (
                                 <p key={index} className="text-gray-600">
-                                  {work.role} at {work.company} ({work.startDate}{" "}
-                                  - {work.endDate})
+                                  {work.role} at {work.company} (
+                                  {work.startDate} - {work.endDate})
                                 </p>
                               ))}
                             </div>
@@ -1344,16 +1475,20 @@ const Applicants = () => {
                               <h3 className="font-semibold">
                                 Personal Projects:
                               </h3>
-                              {student.personalProjects.map((project, index) => (
-                                <p key={index} className="text-gray-600">
-                                  {project.title} - {project.description}
-                                </p>
-                              ))}
+                              {student.personalProjects.map(
+                                (project, index) => (
+                                  <p key={index} className="text-gray-600">
+                                    {project.title} - {project.description}
+                                  </p>
+                                )
+                              )}
                             </div>
 
                             {/* Portfolio Links */}
                             <div className="mb-2">
-                              <h3 className="font-semibold">Portfolio Links:</h3>
+                              <h3 className="font-semibold">
+                                Portfolio Links:
+                              </h3>
                               {student.portfolioLink.map((link, index) => (
                                 <p key={index}>
                                   {link.linkType}:{" "}
@@ -1373,12 +1508,13 @@ const Applicants = () => {
                             <div className="mb-2">
                               <h3 className="font-semibold">Resume:</h3>
                               <a
-                                href={`data:${student.resume.contentType
-                                  };base64,${btoa(
-                                    String.fromCharCode(
-                                      ...new Uint8Array(student.resume.data.data)
-                                    )
-                                  )}`}
+                                href={`data:${
+                                  student.resume.contentType
+                                };base64,${btoa(
+                                  String.fromCharCode(
+                                    ...new Uint8Array(student.resume.data.data)
+                                  )
+                                )}`}
                                 download={student.resume.filename}
                                 className="text-blue-500 hover:underline"
                               >
@@ -1399,16 +1535,15 @@ const Applicants = () => {
             )}
           </div>
 
-
-
           {/* board */}
           <div className="mb-5 hidden lg:flex lg:flex-col bg-white shadow-md rounded-lg p-6 left-2  space-y-7 w-full lg:w-[300px] lg:ml-5">
             <div
               onClick={() => setSelectedStatus("Applications Received")} // Click handler
-              className={`flex cursor-pointer justify-between ${selectedStatus === "Applications Received"
-                ? "text-blue-500 font-semibold"
-                : "text-gray-800"
-                }`}
+              className={`flex cursor-pointer justify-between ${
+                selectedStatus === "Applications Received"
+                  ? "text-blue-500 font-semibold"
+                  : "text-gray-800"
+              }`}
             >
               <p>Applications Received</p>{" "}
               <span>{filteredApplicants.length}</span>
@@ -1416,10 +1551,11 @@ const Applicants = () => {
 
             <div
               onClick={() => setSelectedStatus("Shortlisted")} // Click handler
-              className={`flex cursor-pointer justify-between ${selectedStatus === "Shortlisted"
-                ? "text-blue-500 font-semibold"
-                : "text-gray-800"
-                }`}
+              className={`flex cursor-pointer justify-between ${
+                selectedStatus === "Shortlisted"
+                  ? "text-blue-500 font-semibold"
+                  : "text-gray-800"
+              }`}
             >
               <p>Shortlisted</p>
               <span>{shortlistedApplicants.length}</span>
@@ -1427,10 +1563,11 @@ const Applicants = () => {
 
             <div
               onClick={() => setSelectedStatus("Not Interested")} // Click handler
-              className={`flex cursor-pointer justify-between ${selectedStatus === "Not Interested"
-                ? "text-blue-500 font-semibold"
-                : "text-gray-800"
-                }`}
+              className={`flex cursor-pointer justify-between ${
+                selectedStatus === "Not Interested"
+                  ? "text-blue-500 font-semibold"
+                  : "text-gray-800"
+              }`}
             >
               <p>Not Interested</p>
               <span>{rejectedApplicants.length}</span>
@@ -1438,16 +1575,16 @@ const Applicants = () => {
 
             <div
               onClick={() => setSelectedStatus("Hired")} // Click handler
-              className={`flex cursor-pointer justify-between ${selectedStatus === "Hired"
-                ? "text-blue-500 font-semibold"
-                : "text-gray-800"
-                }`}
+              className={`flex cursor-pointer justify-between ${
+                selectedStatus === "Hired"
+                  ? "text-blue-500 font-semibold"
+                  : "text-gray-800"
+              }`}
             >
               <p>Hired</p>
               <span>0</span>
             </div>
           </div>
-
         </div>
       </div>
     </div>
