@@ -17,6 +17,8 @@ import { FaBuilding, FaPen, FaUser } from "react-icons/fa";
 import Resume from "./Resume";
 import statesAndCities from "../common/statesAndCities";
 import { FaArrowLeft } from "react-icons/fa";
+// country
+import countryData from "../TESTJSONS/countries+states+cities.json";
 
 const Profile = () => {
   const idFromToken = getUserIdFromToken();
@@ -36,6 +38,9 @@ const Profile = () => {
 
   const [profPicture, setProfilePic] = useState(null);
   const [picUrl, setPicUrl] = useState(null);
+  // state for country and state
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
 
   const nums = [
     { value: "no experience", label: "no experience" },
@@ -62,7 +67,8 @@ const Profile = () => {
         toast.info("Please add some of your skills");
       if (student.yearsOfExp === "")
         toast.info("Please specify years of experience");
-      if(student.yearsOfExp==='') toast.info('Please specify years of experience');
+      if (student.yearsOfExp === "")
+        toast.info("Please specify years of experience");
     }
   }, [student]);
 
@@ -249,6 +255,15 @@ const Profile = () => {
   console.log("this is student", student);
   console.log(picUrl);
   console.log("this is student", student);
+  // country state city Api
+
+  // Get available states and cities based on selections
+  const states = selectedCountry
+    ? countryData.find((c) => c.name === selectedCountry)?.states
+    : [];
+  const cities = selectedState
+    ? states.find((s) => s.name === selectedState)?.cities
+    : [];
 
   return !student ? (
     <Spinner />
@@ -309,36 +324,87 @@ const Profile = () => {
             onClick={() => setCityEdit(true)}
             className="text-blue-500 underline text-center hover:cursor-pointer"
           >
-            Select Your City
+            Select Your Location
           </h1>
         )}
         {cityEdit && (
           <div className="flex justify-center space-x-3 my-2">
-            <Select
+            {/* <Select
               options={statesAndCities}
               values={selectedCity}
               onChange={(value) => setSelectedCity(value)}
               placeholder="Select a location"
               searchable={true}
               className=" shadow-md w-[50%] lg:w-[70%]"
-            />
-            {selectedCity && (
-              <button
-                onClick={handleSave}
-                className="bg-green-300 py-1 px-3 rounded-lg hover:bg-green-500"
+            /> */}
+            <div className="flex flex-col gap-3 w-full">
+              {/* Country Dropdown */}
+              <select
+                className="border-2 py-1 rounded-md px-2 w-full"
+                id="country"
+                value={selectedCountry}
+                onChange={(e) => {
+                  setSelectedCountry(e.target.value);
+                  setSelectedState(""); // Reset state and cities dropdowns
+                }}
               >
-                Save
+                <option value="">-- Select Country --</option>
+                {countryData.map((country) => (
+                  <option key={country.id} value={country.name}>
+                    {country.name}
+                  </option>
+                ))}
+              </select>
+
+              {/* State Dropdown */}
+              <select
+                className="border-2 py-1 rounded-md px-2 w-full"
+                id="state"
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                disabled={!selectedCountry}
+              >
+                <option value="">-- Select State --</option>
+                {states?.map((state) => (
+                  <option key={state.id} value={state.name}>
+                    {state.name}
+                  </option>
+                ))}
+              </select>
+
+              {/* City Dropdown */}
+              <select
+                id="city"
+                disabled={!selectedState}
+                className="border-2 py-1 rounded-md px-2 w-full"
+              >
+                <option value="">-- Select City --</option>
+                {cities?.map((city) => (
+                  <option key={city.id} value={city.name}>
+                    {city.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-3">
+              {selectedCity && (
+                <button
+                  onClick={handleSave}
+                  className="bg-green-300 py-1 px-3 rounded-lg hover:bg-green-500 h-10 text-white"
+                >
+                  Save
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setCityEdit(false);
+                  setSelectedCity(null);
+                }}
+                className="bg-red-300  md:py-1 px-2 md:px-3 rounded-lg hover:bg-red-500 h-10 text-white"
+              >
+                Close
               </button>
-            )}
-            <button
-              onClick={() => {
-                setCityEdit(false);
-                setSelectedCity(null);
-              }}
-              className="bg-red-300  md:py-1 px-2 md:px-3 rounded-lg hover:bg-red-500"
-            >
-              Close
-            </button>
+            </div>
           </div>
         )}
         {!cityEdit && (
