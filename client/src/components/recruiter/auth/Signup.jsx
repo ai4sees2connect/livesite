@@ -126,9 +126,9 @@ function Signup() {
     email.trim() !== "" &&
     password.trim() !== "" &&
     firstname.trim() !== "" &&
-    lastname.trim() !== "" &&
-    otp.trim() !== "" &&
-    otpVerified;
+    lastname.trim() !== "" 
+    // otp.trim() !== "" &&
+    // otpVerified;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -284,32 +284,32 @@ function Signup() {
                   required
                 />
 
-                {validateEmail(email) && !sendingOtp && !otpInput && (
+                {/* {validateEmail(email) && !sendingOtp && !otpInput && (
                   <button
                     className="text-blue-500 text-left absolute right-3  sm:-right-[73px] sm:top-3 text-xs sm:text-base top-4"
                     onClick={handleSendOtp}
                   >
                     Send OTP
                   </button>
-                )}
-                {validateEmail(email) && !sendingOtp && otpInput && (
+                )} */}
+                {/* {validateEmail(email) && !sendingOtp && otpInput && (
                   <button
                     className="text-blue-500 text-left absolute right-3  sm:-right-[82px] sm:top-3 text-xs sm:text-base top-4"
                     onClick={handleSendOtp}
                   >
                     Resend otp
                   </button>
-                )}
+                )} */}
 
-                {sendingOtp && (
+                {/* {sendingOtp && (
                   <FontAwesomeIcon
                     icon={faSpinner}
                     spin
                     className="h-5 w-5 text-black absolute right-2 top-4"
                   />
-                )}
+                )} */}
 
-                {otpInput  && (
+                {/* {otpInput  && (
                   <div className="relative my-3 w-full">
                     <input
                       type="text"
@@ -326,7 +326,7 @@ function Signup() {
                       Verify
                     </button>):(<div className="absolute flex items-center space-x-1 right-3 sm:-right-[78px] top-4 sm:top-3 text-green-500 text-xs sm:text-base"><FaCheckCircle/><span>Verified</span></div>)}
                   </div>
-                )}
+                )} */}
 
               </div>
               {emailError && (

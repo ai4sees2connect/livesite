@@ -9,7 +9,8 @@ const Skill = require('../schema/skillsSchema.js');
 const File = require('../schema/fileSchema.js');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-const Otp =require('../schema/otpSchema.js')
+const Otp =require('../schema/otpSchema.js');
+const Internship = require('../schema/internshipSchema.js');
 // const getUserIdFromToken = require('../auth/auth');
 // const { default: getUserIdFromToken } = require('../../client/src/components/student/auth/authUtils');
 
@@ -567,41 +568,107 @@ router.get('/resume/:id', async (req, res) => {
   }
 });
 
+// Helper function to build the filter based on query parameters
+const buildFilters = (req) => {
+  const { workType, jobProfile, location, stipend } = req.query;
+
+  let filter = {};
+  
+  // Filter by work type (if provided)
+  if (workType && workType !== 'All Internships') {
+    filter.internshipType = workType;
+  }
+
+  // Filter by job profile (if provided)
+  if (jobProfile && jobProfile.length > 0) {
+    filter.jobProfile = { $in: jobProfile };
+  }
+
+  // Filter by location (if provided)
+  if (location && location.length > 0) {
+    filter.internLocation = { $in: location };
+  }
+
+  // Filter by stipend (if provided)
+  if (stipend && stipend > 0) {
+    filter.stipend = { $gte: stipend };  // Assuming stipend is a numeric value
+  }
+
+  return filter;
+};
+
 router.get('/internships', async (req, res) => {
   try {
-    // const { workType, locationName,minStipend,profile } = req.query;
-    // console.log('Received workType:', workType);
-    // console.log('Received locationName:', locationName);
-    const recruiters = await Recruiter.find().populate('internships');
-    let internships = [];
+    const { page = 1, workType, jobProfile, location, stipend } = req.query;
+    const limit = 9;  // Number of internships per page
+    const skip = (parseInt(page) - 1) * limit;  // Calculate skip value for pagination
 
-    recruiters.forEach(recruiter => {
-      recruiter.internships.forEach(internship => {
-        if(internship.status==='Active'){
-        internships.push({
-          ...internship._doc,
-          recruiter: {
-            _id: recruiter._id,
-            firstname: recruiter.firstname,
-            lastname: recruiter.lastname,
-            email: recruiter.email,
-            phone: recruiter.phone,
-            companyName:recruiter.companyName
-          },
+    const filters = { status: 'Active' };
+
+    if (workType && workType !== 'All Internships') {
+      filters.internshipType = workType;
+    }
+
+    if (jobProfile) {
+      // Split the jobProfile string into an array
+      const jobProfileArray = jobProfile.split(',').map((job) => job.trim()); // To handle comma-separated input
+      if (jobProfileArray.length > 0) {
+        filters.jobProfile = { $in: jobProfileArray }; // Add the filter for job profile
+      }
+    }
+
+    if (location) {
+      const locationArray = location.split(',').map((loc) => loc.trim()); // Split into array and trim spaces
+      if (locationArray.length > 0) {
+        filters.internLocation = { $in: locationArray }; // Add the filter for locations
+      }
+    }
+
+    if (stipend && parseInt(stipend) > 0) {
+      filters.stipend = { $gte: parseInt(stipend) };
+    }
+
+    console.log('filters',filters);
+
+  
+
+
+  
+      // Apply pagination: slice the internships based on the current page
+     
+      let internships = await Internship.find(filters)
+      .populate({
+        path: 'recruiter',
+        select: 'firstname lastname email phone companyName', // Recruiter details
+      })
+      .skip(skip)
+      .limit(limit);
+
+
+      if (stipend && parseInt(stipend) > 0) {
+        internships = internships.filter(internship => {
+          const stipendValue = parseInt(internship.stipend, 10); // Convert stipend to number
+          return stipendValue >= parseInt(stipend, 10);
         });
       }
-      });
-    });
+     
+      const totalInternships = await Internship.countDocuments(filters);
+      const totalPages = Math.ceil(totalInternships / limit); // Calculate total number of pages
 
     
     for (const internship of internships) {
       const students = await Student.find({ 'appliedInternships.internship': internship._id });
       
       // Add studentCount as a new property to the internship object
-      internship.studentCount = students.length;
+      internship._doc.studentCount = students.length;
     }
-    // console.log(internships);
-     res.status(200).json(internships);
+    
+    res.status(200).json({
+      internships,
+      totalPages,
+      numOfInternships:totalInternships
+    });
+    
   } catch (error) {
     console.error('Error fetching internships:', error);
     res.status(500).json({ message: 'Server Error' });
