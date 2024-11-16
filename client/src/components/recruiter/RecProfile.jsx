@@ -23,6 +23,8 @@ import { toast } from "react-toastify";
 import TimeAgo from "../common/TimeAgo";
 import statesAndCities from "../common/statesAndCities";
 import Select from "react-select";
+// country
+import countryData from "../TESTJSONS/countries+states+cities.json";
 
 const RecProfile = () => {
   const fileInputRef = useRef(null);
@@ -50,7 +52,7 @@ const RecProfile = () => {
   const [companyLocation, setCompanyLocation] = useState("");
   const [industry, setIndustry] = useState("");
   const [employeesCount, setEmployeesCount] = useState("");
-  const [cityPresent, setCityPresent]=useState("");
+  const [cityPresent, setCityPresent] = useState("");
 
   console.log(recruiter);
 
@@ -73,7 +75,10 @@ const RecProfile = () => {
       setCompany(recruiter.companyName);
     }
 
-    if (recruiter?.independentRec === false || recruiter?.independentRec === true) {
+    if (
+      recruiter?.independentRec === false ||
+      recruiter?.independentRec === true
+    ) {
       setIndependentCheck(recruiter.independentRec);
     }
     if (recruiter?.orgDescription) {
@@ -82,23 +87,22 @@ const RecProfile = () => {
 
     if (recruiter?.designation) {
       setDesignation(recruiter.designation);
-      
     }
 
     if (recruiter?.companyCity) {
       setCompanyLocation(recruiter.companyCity);
     }
 
-    if(recruiter?.industryType){
+    if (recruiter?.industryType) {
       setIndustry(recruiter.industryType);
     }
 
-    if(recruiter?.numOfEmployees){
+    if (recruiter?.numOfEmployees) {
       setEmployeesCount(recruiter.numOfEmployees);
     }
   }, [recruiter]);
 
-console.log('this is location',companyLocation)
+  console.log("this is location", companyLocation);
 
   useEffect(() => {
     if (!token) {
@@ -196,7 +200,6 @@ console.log('this is location',companyLocation)
       toast.success("Logo uploaded successfully");
 
       fetchLogo();
-
     } catch (error) {
       // setUploading(false);
       console.error("Error uploading logo", error);
@@ -309,8 +312,6 @@ console.log('this is location',companyLocation)
 
   const handleDetailsUpdate = async () => {
     try {
-
-
       const phoneStr = String(phoneNumber); // Convert number to string
       if (phoneStr.length !== 10) {
         // console.log("This is length:", phoneStr.length);
@@ -320,11 +321,10 @@ console.log('this is location',companyLocation)
         return;
       }
 
-      if (designation === '') {
+      if (designation === "") {
         toast.error("Please enter your designation");
         return;
       }
-
 
       const response = await axios.put(
         `${api}/recruiter/update-details/${idFromToken}`,
@@ -333,7 +333,7 @@ console.log('this is location',companyLocation)
           countryCode,
           firstname: firstName,
           lastname: lastName,
-          designation
+          designation,
         }
       );
 
@@ -349,45 +349,40 @@ console.log('this is location',companyLocation)
   };
   const handleDetailsUpdate_2 = async () => {
     try {
-
-      if (company === '' && independentCheck === false) {
+      if (company === "" && independentCheck === false) {
         toast.error("Please enter your name of company");
         return;
       }
 
-      if (companyDesc === '') {
+      if (companyDesc === "") {
         toast.error("Please enter your company description");
         return;
       }
 
-      if(companyLocation===''){
+      if (companyLocation === "") {
         toast.error("Please enter your company location");
         return;
       }
 
-      if(industry===''){
+      if (industry === "") {
         toast.error("Please enter industry type");
         return;
       }
 
-      if(employeesCount===''){
+      if (employeesCount === "") {
         toast.error("Please enter number of employees ");
         return;
       }
 
-
-
       const response = await axios.put(
         `${api}/recruiter/update-details-2/${idFromToken}`,
         {
-
           companyName: company,
           independentRec: independentCheck,
           orgDescription: companyDesc,
-          companyCity:companyLocation,
-          industryType:industry,
+          companyCity: companyLocation,
+          industryType: industry,
           numOfEmployees: employeesCount,
-
         }
       );
 
@@ -454,7 +449,7 @@ console.log('this is location',companyLocation)
   // Industry functions
   // const [industry, setIndustry] = useState("");
   const [selectedIndustries, setSelectedIndustries] = useState([]);
-  const suggestions=[
+  const suggestions = [
     "Accounting",
     "Advertising",
     "Aerospace",
@@ -600,7 +595,7 @@ console.log('this is location',companyLocation)
     "Writing & Editing",
   ].map((item) => ({
     label: item,
-    value: item
+    value: item,
   }));
 
   // console.log(suggestions)
@@ -633,13 +628,24 @@ console.log('this is location',companyLocation)
   // );
   // company employee numbers
   const [totalEmployees, setTotalEmployees] = useState();
+  // state for country and state
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
   const handleCompanySizeChange = (e) => {
     setEmployeesCount(e.target.value);
   };
+  // country state city Api
+
+  // Get available states and cities based on selections
+  const states = selectedCountry
+    ? countryData.find((c) => c.name === selectedCountry)?.states
+    : [];
+  const cities = selectedState
+    ? states.find((s) => s.name === selectedState)?.cities
+    : [];
   return !recruiter ? (
     <Spinner />
   ) : (
-
     // <div className="max-w-[1170px] mx-auto py-10 mt-[68px] min-h-screen px-3">
     //   <div className="border-2 rounded-lg flex flex-col items-center space-y-3 py-5">
     //     <h1 className="text-3xl font-bold mb-2 text-center">Profile</h1>
@@ -1000,10 +1006,11 @@ console.log('this is location',companyLocation)
         <div className="flex space-x-4 justify-center items-center">
           {/* tab 1 */}
           <button
-            className={`py-2 px-4 flex flex-col justify-center items-center ${activeTab === "Tab1"
-              ? "text-blue-500 border-b-2 border-blue-500"
-              : "text-gray-500 border-b-2 border-white"
-              }`}
+            className={`py-2 px-4 flex flex-col justify-center items-center ${
+              activeTab === "Tab1"
+                ? "text-blue-500 border-b-2 border-blue-500"
+                : "text-gray-500 border-b-2 border-white"
+            }`}
             onClick={() => setActiveTab("Tab1")}
           >
             <CgProfile className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
@@ -1011,10 +1018,11 @@ console.log('this is location',companyLocation)
           </button>
           {/* tab-2 */}
           <button
-            className={`py-2 px-4 flex flex-col justify-center items-center  ${activeTab === "Tab2"
-              ? "text-blue-500 border-b-2 border-blue-500"
-              : "text-gray-500 border-b-2 border-white"
-              }`}
+            className={`py-2 px-4 flex flex-col justify-center items-center  ${
+              activeTab === "Tab2"
+                ? "text-blue-500 border-b-2 border-blue-500"
+                : "text-gray-500 border-b-2 border-white"
+            }`}
             onClick={() => setActiveTab("Tab2")}
           >
             <IoIosBriefcase className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
@@ -1082,8 +1090,9 @@ console.log('this is location',companyLocation)
 
                     <div className="relative flex items-center">
                       <select
-                        className={`border-2 rounded-md px-3 py-1 w-full ${showManualInput ? "appearance-none" : ""
-                          }`}
+                        className={`border-2 rounded-md px-3 py-1 w-full ${
+                          showManualInput ? "appearance-none" : ""
+                        }`}
                         value={showManualInput ? "notAvailable" : designation}
                         onChange={handleDesignationChange}
                       >
@@ -1138,54 +1147,63 @@ console.log('this is location',companyLocation)
                         // defaultValue={recruiter?.phone}
                         value={phoneNumber}
                         onChange={(e) => {
-                          setPhoneNumber(e.target.value)
-                          if (e.target.value.trim().length < 10 || e.target.value.trim().length > 10) {
-
-                            setPhoneError('Enter a valid phone number')
+                          setPhoneNumber(e.target.value);
+                          if (
+                            e.target.value.trim().length < 10 ||
+                            e.target.value.trim().length > 10
+                          ) {
+                            setPhoneError("Enter a valid phone number");
+                          } else {
+                            setPhoneError("");
                           }
-                          else {
-                            setPhoneError('')
-                          }
-
                         }}
                         maxLength={10}
                         type="number"
                       />
-                      {phoneError !== '' && <div className="absolute text-red-500 text-sm top-8 left-[69px] md:left-28"> Enter a valid phone number</div>}
+                      {phoneError !== "" && (
+                        <div className="absolute text-red-500 text-sm top-8 left-[69px] md:left-28">
+                          {" "}
+                          Enter a valid phone number
+                        </div>
+                      )}
 
                       <p className="text-gray-600 ml-2 md:ml-5">
                         <span
-                          className={`flex items-center gap-[2px] ${recruiter?.companyCertificate?.status === "pending"
-                            ? "text-yellow-500"
-                            : recruiter?.companyCertificate?.status ===
-                              "Verified"
+                          className={`flex items-center gap-[2px] ${
+                            recruiter?.companyCertificate?.status === "pending"
+                              ? "text-yellow-500"
+                              : recruiter?.companyCertificate?.status ===
+                                "Verified"
                               ? "text-green-500"
                               : recruiter?.companyCertificate?.status ===
                                 "Rejected"
-                                ? "text-red-500"
-                                : ""
-                            }`}
+                              ? "text-red-500"
+                              : ""
+                          }`}
                         >
                           <MdOutlineCancel
-                            className={`${recruiter?.companyCertificate?.status ===
+                            className={`${
+                              recruiter?.companyCertificate?.status ===
                               "Rejected"
-                              ? "block"
-                              : "hidden"
-                              }`}
+                                ? "block"
+                                : "hidden"
+                            }`}
                           />
                           <MdVerifiedUser
-                            className={`${recruiter?.companyCertificate?.status ===
+                            className={`${
+                              recruiter?.companyCertificate?.status ===
                               "Verified"
-                              ? "block"
-                              : "hidden"
-                              }`}
+                                ? "block"
+                                : "hidden"
+                            }`}
                           />
                           <MdOutlinePendingActions
-                            className={`${recruiter?.companyCertificate?.status ===
+                            className={`${
+                              recruiter?.companyCertificate?.status ===
                               "pending"
-                              ? "block"
-                              : "hidden"
-                              }`}
+                                ? "block"
+                                : "hidden"
+                            }`}
                           />
                           {recruiter?.companyCertificate?.status}
                         </span>
@@ -1230,7 +1248,7 @@ console.log('this is location',companyLocation)
                       className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded mt-[3px]"
                       checked={independentCheck}
                       onChange={handleCheckboxChange}
-                      disabled={company !== ''}
+                      disabled={company !== ""}
                     />
                     <label htmlFor="checkbox" className="text-sm text-gray-600">
                       I am an Independent Practitionar(Freelancer, Architect,
@@ -1255,33 +1273,86 @@ console.log('this is location',companyLocation)
                 {/* Organization city */}
                 <div className="flex flex-col">
                   <label className="text-sm text-gray-600 mb-1 ml-1">
-                    Organization City
+                    Organization Location
                   </label>
-                  <Select
+                  {/* <Select
                     options={statesAndCities}
-                    value={statesAndCities.find(option => option.value === companyLocation)}
-                    onChange={(values)=> setCompanyLocation(values.value)}
+                    value={statesAndCities.find(
+                      (option) => option.value === companyLocation
+                    )}
+                    onChange={(values) => setCompanyLocation(values.value)}
                     placeholder="Select a location"
                     searchable={true}
                     className="w-full shadow-md"
                     classNamePrefix="custom-select-dropdown"
-                  />
-                  
+                  /> */}
+                  <div className="flex flex-col md:flex-row gap-3 w-full">
+                    {/* Country Dropdown */}
+                    <select
+                      className="border-2 py-1 rounded-md px-2 w-full"
+                      id="country"
+                      value={selectedCountry}
+                      onChange={(e) => {
+                        setSelectedCountry(e.target.value);
+                        setSelectedState(""); // Reset state and cities dropdowns
+                      }}
+                    >
+                      <option value="">-- Select Country --</option>
+                      {countryData.map((country) => (
+                        <option key={country.id} value={country.name}>
+                          {country.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* State Dropdown */}
+                    <select
+                      className="border-2 py-1 rounded-md px-2 w-full"
+                      id="state"
+                      value={selectedState}
+                      onChange={(e) => setSelectedState(e.target.value)}
+                      disabled={!selectedCountry}
+                    >
+                      <option value="">-- Select State --</option>
+                      {states?.map((state) => (
+                        <option key={state.id} value={state.name}>
+                          {state.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* City Dropdown */}
+                    <select
+                      id="city"
+                      disabled={!selectedState}
+                      className="border-2 py-1 rounded-md px-2 w-full"
+                    >
+                      <option value="">-- Select City --</option>
+                      {cities?.map((city) => (
+                        <option key={city.id} value={city.name}>
+                          {city.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
                 {/* Industry */}
                 <div className="flex flex-col">
-                <label className="text-sm text-gray-600 mb-1 ml-1">Industry Type</label>
-                <Select
+                  <label className="text-sm text-gray-600 mb-1 ml-1">
+                    Industry Type
+                  </label>
+                  <Select
                     options={suggestions}
                     // values={industry}
-                    value={suggestions.find(option=>option.value===industry)}
-                    onChange={(values)=> setIndustry(values.value)}
+                    value={suggestions.find(
+                      (option) => option.value === industry
+                    )}
+                    onChange={(values) => setIndustry(values.value)}
                     placeholder="Select Industry type"
                     searchable={true}
                     className="w-full shadow-md"
                     classNamePrefix="custom-select-dropdown"
                   />
-                   
                 </div>
                 {/* number of employees */}
                 <div className="flex flex-col w-full lg:w-1/2">
@@ -1456,16 +1527,17 @@ console.log('this is location',companyLocation)
                     <p className="text-gray-600">
                       Verification status:
                       <span
-                        className={`mx-1 ${recruiter.companyCertificate?.status === "pending"
-                          ? "text-yellow-500"
-                          : recruiter.companyCertificate?.status ===
-                            "Verified"
+                        className={`mx-1 ${
+                          recruiter.companyCertificate?.status === "pending"
+                            ? "text-yellow-500"
+                            : recruiter.companyCertificate?.status ===
+                              "Verified"
                             ? "text-green-500"
                             : recruiter.companyCertificate?.status ===
                               "Rejected"
-                              ? "text-red-500"
-                              : ""
-                          }`}
+                            ? "text-red-500"
+                            : ""
+                        }`}
                       >
                         {recruiter.companyCertificate?.status}
                       </span>
@@ -1484,7 +1556,10 @@ console.log('this is location',companyLocation)
                 )}
               </div>
               <div className="mt-5 text-right">
-                <button onClick={handleDetailsUpdate_2} className="px-5 py-1 bg-blue-500 text-white rounded-sm">
+                <button
+                  onClick={handleDetailsUpdate_2}
+                  className="px-5 py-1 bg-blue-500 text-white rounded-sm"
+                >
                   Done
                 </button>
               </div>

@@ -22,6 +22,7 @@ import { useStudent } from "../context/studentContext";
 import ToggleButton from "../../common/ToggleButton";
 import ToggleButtonSecond from "../../common/ToogleButtonSecond";
 import api from "../../common/server_url";
+import GoBackButton from "../../common/GoBackButton";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -98,6 +99,9 @@ function Login() {
       toast.error("Error signing in with Google");
     }
   };
+  // const handleBack = () => {
+  //   navigate("");
+  // };
 
   return (
     <div className="flex mt-10 md:mt-0 min-h-screen">
@@ -106,7 +110,16 @@ function Login() {
         {/* <p className='absolute flex inset-0 justify-center items-center text-white text-6xl font-bold '>Welcome back !</p> */}
       </div>
       <div className="mb-20 w-full lg:w-[90%] flex-1">
-        <div className="text-center flex flex-col justify-center items-center mt-[20px] ">
+        {/* back button */}
+        <div className="absolute left-0 top-5  rounded-full">
+        <Link
+            to="/"
+            className="px-5 py-1 text-blue-400  font-semibold"
+          >
+            <GoBackButton/>
+          </Link>
+        </div>
+        <div className="text-center flex flex-col justify-center items-center ">
           <p className="text-3xl lg:text-5xl font-extrabold mb-5 md:mb-12">
             Login
           </p>
@@ -118,7 +131,6 @@ function Login() {
         </div>
         <div>
           {/* form starts from here */}
-
           <div className="flex justify-center items-center mt-[40px] md:mt-[90px] w-full mx-auto ">
             <form
               onSubmit={handleSubmit}
@@ -168,7 +180,12 @@ function Login() {
                 </button>
               </div>
               <div>
-                <Link  to='/student/forget-pass' className="text-sm px-2 text-blue-500">Forget password</Link>
+                <Link
+                  to="/student/forget-pass"
+                  className="text-sm px-2 text-blue-500"
+                >
+                  Forget password
+                </Link>
               </div>
 
               <button

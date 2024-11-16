@@ -232,20 +232,20 @@ const RightSide = () => {
       {/* Quick Links */}
       <div className=" my-10 px-3 lg:px-0 rounded-md mx-auto lg:w-[90%]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 items-center gap-5 justify-center">
-          <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 hover:transition-0.5s  text-black font-semibold justify-between">
+          <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
             <span> Remote</span> <FaLongArrowAltRight />
           </button>
-          <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 hover:transition-0.5s  text-black font-semibold justify-between">
+          <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
             <span> Work At Office</span> <FaLongArrowAltRight />
           </button>
-          <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 hover:transition-0.5s  text-black font-semibold justify-between">
+          <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
             <span> Hybrid</span> <FaLongArrowAltRight />
           </button>
-          <button className="flex items-center px-5 py-2 rounded-md border-2  text-xl hover:scale-105 hover:transition-0.5s  text-white font-semibold justify-between bg-gray-800 hover:bg-[#475865] border-1 border-white  transition-0.5s">
-            <span> All Internships</span> <FaLongArrowAltRight />
+          <button className="flex items-center px-5 py-2 rounded-md border-2  text-xl hover:scale-105 hover:transition-0.5s duration-300 text-white font-semibold justify-between bg-[#475865] hover:bg-black border-1 border-white  transition-0.5s">
+            <Link to='/internships'> <span> All Internships</span> <FaLongArrowAltRight /></Link>
           </button>
-          <button className="flex items-center px-5 py-2 rounded-md border-2 text-xl hover:transition-0.5s  font-semibold justify-between bg-blue-500 border-1 border-white hover:scale-105 hover:transition-0.5s hover:bg-blue-600 text-white">
-            <span>Want To Hire</span> <FaLongArrowAltRight />
+          <button className="flex items-center px-5 py-2 rounded-md border-2 text-xl hover:transition-0.5s  font-semibold justify-between bg-blue-500 border-1 border-white hover:scale-105 hover:transition-0.5s duration-300 hover:bg-blue-600 text-white">
+            <Link to='/recruiter/signup'> <span>Want To Hire</span> <FaLongArrowAltRight /></Link>
           </button>
         </div>
       </div>
@@ -274,7 +274,7 @@ const RightSide = () => {
                         {intern?.internshipName}
                       </h2>
                       <p className="text-sm text-gray-600 text-left">
-                        {intern?.recruiter.companyName}
+                        {intern.recruiter.companyName !== '' ? intern.recruiter.companyName : intern.recruiter.firstname + ' ' + intern.recruiter.lastname}
                       </p>
                     </div>
                     <div>
@@ -354,9 +354,8 @@ const RightSide = () => {
                       {intern?.internshipType}
                     </p>
                     <Link
-                      to={`/${token ? "student/" : ""}internships${
-                        token ? `/${userId}` : ""
-                      }`}
+                      to={`/${token ? "student/" : ""}internships${token ? `/${userId}` : ""
+                        }`}
                       className="px-2 lg:px-4 py-1 border-2 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600 transition duration-500"
                     >
                       See Details

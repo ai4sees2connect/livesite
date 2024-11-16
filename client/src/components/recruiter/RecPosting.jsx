@@ -10,7 +10,12 @@ import api from "../common/server_url";
 import Select from "react-select";
 import { useRecruiter } from "./context/recruiterContext";
 import Spinner from "../common/Spinner";
-import { Link } from "react-router-dom";
+
+import { Link, useNavigate } from "react-router-dom";
+import statesAndCities from "../common/statesAndCities";
+// country
+import countryData from "../TESTJSONS/countries+states+cities.json";
+
 
 const RecPosting = () => {
   const [formData, setFormData] = useState({
@@ -39,7 +44,14 @@ const RecPosting = () => {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedPerks, setSelectedPerks] = useState([]);
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
-  const { recruiter } = useRecruiter();
+
+  const [startQuesDays, setStartQuesDays] = useState(null);
+  const { recruiter, refreshData } = useRecruiter();
+  const navigate = useNavigate();
+  // state for country and state
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+
   const jobProfiles = [
     "3D Animation",
     "Account Management",
@@ -306,6 +318,27 @@ const RecPosting = () => {
   console.log("this is recruite data", recruiter);
 
   useEffect(() => {
+
+    // refreshData();
+    const getData = () => {
+      if (
+        recruiter?.orgDescription === "" ||
+        recruiter?.companyCity === "" ||
+        recruiter?.industryType === "" ||
+        recruiter?.numOfEmployees === ""
+      ) {
+        toast.info("Please complete your profile");
+        navigate(`/recruiter/profile/${userId}`);
+        return;
+      }
+    };
+    setTimeout(() => {
+      getData();
+    }, 1000);
+  }, [recruiter]);
+
+  useEffect(() => {
+
     const fetchSkills = async () => {
       try {
         const response = await axios.get(`${api}/recruiter/api/get-skills`);
@@ -524,6 +557,15 @@ const RecPosting = () => {
       );
     }
   }
+  // country state city Api
+
+  // Get available states and cities based on selections
+  const states = selectedCountry
+    ? countryData.find((c) => c.name === selectedCountry)?.states
+    : [];
+  const cities = selectedState
+    ? states.find((s) => s.name === selectedState)?.cities
+    : [];
 
   return (
     <div>
@@ -606,6 +648,7 @@ const RecPosting = () => {
           {(formData.internshipType === "Office" ||
             formData.internshipType === "Hybrid") && (
             <div className="flex flex-col my-5">
+              <label className="font-semibold mb-2">Location:</label>
               {/* <input type="text"
                 name="internLocation"
                 value={formData.internLocation}
@@ -613,8 +656,10 @@ const RecPosting = () => {
                 className='p-2 border border-gray-300 rounded-md shadow-md'
                 placeholder='Enter Location e.g Delhi or Mumbai' /> */}
 
-              <Select
-                options={statesAndUTs}
+
+              {/* <Select
+                options={statesAndCities}
+
                 values={formData.internLocation}
                 onChange={(value) =>
                   setFormData({ ...formData, internLocation: value.value })
@@ -622,7 +667,56 @@ const RecPosting = () => {
                 placeholder="Select a location"
                 searchable={true}
                 className="w-full shadow-md"
-              />
+              /> */}
+              <div className="flex flex-col md:flex-row gap-3 w-full">
+                {/* Country Dropdown */}
+                <select
+                  className="border-2 py-1 rounded-md px-2 w-full"
+                  id="country"
+                  value={selectedCountry}
+                  onChange={(e) => {
+                    setSelectedCountry(e.target.value);
+                    setSelectedState(""); // Reset state and cities dropdowns
+                  }}
+                >
+                  <option value="">-- Select Country --</option>
+                  {countryData.map((country) => (
+                    <option key={country.id} value={country.name}>
+                      {country.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* State Dropdown */}
+                <select
+                  className="border-2 py-1 rounded-md px-2 w-full"
+                  id="state"
+                  value={selectedState}
+                  onChange={(e) => setSelectedState(e.target.value)}
+                  disabled={!selectedCountry}
+                >
+                  <option value="">-- Select State --</option>
+                  {states?.map((state) => (
+                    <option key={state.id} value={state.name}>
+                      {state.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* City Dropdown */}
+                <select
+                  id="city"
+                  disabled={!selectedState}
+                  className="border-2 py-1 rounded-md px-2 w-full"
+                >
+                  <option value="">-- Select City --</option>
+                  {cities?.map((city) => (
+                    <option key={city.id} value={city.name}>
+                      {city.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
 

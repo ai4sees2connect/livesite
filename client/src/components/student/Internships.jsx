@@ -30,6 +30,8 @@ import StipendSlider from "./utils/StipendSlider";
 import { useStudent } from "./context/studentContext";
 // import CustomRadio from './utils/CustomRadio';
 import statesAndCities from "../common/statesAndCities";
+// country
+import countryData from "../TESTJSONS/countries+states+cities.json";
 
 const Internships = () => {
   const [internships, setInternships] = useState([]);
@@ -45,6 +47,12 @@ const Internships = () => {
   const internshipsPerPage = 9;
   const scrollableRef = useRef(null);
   const navigate = useNavigate();
+  // state for country and state
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(null);
+  const [internshipsCount, setInternshipsCount] = useState(null);
 
   const statesAndUTs = [
     { value: "All Locations", label: "All Locations" },
@@ -322,30 +330,41 @@ const Internships = () => {
     window.scrollTo(0, 0);
   }, []);
 
+
+  const constructQueryStringReset = () => {
+    let query = `page=${1}`;
+    if (workType && workType !== 'All Internships') query += `&workType=${workType}`;
+    if (selectedProfile.length > 0) query += `&jobProfile=${selectedProfile.join(',')}`;
+    if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
+    if (selectedLocation) query += `&location=${selectedLocation}`;
+    return query;
+  };
+
+  const constructQueryStringPageUpdation = () => {
+    let query = `page=${page}`;
+    if (workType && workType !== 'All Internships') query += `&workType=${workType}`;
+    if (selectedProfile.length > 0) query += `&jobProfile=${selectedProfile.join(',')}`;
+    if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
+    if (selectedLocation) query += `&location=${selectedLocation}`;
+    return query;
+  };
+
+
   useEffect(() => {
     const fetchInternships = async () => {
-      // const cachedInternships = localStorage.getItem("cachedInternships");
-      // if (cachedInternships) {
-      //   setInternships(JSON.parse(cachedInternships));
-      //   setLoading(false);
-      //   return;
-      // }
+    
 
       try {
-        console.log("LocationName", selectedLocation);
-        console.log("WorkType:", workType);
-        console.log("profile", selectedProfile);
-
-        // const response = await axios.get(`${api}/student/${userId}/internships`);
-        // const appliedResponse = await axios.get(`${api}/student/internship/${userId}/applied-internships`);
-
+        setLoading(true);
+        const queryString = constructQueryStringReset();
         const [response, appliedResponse] = await Promise.all([
-          axios.get(`${api}/student/internships`),
+          axios.get(`${api}/student/internships?${queryString}`),
           axios.get(`${api}/student/internship/${userId}/applied-internships`),
         ]);
-
+        setTotalPages(response.data.totalPages);
+        setInternshipsCount(response.data.numOfInternships);
         setAppliedInternships(appliedResponse.data);
-        const sortedInternships = response.data.sort(
+        const sortedInternships = response.data.internships.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
 
@@ -400,7 +419,74 @@ const Internships = () => {
     };
 
     fetchInternships();
-  }, []);
+  }, [workType, selectedProfile, selectedStipend, selectedLocation]);
+
+  useEffect(() => {
+
+    const fetchInternships = async () => {
+
+      try {
+        setLoading(true);
+        const queryString = constructQueryStringPageUpdation();
+        const response = await axios.get(`${api}/student/internships?${queryString}`);
+        setTotalPages(response.data.totalPages);
+        setInternshipsCount(response.data.numOfInternships);
+        const sortedInternships = response.data.internships.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        const internshipsWithLogo = await Promise.all(
+          sortedInternships.map(async (internship) => {
+            if (internship.recruiter && internship.recruiter._id) {
+              try {
+                // Kick off the logo fetch but don't await it here
+                const logoPromise = axios.get(
+                  `${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`,
+                  { responseType: "blob" }
+                );
+
+                // Once the promise resolves, process the logo
+                const res = await logoPromise;
+                const logoBlob = new Blob([res.data], {
+                  type: res.headers["content-type"],
+                });
+                const logoUrl = URL.createObjectURL(logoBlob);
+
+                // Return the internship with the logo URL
+                return {
+                  ...internship,
+                  logoUrl,
+                };
+              } catch (error) {
+                console.error("Error fetching logo:", error);
+
+                // Return internship with a default or null logo URL in case of an error
+                return {
+                  ...internship,
+                  logoUrl: null, // Or use a default image URL here
+                };
+              }
+            }
+
+            // If no recruiter, return the internship as is
+            return internship;
+          })
+        );
+
+        setInternships(internshipsWithLogo);
+        // localStorage.setItem('cachedInternships', JSON.stringify(internshipsWithLogo));
+        console.log("internhsipswith logo", internshipsWithLogo);
+        setLoading(false);
+
+      } catch (err) {
+        console.error("Error fetching internships:", err);
+        setError("Failed to fetch internships. Please try again later.");
+        setLoading(false);
+      }
+    };
+
+    fetchInternships();
+  }, [page]);
 
   //fetching resume in below useEffect
   useEffect(() => {
@@ -438,71 +524,59 @@ const Internships = () => {
   }, [userId]);
   console.log("this is resume", resumeUrl);
 
-  const filteredInternships = internships.filter((internship) => {
-    // Matches Work Type
-    const matchesWorkType =
-      workType === "All Internships" ||
-      internship.internshipType.toLowerCase() === workType.toLowerCase();
+  // const filteredInternships = internships.filter((internship) => {
+  //   // Matches Work Type
+  //   const matchesWorkType =
+  //     workType === "All Internships" ||
+  //     internship.internshipType.toLowerCase() === workType.toLowerCase();
 
-    // Matches Job Profile
-    const matchesJobProfile =
-      selectedProfile.length == 0 ||
-      selectedProfile.some(
-        (profile) =>
-          internship?.jobProfile?.toLowerCase() ===
-          profile?.label?.toLowerCase()
-      );
+  //   // Matches Job Profile
+  //   const matchesJobProfile =
+  //     selectedProfile.length == 0 ||
+  //     selectedProfile.some(
+  //       (profile) =>
+  //         internship?.jobProfile?.toLowerCase() ===
+  //         profile?.label?.toLowerCase()
+  //     );
 
-    const matchesLocation =
-      selectedLocation.length == 0 ||
-      selectedLocation.some(
-        (location) =>
-          location?.label?.toLowerCase() ===
-          internship?.internLocation?.toLowerCase()
-      );
-    // const matchesLocation = selectedLocation==='All Locations' ||
-    //   selectedLocation.some(location => internship.internLocation.toLowerCase() === location.value.toLowerCase());
+  //   const matchesLocation =
+  //     selectedLocation.length == 0 ||
+  //     selectedLocation.some(
+  //       (location) =>
+  //         location?.label?.toLowerCase() ===
+  //         internship?.internLocation?.toLowerCase()
+  //     );
+  //   // const matchesLocation = selectedLocation==='All Locations' ||
+  //   //   selectedLocation.some(location => internship.internLocation.toLowerCase() === location.value.toLowerCase());
 
-    // Matches Stipend
-    const matchesStipend =
-      selectedStipend === 0 || internship.stipend >= selectedStipend;
+  //   // Matches Stipend
+  //   const matchesStipend =
+  //     selectedStipend === 0 || internship.stipend >= selectedStipend;
 
-    // Return true if all filters match
-    return (
-      matchesWorkType && matchesJobProfile && matchesLocation && matchesStipend
-    );
-  });
+  //   // Return true if all filters match
+  //   return (
+  //     matchesWorkType && matchesJobProfile && matchesLocation && matchesStipend
+  //   );
+  // });
 
   // console.log('this is selected location', selectedLocation);
-  console.log("this is filtered internships", filteredInternships);
+  // console.log("this is filtered internships", filteredInternships);
 
-  const indexOfLastInternship = currentPage * internshipsPerPage;
-  const indexOfFirstInternship = indexOfLastInternship - internshipsPerPage;
-  const currentInternships = filteredInternships.slice(
-    indexOfFirstInternship,
-    indexOfLastInternship
-  );
-  const totalPages = Math.ceil(filteredInternships.length / internshipsPerPage);
+  // const indexOfLastInternship = currentPage * internshipsPerPage;
+  // const indexOfFirstInternship = indexOfLastInternship - internshipsPerPage;
+  // const currentInternships = filteredInternships.slice(
+  //   indexOfFirstInternship,
+  //   indexOfLastInternship
+  // );
+  // const totalPages = Math.ceil(filteredInternships.length / internshipsPerPage);
 
   const handleNextPage = () => {
-    if (
-      currentPage < Math.ceil(filteredInternships.length / internshipsPerPage)
-    ) {
-      setCurrentPage(currentPage + 1);
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        scrollToTop();
-      }, 500);
-    }
+    setPage(page + 1);
   };
 
   const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        scrollToTop();
-      }, 500);
+    if (page > 1) {
+      setPage(page - 1);
     }
   };
 
@@ -513,6 +587,15 @@ const Internships = () => {
     });
   };
 
+  useEffect(() => {
+    if (internships.length > 0) {
+      scrollToTop();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    }
+  }, [internships])
+
+  
   const openModal = async (internship) => {
     refreshData();
     setSelectedInternship(internship);
@@ -529,20 +612,8 @@ const Internships = () => {
 
   const closeModal = () => {
     setSelectedInternship(null);
-    // setIsInterestedModalOpen(false);
   };
 
-  // const openInterestedModal = () => {
-  //   if( student.education.length==0 || student.personalProjects.length==0 || student.portfolioLink.length==0 || student.skills.length==0 || !student.gender || !student.homeLocation || !student.yearsOfExp || !student.resume ){
-  //     toast.error("Please complete your profile");
-  //     return;
-  //   }
-  //   // setIsInterestedModalOpen(true);
-  // };
-
-  // const closeInterestedModal = () => {
-  //   setIsInterestedModalOpen(false);
-  // };
 
   console.log("this is about text", aboutText);
 
@@ -639,6 +710,15 @@ const Internships = () => {
       </div>
     );
   }
+  // country state city Api
+
+  // Get available states and cities based on selections
+  const states = selectedCountry
+    ? countryData.find((c) => c.name === selectedCountry)?.states
+    : [];
+  const cities = selectedState
+    ? states.find((s) => s.name === selectedState)?.cities
+    : [];
 
   return (
     <div className="py-5 px-5 mt-16 min-h-screen bg-gray-100">
@@ -730,8 +810,11 @@ const Internships = () => {
           <div className="my-4">
             <p>Profile</p>
             <Select
-              value={selectedProfile}
-              onChange={(values) => setSelectedProfile(values)}
+              value={selectedProfile.map((profile) => ({
+                value: profile,
+                label: profile,
+              }))}
+              onChange={(values) => setSelectedProfile(values.map((option) => option.value))}
               options={jobProfiles.map((job) => ({
                 value: job,
                 label: job,
@@ -746,7 +829,7 @@ const Internships = () => {
           {(workType === "Work from Office" || workType === "Hybrid") && (
             <div className="mt-7">
               <p className="mt-6 mb-2 font-bold">Location</p>
-              <Select
+              {/* <Select
                 options={statesAndCities}
                 values={selectedLocation}
                 onChange={handleChange}
@@ -755,19 +838,68 @@ const Internships = () => {
                 isMulti
                 className="w-full shadow-md"
                 classNamePrefix="custom-select-dropdown"
-              />
+              /> */}
+              <div className="flex flex-col gap-3">
+                {/* Country Dropdown */}
+                <select
+                  className="border-2 py-1 rounded-md px-2"
+                  id="country"
+                  value={selectedCountry}
+                  onChange={(e) => {
+                    setSelectedCountry(e.target.value);
+                    setSelectedState(""); // Reset state and cities dropdowns
+                  }}
+                >
+                  <option value="">-- Select Country --</option>
+                  {countryData.map((country) => (
+                    <option key={country.id} value={country.name}>
+                      {country.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* State Dropdown */}
+                <select
+                  className="border-2 py-1 rounded-md px-2"
+                  id="state"
+                  value={selectedState}
+                  onChange={(e) => setSelectedState(e.target.value)}
+                  disabled={!selectedCountry}
+                >
+                  <option value="">-- Select State --</option>
+                  {states?.map((state) => (
+                    <option key={state.id} value={state.name}>
+                      {state.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* City Dropdown */}
+                <select
+                  id="city"
+                  disabled={!selectedState}
+                  className="border-2 py-1 rounded-md px-2"
+                >
+                  <option value="">-- Select City --</option>
+                  {cities?.map((city) => (
+                    <option key={city.id} value={city.name}>
+                      {city.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
         </div>
 
         <h1 className="text-3xl font-bold mb-1 mt-1 text-center lg:hidden">
-          {filteredInternships.length} Total Internships
+          {internshipsCount} Total Internships
         </h1>
 
         {/* internships div */}
         <div className="w-full  lg:w-[79%] mt-5">
           <h1 className="text-3xl font-bold mb-8 mt-8 text-center hidden lg:block">
-            {filteredInternships.length} Total Internships
+            {internshipsCount} Total Internships
           </h1>
 
           {/* list of internships */}
@@ -778,7 +910,7 @@ const Internships = () => {
                 ref={scrollableRef}
                 className="overflow-scroll scrollbar-thin h-[90vh] overflow-x-hidden "
               >
-                {currentInternships.map((internship) => (
+                {internships.map((internship) => (
                   <div
                     key={internship._id}
                     className="bg-white shadow-md rounded-lg px-7 py-2 w-full lg:w-[90%] mb-3 mx-auto relative "
@@ -789,7 +921,7 @@ const Internships = () => {
                           {internship.internshipName}
                         </h2>
                         <p className="text-gray-600">
-                          {internship.recruiter.companyName}
+                        {internship.recruiter.companyName !== '' ? internship.recruiter.companyName : internship.recruiter.firstname + ' ' + internship.recruiter.lastname}
                         </p>
                       </div>
 
@@ -921,33 +1053,38 @@ const Internships = () => {
                   </div>
                 ))}
               </div>
+              
               {/* pagination */}
-              <div className="flex  justify-center my-4 space-x-4">
-                <button
-                  onClick={handlePreviousPage}
-                  disabled={currentPage === 1}
-                  className={`px-4 py-2 rounded-md ${
-                    currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
+              {internships.length > 0 && <div className="flex justify-center my-4 space-x-4">
+              
+              <button
+                onClick={handlePreviousPage}
+                disabled={page === 1}
+                className={`px-4 py-2 rounded-md ${page === 1
+                  ? 'bg-gray-300'
+                  : 'bg-blue-500 text-white'
+
                   }`}
-                >
-                  <FaAngleLeft />
-                </button>
-                <span>
-                  {currentPage} / {totalPages}
-                </span>
-                <button
-                  onClick={handleNextPage}
-                  disabled={currentPage === totalPages}
-                  className={`px-4 py-2 rounded-md ${
-                    currentPage ===
-                    Math.ceil(filteredInternships.length / internshipsPerPage)
-                      ? "bg-gray-300"
-                      : "bg-blue-500 text-white"
+              >
+                <FaAngleLeft />
+              </button>
+
+              <span>
+                {page} / {totalPages}
+              </span>
+              <button
+                onClick={handleNextPage}
+                disabled={page === totalPages}
+                className={`px-4 py-2 rounded-md ${page ===
+                   totalPages
+                    ? "bg-gray-300"
+                    : "bg-blue-500 text-white"
                   }`}
-                >
-                  <FaAngleRight />
-                </button>
-              </div>
+              >
+                <FaAngleRight />
+              </button>
+            </div>
+            }
 
               {selectedInternship &&
                 !isAlreadyApplied(selectedInternship._id) && (

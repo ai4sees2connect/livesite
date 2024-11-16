@@ -18,6 +18,7 @@ import api from "../../common/server_url";
 import Spinner from "../../common/Spinner";
 
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import GoBackButton from "../../common/GoBackButton";
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -35,7 +36,6 @@ function Signup() {
   const [otp, setOtp] = useState("");
   const [sendingOtp, setSendingOtp] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
-  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -54,13 +54,14 @@ function Signup() {
     setPassword(newPassword);
 
     // Define the regex pattern
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordPattern =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (newPassword.trim().length < 8) {
       setPasswordError("Password must be at least 8 characters");
     } else if (!passwordPattern.test(newPassword)) {
       setPasswordError(
-        "Password must contain at least one uppercase , one lowercase , one number, and one special character"
+        "Password must contain at least one uppercase , one lowercase , one number, and any one of special characters from @,$,!,%,*,?,&"
       );
     } else {
       setPasswordError("");
@@ -199,6 +200,15 @@ function Signup() {
         <img src={login_bg} alt="" className=" w-full h-full" />
       </div>
       <div className="flex-1 mx-auto w-[90%] mb-20">
+        {/* back button */}
+        <div className="absolute left-0 top-5  rounded-full">
+        <Link
+            to="/"
+            className="px-5 py-1 text-blue-400  font-semibold"
+          >
+            <GoBackButton/>
+          </Link>
+        </div>
         <div className="flex flex-col items-center mt-[20px]">
           <p className="text-3xl lg:text-5xl font-extrabold mb-5 md:mb-12">
             Sign up
