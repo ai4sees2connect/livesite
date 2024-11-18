@@ -109,21 +109,18 @@ function Login() {
         <img src={login_bg} alt="" className="w-full h-full" />
         {/* <p className='absolute flex inset-0 justify-center items-center text-white text-6xl font-bold '>Welcome back !</p> */}
       </div>
-      <div className="mb-20 w-full lg:w-[90%] flex-1">
+      <div className="mb-20 lg:w-[90%] flex-1 min-h-[635px]">
         {/* back button */}
         <div className="absolute left-0 top-5  rounded-full">
-        <Link
-            to="/"
-            className="px-5 py-1 text-blue-400  font-semibold"
-          >
-            <GoBackButton/>
+          <Link to="/" className="px-5 py-1 text-blue-400  font-semibold">
+            <GoBackButton />
           </Link>
         </div>
-        <div className="text-center flex flex-col justify-center items-center ">
-          <p className="text-3xl lg:text-5xl font-extrabold mb-5 md:mb-12">
+        <div className="flex flex-col items-center mt-[20px]">
+          <p className="text-5xl font-extrabold mb-5 md:mb-12 mt-10 lg:mt-0">
             Login
           </p>
-          <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5 md:items-center ">
+          <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5 md:items-center mt-8 md:mt-0">
             <ToggleButton type="student" auth="login" />
 
             <ToggleButtonSecond type="student" auth="login" />
@@ -131,10 +128,10 @@ function Login() {
         </div>
         <div>
           {/* form starts from here */}
-          <div className="flex justify-center items-center mt-[40px] md:mt-[90px] w-full mx-auto ">
+          <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full mx-auto ">
             <form
               onSubmit={handleSubmit}
-              className="space-y-4 w-full lg:w-[60%] md:max-w-xl px-5 md:px-0"
+              className="space-y-4 w-full lg:w-[60%] md:max-w-xl px-5 lg:px-0"
             >
               <div className="mx-auto md:max-w-xl">
                 <input
@@ -150,7 +147,7 @@ function Login() {
                 />
               </div>
 
-              <div className="relative w-full md:max-w-xl ">
+              <div className="relative flex flex-col items-center ">
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
