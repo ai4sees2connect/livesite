@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import internsnestlogo2 from "../../images/internsnest_pic2.jpg";
 import internsnestLogo from "../../images/internnest_logo.png";
@@ -71,7 +71,6 @@ const NavbarUniversal = () => {
                 </button>
               </Link>
               <Link to="/student/signup">
-                {" "}
                 <button className="py-2 hover:text-blue-500">
                   As a student
                 </button>
@@ -92,10 +91,25 @@ const NavbarUniversal = () => {
           <div className="flex items-start justify-center"></div>
 
           {/* User Icon */}
-          <div className="hidden sm:flex relative group  items-center justify-center space-x-2 lg:space-x-5 ">
-            <Link to="/internships" className="hover:text-blue-500 p-2 md:p-5">
-              Internships
-            </Link>
+          <div className="hidden sm:flex relative group  items-center justify-center space-x-2 ">
+            <div className="flex gap-8 mr-5">
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `hover:text-blue-500 ${isActive ? "text-blue-500" : ""}`
+                }
+              >
+                Home
+              </NavLink>
+              <NavLink
+                to="/internships"
+                className={({ isActive }) =>
+                  `hover:text-blue-500 ${isActive ? "text-blue-500" : ""}`
+                }
+              >
+                Internships
+              </NavLink>
+            </div>
             <Link to="/student/login">
               <button className="border border-blue-500 text-blue-500 rounded-md font-semibold px-4 py-1 lg:px-3">
                 Login
@@ -126,13 +140,24 @@ const NavbarUniversal = () => {
           </button>
         </div>
         <div className="flex flex-col p-4">
-          <Link
+          <NavLink
+            onClick={toggleSidebar}
+            to="/"
+            className={({ isActive }) =>
+              `py-2 hover:text-blue-500 ${isActive ? "text-blue-500" : ""}`
+            }
+          >
+            Home
+          </NavLink>
+          <NavLink
             to="/internships"
             onClick={toggleSidebar}
-            className="py-2 hover:text-blue-500"
+            className={({ isActive }) =>
+              ` py-2 hover:text-blue-500 ${isActive ? "text-blue-500" : ""}`
+            }
           >
             Internship
-          </Link>
+          </NavLink>
 
           <Link to={`/student/login`} className="py-2 hover:text-blue-500">
             Login

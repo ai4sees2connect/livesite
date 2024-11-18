@@ -50,19 +50,6 @@ import Spinner from "../common/Spinner";
 import getUserIdFromToken from "./auth/authUtils";
 import { jwtDecode } from "jwt-decode";
 
-// const images = [
-//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-//   "https://i.ibb.co.com/Gnxqh7p/2151003702.jpg",
-// ];
-
 const userId = getUserIdFromToken();
 const token = localStorage.getItem("token");
 
@@ -168,7 +155,7 @@ const RightSide = () => {
   }, []);
 
   const settings = {
-    dots: true, // Show dots for navigation
+    dots: false, // Show dots for navigation
     infinite: true,
     speed: 500,
     slidesToShow: 3, // Number of slides to show at once
@@ -176,6 +163,7 @@ const RightSide = () => {
     arrows: true,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
+
     responsive: [
       {
         breakpoint: 1000,
@@ -241,11 +229,21 @@ const RightSide = () => {
           <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
             <span> Hybrid</span> <FaLongArrowAltRight />
           </button>
-          <button className="flex items-center px-5 py-2 rounded-md border-2  text-xl hover:scale-105 hover:transition-0.5s duration-300 text-white font-semibold justify-between bg-[#475865] hover:bg-black border-1 border-white  transition-0.5s">
-            <Link to='/internships'> <span> All Internships</span> <FaLongArrowAltRight /></Link>
+          <button className="px-5 py-2 rounded-md border-2  text-xl hover:scale-105 hover:transition-0.5s duration-300 text-white font-semibold  bg-[#475865] hover:bg-black border-1 border-white  transition-0.5s">
+            <Link
+              className="flex items-center justify-between"
+              to="/internships"
+            >
+              <span> All Internships</span> <FaLongArrowAltRight />
+            </Link>
           </button>
-          <button className="flex items-center px-5 py-2 rounded-md border-2 text-xl hover:transition-0.5s  font-semibold justify-between bg-blue-500 border-1 border-white hover:scale-105 hover:transition-0.5s duration-300 hover:bg-blue-600 text-white">
-            <Link to='/recruiter/signup'> <span>Want To Hire</span> <FaLongArrowAltRight /></Link>
+          <button className=" px-5 py-2 rounded-md border-2 text-xl hover:transition-0.5s  font-semibold  bg-blue-500 border-1 border-white hover:scale-105 hover:transition-0.5s duration-300 hover:bg-blue-600 text-white">
+            <Link
+              className="flex items-center justify-between"
+              to="/recruiter/signup"
+            >
+              <span>Want To Hire</span> <FaLongArrowAltRight />
+            </Link>
           </button>
         </div>
       </div>
@@ -274,7 +272,11 @@ const RightSide = () => {
                         {intern?.internshipName}
                       </h2>
                       <p className="text-sm text-gray-600 text-left">
-                        {intern.recruiter.companyName !== '' ? intern.recruiter.companyName : intern.recruiter.firstname + ' ' + intern.recruiter.lastname}
+                        {intern.recruiter.companyName !== ""
+                          ? intern.recruiter.companyName
+                          : intern.recruiter.firstname +
+                            " " +
+                            intern.recruiter.lastname}
                       </p>
                     </div>
                     <div>
@@ -354,8 +356,9 @@ const RightSide = () => {
                       {intern?.internshipType}
                     </p>
                     <Link
-                      to={`/${token ? "student/" : ""}internships${token ? `/${userId}` : ""
-                        }`}
+                      to={`/${token ? "student/" : ""}internships${
+                        token ? `/${userId}` : ""
+                      }`}
                       className="px-2 lg:px-4 py-1 border-2 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600 transition duration-500"
                     >
                       See Details
@@ -379,8 +382,8 @@ const RightSide = () => {
               <p className="text-xl mb-10">
                 Hire Interns with ease - Get Job Easy
               </p>
-              <button className="px-10 py-4 rounded-md bg-gray-800 hover:bg-[#475865] border-1 border-white hover:scale-105 transition-0.5s">
-                Hire Now!
+              <button className="text-2xl font-bold  px-10 py-4 rounded-md bg-gray-800 hover:bg-[#475865] border-1 border-white hover:scale-105 transition-0.5s">
+                <Link to="/recruiter/signup ">Hire Now!</Link>
               </button>
             </div>
           </div>
@@ -392,8 +395,8 @@ const RightSide = () => {
               <p className="text-xl mb-10">
                 10,000 Job Openings all Over India
               </p>
-              <button className="px-10 py-4 rounded-md bg-blue-500 border-1 border-white hover:scale-105 hover:transition-0.5s hover:bg-blue-600">
-                Get Job!
+              <button className="text-2xl font-bold px-10 py-4 rounded-md bg-blue-500 border-1 border-white hover:scale-105 hover:transition-0.5s hover:bg-blue-600">
+                <Link to="/student/signup"> Get Job!</Link>
               </button>
             </div>
           </div>
