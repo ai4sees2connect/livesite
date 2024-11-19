@@ -267,6 +267,7 @@ const RecPosting = () => {
 
 
 
+
   const perks = [
     "Letter of recommendation",
     "Flexible work hours",
