@@ -181,9 +181,9 @@ function Login() {
               <div>
                 <Link
                   to="/recruiter/forget-pass"
-                  className="text-sm px-2 text-blue-500"
+                  className="text-sm px-2 text-blue-500 hover:underline"
                 >
-                  Forget password
+                  Forgot password?
                 </Link>
               </div>
 

@@ -19,12 +19,14 @@ import Spinner from "../../common/Spinner";
 
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import GoBackButton from "../../common/GoBackButton";
+import { FaCheckCircle } from "react-icons/fa";
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
 
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [verifiedEmail, setVerifiedEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -117,6 +119,7 @@ function Signup() {
         // OTP verified successfully
         toast.success("OTP verified successfully!");
         setOtpVerified(true);
+        setVerifiedEmail(email);
       } else {
         // Something went wrong, show the error message
         toast.error(response.data.message);
@@ -155,9 +158,18 @@ function Signup() {
       toast.error(error.response?.data?.message || "Error sending OTP");
     }
   };
+  const handleResendOtp = async (e) => {
+    try {
+      await handleSendOtp(e);
+      setButtonDisabled(true);
+      setCountdown(30);
+    } catch (error) {
+      console.error("Error in handleResendOtp:", error);
+    }
+  };
 
   const isFormValid =
-    email.trim() !== "" &&
+    email.trim() === verifiedEmail &&
     password.trim() !== "" &&
     firstname.trim() !== "" &&
     lastname.trim() !== "" &&
@@ -193,6 +205,25 @@ function Signup() {
       console.error("Error signing in with Google", error);
     }
   };
+  // resend button
+  const [countdown, setCountdown] = useState(30);
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+
+  useEffect(() => {
+    let timer;
+    if (buttonDisabled) {
+      timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev > 0) return prev - 1;
+          clearInterval(timer);
+          setButtonDisabled(false); // Enable the button after countdown ends
+          return 0;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(timer); // Cleanup timer on unmount
+  }, [buttonDisabled]);
 
   return (
     <div className="flex mt-10 md:mt-0 min-h-screen">
@@ -235,7 +266,9 @@ function Signup() {
                   className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                 />
                 {nameError && (
-                  <p className="text-red-500 text-left w-full">{nameError}</p>
+                  <p className="text-red-500 text-left w-full mb-0">
+                    {nameError}
+                  </p>
                 )}
               </div>
 
@@ -254,7 +287,9 @@ function Signup() {
                   className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                 />
                 {nameError && (
-                  <p className="text-red-500 text-left w-full">{nameError}</p>
+                  <p className="text-red-500 text-left w-full mb-0">
+                    {nameError}
+                  </p>
                 )}
               </div>
 
@@ -273,15 +308,44 @@ function Signup() {
                         );
                       } else setEmailError("");
                     }}
-                    className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
+                    className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full relative"
                     required
                   />
-                  {validateEmail(email) && !sendingOtp && (
+                  {validateEmail(email) && !sendingOtp && !otpInput && (
                     <button
-                      className="text-blue-500 text-left absolute right-3  sm:-right-[73px] sm:top-3 text-xs sm:text-base top-4"
+                      className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
+                      type="button"
                       onClick={handleSendOtp}
                     >
                       Send OTP
+                    </button>
+                  )}
+                  {validateEmail(email) &&
+                    !sendingOtp &&
+                    otpInput &&
+                    !otpVerified && (
+                      <button
+                        className={`absolute right-0 top-2.5 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2 ${
+                          buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        type="button"
+                        onClick={handleResendOtp}
+                        disabled={buttonDisabled}
+                      >
+                        {buttonDisabled
+                          ? `Resend in ${countdown}s`
+                          : "Resend OTP"}
+                      </button>
+                    )}
+                  {otpVerified && (
+                    <button
+                      className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
+                      type="button"
+                    >
+                      <div className="flex gap-2 items-center">
+                        <FaCheckCircle />
+                        <span> Verified</span>
+                      </div>
                     </button>
                   )}
 
@@ -296,7 +360,7 @@ function Signup() {
                 {emailError && (
                   <p className="text-red-500 text-left w-full">{emailError}</p>
                 )}
-                {otpInput && (
+                {otpInput && !otpVerified && (
                   <div className="relative my-3 w-full">
                     <input
                       type="text"
@@ -306,50 +370,55 @@ function Signup() {
                       placeholder="Enter otp"
                       className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-20 w-full"
                     />
-                    <button
-                      onClick={handleVerifyOtp}
-                      className="absolute -right-[40px] top-3 text-blue-500 text-sm"
-                    >
-                      Verify
-                    </button>
+                    {!otpVerified && (
+                      <button
+                        className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
+                        type="button"
+                        onClick={handleVerifyOtp}
+                      >
+                        Verify OTP
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
 
-              <div className="flex flex-col items-center relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  value={password}
-                  placeholder="Password"
-                  onChange={handlePasswordChange}
-                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-10 w-full"
-                  required
-                />
-                {passwordError && (
-                  <p className="text-red-500 text-left w-full">
-                    {passwordError}
-                  </p>
-                )}
-
-                <button
-                  type="button"
-                  onClick={handlePasswordToggle}
-                  className="absolute right-2 top-[24px] transform -translate-y-1/2"
-                >
-                  {showPassword ? (
-                    <FontAwesomeIcon
-                      icon={faEye}
-                      className="w-5 h-5 text-gray-500"
-                    />
-                  ) : (
-                    <FontAwesomeIcon
-                      icon={faEyeSlash}
-                      className="w-5 h-5 text-gray-500"
-                    />
+              {otpVerified && (
+                <div className="flex flex-col items-center relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    value={password}
+                    placeholder="Password"
+                    onChange={handlePasswordChange}
+                    className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-10 w-full"
+                    required
+                  />
+                  {passwordError && (
+                    <p className="text-red-500 text-left w-full">
+                      {passwordError}
+                    </p>
                   )}
-                </button>
-              </div>
+
+                  <button
+                    type="button"
+                    onClick={handlePasswordToggle}
+                    className="absolute right-2 top-[24px] transform -translate-y-1/2"
+                  >
+                    {showPassword ? (
+                      <FontAwesomeIcon
+                        icon={faEye}
+                        className="w-5 h-5 text-gray-500"
+                      />
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faEyeSlash}
+                        className="w-5 h-5 text-gray-500"
+                      />
+                    )}
+                  </button>
+                </div>
+              )}
 
               <button
                 onClick={handleSubmit}
