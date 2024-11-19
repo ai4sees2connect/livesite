@@ -599,7 +599,7 @@ const buildFilters = (req) => {
 
 router.get('/internships', async (req, res) => {
   try {
-    const { page = 1, workType, jobProfile, location, stipend } = req.query;
+    const { page = 1, workType, jobProfile, country,state,city, stipend } = req.query;
     const limit = 9;  // Number of internships per page
     const skip = (parseInt(page) - 1) * limit;  // Calculate skip value for pagination
 
@@ -617,10 +617,16 @@ router.get('/internships', async (req, res) => {
       }
     }
 
-    if (location) {
-      const locationArray = location.split(',').map((loc) => loc.trim()); // Split into array and trim spaces
-      if (locationArray.length > 0) {
-        filters.internLocation = { $in: locationArray }; // Add the filter for locations
+    if (country || state || city) {
+      // Use dot notation to specify filters for nested fields
+      if (country) {
+        filters['internLocation.country'] = country;
+      }
+      if (state) {
+        filters['internLocation.state'] = state;
+      }
+      if (city) {
+        filters['internLocation.city'] = city;
       }
     }
 
@@ -642,7 +648,8 @@ router.get('/internships', async (req, res) => {
         select: 'firstname lastname email phone companyName', // Recruiter details
       })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .sort({ createdAt: -1 });
 
 
       if (stipend && parseInt(stipend) > 0) {
