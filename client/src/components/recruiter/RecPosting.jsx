@@ -453,13 +453,13 @@ const RecPosting = () => {
 
     if (status === "pending") {
       return (
-        <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
+        <div className="mt-[340px] text-center text-gray-700 text-lg font-semibold h-screen space-y-4">
           Please wait some time while we verify your details
         </div>
       );
     } else if (status === "Rejected") {
       return (
-        <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
+        <div className="mt-[340px] text-center text-gray-700 text-lg font-semibold h-screen space-y-4">
           We regret to inform you that your verification has failed
         </div>
       );
