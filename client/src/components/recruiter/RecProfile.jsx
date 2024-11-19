@@ -816,7 +816,6 @@ const RecProfile = () => {
                       />
                       {phoneError !== "" && (
                         <div className="absolute text-red-500 text-sm top-8 left-[69px] md:left-28">
-                          {" "}
                           Enter a valid phone number
                         </div>
                       )}
@@ -1188,50 +1187,74 @@ const RecProfile = () => {
                 )}
 
                 {pdfUrl && (
-                  <>
+                  <div className="text-center space-y-2">
                     <a
                       href={pdfUrl}
                       download={recruiter.companyCertificate.filename}
-                      className="text-blue-500"
+                      className="text-blue-500 text-lg underline"
                     >
-                      Download Company Incorporation Certificate
+                      Download Company Incorporation Certificate?
                     </a>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 text-md font-semibold">
                       (
                       {`Uploaded ${TimeAgo(
                         recruiter.companyCertificate.uploadedDate
                       )}`}
                       )
                     </p>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 text-md font-bold flex justify-center gap-2">
                       Verification status:
                       <span
-                        className={`mx-1 ${
-                          recruiter.companyCertificate?.status === "pending"
+                        className={`flex items-center gap-[2px] ${
+                          recruiter?.companyCertificate?.status === "pending"
                             ? "text-yellow-500"
-                            : recruiter.companyCertificate?.status ===
+                            : recruiter?.companyCertificate?.status ===
                               "Verified"
                             ? "text-green-500"
-                            : recruiter.companyCertificate?.status ===
+                            : recruiter?.companyCertificate?.status ===
                               "Rejected"
                             ? "text-red-500"
                             : ""
                         }`}
                       >
-                        {recruiter.companyCertificate?.status}
+                        <MdOutlineCancel
+                          className={`${
+                            recruiter?.companyCertificate?.status === "Rejected"
+                              ? "block"
+                              : "hidden"
+                          }`}
+                        />
+                        <MdVerifiedUser
+                          className={`${
+                            recruiter?.companyCertificate?.status === "Verified"
+                              ? "block"
+                              : "hidden"
+                          }`}
+                        />
+                        <MdOutlinePendingActions
+                          className={`${
+                            recruiter?.companyCertificate?.status === "pending"
+                              ? "block"
+                              : "hidden"
+                          }`}
+                        />
+                        {recruiter?.companyCertificate?.status}
                       </span>
                     </p>
-                    {recruiter.companyCertificate?.status !== "Verified" && (
-                      <>
-                        <p className="text-red-400">
+                    {recruiter.companyCertificate?.status !== "Verified" ||
+                    recruiter.companyCertificate?.status !== "Rejected" ? (
+                      ""
+                    ) : (
+                      <div className="flex flex-col md:flex-row items-center gap-1 justify-center text-md font-semibold">
+                        <p className="text-red-600">
                           We will verify your certificate shortly!
                         </p>
-                        <p className="text-red-400 text-center">
+                        <p className="text-red-600 text-center">
                           (Estimated time-24hrs)
                         </p>
-                      </>
+                      </div>
                     )}
-                  </>
+                  </div>
                 )}
               </div>
               <div className="mt-5 text-right">
