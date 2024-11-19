@@ -32,7 +32,7 @@ const RecProfile = () => {
   const idFromToken = getUserIdFromToken();
   const { userId } = useParams();
   const navigate = useNavigate();
-  const { logout, recruiter } = useRecruiter();
+  const { logout, recruiter, refreshData } = useRecruiter();
   const token = localStorage.getItem("token");
   const [logo, setLogo] = useState(null);
   const [logoUrl, setLogoUrl] = useState(null);
@@ -54,6 +54,11 @@ const RecProfile = () => {
   const [industry, setIndustry] = useState("");
   const [employeesCount, setEmployeesCount] = useState("");
   const [cityPresent, setCityPresent] = useState("");
+  const [companyPresent, setCompanyPresent] = useState(false);
+  const [linkPresent, setLinkPresent] = useState(false);
+  const [companyCountry,setCompanyCountry] =useState("");
+  const [companyState,setCompanyState] =useState("");
+  const [companyCity,setCompanyCity] =useState("");
 
   console.log(recruiter);
 
@@ -90,8 +95,14 @@ const RecProfile = () => {
       setDesignation(recruiter.designation);
     }
 
-    if (recruiter?.companyCity) {
-      setCompanyLocation(recruiter.companyCity);
+    if (recruiter?.companyLocation?.country) {
+      setSelectedCountry(recruiter.companyLocation.country);
+    }
+    if (recruiter?.companyLocation?.state) {
+      setSelectedState(recruiter.companyLocation.state);
+    }
+    if (recruiter?.companyLocation?.city) {
+      setSelectedCity(recruiter.companyLocation.city);
     }
 
     if (recruiter?.industryType) {
@@ -101,9 +112,27 @@ const RecProfile = () => {
     if (recruiter?.numOfEmployees) {
       setEmployeesCount(recruiter.numOfEmployees);
     }
+
+    if (recruiter?.companyCertificate?.data) {
+      setCompanyPresent(true);
+      urlCreator(recruiter.companyCertificate)
+    }
+    if (recruiter?.companyWebsite) {
+      setLinkPresent(true);
+      setCompanyUrl(recruiter.companyWebsite.link);
+    }
   }, [recruiter]);
 
-  console.log("this is location", companyLocation);
+  const urlCreator = (companyCertificate) => {
+    const byteArray = new Uint8Array(companyCertificate.data.data);
+    const blob = new Blob([byteArray], {
+      type: companyCertificate.contentType,
+    });
+    const url = URL.createObjectURL(blob);
+    setPdfUrl(url);
+  }
+
+  console.log('this is link', companyUrl);
 
   useEffect(() => {
     if (!token) {
@@ -158,20 +187,8 @@ const RecProfile = () => {
     };
   }, [logo]);
 
-  useEffect(() => {
-    if (recruiter?.companyCertificate?.data) {
-      const byteArray = new Uint8Array(recruiter.companyCertificate.data.data);
-      const blob = new Blob([byteArray], {
-        type: recruiter.companyCertificate.contentType,
-      });
-      const url = URL.createObjectURL(blob);
-      setPdfUrl(url);
-    }
-  }, [recruiter]);
 
-  // const handleFileChange = (e) => {
-  //   setLogo(e.target.files[0]);
-  // };
+
 
   const handleFileUpload = async (e) => {
     // if (!logo) return;
@@ -211,22 +228,7 @@ const RecProfile = () => {
     fileInputRef.current.click();
   };
 
-  // const handleCompanySave = async () => {
-  //   try {
-  //     if (!company) {
-  //       toast.error("Company name cannot be empty");
-  //       return;
-  //     }
-  //     axios.put(`${api}/recruiter/api/${idFromToken}/add-company`, {
-  //       companyName: companyName,
-  //     });
-  //     toast.success("Company added successfully");
-  //     window.location.reload();
-  //   } catch (error) {
-  //     toast.error("Error saving company");
-  //     console.log(error);
-  //   }
-  // };
+
 
   const handleDelete = async () => {
     try {
@@ -244,7 +246,7 @@ const RecProfile = () => {
       console.error("Error deleting logo", error);
     }
   };
-  // console.log(companyName);
+  console.log('this is selected certificate', selectedFile);
 
   const handleFileInput = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -269,11 +271,12 @@ const RecProfile = () => {
       // Check if the company URL is provided
       if (companyUrl) {
         formData.append("companyWebsite", companyUrl);
+        toast.info('link is present');
       }
 
-      // Check if the selected file is provided
       if (selectedFile) {
         formData.append("companyCertificate", selectedFile);
+        toast.info('file is present');
       }
 
       // Make an API call to submit the data
@@ -289,9 +292,22 @@ const RecProfile = () => {
 
       if (response.status === 200) {
         toast.success("Details submitted successfully!");
-        // Reset the form after successful submission
-        setCompanyUrl("");
-        setSelectedFile(null);
+        // console.log('this is from backend',response.data.companyCertificate)
+        console.log('this is response', response.data);
+        if (response.data.companyCertificate) {
+          const url = URL.createObjectURL(selectedFile);
+          setPdfUrl(url);
+          
+          setCompanyUrl("");
+          setCompanyPresent(true);
+        }
+        if (response.data.companyWebsite) {
+          setCompanyUrl(response.data.companyWebsite.link)
+          setLinkPresent(true);
+          setPdfUrl(null);
+        }
+        refreshData();
+        // setSelectedFile(null);
         // window.location.reload();
       } else {
         toast.error("Failed to submit details. Please try again.");
@@ -360,7 +376,7 @@ const RecProfile = () => {
         return;
       }
 
-      if (companyLocation === "") {
+      if (selectedCountry === "" || selectedState==="" || selectedCity==="") {
         toast.error("Please enter your company location");
         return;
       }
@@ -381,7 +397,7 @@ const RecProfile = () => {
           companyName: company,
           independentRec: independentCheck,
           orgDescription: companyDesc,
-          companyCity: companyLocation,
+          companyLocation: {country:selectedCountry,state: selectedState,city: selectedCity},
           industryType: industry,
           numOfEmployees: employeesCount,
         }
@@ -632,9 +648,17 @@ const RecProfile = () => {
   // state for country and state
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const handleCompanySizeChange = (e) => {
     setEmployeesCount(e.target.value);
   };
+
+  console.log('this is country',selectedCountry);
+  console.log('this is state',selectedState);
+  console.log('this is city',selectedCity);
+
+
+  // console.log(recruiter.companyWebsite,'******', recruiter.companyCertificate,"******",pdfUrl);
   // country state city Api
 
   // Get available states and cities based on selections
@@ -660,11 +684,10 @@ const RecProfile = () => {
         <div className="flex space-x-4 justify-center items-center">
           {/* tab 1 */}
           <button
-            className={`py-2 px-4 flex flex-col justify-center items-center ${
-              activeTab === "Tab1"
-                ? "text-blue-500 border-b-2 border-blue-500"
-                : "text-gray-500 border-b-2 border-white"
-            }`}
+            className={`py-2 px-4 flex flex-col justify-center items-center ${activeTab === "Tab1"
+              ? "text-blue-500 border-b-2 border-blue-500"
+              : "text-gray-500 border-b-2 border-white"
+              }`}
             onClick={() => setActiveTab("Tab1")}
           >
             <CgProfile className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
@@ -672,11 +695,10 @@ const RecProfile = () => {
           </button>
           {/* tab-2 */}
           <button
-            className={`py-2 px-4 flex flex-col justify-center items-center  ${
-              activeTab === "Tab2"
-                ? "text-blue-500 border-b-2 border-blue-500"
-                : "text-gray-500 border-b-2 border-white"
-            }`}
+            className={`py-2 px-4 flex flex-col justify-center items-center  ${activeTab === "Tab2"
+              ? "text-blue-500 border-b-2 border-blue-500"
+              : "text-gray-500 border-b-2 border-white"
+              }`}
             onClick={() => setActiveTab("Tab2")}
           >
             <IoIosBriefcase className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
@@ -744,9 +766,8 @@ const RecProfile = () => {
 
                     <div className="relative flex items-center">
                       <select
-                        className={`border-2 rounded-md px-3 py-1 w-full ${
-                          showManualInput ? "appearance-none" : ""
-                        }`}
+                        className={`border-2 rounded-md px-3 py-1 w-full ${showManualInput ? "appearance-none" : ""
+                          }`}
                         value={showManualInput ? "notAvailable" : designation}
                         onChange={handleDesignationChange}
                       >
@@ -822,41 +843,37 @@ const RecProfile = () => {
 
                       <p className="text-gray-600 ml-2 md:ml-5">
                         <span
-                          className={`flex items-center gap-[2px] ${
-                            recruiter?.companyCertificate?.status === "pending"
-                              ? "text-yellow-500"
-                              : recruiter?.companyCertificate?.status ===
-                                "Verified"
+                          className={`flex items-center gap-[2px] ${recruiter?.companyCertificate?.status === "pending"
+                            ? "text-yellow-500"
+                            : recruiter?.companyCertificate?.status ===
+                              "Verified"
                               ? "text-green-500"
                               : recruiter?.companyCertificate?.status ===
                                 "Rejected"
-                              ? "text-red-500"
-                              : ""
-                          }`}
+                                ? "text-red-500"
+                                : ""
+                            }`}
                         >
                           <MdOutlineCancel
-                            className={`${
-                              recruiter?.companyCertificate?.status ===
+                            className={`${recruiter?.companyCertificate?.status ===
                               "Rejected"
-                                ? "block"
-                                : "hidden"
-                            }`}
+                              ? "block"
+                              : "hidden"
+                              }`}
                           />
                           <MdVerifiedUser
-                            className={`${
-                              recruiter?.companyCertificate?.status ===
+                            className={`${recruiter?.companyCertificate?.status ===
                               "Verified"
-                                ? "block"
-                                : "hidden"
-                            }`}
+                              ? "block"
+                              : "hidden"
+                              }`}
                           />
                           <MdOutlinePendingActions
-                            className={`${
-                              recruiter?.companyCertificate?.status ===
+                            className={`${recruiter?.companyCertificate?.status ===
                               "pending"
-                                ? "block"
-                                : "hidden"
-                            }`}
+                              ? "block"
+                              : "hidden"
+                              }`}
                           />
                           {recruiter?.companyCertificate?.status}
                         </span>
@@ -927,11 +944,10 @@ const RecProfile = () => {
 
                     {/* Character Count */}
                     <div
-                      className={`mt-1 text-sm ${
-                        companyDesc.length === maxChars
-                          ? "text-red-500"
-                          : "text-gray-500"
-                      }`}
+                      className={`mt-1 text-sm ${companyDesc.length === maxChars
+                        ? "text-red-500"
+                        : "text-gray-500"
+                        }`}
                     >
                       {maxChars - companyDesc.length} characters remaining
                     </div>
@@ -942,17 +958,7 @@ const RecProfile = () => {
                   <label className="text-sm text-gray-600 mb-1 ml-1">
                     Organization Location
                   </label>
-                  {/* <Select
-                    options={statesAndCities}
-                    value={statesAndCities.find(
-                      (option) => option.value === companyLocation
-                    )}
-                    onChange={(values) => setCompanyLocation(values.value)}
-                    placeholder="Select a location"
-                    searchable={true}
-                    className="w-full shadow-md"
-                    classNamePrefix="custom-select-dropdown"
-                  /> */}
+              
                   <div className="flex flex-col md:flex-row gap-3 w-full">
                     {/* Country Dropdown */}
                     <select
@@ -993,6 +999,8 @@ const RecProfile = () => {
                       id="city"
                       disabled={!selectedState}
                       className="border-2 py-1 rounded-md px-2 w-full"
+                      value={selectedCity}
+                      onChange={(e) => setSelectedCity(e.target.value)}
                     >
                       <option value="">-- Select City --</option>
                       {cities?.map((city) => (
@@ -1095,7 +1103,7 @@ const RecProfile = () => {
               </div>
               {/* File Upload */}
               <div className="p-5 border-2 mt-5 rounded-md">
-                {!recruiter.companyWebsite && !recruiter.companyCertificate && (
+                {!companyPresent && !linkPresent &&(
                   <div className="flex flex-col space-y-3  justify-center">
                     {/* Trigger button to open popup */}
                     <p className="text-red-400">
@@ -1120,12 +1128,22 @@ const RecProfile = () => {
                               setIsModalOpen(false);
                               setSelectedFile(null);
                               setCompanyUrl("");
+                              if (recruiter?.companyCertificate) {
+                                urlCreator(recruiter.companyCertificate);
+                                setCompanyPresent(true);
+                                setLinkPresent(false);
+                              }
+                              if(recruiter?.companyWebsite){
+                                setCompanyUrl(recruiter.companyWebsite.link);
+                                setLinkPresent(true);
+                                setCompanyPresent(false);
+                              }
                             }}
                           />
-                          <div className="flex flex-col md:flex-row  justify-center gap-5 items-center">
-                            <div>
+                          <div className="flex flex-col md:flex-row  justify-center  items-center">
+                            <div className={`mx-3`}>
                               {!companyUrl && (
-                                <div className="w-full flex flex-col items-center justify-center">
+                                <div className="w-full  flex flex-col items-center justify-center">
                                   <input
                                     id="fileinput"
                                     type="file"
@@ -1135,7 +1153,7 @@ const RecProfile = () => {
                                   />
                                   <label
                                     htmlFor="fileinput"
-                                    className="text-blue-500 text-lg hover:cursor-pointer hover:scale-105 duration-300 flex justify-center items-center gap-2 border-2 px-3 rounded-md border-dashed border-blue-500"
+                                    className="text-blue-500 text-lg hover:cursor-pointer hover:scale-105 duration-300 flex justify-center items-center gap-2 border-2 px-3 mx-auto rounded-md border-dashed border-blue-500"
                                   >
                                     <FaUpload />
                                     <span>Upload PDF</span>
@@ -1149,7 +1167,7 @@ const RecProfile = () => {
                               )}
                             </div>
                             {/* OR Divider */}
-                            <div>
+                            <div className="mx-3">
                               {!selectedFile && !companyUrl && (
                                 <div className="">
                                   <span className="text-gray-400">OR</span>
@@ -1158,14 +1176,14 @@ const RecProfile = () => {
                             </div>
 
                             {/* URL Input Section */}
-                            <div>
+                            <div className="mx-3">
                               {!selectedFile && (
-                                <div className="w-full">
+                                <div className="w-full ">
                                   <input
                                     type="text"
-                                    placeholder="Enter company's website URL"
+                                    placeholder="Enter website link"
                                     onChange={handleUrlInputChange}
-                                    className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500 w-full"
+                                    className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500  "
                                   />
                                 </div>
                               )}
@@ -1190,59 +1208,76 @@ const RecProfile = () => {
                   <div className="text-center space-y-2">
                     <a
                       href={pdfUrl}
-                      download={recruiter.companyCertificate.filename}
+                      download={
+                        recruiter?.companyCertificate
+                          ? recruiter.companyCertificate.filename
+                          : selectedFile?.name || "Company_Certificate.pdf"
+                      }
                       className="text-blue-500 text-lg underline"
                     >
                       Download Company Incorporation Certificate?
                     </a>
+                    <div
+                      onClick={() => {
+                        setIsModalOpen(true); // Open the modal dialog box
+                        setPdfUrl(null);
+                        setCompanyPresent(false);
+                        setSelectedFile(null);
+                      }}
+                      className="hover:cursor-pointer bg-blue-500 rounded-md px-2 py-1 w-fit mx-auto text-white"
+                    >
+                      Reupload
+                    </div>
+
+                    {companyPresent && <div onClick={()=>{setCompanyPresent(false);setIsModalOpen(true); setSelectedFile(null)}} className="text-green-600 hover:cursor-pointer">
+                      Want to provide company's website link?
+                    </div>}
                     <p className="text-gray-600 text-md font-semibold">
                       (
-                      {`Uploaded ${TimeAgo(
-                        recruiter.companyCertificate.uploadedDate
-                      )}`}
+                      {recruiter?.companyCertificate
+                        ? `Uploaded ${TimeAgo(recruiter.companyCertificate.uploadedDate)}`
+                        : selectedFile
+                          ? `Uploaded just now`
+                          : "No details available"}
                       )
                     </p>
                     <p className="text-gray-600 text-md font-bold flex justify-center gap-2">
                       Verification status:
                       <span
-                        className={`flex items-center gap-[2px] ${
-                          recruiter?.companyCertificate?.status === "pending"
-                            ? "text-yellow-500"
-                            : recruiter?.companyCertificate?.status ===
-                              "Verified"
+                        className={`flex items-center gap-[2px] ${recruiter?.companyCertificate?.status === "pending"
+                          ? "text-yellow-500"
+                          : recruiter?.companyCertificate?.status ===
+                            "Verified"
                             ? "text-green-500"
                             : recruiter?.companyCertificate?.status ===
                               "Rejected"
-                            ? "text-red-500"
-                            : ""
-                        }`}
+                              ? "text-red-500"
+                              : ""
+                          } `}
                       >
                         <MdOutlineCancel
-                          className={`${
-                            recruiter?.companyCertificate?.status === "Rejected"
-                              ? "block"
-                              : "hidden"
-                          }`}
+                          className={`${recruiter?.companyCertificate?.status === "Rejected"
+                            ? "block"
+                            : "hidden"
+                            }`}
                         />
                         <MdVerifiedUser
-                          className={`${
-                            recruiter?.companyCertificate?.status === "Verified"
-                              ? "block"
-                              : "hidden"
-                          }`}
+                          className={`${recruiter?.companyCertificate?.status === "Verified"
+                            ? "block"
+                            : "hidden"
+                            }`}
                         />
                         <MdOutlinePendingActions
-                          className={`${
-                            recruiter?.companyCertificate?.status === "pending"
-                              ? "block"
-                              : "hidden"
-                          }`}
+                          className={`${recruiter?.companyCertificate?.status === "pending"
+                            ? "block"
+                            : "hidden"
+                            }`}
                         />
-                        {recruiter?.companyCertificate?.status}
+                        {recruiter?.companyCertificate?.status || "Pending"}
                       </span>
                     </p>
                     {recruiter.companyCertificate?.status !== "Verified" ||
-                    recruiter.companyCertificate?.status !== "Rejected" ? (
+                      recruiter.companyCertificate?.status !== "Rejected" ? (
                       ""
                     ) : (
                       <div className="flex flex-col md:flex-row items-center gap-1 justify-center text-md font-semibold">
@@ -1254,6 +1289,15 @@ const RecProfile = () => {
                         </p>
                       </div>
                     )}
+                  </div>
+                )}
+                {companyUrl && (
+                  <div className="text-center space-y-2">
+                    <div className="font-semibold text-lg">Your Company's Wesbite Link</div>
+                    <a href={companyUrl} target="_blank"
+                      rel="noopener noreferrer">{companyUrl}</a>
+                      <div onClick={()=>{setLinkPresent(false);setIsModalOpen(true);setPdfUrl(null);setCompanyUrl(null)}} className="hover:cursor-pointer bg-blue-500 rounded-md px-2 py-1 w-fit mx-auto text-white">Update Link</div>
+                      
                   </div>
                 )}
               </div>
