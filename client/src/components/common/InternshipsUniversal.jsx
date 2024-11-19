@@ -281,8 +281,11 @@ const InternshipsUniversal = () => {
   const [selectedProfile, setSelectedProfile] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
 
-
+  console.log('this is country', selectedCountry)
+  console.log('this is state', selectedState)
+  console.log('this is city', selectedCity)
 
 
   useEffect(() => {
@@ -294,7 +297,9 @@ const InternshipsUniversal = () => {
     if (workType && workType !== 'All Internships') query += `&workType=${workType}`;
     if (selectedProfile.length > 0) query += `&jobProfile=${selectedProfile.join(',')}`;
     if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
-    if (selectedLocation) query += `&location=${selectedLocation}`;
+    if (selectedCountry) query += `&country=${selectedCountry}`;
+    if (selectedState) query += `&state=${selectedState}`;
+    if (selectedCity) query += `&city=${selectedCity}`;
     return query;
   };
 
@@ -303,7 +308,9 @@ const InternshipsUniversal = () => {
     if (workType && workType !== 'All Internships') query += `&workType=${workType}`;
     if (selectedProfile.length > 0) query += `&jobProfile=${selectedProfile.join(',')}`;
     if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
-    if (selectedLocation) query += `&location=${selectedLocation}`;
+    if (selectedCountry) query += `&country=${selectedCountry}`;
+    if (selectedState) query += `&state=${selectedState}`;
+    if (selectedCity) query += `&city=${selectedCity}`;
     return query;
   };
 
@@ -375,7 +382,7 @@ const InternshipsUniversal = () => {
 
     fetchInternships();
     setPage(1);
-  }, [workType, selectedProfile, selectedStipend, selectedLocation]);
+  }, [workType, selectedProfile, selectedStipend, selectedCountry,selectedState,selectedCity]);
 
   useEffect(() => {
 
@@ -448,32 +455,14 @@ const InternshipsUniversal = () => {
     navigate("/student/login");
   };
 
-
-  // const indexOfLastInternship = currentPage * internshipsPerPage;
-  // const indexOfFirstInternship = indexOfLastInternship - internshipsPerPage;
-  // const currentInternships = filteredInternships.slice(
-  //   indexOfFirstInternship,
-  //   indexOfLastInternship
-  // );
-  // const totalPages = Math.ceil(filteredInternships.length / internshipsPerPage);
-
   const handleNextPage = () => {
-
     setPage(page + 1);
-    // setTimeout(() => {
-    //   window.scrollTo({ top: 0, behavior: 'smooth' });
-    //   scrollToTop();
-    // }, 500);
 
   };
 
   const handlePreviousPage = () => {
     if (page > 1) {
       setPage(page - 1);
-      //   setTimeout(() => {
-      //     window.scrollTo({ top: 0, behavior: 'smooth' });
-      //     scrollToTop();
-      //   }, 500);
 
     }
   };
@@ -640,19 +629,7 @@ const InternshipsUniversal = () => {
           {(workType === "Work from Office" || workType === "Hybrid") && (
             <div className="mt-7">
               <p className="mt-6 mb-2 font-bold">Location</p>
-              {/* <Select
-                options={statesAndCities}
-                value={selectedLocation.map((location) => ({
-                  value: location,
-                  label: location,
-                }))}
-                onChange={(values)=>setSelectedLocation(values.map((option)=>option.value))}
-                placeholder="Select a location"
-                searchable={true}
-                isMulti
-                className="w-full shadow-md"
-                classNamePrefix="custom-select-dropdown"
-              /> */}
+
               <div className="flex flex-col gap-3">
                 {/* Country Dropdown */}
                 <select
@@ -662,6 +639,7 @@ const InternshipsUniversal = () => {
                   onChange={(e) => {
                     setSelectedCountry(e.target.value);
                     setSelectedState(""); // Reset state and cities dropdowns
+                    setSelectedCity("");
                   }}
                 >
                   <option value="">-- Select Country --</option>
@@ -677,7 +655,7 @@ const InternshipsUniversal = () => {
                   className="border-2 py-1 rounded-md px-2"
                   id="state"
                   value={selectedState}
-                  onChange={(e) => setSelectedState(e.target.value)}
+                  onChange={(e) => { setSelectedState(e.target.value); setSelectedCity("") }}
                   disabled={!selectedCountry}
                 >
                   <option value="">-- Select State --</option>
@@ -691,7 +669,9 @@ const InternshipsUniversal = () => {
                 {/* City Dropdown */}
                 <select
                   id="city"
+                  value={selectedCity}
                   disabled={!selectedState}
+                  onChange={(e) => setSelectedCity(e.target.value)}
                   className="border-2 py-1 rounded-md px-2"
                 >
                   <option value="">-- Select City --</option>
@@ -760,8 +740,8 @@ const InternshipsUniversal = () => {
                       <div className="flex items-center text-gray-700 mb-2">
                         <FaMapMarkerAlt className="mr-1" />
                         <span>
-                          {internship.internLocation
-                            ? `${internship.internLocation}`
+                          {internship.internLocation.country|| internship.internLocation.state||internship.internLocation.city
+                            ? `${internship.internLocation.country}, ${internship.internLocation.state}, ${internship.internLocation.city}`
                             : "Remote"}
                         </span>
                       </div>
@@ -806,8 +786,8 @@ const InternshipsUniversal = () => {
                     <div className="flex text-sm md:text-base space-x-4 items-center">
                       <div
                         className={`${internship.studentCount < 20
-                            ? "text-green-500"
-                            : "text-gray-500"
+                          ? "text-green-500"
+                          : "text-gray-500"
                           }  w-fit my-2 sm:my-0 md:w-auto`}
                       >
                         {internship.studentCount} Applicants
@@ -842,17 +822,9 @@ const InternshipsUniversal = () => {
               </div>
 
 
-              
-              {internships.length > 0 && <div className="flex justify-center my-4 space-x-4">
-                {/* <button
-                  onClick={handlePreviousPage}
-                  disabled={page === 1}
-                  className={`px-4 py-2 rounded-md ${page === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'}`}
-                >
-                  <FaAngleLeft />
-                </button> */}
 
-                {/* <span>{page} / {totalPages}</span> */}
+              {internships.length > 0 && <div className="flex justify-center my-4 space-x-4">
+                
                 <button
                   onClick={handlePreviousPage}
                   disabled={page === 1}
@@ -872,9 +844,9 @@ const InternshipsUniversal = () => {
                   onClick={handleNextPage}
                   disabled={page === totalPages}
                   className={`px-4 py-2 rounded-md ${page ===
-                     totalPages
-                      ? "bg-gray-300"
-                      : "bg-blue-500 text-white"
+                    totalPages
+                    ? "bg-gray-300"
+                    : "bg-blue-500 text-white"
                     }`}
                 >
                   <FaAngleRight />

@@ -50,56 +50,11 @@ const Internships = () => {
   // state for country and state
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(null);
   const [internshipsCount, setInternshipsCount] = useState(null);
 
-  const statesAndUTs = [
-    { value: "All Locations", label: "All Locations" },
-    { value: "Andhra Pradesh", label: "Andhra Pradesh" },
-    { value: "Arunachal Pradesh", label: "Arunachal Pradesh" },
-    { value: "Assam", label: "Assam" },
-    { value: "Bihar", label: "Bihar" },
-    { value: "Chhattisgarh", label: "Chhattisgarh" },
-    { value: "Chennai", label: "Chennai" },
-    { value: "Goa", label: "Goa" },
-    { value: "Gujarat", label: "Gujarat" },
-    { value: "Haryana", label: "Haryana" },
-    { value: "Himachal Pradesh", label: "Himachal Pradesh" },
-    { value: "Jharkhand", label: "Jharkhand" },
-    { value: "Karnataka", label: "Karnataka" },
-    { value: "Kerala", label: "Kerala" },
-    { value: "Madhya Pradesh", label: "Madhya Pradesh" },
-    { value: "Maharashtra", label: "Maharashtra" },
-    { value: "Manipur", label: "Manipur" },
-    { value: "Meghalaya", label: "Meghalaya" },
-    { value: "Mizoram", label: "Mizoram" },
-    { value: "Nagaland", label: "Nagaland" },
-    { value: "Odisha", label: "Odisha" },
-    { value: "Punjab", label: "Punjab" },
-    { value: "Rajasthan", label: "Rajasthan" },
-    { value: "Sikkim", label: "Sikkim" },
-    { value: "Tamil Nadu", label: "Tamil Nadu" },
-    { value: "Telangana", label: "Telangana" },
-    { value: "Tripura", label: "Tripura" },
-    { value: "Uttar Pradesh", label: "Uttar Pradesh" },
-    { value: "Uttarakhand", label: "Uttarakhand" },
-    { value: "West Bengal", label: "West Bengal" },
-    {
-      value: "Andaman and Nicobar Islands",
-      label: "Andaman and Nicobar Islands",
-    },
-    { value: "Chandigarh", label: "Chandigarh" },
-    {
-      value: "Dadra and Nagar Haveli and Daman and Diu",
-      label: "Dadra and Nagar Haveli and Daman and Diu",
-    },
-    { value: "Lakshadweep", label: "Lakshadweep" },
-    { value: "Delhi", label: "Delhi" },
-    { value: "Puducherry", label: "Puducherry" },
-    { value: "Jammu and Kashmir", label: "Jammu and Kashmir" },
-    { value: "Ladakh", label: "Ladakh" },
-  ];
   const jobProfiles = [
     "3D Animation",
     "Account Management",
@@ -336,7 +291,9 @@ const Internships = () => {
     if (workType && workType !== 'All Internships') query += `&workType=${workType}`;
     if (selectedProfile.length > 0) query += `&jobProfile=${selectedProfile.join(',')}`;
     if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
-    if (selectedLocation) query += `&location=${selectedLocation}`;
+    if (selectedCountry) query += `&country=${selectedCountry}`;
+    if (selectedState) query += `&state=${selectedState}`;
+    if (selectedCity) query += `&city=${selectedCity}`;
     return query;
   };
 
@@ -345,7 +302,9 @@ const Internships = () => {
     if (workType && workType !== 'All Internships') query += `&workType=${workType}`;
     if (selectedProfile.length > 0) query += `&jobProfile=${selectedProfile.join(',')}`;
     if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
-    if (selectedLocation) query += `&location=${selectedLocation}`;
+    if (selectedCountry) query += `&country=${selectedCountry}`;
+    if (selectedState) query += `&state=${selectedState}`;
+    if (selectedCity) query += `&city=${selectedCity}`;
     return query;
   };
 
@@ -419,7 +378,8 @@ const Internships = () => {
     };
 
     fetchInternships();
-  }, [workType, selectedProfile, selectedStipend, selectedLocation]);
+    setPage(1);
+  }, [workType, selectedProfile, selectedStipend,  selectedCountry,selectedState,selectedCity]);
 
   useEffect(() => {
 
@@ -524,51 +484,6 @@ const Internships = () => {
   }, [userId]);
   console.log("this is resume", resumeUrl);
 
-  // const filteredInternships = internships.filter((internship) => {
-  //   // Matches Work Type
-  //   const matchesWorkType =
-  //     workType === "All Internships" ||
-  //     internship.internshipType.toLowerCase() === workType.toLowerCase();
-
-  //   // Matches Job Profile
-  //   const matchesJobProfile =
-  //     selectedProfile.length == 0 ||
-  //     selectedProfile.some(
-  //       (profile) =>
-  //         internship?.jobProfile?.toLowerCase() ===
-  //         profile?.label?.toLowerCase()
-  //     );
-
-  //   const matchesLocation =
-  //     selectedLocation.length == 0 ||
-  //     selectedLocation.some(
-  //       (location) =>
-  //         location?.label?.toLowerCase() ===
-  //         internship?.internLocation?.toLowerCase()
-  //     );
-  //   // const matchesLocation = selectedLocation==='All Locations' ||
-  //   //   selectedLocation.some(location => internship.internLocation.toLowerCase() === location.value.toLowerCase());
-
-  //   // Matches Stipend
-  //   const matchesStipend =
-  //     selectedStipend === 0 || internship.stipend >= selectedStipend;
-
-  //   // Return true if all filters match
-  //   return (
-  //     matchesWorkType && matchesJobProfile && matchesLocation && matchesStipend
-  //   );
-  // });
-
-  // console.log('this is selected location', selectedLocation);
-  // console.log("this is filtered internships", filteredInternships);
-
-  // const indexOfLastInternship = currentPage * internshipsPerPage;
-  // const indexOfFirstInternship = indexOfLastInternship - internshipsPerPage;
-  // const currentInternships = filteredInternships.slice(
-  //   indexOfFirstInternship,
-  //   indexOfLastInternship
-  // );
-  // const totalPages = Math.ceil(filteredInternships.length / internshipsPerPage);
 
   const handleNextPage = () => {
     setPage(page + 1);
@@ -829,16 +744,7 @@ const Internships = () => {
           {(workType === "Work from Office" || workType === "Hybrid") && (
             <div className="mt-7">
               <p className="mt-6 mb-2 font-bold">Location</p>
-              {/* <Select
-                options={statesAndCities}
-                values={selectedLocation}
-                onChange={handleChange}
-                placeholder="Select a location"
-                searchable={true}
-                isMulti
-                className="w-full shadow-md"
-                classNamePrefix="custom-select-dropdown"
-              /> */}
+            
               <div className="flex flex-col gap-3">
                 {/* Country Dropdown */}
                 <select
@@ -863,7 +769,7 @@ const Internships = () => {
                   className="border-2 py-1 rounded-md px-2"
                   id="state"
                   value={selectedState}
-                  onChange={(e) => setSelectedState(e.target.value)}
+                  onChange={(e) => { setSelectedState(e.target.value); setSelectedCity("") }}
                   disabled={!selectedCountry}
                 >
                   <option value="">-- Select State --</option>
@@ -877,7 +783,9 @@ const Internships = () => {
                 {/* City Dropdown */}
                 <select
                   id="city"
+                  value={selectedCity}
                   disabled={!selectedState}
+                  onChange={(e) => setSelectedCity(e.target.value)}
                   className="border-2 py-1 rounded-md px-2"
                 >
                   <option value="">-- Select City --</option>
@@ -957,8 +865,8 @@ const Internships = () => {
                       <div className="flex  items-center text-gray-700 mb-2">
                         <FaMapMarkerAlt className="mr-1" />
                         <span>
-                          {internship.internLocation
-                            ? `${internship.internLocation}`
+                          {internship.internLocation.country|| internship.internLocation.state||internship.internLocation.city
+                            ? `${internship.internLocation.country}, ${internship.internLocation.state}, ${internship.internLocation.city}`
                             : "Remote"}
                         </span>
                       </div>
@@ -1012,7 +920,7 @@ const Internships = () => {
                           internship.studentCount < 20
                             ? "text-green-500"
                             : "text-gray-500"
-                        } my-1 w-fit md:w-auto`}
+                        } my-2 w-fit sm:my-0 md:w-auto`}
                       >
                         {internship.studentCount} Applicants
                       </div>

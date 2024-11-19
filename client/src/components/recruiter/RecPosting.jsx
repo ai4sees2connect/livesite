@@ -12,12 +12,15 @@ import { useRecruiter } from "./context/recruiterContext";
 import Spinner from "../common/Spinner";
 import { Link, useNavigate } from "react-router-dom";
 import statesAndCities from "../common/statesAndCities";
+import countryData from "../TESTJSONS/countries+states+cities.json";
+
+
 
 const RecPosting = () => {
   const [formData, setFormData] = useState({
     internshipName: "",
     internshipType: "",
-    internLocation: "",
+    internLocation:{},
     internshipStartQues: "",
     stipendType: "",
     incentiveDescription: "",
@@ -41,8 +44,11 @@ const RecPosting = () => {
   const [selectedPerks, setSelectedPerks] = useState([]);
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
   const [startQuesDays, setStartQuesDays] = useState(null);
-  const { recruiter,refreshData } = useRecruiter();
-  const navigate=useNavigate();
+  const { recruiter, refreshData } = useRecruiter();
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const navigate = useNavigate();
   const jobProfiles = [
     "3D Animation",
     "Account Management",
@@ -249,6 +255,14 @@ const RecPosting = () => {
     "Web Development",
   ];
 
+  const states = selectedCountry
+? countryData.find((c) => c.name === selectedCountry)?.states
+: [];
+const cities = selectedState
+? states.find((s) => s.name === selectedState)?.cities
+: [];
+
+
   // const statesAndUTs = [
   //   { value: "All Locations", label: "All Locations" },
   //   { value: "Andhra Pradesh", label: "Andhra Pradesh" },
@@ -310,20 +324,20 @@ const RecPosting = () => {
 
   useEffect(() => {
     // refreshData();
-    const getData=()=>{
-      
-        if( recruiter?.orgDescription==='' || recruiter?.companyCity==='' || recruiter?.industryType==='' || recruiter?.numOfEmployees===''){
-         toast.info('Please complete your profile');
-         navigate(`/recruiter/profile/${userId}`)
-         return;
-        }
+    const getData = () => {
+
+      if (recruiter?.orgDescription === '' || recruiter?.companyCity === '' || recruiter?.industryType === '' || recruiter?.numOfEmployees === '') {
+        toast.info('Please complete your profile');
+        navigate(`/recruiter/profile/${userId}`)
+        return;
+      }
     }
     setTimeout(() => {
       getData();
     }, 1000);
-    
+
   }, [recruiter])
-  
+
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -364,6 +378,10 @@ const RecPosting = () => {
     console.log("This is a skill set", selectedOptions);
   };
 
+  console.log('this is country', selectedCountry)
+  console.log('this is state', selectedState)
+  console.log('this is city', selectedCity)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const skillSet = selectedSkills.map((skill) => {
@@ -394,7 +412,11 @@ const RecPosting = () => {
       internshipName: formData.internshipName,
       skills: skillSet,
       internshipType: formData.internshipType,
-      internLocation: formData.internLocation,
+      internLocation: {
+        country: selectedCountry || "",
+        state: selectedState || "",
+        city: selectedCity || "",
+      },
       internshipStartQues: formData.internshipStartQues,
       numberOfOpenings: formData.numberOfOpenings,
       duration: formData.duration,
@@ -409,31 +431,22 @@ const RecPosting = () => {
       assessment: formData.assessment,
     };
     console.log(postData);
-    // if (
-    //   !postData.internshipName ||
-    //   !postData.internshipType ||
-    //   !postData.internshipStartQues ||
-    //   !postData.stipendType ||
-    //   !postData.ppoCheck ||
-    //   postData.perks.length == 0 ||
-    //   !postData.jobProfile ||
-    //   !postData.duration ||
-    //   !postData.numberOfOpenings ||
-    //   !postData.description ||
-    //   postData.skills.length == 0
-    // ) {
-    //   toast.error("Please enter all fields");
-    //   return;
-    // }
 
     if (postData.internshipType === "Remote") {
-      // setFormData({...formData,internshipType: 'Work from Home'})
       postData.internshipType = "Work from Home";
-      postData.internLocation = "";
+      postData.internLocation = { country: "", state: "", city: "" }; // Clear all location fields
     } else if (postData.internshipType === "Office") {
       postData.internshipType = "Work from Office";
+      if (!postData.internLocation.country || !postData.internLocation.state || !postData.internLocation.city) {
+        toast.info("Please provide a valid country, state, and city for 'Work from Office' internships.");
+        return;
+      }
     } else if (postData.internshipType === "Hybrid") {
       postData.internshipType = "Hybrid";
+      if (!postData.internLocation.country || !postData.internLocation.state || !postData.internLocation.city) {
+        toast.info("Please provide country, state, and city for 'Hybrid' internships.");
+        return;
+      }
     }
 
     console.log("sending this data", postData);
@@ -617,26 +630,61 @@ const RecPosting = () => {
 
           {(formData.internshipType === "Office" ||
             formData.internshipType === "Hybrid") && (
-            <div className="flex flex-col my-5">
-              {/* <input type="text"
-                name="internLocation"
-                value={formData.internLocation}
-                onChange={handleChange}
-                className='p-2 border border-gray-300 rounded-md shadow-md'
-                placeholder='Enter Location e.g Delhi or Mumbai' /> */}
 
-              <Select
-                options={statesAndCities}
-                values={formData.internLocation}
-                onChange={(value) =>
-                  setFormData({ ...formData, internLocation: value.value })
-                }
-                placeholder="Select a location"
-                searchable={true}
-                className="w-full shadow-md"
-              />
-            </div>
-          )}
+
+              <div className="flex flex-col gap-3">
+                {/* Country Dropdown */}
+                <select
+                  className="border-2 py-1 rounded-md px-2"
+                  id="country"
+                  value={selectedCountry}
+                  onChange={(e) => {
+                    setSelectedCountry(e.target.value);
+                    setSelectedState(""); // Reset state and cities dropdowns
+                    setSelectedCity("");
+                  }}
+                >
+                  <option value="">-- Select Country --</option>
+                  {countryData.map((country) => (
+                    <option key={country.id} value={country.name}>
+                      {country.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* State Dropdown */}
+                <select
+                  className="border-2 py-1 rounded-md px-2"
+                  id="state"
+                  value={selectedState}
+                  onChange={(e) => { setSelectedState(e.target.value); setSelectedCity("") }}
+                  disabled={!selectedCountry}
+                >
+                  <option value="">-- Select State --</option>
+                  {states?.map((state) => (
+                    <option key={state.id} value={state.name}>
+                      {state.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* City Dropdown */}
+                <select
+                  id="city"
+                  value={selectedCity}
+                  disabled={!selectedState}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                  className="border-2 py-1 rounded-md px-2"
+                >
+                  <option value="">-- Select City --</option>
+                  {cities?.map((city) => (
+                    <option key={city.id} value={city.name}>
+                      {city.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
           <div className="flex flex-col my-5 space-y-3">
             <p className="font-medium">Internship Start date</p>
@@ -817,33 +865,33 @@ const RecPosting = () => {
             {(formData.stipendType === "fixed" ||
               formData.stipendType === "negotiable" ||
               formData.stipendType === "performance-based") && (
-              <div className="flex items-center mb-4">
-                {/* Currency Selector */}
-                <select
-                  name="currency"
-                  value={formData.currency}
-                  onChange={handleChange}
-                  className="p-1 border border-gray-300 rounded-md shadow-md mr-2"
-                >
-                  <option value="₹">₹ (INR)</option>
-                  <option value="$">$ (USD)</option>
-                  <option value="€">€ (EUR)</option>
-                  <option value="£">£ (GBP)</option>
-                  <option value="¥">¥ (JPY)</option>
-                </select>
-                {/* Stipend Amount Input */}
-                <input
-                  type="number"
-                  name="stipend"
-                  value={formData.stipend}
-                  onChange={handleChange}
-                  className="p-1 border w-28 border-gray-300 rounded-md shadow-md"
-                  placeholder="e.g 4000"
-                  required
-                />{" "}
-                /month
-              </div>
-            )}
+                <div className="flex items-center mb-4">
+                  {/* Currency Selector */}
+                  <select
+                    name="currency"
+                    value={formData.currency}
+                    onChange={handleChange}
+                    className="p-1 border border-gray-300 rounded-md shadow-md mr-2"
+                  >
+                    <option value="₹">₹ (INR)</option>
+                    <option value="$">$ (USD)</option>
+                    <option value="€">€ (EUR)</option>
+                    <option value="£">£ (GBP)</option>
+                    <option value="¥">¥ (JPY)</option>
+                  </select>
+                  {/* Stipend Amount Input */}
+                  <input
+                    type="number"
+                    name="stipend"
+                    value={formData.stipend}
+                    onChange={handleChange}
+                    className="p-1 border w-28 border-gray-300 rounded-md shadow-md"
+                    placeholder="e.g 4000"
+                    required
+                  />{" "}
+                  /month
+                </div>
+              )}
 
             {/* Conditionally render Incentive Description for Performance Based */}
             {formData.stipendType === "performance-based" && (
