@@ -63,8 +63,8 @@ function App() {
   return (
     <>
       {(location.pathname === '/' || location.pathname==='/internships') && <NavbarUniversal />}
-      { !location.pathname.endsWith('/signup') && !location.pathname.endsWith('/login') && location.pathname !== '/' && location.pathname.startsWith('/student')&&  <Navbar />}
-      { !location.pathname.endsWith('/signup') && !location.pathname.endsWith('/login') && location.pathname !== '/' && location.pathname.startsWith('/recruiter')&&  <RecNavbar />}
+      { !location.pathname.endsWith('/signup') && !location.pathname.endsWith('/forget-pass') && !location.pathname.endsWith('/login') && location.pathname !== '/' && location.pathname.startsWith('/student')&&  <Navbar />}
+      { !location.pathname.endsWith('/signup') && !location.pathname.endsWith('/forget-pass') && !location.pathname.endsWith('/login') && location.pathname !== '/' && location.pathname.startsWith('/recruiter')&&  <RecNavbar />}
       <Routes>
         {/* <Route path="/" element={<Main />} /> */}
         {/* <Route path="/spinner" element={<Spinner />} /> */}

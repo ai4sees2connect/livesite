@@ -32,7 +32,7 @@ const RecProfile = () => {
   const idFromToken = getUserIdFromToken();
   const { userId } = useParams();
   const navigate = useNavigate();
-  const { logout, recruiter } = useRecruiter();
+  const { logout, recruiter, refreshData } = useRecruiter();
   const token = localStorage.getItem("token");
   const [logo, setLogo] = useState(null);
   const [logoUrl, setLogoUrl] = useState(null);
@@ -54,6 +54,7 @@ const RecProfile = () => {
   const [industry, setIndustry] = useState("");
   const [employeesCount, setEmployeesCount] = useState("");
   const [cityPresent, setCityPresent] = useState("");
+  const [companyPresent, setCompanyPresent] = useState(false);
 
   console.log(recruiter);
 
@@ -101,7 +102,21 @@ const RecProfile = () => {
     if (recruiter?.numOfEmployees) {
       setEmployeesCount(recruiter.numOfEmployees);
     }
+
+    if(recruiter?.companyCertificate?.data){
+      setCompanyPresent(true);
+      urlCreator(recruiter.companyCertificate)
+    }
   }, [recruiter]);
+
+  const urlCreator=(companyCertificate)=>{
+    const byteArray = new Uint8Array(companyCertificate.data.data);
+    const blob = new Blob([byteArray], {
+      type: companyCertificate.contentType,
+    });
+    const url = URL.createObjectURL(blob);
+    setPdfUrl(url);
+  }
 
   console.log("this is location", companyLocation);
 
@@ -164,16 +179,16 @@ const RecProfile = () => {
     }
   }
 
-  useEffect(() => {
-    if (recruiter?.companyCertificate?.data) {
-      const byteArray = new Uint8Array(recruiter.companyCertificate.data.data);
-      const blob = new Blob([byteArray], {
-        type: recruiter.companyCertificate.contentType,
-      });
-      const url = URL.createObjectURL(blob);
-      setPdfUrl(url);
-    }
-  }, [recruiter]);
+  // useEffect(() => {
+  //   if (recruiter?.companyCertificate?.data) {
+  //     const byteArray = new Uint8Array(recruiter.companyCertificate.data.data);
+  //     const blob = new Blob([byteArray], {
+  //       type: recruiter.companyCertificate.contentType,
+  //     });
+  //     const url = URL.createObjectURL(blob);
+  //     setPdfUrl(url);
+  //   }
+  // }, [recruiter]);
 
   // const handleFileChange = (e) => {
   //   setLogo(e.target.files[0]);
@@ -283,6 +298,7 @@ const RecProfile = () => {
         // console.log('this is from backend',response.data.companyCertificate)
         const url = URL.createObjectURL(selectedFile);
         setPdfUrl(url);
+        refreshData();
 
         setCompanyUrl("");
         // setSelectedFile(null);
@@ -629,6 +645,8 @@ const RecProfile = () => {
   const handleCompanySizeChange = (e) => {
     setEmployeesCount(e.target.value);
   };
+
+  // console.log(recruiter.companyWebsite,'******', recruiter.companyCertificate,"******",pdfUrl);
   // country state city Api
 
   // Get available states and cities based on selections
@@ -655,8 +673,8 @@ const RecProfile = () => {
           {/* tab 1 */}
           <button
             className={`py-2 px-4 flex flex-col justify-center items-center ${activeTab === "Tab1"
-                ? "text-blue-500 border-b-2 border-blue-500"
-                : "text-gray-500 border-b-2 border-white"
+              ? "text-blue-500 border-b-2 border-blue-500"
+              : "text-gray-500 border-b-2 border-white"
               }`}
             onClick={() => setActiveTab("Tab1")}
           >
@@ -666,8 +684,8 @@ const RecProfile = () => {
           {/* tab-2 */}
           <button
             className={`py-2 px-4 flex flex-col justify-center items-center  ${activeTab === "Tab2"
-                ? "text-blue-500 border-b-2 border-blue-500"
-                : "text-gray-500 border-b-2 border-white"
+              ? "text-blue-500 border-b-2 border-blue-500"
+              : "text-gray-500 border-b-2 border-white"
               }`}
             onClick={() => setActiveTab("Tab2")}
           >
@@ -814,35 +832,35 @@ const RecProfile = () => {
                       <p className="text-gray-600 ml-2 md:ml-5">
                         <span
                           className={`flex items-center gap-[2px] ${recruiter?.companyCertificate?.status === "pending"
-                              ? "text-yellow-500"
+                            ? "text-yellow-500"
+                            : recruiter?.companyCertificate?.status ===
+                              "Verified"
+                              ? "text-green-500"
                               : recruiter?.companyCertificate?.status ===
-                                "Verified"
-                                ? "text-green-500"
-                                : recruiter?.companyCertificate?.status ===
-                                  "Rejected"
-                                  ? "text-red-500"
-                                  : ""
+                                "Rejected"
+                                ? "text-red-500"
+                                : ""
                             }`}
                         >
                           <MdOutlineCancel
                             className={`${recruiter?.companyCertificate?.status ===
-                                "Rejected"
-                                ? "block"
-                                : "hidden"
+                              "Rejected"
+                              ? "block"
+                              : "hidden"
                               }`}
                           />
                           <MdVerifiedUser
                             className={`${recruiter?.companyCertificate?.status ===
-                                "Verified"
-                                ? "block"
-                                : "hidden"
+                              "Verified"
+                              ? "block"
+                              : "hidden"
                               }`}
                           />
                           <MdOutlinePendingActions
                             className={`${recruiter?.companyCertificate?.status ===
-                                "pending"
-                                ? "block"
-                                : "hidden"
+                              "pending"
+                              ? "block"
+                              : "hidden"
                               }`}
                           />
                           {recruiter?.companyCertificate?.status}
@@ -915,8 +933,8 @@ const RecProfile = () => {
                     {/* Character Count */}
                     <div
                       className={`mt-1 text-sm ${companyDesc.length === maxChars
-                          ? "text-red-500"
-                          : "text-gray-500"
+                        ? "text-red-500"
+                        : "text-gray-500"
                         }`}
                     >
                       {maxChars - companyDesc.length} characters remaining
@@ -1081,7 +1099,7 @@ const RecProfile = () => {
               </div>
               {/* File Upload */}
               <div className="p-5 border-2 mt-5 rounded-md">
-                {!recruiter.companyWebsite && !recruiter.companyCertificate && !pdfUrl && (
+                {!companyPresent && !recruiter.companyWebsite && !pdfUrl && (
                   <div className="flex flex-col space-y-3  justify-center">
                     {/* Trigger button to open popup */}
                     <p className="text-red-400">
@@ -1106,6 +1124,9 @@ const RecProfile = () => {
                               setIsModalOpen(false);
                               setSelectedFile(null);
                               setCompanyUrl("");
+                              if(recruiter?.companyCertificate){
+                                urlCreator(recruiter.companyCertificate);
+                              }
                             }}
                           />
                           <div className="flex flex-col md:flex-row  justify-center gap-5 items-center">
@@ -1185,6 +1206,16 @@ const RecProfile = () => {
                     >
                       Download Company Incorporation Certificate?
                     </a>
+                    <div
+                      onClick={() => {
+                        setIsModalOpen(true); // Open the modal dialog box
+                        setPdfUrl(null);
+                        setCompanyPresent(false)
+                      }}
+                      className="hover:cursor-pointer bg-blue-500 rounded-md px-2 py-1 w-fit mx-auto text-white"
+                    >
+                      Reupload
+                    </div>
                     <p className="text-gray-600 text-md font-semibold">
                       (
                       {recruiter?.companyCertificate
@@ -1198,32 +1229,32 @@ const RecProfile = () => {
                       Verification status:
                       <span
                         className={`flex items-center gap-[2px] ${recruiter?.companyCertificate?.status === "pending"
-                            ? "text-yellow-500"
+                          ? "text-yellow-500"
+                          : recruiter?.companyCertificate?.status ===
+                            "Verified"
+                            ? "text-green-500"
                             : recruiter?.companyCertificate?.status ===
-                              "Verified"
-                              ? "text-green-500"
-                              : recruiter?.companyCertificate?.status ===
-                                "Rejected"
-                                ? "text-red-500"
-                                : ""
+                              "Rejected"
+                              ? "text-red-500"
+                              : ""
                           } `}
                       >
                         <MdOutlineCancel
                           className={`${recruiter?.companyCertificate?.status === "Rejected"
-                              ? "block"
-                              : "hidden"
+                            ? "block"
+                            : "hidden"
                             }`}
                         />
                         <MdVerifiedUser
                           className={`${recruiter?.companyCertificate?.status === "Verified"
-                              ? "block"
-                              : "hidden"
+                            ? "block"
+                            : "hidden"
                             }`}
                         />
                         <MdOutlinePendingActions
                           className={`${recruiter?.companyCertificate?.status === "pending"
-                              ? "block"
-                              : "hidden"
+                            ? "block"
+                            : "hidden"
                             }`}
                         />
                         {recruiter?.companyCertificate?.status || "Pending"}
