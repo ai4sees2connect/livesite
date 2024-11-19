@@ -130,7 +130,7 @@ const AdminDashboard = () => {
           {recruiters.map((recruiter) => {
             console.log(recruiter);
             const companyWebsite = recruiter.companyWebsite.link ? recruiter.companyWebsite : null;
-            const companyCertificate = recruiter.companyCertificate.data ? recruiter.companyCertificate : null;
+            const companyCertificate = recruiter.companyCertificate?.data ? recruiter.companyCertificate : null;
             const status=companyWebsite?companyWebsite.status:companyCertificate.status
             console.log('this is',recruiter.firstname, '.....', status)
 

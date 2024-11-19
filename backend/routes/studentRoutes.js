@@ -603,7 +603,7 @@ router.get('/internships', async (req, res) => {
     const limit = 9;  // Number of internships per page
     const skip = (parseInt(page) - 1) * limit;  // Calculate skip value for pagination
 
-    const filters = { status: 'Active' };
+    const filters = { status: 'Active',recruiter: { $ne: null } };
 
     if (workType && workType !== 'All Internships') {
       filters.internshipType = workType;
