@@ -8,7 +8,7 @@ const GoBackButton = ({ onClick }) => {
       onClick={onClick}
     >
       <div
-        className="bg-green-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500"
+        className="bg-blue-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
