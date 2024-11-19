@@ -9,6 +9,7 @@ import getUserIdFromToken from "./authUtils";
 import { auth, provider } from "../../common/firebaseConfig";
 import { signInWithPopup } from "firebase/auth";
 import { toast } from "react-toastify";
+import { FaCheckCircle } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 import { useStudent } from "../context/studentContext";
 import login_bg from "../../../images/login_bg.jpeg";
@@ -199,18 +200,21 @@ function Signup() {
       <div className="relative flex-1 hidden lg:block ">
         <img src={login_bg} alt="" className=" w-full h-full" />
       </div>
-      <div className="flex-1 mx-auto w-[90%] mb-20 min-h-[635px]">
+      <div className="flex-1 mx-auto w-[90%] mb-20">
         {/* back button */}
         <div className="absolute left-0 top-5  rounded-full">
-          <Link to="/" className="px-5 py-1 text-blue-400  font-semibold">
-            <GoBackButton />
+        <Link
+            to="/"
+            className="px-5 py-1 text-blue-400  font-semibold"
+          >
+            <GoBackButton/>
           </Link>
         </div>
         <div className="flex flex-col items-center mt-[20px]">
-          <p className="text-5xl font-extrabold mb-5 md:mb-12 mt-10 lg:mt-0">
+          <p className="text-3xl lg:text-5xl font-extrabold mb-5 md:mb-12">
             Sign up
           </p>
-          <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center mt-8 md:mt-0">
+          <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center">
             <ToggleButton type="student" auth="signup" />
             <ToggleButtonSecond type="student" auth="signup" />
           </div>
@@ -219,7 +223,7 @@ function Signup() {
           {/* form starts from here */}
 
           <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full ">
-            <form className="space-y-4 w-full lg:w-[60%]  md:max-w-xl px-5 lg:px-0">
+            <form className="space-y-4 w-[80%] lg:w-[60%]  md:max-w-xl px-5 lg:px-0">
               <div className="mx-auto md:max-w-xl">
                 <input
                   type="text"
@@ -258,8 +262,7 @@ function Signup() {
                 )}
               </div>
 
-              <div className="flex flex-col">
-                <div className="flex relative">
+              <div className="flex flex-col items-center relative">
                   <input
                     type="email"
                     id="email"
@@ -276,14 +279,23 @@ function Signup() {
                     className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                     required
                   />
-                  {validateEmail(email) && !sendingOtp && (
+                  {validateEmail(email) && !sendingOtp && !otpInput && (
                     <button
-                      className="text-blue-500 text-left absolute right-3  sm:-right-[73px] sm:top-3 text-xs sm:text-base top-4"
+                      className="border border-blue-500 bg-white text-blue-500 text-left absolute right-3 sm:-right-[70px] sm:top-3 text-xxs sm:text-sm top-3 rounded-md px-0.5 py-0.5 shadow-md hover:shadow-lg transition-shadow duration-200"
                       onClick={handleSendOtp}
                     >
                       Send OTP
                     </button>
                   )}
+                        {validateEmail(email) && !sendingOtp && otpInput && (
+                  <button
+                    className="border border-blue-500 bg-white text-blue-500 text-left absolute right-2 sm:-right-[80px] sm:top-3 text-xxs sm:text-sm top-5 rounded-md px-0.5 py-1 shadow-md hover:shadow-lg transition-shadow duration-200"
+                    onClick={handleSendOtp}
+                  >
+                    Resend otp
+                  </button>
+                )}
+
 
                   {sendingOtp && (
                     <FontAwesomeIcon
@@ -292,7 +304,7 @@ function Signup() {
                       className="h-5 w-5 text-black absolute right-2 top-4"
                     />
                   )}
-                </div>
+      
                 {emailError && (
                   <p className="text-red-500 text-left w-full">{emailError}</p>
                 )}
@@ -306,12 +318,19 @@ function Signup() {
                       placeholder="Enter otp"
                       className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-20 w-full"
                     />
-                    <button
-                      onClick={handleVerifyOtp}
-                      className="absolute -right-[40px] top-3 text-blue-500 text-sm"
-                    >
-                      Verify
-                    </button>
+                    {!otpVerified ? (
+                      <button
+                        onClick={handleVerifyOtp}
+                        className="border border-blue-500 bg-white text-blue-500 text-left absolute right-3 sm:-right-[45px] sm:top-3 text-xxs sm:text-sm top-3 rounded-md px-0.5 py-1 shadow-md hover:shadow-lg transition-shadow duration-200"
+                      >
+                        Verify
+                      </button>
+                    ) : (
+                      <div className="absolute flex items-center space-x-1 right-3 sm:-right-[78px] top-4 sm:top-3 text-green-500 text-xs sm:text-base">
+                        <FaCheckCircle />
+                        <span>Verified</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
