@@ -1029,8 +1029,8 @@ const Internships = () => {
                         <div className="flex items-center text-gray-700 mb-1 lg:mb-2">
                           <FaMapMarkerAlt className="mr-2" />
                           <span>
-                            {selectedInternship.internLocation
-                              ? `${selectedInternship.internLocation}`
+                            {selectedInternship.internLocation.country
+                              ? `${selectedInternship.internLocation.country +',' +selectedInternship.internLocation.state + ','+ selectedInternship.internLocation.city}`
                               : "Remote"}
                           </span>
                         </div>
