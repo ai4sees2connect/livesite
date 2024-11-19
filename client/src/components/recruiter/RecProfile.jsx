@@ -55,6 +55,7 @@ const RecProfile = () => {
   const [employeesCount, setEmployeesCount] = useState("");
   const [cityPresent, setCityPresent] = useState("");
   const [companyPresent, setCompanyPresent] = useState(false);
+  const [linkPresent, setLinkPresent] = useState(false);
 
   console.log(recruiter);
 
@@ -103,13 +104,17 @@ const RecProfile = () => {
       setEmployeesCount(recruiter.numOfEmployees);
     }
 
-    if(recruiter?.companyCertificate?.data){
+    if (recruiter?.companyCertificate?.data) {
       setCompanyPresent(true);
       urlCreator(recruiter.companyCertificate)
     }
+    if (recruiter?.companyWebsite) {
+      setLinkPresent(true);
+      setCompanyUrl(recruiter.companyWebsite.link);
+    }
   }, [recruiter]);
 
-  const urlCreator=(companyCertificate)=>{
+  const urlCreator = (companyCertificate) => {
     const byteArray = new Uint8Array(companyCertificate.data.data);
     const blob = new Blob([byteArray], {
       type: companyCertificate.contentType,
@@ -118,7 +123,7 @@ const RecProfile = () => {
     setPdfUrl(url);
   }
 
-  console.log("this is location", companyLocation);
+  console.log('this is link', companyUrl);
 
   useEffect(() => {
     if (!token) {
@@ -173,26 +178,8 @@ const RecProfile = () => {
     };
   }, [logo]);
 
-  const getCertificate = () => {
-    if (selectedFile) {
 
-    }
-  }
 
-  // useEffect(() => {
-  //   if (recruiter?.companyCertificate?.data) {
-  //     const byteArray = new Uint8Array(recruiter.companyCertificate.data.data);
-  //     const blob = new Blob([byteArray], {
-  //       type: recruiter.companyCertificate.contentType,
-  //     });
-  //     const url = URL.createObjectURL(blob);
-  //     setPdfUrl(url);
-  //   }
-  // }, [recruiter]);
-
-  // const handleFileChange = (e) => {
-  //   setLogo(e.target.files[0]);
-  // };
 
   const handleFileUpload = async (e) => {
     // if (!logo) return;
@@ -275,11 +262,12 @@ const RecProfile = () => {
       // Check if the company URL is provided
       if (companyUrl) {
         formData.append("companyWebsite", companyUrl);
+        toast.info('link is present');
       }
 
-      // Check if the selected file is provided
       if (selectedFile) {
         formData.append("companyCertificate", selectedFile);
+        toast.info('file is present');
       }
 
       // Make an API call to submit the data
@@ -296,11 +284,20 @@ const RecProfile = () => {
       if (response.status === 200) {
         toast.success("Details submitted successfully!");
         // console.log('this is from backend',response.data.companyCertificate)
-        const url = URL.createObjectURL(selectedFile);
-        setPdfUrl(url);
+        console.log('this is response', response.data);
+        if (response.data.companyCertificate) {
+          const url = URL.createObjectURL(selectedFile);
+          setPdfUrl(url);
+          
+          setCompanyUrl("");
+          setCompanyPresent(true);
+        }
+        if (response.data.companyWebsite) {
+          setCompanyUrl(response.data.companyWebsite.link)
+          setLinkPresent(true);
+          setPdfUrl(null);
+        }
         refreshData();
-
-        setCompanyUrl("");
         // setSelectedFile(null);
         // window.location.reload();
       } else {
@@ -1099,7 +1096,7 @@ const RecProfile = () => {
               </div>
               {/* File Upload */}
               <div className="p-5 border-2 mt-5 rounded-md">
-                {!companyPresent && !recruiter.companyWebsite && !pdfUrl && (
+                {!companyPresent && !linkPresent &&(
                   <div className="flex flex-col space-y-3  justify-center">
                     {/* Trigger button to open popup */}
                     <p className="text-red-400">
@@ -1124,8 +1121,15 @@ const RecProfile = () => {
                               setIsModalOpen(false);
                               setSelectedFile(null);
                               setCompanyUrl("");
-                              if(recruiter?.companyCertificate){
+                              if (recruiter?.companyCertificate) {
                                 urlCreator(recruiter.companyCertificate);
+                                setCompanyPresent(true);
+                                setLinkPresent(false);
+                              }
+                              if(recruiter?.companyWebsite){
+                                setCompanyUrl(recruiter.companyWebsite.link);
+                                setLinkPresent(true);
+                                setCompanyPresent(false);
                               }
                             }}
                           />
@@ -1165,14 +1169,14 @@ const RecProfile = () => {
                             </div>
 
                             {/* URL Input Section */}
-                            <div>
+                            <div className="">
                               {!selectedFile && (
-                                <div className="w-full">
+                                <div className="w-full ">
                                   <input
                                     type="text"
-                                    placeholder="Enter company's website URL"
+                                    placeholder="Enter website link"
                                     onChange={handleUrlInputChange}
-                                    className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500 w-full"
+                                    className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500 w-[85%] "
                                   />
                                 </div>
                               )}
@@ -1210,12 +1214,17 @@ const RecProfile = () => {
                       onClick={() => {
                         setIsModalOpen(true); // Open the modal dialog box
                         setPdfUrl(null);
-                        setCompanyPresent(false)
+                        setCompanyPresent(false);
+                        setSelectedFile(null);
                       }}
                       className="hover:cursor-pointer bg-blue-500 rounded-md px-2 py-1 w-fit mx-auto text-white"
                     >
                       Reupload
                     </div>
+
+                    {companyPresent && <div onClick={()=>{setCompanyPresent(false);setIsModalOpen(true); setSelectedFile(null)}} className="text-green-600 hover:cursor-pointer">
+                      Want to provide company's website link?
+                    </div>}
                     <p className="text-gray-600 text-md font-semibold">
                       (
                       {recruiter?.companyCertificate
@@ -1273,6 +1282,15 @@ const RecProfile = () => {
                         </p>
                       </div>
                     )}
+                  </div>
+                )}
+                {companyUrl && (
+                  <div className="text-center space-y-2">
+                    <div className="font-semibold text-lg">Your Company's Wesbite Link</div>
+                    <a href={companyUrl} target="_blank"
+                      rel="noopener noreferrer">{companyUrl}</a>
+                      <div onClick={()=>{setLinkPresent(false);setIsModalOpen(true);setPdfUrl(null);setCompanyUrl(null)}} className="hover:cursor-pointer bg-blue-500 rounded-md px-2 py-1 w-fit mx-auto text-white">Update Link</div>
+                      
                   </div>
                 )}
               </div>

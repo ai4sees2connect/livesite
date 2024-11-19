@@ -559,6 +559,7 @@ router.post(
       const { companyWebsite } = req.body; // Retrieve the company URL from the request body
 
       let updateData = {};
+      let responseData = {};
 
       // If a company URL is provided, update the URL
       if (companyWebsite) {
@@ -566,6 +567,8 @@ router.post(
           link: companyWebsite,
           uploadedDate: new Date(), // Track the date of the URL submission
         };
+        responseData.companyWebsite = updateData.companyWebsite;
+        updateData.companyCertificate = null;
       }
 
       // If a file (company certificate) is uploaded, process the file
@@ -577,6 +580,14 @@ router.post(
           fileSize: req.file.size,
           uploadedDate: new Date(), // Track the date of the file upload
         };
+        responseData.companyCertificate = {
+          filename: req.file.originalname,
+          contentType: req.file.mimetype,
+          fileSize: req.file.size,
+          uploadedDate: updateData.companyCertificate.uploadedDate,
+        }; // Add only necessary file details to response
+
+        updateData.companyWebsite = null;
       }
 
       // Update recruiter with company details (either URL or certificate)
@@ -592,7 +603,7 @@ router.post(
 
       return res
         .status(200)
-        .json({ message: "Details updated successfully", recruiter, companyCertificate: updateData.companyCertificate });
+        .json({ message: "Details updated successfully", ...responseData  });
     } catch (error) {
       console.error("Error uploading company details:", error);
       res.status(500).json({ message: "Server error", error });
