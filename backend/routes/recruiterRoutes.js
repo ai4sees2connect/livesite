@@ -312,7 +312,7 @@ router.get("/details", async (req, res) => {
         industryType:recruiter.industryType,
         numOfEmployees:recruiter.numOfEmployees,
         countryCode:recruiter.countryCode,
-        companyCity:recruiter.companyCity,
+        companyLocation:recruiter.companyLocation,
         companyLogo: recruiter.companyLogo,
         subscription:recruiter.subscription,
         companyName: recruiter.companyName,
@@ -353,14 +353,14 @@ router.put('/update-details/:recruiterId', async (req, res) => {
   }
 });
 router.put('/update-details-2/:recruiterId', async (req, res) => {
-  const { companyName, independentRec,orgDescription,companyCity, industryType, numOfEmployees} = req.body;
+  const { companyName, independentRec,orgDescription,companyLocation, industryType, numOfEmployees} = req.body;
   const recruiterId= req.params.recruiterId; // Assuming the user ID is stored in req.user
 
   try {
     // Update the user contact information in the database
     const recruiter = await Recruiter.findByIdAndUpdate(
       recruiterId,
-      { companyName, independentRec,orgDescription,companyCity, industryType,numOfEmployees},
+      { companyName, independentRec,orgDescription,companyLocation, industryType,numOfEmployees},
       { new: true } // returns the updated document
     );
 

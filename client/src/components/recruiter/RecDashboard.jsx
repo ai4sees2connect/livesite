@@ -17,6 +17,7 @@ import {
 import TimeAgo from "../common/TimeAgo";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useRecruiter } from "./context/recruiterContext";
 
 const RecDashboard = () => {
   const [internships, setInternships] = useState([]);
@@ -27,6 +28,7 @@ const RecDashboard = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const {refreshData}=useRecruiter();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,6 +39,7 @@ const RecDashboard = () => {
     if (!token) {
       navigate("/");
     }
+    refreshData();
   }, [token]);
 
   useEffect(() => {

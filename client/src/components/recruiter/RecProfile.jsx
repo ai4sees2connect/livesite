@@ -56,6 +56,9 @@ const RecProfile = () => {
   const [cityPresent, setCityPresent] = useState("");
   const [companyPresent, setCompanyPresent] = useState(false);
   const [linkPresent, setLinkPresent] = useState(false);
+  const [companyCountry,setCompanyCountry] =useState("");
+  const [companyState,setCompanyState] =useState("");
+  const [companyCity,setCompanyCity] =useState("");
 
   console.log(recruiter);
 
@@ -92,8 +95,14 @@ const RecProfile = () => {
       setDesignation(recruiter.designation);
     }
 
-    if (recruiter?.companyCity) {
-      setCompanyLocation(recruiter.companyCity);
+    if (recruiter?.companyLocation?.country) {
+      setSelectedCountry(recruiter.companyLocation.country);
+    }
+    if (recruiter?.companyLocation?.state) {
+      setSelectedState(recruiter.companyLocation.state);
+    }
+    if (recruiter?.companyLocation?.city) {
+      setSelectedCity(recruiter.companyLocation.city);
     }
 
     if (recruiter?.industryType) {
@@ -367,7 +376,7 @@ const RecProfile = () => {
         return;
       }
 
-      if (companyLocation === "") {
+      if (selectedCountry === "" || selectedState==="" || selectedCity==="") {
         toast.error("Please enter your company location");
         return;
       }
@@ -388,7 +397,7 @@ const RecProfile = () => {
           companyName: company,
           independentRec: independentCheck,
           orgDescription: companyDesc,
-          companyCity: companyLocation,
+          companyLocation: {country:selectedCountry,state: selectedState,city: selectedCity},
           industryType: industry,
           numOfEmployees: employeesCount,
         }
@@ -639,9 +648,15 @@ const RecProfile = () => {
   // state for country and state
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const handleCompanySizeChange = (e) => {
     setEmployeesCount(e.target.value);
   };
+
+  console.log('this is country',selectedCountry);
+  console.log('this is state',selectedState);
+  console.log('this is city',selectedCity);
+
 
   // console.log(recruiter.companyWebsite,'******', recruiter.companyCertificate,"******",pdfUrl);
   // country state city Api
@@ -943,17 +958,7 @@ const RecProfile = () => {
                   <label className="text-sm text-gray-600 mb-1 ml-1">
                     Organization Location
                   </label>
-                  {/* <Select
-                    options={statesAndCities}
-                    value={statesAndCities.find(
-                      (option) => option.value === companyLocation
-                    )}
-                    onChange={(values) => setCompanyLocation(values.value)}
-                    placeholder="Select a location"
-                    searchable={true}
-                    className="w-full shadow-md"
-                    classNamePrefix="custom-select-dropdown"
-                  /> */}
+              
                   <div className="flex flex-col md:flex-row gap-3 w-full">
                     {/* Country Dropdown */}
                     <select
@@ -994,6 +999,8 @@ const RecProfile = () => {
                       id="city"
                       disabled={!selectedState}
                       className="border-2 py-1 rounded-md px-2 w-full"
+                      value={selectedCity}
+                      onChange={(e) => setSelectedCity(e.target.value)}
                     >
                       <option value="">-- Select City --</option>
                       {cities?.map((city) => (
@@ -1133,10 +1140,10 @@ const RecProfile = () => {
                               }
                             }}
                           />
-                          <div className="flex flex-col md:flex-row  justify-center gap-5 items-center">
-                            <div>
+                          <div className="flex flex-col md:flex-row  justify-center  items-center">
+                            <div className={`mx-3`}>
                               {!companyUrl && (
-                                <div className="w-full flex flex-col items-center justify-center">
+                                <div className="w-full  flex flex-col items-center justify-center">
                                   <input
                                     id="fileinput"
                                     type="file"
@@ -1146,7 +1153,7 @@ const RecProfile = () => {
                                   />
                                   <label
                                     htmlFor="fileinput"
-                                    className="text-blue-500 text-lg hover:cursor-pointer hover:scale-105 duration-300 flex justify-center items-center gap-2 border-2 px-3 rounded-md border-dashed border-blue-500"
+                                    className="text-blue-500 text-lg hover:cursor-pointer hover:scale-105 duration-300 flex justify-center items-center gap-2 border-2 px-3 mx-auto rounded-md border-dashed border-blue-500"
                                   >
                                     <FaUpload />
                                     <span>Upload PDF</span>
@@ -1160,7 +1167,7 @@ const RecProfile = () => {
                               )}
                             </div>
                             {/* OR Divider */}
-                            <div>
+                            <div className="mx-3">
                               {!selectedFile && !companyUrl && (
                                 <div className="">
                                   <span className="text-gray-400">OR</span>
@@ -1169,14 +1176,14 @@ const RecProfile = () => {
                             </div>
 
                             {/* URL Input Section */}
-                            <div className="">
+                            <div className="mx-3">
                               {!selectedFile && (
                                 <div className="w-full ">
                                   <input
                                     type="text"
                                     placeholder="Enter website link"
                                     onChange={handleUrlInputChange}
-                                    className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500 w-[85%] "
+                                    className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500  "
                                   />
                                 </div>
                               )}

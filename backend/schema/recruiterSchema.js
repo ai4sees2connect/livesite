@@ -63,9 +63,16 @@ const recruiterSchema = new mongoose.Schema({
     type: String,
     default:""
   },
-  companyCity:{
-    type:String,
-    default:""
+  companyLocation:{
+    country: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
   },
   industryType:{
     type: String,
