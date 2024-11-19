@@ -263,12 +263,6 @@ const RecPosting = () => {
   ];
 
 
-  const states = selectedCountry
-? countryData.find((c) => c.name === selectedCountry)?.states
-: [];
-const cities = selectedState
-? states.find((s) => s.name === selectedState)?.cities
-: [];
 
 
 

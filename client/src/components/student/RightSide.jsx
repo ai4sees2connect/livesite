@@ -155,7 +155,7 @@ const RightSide = () => {
   }, []);
 
   const settings = {
-    dots: false, // Show dots for navigation
+    dots: true, // Show dots for navigation
     infinite: true,
     speed: 500,
     slidesToShow: 3, // Number of slides to show at once

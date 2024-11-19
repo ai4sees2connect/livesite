@@ -709,7 +709,7 @@ router.get('/internships/top-15', async (req, res) => {
       });
     });
 
-    internships = internships.sort((a, b) => b.createdAt - a.createdAt).slice(0, 15);
+    internships = internships.sort((a, b) => b.createdAt - a.createdAt).slice(0, 8);
     
     for (const internship of internships) {
       const students = await Student.find({ 'appliedInternships.internship': internship._id });
