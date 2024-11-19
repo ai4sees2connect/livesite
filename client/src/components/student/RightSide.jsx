@@ -166,13 +166,13 @@ const RightSide = () => {
 
     responsive: [
       {
-        breakpoint: 1000,
+        breakpoint: 1100,
         settings: {
           slidesToShow: 3,
         },
       },
       {
-        breakpoint: 800,
+        breakpoint: 1000,
         settings: {
           slidesToShow: 2,
         },
@@ -262,12 +262,12 @@ const RightSide = () => {
               <div key={index} className="mx-0 md:mx-3 mb-6">
                 <div
                   key={index}
-                  className="shadow-lg border-2 p-4 rounded-lg max-h-[350px] bg-white mx-2"
+                  className="shadow-lg border-2 p-4 rounded-lg max-h-[280px] bg-white mx-2"
                 >
                   {/* Changed mx-3 to mx-2 */}
                   {/* Job company */}
                   <div className="flex justify-between items-start border-b">
-                    <div className="min-h-[100px]">
+                    <div className="min-h-[60px]">
                       <h2 className="text-sm md:text-lg text-left font-semibold">
                         {intern?.internshipName}
                       </h2>
@@ -284,10 +284,10 @@ const RightSide = () => {
                         <img
                           src={intern.logoUrl}
                           alt={intern.logoUrl}
-                          className="md:min-w-20 md:min-h-20 min-w-14 max-h-14"
+                          className="h-14"
                         />
                       ) : (
-                        <FaBuilding />
+                        <FaBuilding className="text-3xl" />
                       )}
                     </div>
                   </div>
@@ -306,8 +306,8 @@ const RightSide = () => {
                         className="text-gray-500"
                       />
                       <span className="text-sm text-gray-600">
-                        {intern.internLocation
-                          ? `${intern.internLocation}`
+                        {intern.internLocation.country
+                          ? `${intern.internLocation.city}, ${intern.internLocation.state}, ${intern.internLocation.country}`
                           : "Remote"}
                       </span>
                     </div>
@@ -320,7 +320,7 @@ const RightSide = () => {
                     {intern.stipendType === "unpaid" && (
                       <div className="flex items-center text-gray-700 mb-2">
                         <FaMoneyBillWave className="mr-1" />
-                        <span>Unpaid</span>
+                        <span className="mb-2">Unpaid</span>
                       </div>
                     )}
 
@@ -351,8 +351,8 @@ const RightSide = () => {
                     {/* Other details... */}
                   </div>
                   {/* Buttons */}
-                  <div className="flex flex-col lg:flex-row space-y-3 justify-between items-center mt-5">
-                    <p className="text-xs text-gray-600 bg-gray-300 rounded-md px-2 py-1 lg:px-3">
+                  <div className="flex justify-between items-center">
+                    <p className="text-xs text-blue-600 font-semibold bg-gray-300 rounded-md px-2 py-1 lg:px-3">
                       {intern?.internshipType}
                     </p>
                     <Link
@@ -374,7 +374,7 @@ const RightSide = () => {
       {/* Big Buttons */}
       {!token && (
         <div className="flex flex-col md:flex-row justify-center items-center py-10 px-3 lg:px-0 ">
-          <div className="min-h-[350px] p-10 bg-blue-500 text-white flex justify-center items-center w-full lg:w-[25%]">
+          <div className="min-h-[350px] p-10 bg-blue-500 text-white flex justify-center items-center w-full lg:w-[35%]">
             <div className="">
               <h2 className="text-4xl md:text-5xl font-bold mb-5">
                 WANT TO HIRE?
@@ -387,7 +387,7 @@ const RightSide = () => {
               </button>
             </div>
           </div>
-          <div className="min-h-[350px] p-10 bg-[#252d40] text-white flex justify-center items-center w-full lg:w-[25%]">
+          <div className="min-h-[350px] p-10 bg-[#252d40] text-white flex justify-center items-center w-full lg:w-[35%]">
             <div className="">
               <h2 className="text-4xl md:text-5xl font-bold mb-5">
                 WANT TO BE HIRED?

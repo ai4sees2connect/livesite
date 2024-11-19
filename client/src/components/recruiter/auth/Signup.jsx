@@ -26,6 +26,7 @@ function Signup() {
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [verifiedEmail, setVerifiedEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -88,6 +89,7 @@ function Signup() {
         // OTP verified successfully
         toast.success("OTP verified successfully!");
         setOtpVerified(true);
+        setVerifiedEmail(email);
       } else {
         // Something went wrong, show the error message
         toast.error(response.data.message);
@@ -126,9 +128,18 @@ function Signup() {
       toast.error(error.response?.data?.message || "Error sending OTP");
     }
   };
+  const handleResendOtp = async (e) => {
+    try {
+      await handleSendOtp(e);
+      setButtonDisabled(true);
+      setCountdown(30);
+    } catch (error) {
+      console.error("Error in handleResendOtp:", error);
+    }
+  };
 
   const isFormValid =
-    email.trim() !== "" &&
+    email.trim() === verifiedEmail &&
     password.trim() !== "" &&
     firstname.trim() !== "" &&
     lastname.trim() !== "" &&
@@ -204,6 +215,26 @@ function Signup() {
   const handleCountryChange = (e) => {
     setCountryCode(e.target.value);
   };
+
+  // resend button
+  const [countdown, setCountdown] = useState(30);
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+
+  useEffect(() => {
+    let timer;
+    if (buttonDisabled) {
+      timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev > 0) return prev - 1;
+          clearInterval(timer);
+          setButtonDisabled(false); // Enable the button after countdown ends
+          return 0;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(timer); // Cleanup timer on unmount
+  }, [buttonDisabled]);
 
   return (
     <div className="flex mt-10 md:mt-0 min-h-screen">
@@ -291,24 +322,45 @@ function Signup() {
                       );
                     } else setEmailError("");
                   }}
-                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
+                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full relative"
                   required
                 />
 
                 {validateEmail(email) && !sendingOtp && !otpInput && (
                   <button
-                    className="border border-blue-500 bg-white text-blue-500 text-left absolute right-3 sm:-right-[77px] sm:top-3 text-xxs sm:text-base top-3 rounded-md px-0.5 py-0.5 shadow-md hover:shadow-lg transition-shadow duration-200"
+                    className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
+                    type="button"
                     onClick={handleSendOtp}
                   >
                     Send OTP
                   </button>
                 )}
-                {validateEmail(email) && !sendingOtp && otpInput && (
+                {validateEmail(email) &&
+                  !sendingOtp &&
+                  otpInput &&
+                  !otpVerified && (
+                    <button
+                      className={`absolute right-0 top-2.5 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2 ${
+                        buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                      type="button"
+                      onClick={handleResendOtp}
+                      disabled={buttonDisabled}
+                    >
+                      {buttonDisabled
+                        ? `Resend in ${countdown}s`
+                        : "Resend OTP"}
+                    </button>
+                  )}
+                {otpVerified && (
                   <button
-                    className="ml-2 h-12 border border-blue-500 bg-white text-blue-500 rounded-md px-4 shadow-sm text-xs sm:text-base"
-                    onClick={handleSendOtp}
+                    className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
+                    type="button"
                   >
-                    Resend otp
+                    <div className="flex gap-2 items-center">
+                      <FaCheckCircle />
+                      <span> Verified</span>
+                    </div>
                   </button>
                 )}
 
@@ -320,7 +372,7 @@ function Signup() {
                   />
                 )}
 
-                {otpInput && (
+                {otpInput && !otpVerified && (
                   <div className="relative my-3 w-full">
                     <input
                       type="text"
@@ -328,21 +380,17 @@ function Signup() {
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                       placeholder="Enter otp"
-                      className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-20 w-full"
+                      className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-20 w-full relative"
                     />
 
-                    {!otpVerified ? (
+                    {!otpVerified && (
                       <button
+                        className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
+                        type="button"
                         onClick={handleVerifyOtp}
-                        className="absolute right-3 sm:-right-[45px] top-4 sm:top-3 text-blue-500 text-xs sm:text-base"
                       >
-                        Verify
+                        Verify OTP
                       </button>
-                    ) : (
-                      <div className="absolute flex items-center space-x-1 right-3 sm:-right-[78px] top-4 sm:top-3 text-green-500 text-xs sm:text-base">
-                        <FaCheckCircle />
-                        <span>Verified</span>
-                      </div>
                     )}
                   </div>
                 )}
@@ -351,40 +399,44 @@ function Signup() {
                 <p className="text-red-500 text-left w-full">{emailError}</p>
               )}
 
-              <div className="flex flex-col items-start ">
-                <div className="flex  justify-start md:flex-row gap-2 mt-[6.5px]">
-                  {/* Country Code Dropdown */}
-                  <div className="flex items-center">
-                    <select
-                      value={countryCode}
-                      onChange={handleCountryChange}
-                      className="text-sm outline-none rounded-lg h-full border border-gray-300 p-2"
-                    >
-                      <option value="+1">US (+1)</option>
-                      <option value="+91">IND (+91)</option>
-                      <option value="+44">EU (+44)</option>
-                    </select>
-                  </div>
+              {otpVerified && (
+                <div className="flex flex-col items-start">
+                  <div className="flex  justify-start md:flex-row gap-2 mt-[6.5px] w-full">
+                    {/* Country Code Dropdown */}
+                    <div className="flex items-center">
+                      <select
+                        value={countryCode}
+                        onChange={handleCountryChange}
+                        className="text-sm outline-none rounded-lg h-full border border-gray-300 p-2"
+                      >
+                        <option value="+1">US (+1)</option>
+                        <option value="+91">IND (+91)</option>
+                        <option value="+44">EU (+44)</option>
+                      </select>
+                    </div>
 
-                  {/* Phone Number */}
-                  <div className="flex items-center">
-                    <input
-                      type="number"
-                      className="w-full p-2 border border-gray-300 rounded-lg outline-none"
-                      placeholder="Phone number"
-                      onChange={(e) => {
-                        setPhone(e.target.value);
-                        if (e.target.value.trim().length < 10) {
-                          setPhoneError("Enter a valid phone number");
-                        } else setPhoneError("");
-                      }}
-                    />
+                    {/* Phone Number */}
+                    <div className="w-full">
+                      <input
+                        type="number"
+                        className="w-full p-2 border border-gray-300 rounded-lg outline-none"
+                        placeholder="Phone number"
+                        onChange={(e) => {
+                          setPhone(e.target.value);
+                          if (e.target.value.trim().length < 10) {
+                            setPhoneError("Enter a valid phone number");
+                          } else setPhoneError("");
+                        }}
+                      />
+                    </div>
                   </div>
+                  {phoneError && (
+                    <p className="text-red-500 text-left w-full mb-0">
+                      {phoneError}
+                    </p>
+                  )}
                 </div>
-                {phoneError && (
-                  <p className="text-red-500 text-left w-full">{phoneError}</p>
-                )}
-              </div>
+              )}
 
               {otpVerified && (
                 <div className="flex flex-col items-center relative">
@@ -398,7 +450,7 @@ function Signup() {
                     required
                   />
                   {passwordError && (
-                    <p className="text-red-500 text-left w-full">
+                    <p className="text-red-500 text-left w-full mb-0">
                       {passwordError}
                     </p>
                   )}
