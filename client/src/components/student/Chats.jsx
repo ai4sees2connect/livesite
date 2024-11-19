@@ -671,29 +671,29 @@ const Chats = () => {
 
 
       {/* Left Column - Shortlisted Students */}
-      <div className={`${!chatListOpen ? 'hidden' : 'flex'}  lg:flex  flex-col items-center   w-[90%]  lg:w-[36%] xl:w-[37%] bg-blue-500 py-4  shadow-2xl overflow-y-scroll  scrollbar-thin  h-[90%] md:h-[100%]`}>
+      <div className={`${!chatListOpen ? 'hidden' : 'flex'}  lg:flex  flex-col items-center   w-[90%]  lg:w-[36%] xl:w-[37%] bg-white py-4  shadow-2xl overflow-y-scroll  scrollbar-thin  h-[90%] md:h-[100%]`}>
         {/* <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center  absolute  top-0 left-5 lg:left-4 md:left-20 w-[90%]  lg:w-[36%] xl:w-[30%] bg-gray-100 py-4 lg:px-1 shadow-lg overflow-y-auto h-[90%] md:h-[80vh]`}> */}
-        <h2 className="text-xl text-white w-fit font-semibold mb-2 ">Shortlisted Internships</h2>
+        <h2 className="text-xl text-black w-fit font-semibold mb-2 ">Shortlisted Internships</h2>
 
         <div className="flex items-center justify-center text-sm lg:text-base w-fit space-x-1 lg:space-x-2  rounded-md sm:rounded-full mb-4">
           <button
-            className={`text-sm sm:text-base py-2 px-3 rounded-full text-white box-content ${activeFilter === 'all'
-              ? '  bg-blue-400 '
-              : 'bg-blue-500 border-2 '
+            className={`text-sm sm:text-base py-2 px-3 rounded-full text-black box-content ${activeFilter === 'all'
+              ? '  bg-blue-100 '
+              : 'bg-blue-200 border-2 '
               }`}
             onClick={() => handleFilterChange('all')}
           >
             All Messages
           </button>
           <button
-            className={`text-sm sm:text-base py-2 px-4 rounded-full text-white box-content ${activeFilter === 'unread' ? '  bg-blue-400' : 'bg-blue-500 border-2'}`}
+            className={`text-sm sm:text-base py-2 px-4 rounded-full text-black box-content ${activeFilter === 'unread' ? '  bg-blue-100' : 'bg-blue-200 border-2'}`}
             onClick={() => handleFilterChange('unread')}
           >
             Unread({`${unreadCount}`})
           </button>
 
           <button
-            className={`py-2 px-3 rounded-full text-white box-content ${activeFilter === 'important' ? 'bg-blue-400' : 'bg-blue-500 border-2'}`}
+            className={`py-2 px-3 rounded-full text-black box-content ${activeFilter === 'important' ? 'bg-blue-100' : 'bg-blue-200 border-2'}`}
             onClick={() => handleFilterChange('important')}
           >
             Important
@@ -714,33 +714,33 @@ const Chats = () => {
             return (
               <div
                 key={`${recruiterId}-${internshipId}`}
-                className={`student-internship-entry shadow-lg hover:bg-blue-400  p-4 mb-4 flex items-start space-x-4 rounded-lg  hover:cursor-pointer ${selectedInternship === internshipId ? 'bg-blue-400 ' : 'bg-blue-500 '}  w-full`}
+                className={`student-internship-entry shadow-lg hover:bg-blue-300  p-4 mb-4 flex items-start space-x-4 rounded-lg  hover:cursor-pointer ${selectedInternship === internshipId ? 'bg-blue-200 ' : 'bg-blue-100 '}  w-full`}
                 onClick={() => { handleInternClick(internshipId, recruiterId); handleInfoSetter(companyName, internshipName, isActive) }}
               >
                 <div className="flex-grow">
-                  <h3 className="text-lg font-semibold text-white flex items-center relative">
+                  <h3 className="text-lg font-semibold text-black flex items-center relative">
                     <span className='flex items-center text-xl capitalize'>{companyName}</span>
                     {isActive && (<div className='ml-2 bg-green-300 rounded-full w-2 h-2'></div>)}
-                    {lastMessage && <span className='absolute flex items-center right-0 text-sm font-normal text-white'>{intern.importantForStudent && <FaStar className='mr-2 text-yellow-400' />}{formatSentAt(lastMessage.sentAt)}</span>}
+                    {lastMessage && <span className='absolute flex items-center right-0 text-sm font-normal text-black'>{intern.importantForStudent && <FaStar className='mr-2 text-yellow-400' />}{formatSentAt(lastMessage.sentAt)}</span>}
                   </h3>
-                  <p className="text-sm text-white">{internshipName}</p>
+                  <p className="text-sm text-black-300">{internshipName}</p>
                   {lastMessage && !latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] && lastMessage.senderId !== studentId && (
-                    <div className="text-blue-500 font-semibold text-xs">New mesage</div>
+                    <div className="text-black-300 font-semibold text-xs">New mesage</div>
                   )}
 
 
                   {/* Display the most recent message */}
-                  {lastMessage && <p className="text-sm text-gray-800">
-                    <span className='font-semibold text-sm md:text-base text-white'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
-                    <span className={`${lastMessage.senderId !== studentId && !latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] ? 'text-white font-semibold' : 'text-white'} text-md`}>
+                  {lastMessage && <p className="text-sm text-black">
+                    <span className='font-semibold text-sm md:text-base text-black'>{lastMessage.senderId === studentId ? 'You:  ' : ''}</span>
+                    <span className={`${lastMessage.senderId !== studentId && !latestMessagesSeenStatus[`${recruiterId}_${internshipId}`] ? 'text-black font-semibold' : 'text-black'} text-md`}>
                       {lastMessage ? (lastMessage.messageContent.slice(0, 20) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
                   </p>}
 
                   {studentStatus === 'inTouch' &&
-                    <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-blue-100 rounded-md '>
+                    <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-blue-400 rounded-md '>
                       <span>In-touch</span>
-                      <span><FaBolt className='w-3 h-3 text-blue-400 ' /></span>
+                      <span><FaBolt className='w-3 h-3 text-blue-100 ' /></span>
                     </div>}
                   {studentStatus === 'notHired' &&
                     <div className='inline-flex space-x-1 items-center px-2 py-1 mt-1 text-sm bg-yellow-100 rounded-md '>
@@ -769,7 +769,7 @@ const Chats = () => {
       <div className={`${chatListOpen && 'hidden'} w-[95%] lg:w-[70%] p-4 flex flex-col  h-[84vh] `}>
 
         <div className='w-full h-[15%] lg:h-[10%] my-4 ml-1 relative '>
-          <button onClick={() => setChatListOpen(true)} className='flex lg:hidden space-x-1 text-white items-center'>
+          <button onClick={() => setChatListOpen(true)} className='flex lg:hidden space-x-1 text-black items-center'>
             <FaArrowLeft />
             <span>back</span>
           </button>
@@ -815,12 +815,12 @@ const Chats = () => {
 
                     <div
                       key={index}
-                      className={`p-2 rounded  inline-block break-words shadow-lg  ${msg.senderId === studentId ? 'bg-gray-100 self-end text-right' : 'bg-blue-400 text-white'} `}
+                      className={`p-2 rounded  inline-block break-words shadow-lg  ${msg.senderId === studentId ? 'bg-gray-100 self-end text-right' : 'bg-blue-200 text-black'} `}
                       style={{ maxWidth: 'fit-content' }}
                     >
                       <p className='max-w-[230px] md:max-w-[400px]'>{msg.messageContent}</p>
                       <p className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right text-gray-500`}>
-                        <span className={`${msg.senderId !== studentId ? 'text-white' : 'text-gray-600'}`}>{formatSentAt(msg.sentAt)}</span>
+                        <span className={`${msg.senderId !== studentId ? 'text-black' : 'text-gray-600'}`}>{formatSentAt(msg.sentAt)}</span>
                         {msg.senderId === studentId && <span><MdDoneAll className={`w-5 h-5 ${msg.seenStatus && 'text-blue-500'}`} /></span>}
                       </p>
                     </div>
@@ -988,7 +988,7 @@ const Chats = () => {
 
           <button
           disabled={newMessage === '' ? true : false}
-            className={`bg-blue-500 text-white border-2 font-semibold px-9 py-1 rounded-lg shadow-md ${newMessage === '' && 'bg-gray-300'}`}
+            className={`bg-blue-500 text-white text-sm sm:text-base w-fit  px-9 py-1 rounded-lg hover:scale-105 duration-300 cursor-pointer ${newMessage === '' && 'bg-blue-00'}`}
             onClick={sendMessage}
           >
             Send

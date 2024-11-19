@@ -477,7 +477,7 @@ function Signup() {
 
               <button
                 type="submit"
-                className={`w-full py-2 bg-[rgb(129,41,217)] border-none h-[50px] text-white rounded-full ${
+                className={`w-full py-2 bg-blue-400 border-none h-[50px] text-white rounded-full ${
                   !isFormValid ? `bg-[rgb(224,226,217)]` : ""
                 } `}
                 disabled={!isFormValid}

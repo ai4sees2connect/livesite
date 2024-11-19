@@ -992,7 +992,7 @@ if(shortlistedStudents.length==0){
 
             />
             <button disabled={newMessage === '' ? true : false}
-              className={`bg-blue-500 text-white text-sm sm:text-base w-fit  px-2 py-1 rounded-lg hover:scale-105 duration-300 ${newMessage === '' && 'bg-blue-00'}`}
+              className={`bg-blue-500 text-white text-sm sm:text-base w-fit  px-2 py-1 rounded-lg hover:scale-105 duration-300 cursor-pointer ${newMessage === '' && 'bg-blue-00'}`}
               onClick={sendMessage}
             >
               Send
