@@ -214,19 +214,18 @@ function Signup() {
           className="absolute inset-0 w-full h-full"
         />
       </div>
-      <div className="mx-auto flex-1 w-[90%]  mb-20">
+      <div className="mx-auto flex-1 mb-20 min-h-[635px]">
         {/* back button */}
         <div className="absolute left-0 top-5  rounded-full">
-          <Link
-            to="/"
-            className="px-5 py-1 text-blue-400  font-semibold"
-          >
-            <GoBackButton/>
+          <Link to="/" className="px-5 py-1 text-blue-400  font-semibold">
+            <GoBackButton />
           </Link>
         </div>
         <div className=" flex flex-col items-center mt-[20px]">
-          <p className="text-5xl font-extrabold mb-8 md:mb-6">Sign up</p>
-          <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center">
+          <p className="text-5xl font-extrabold mb-8 md:mb-6 mt-10 lg:mt-0">
+            Sign up
+          </p>
+          <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center mt-5 md:mt-6">
             <ToggleButton type="recruiter" auth="signup" />
             <ToggleButtonSecond type="recruiter" auth="signup" />
           </div>
@@ -235,10 +234,10 @@ function Signup() {
         <div>
           {/* form starts from here */}
 
-          <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full  ">
+          <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full">
             <form
               onSubmit={handleSubmit}
-              className="space-y-4 w-[80%] lg:w-[60%]  md:max-w-xl px-5 lg:px-0"
+              className="space-y-4 w-full lg:w-[60%]  md:max-w-xl px-5 lg:px-0"
             >
               <div className="flex flex-col items-center">
                 <input
@@ -296,17 +295,17 @@ function Signup() {
                   required
                 />
 
-{validateEmail(email) && !sendingOtp && !otpInput && (
-  <button
-    className="border border-blue-500 bg-white text-blue-500 text-left absolute right-3 sm:-right-[70px] sm:top-3 text-xxs sm:text-sm top-3 rounded-md px-0.5 py-1 shadow-md hover:shadow-lg transition-shadow duration-200"
-    onClick={handleSendOtp}
-  >
-    Send OTP
-  </button>
-)}
+                {validateEmail(email) && !sendingOtp && !otpInput && (
+                  <button
+                    className="border border-blue-500 bg-white text-blue-500 text-left absolute right-3 sm:-right-[77px] sm:top-3 text-xxs sm:text-base top-3 rounded-md px-0.5 py-0.5 shadow-md hover:shadow-lg transition-shadow duration-200"
+                    onClick={handleSendOtp}
+                  >
+                    Send OTP
+                  </button>
+                )}
                 {validateEmail(email) && !sendingOtp && otpInput && (
                   <button
-                    className="border border-blue-500 bg-white text-blue-500 text-left absolute right-2 sm:-right-[80px] sm:top-3 text-xxs sm:text-sm top-5 rounded-md px-0.5 py-1 shadow-md hover:shadow-lg transition-shadow duration-200"
+                    className="ml-2 h-12 border border-blue-500 bg-white text-blue-500 rounded-md px-4 shadow-sm text-xs sm:text-base"
                     onClick={handleSendOtp}
                   >
                     Resend otp
@@ -321,9 +320,7 @@ function Signup() {
                   />
                 )}
 
-
-                {otpInput  && (
-
+                {otpInput && (
                   <div className="relative my-3 w-full">
                     <input
                       type="text"
@@ -337,7 +334,7 @@ function Signup() {
                     {!otpVerified ? (
                       <button
                         onClick={handleVerifyOtp}
-                        className="border border-blue-500 bg-white text-blue-500 text-left absolute right-3 sm:-right-[46px] sm:top-3 text-xxs sm:text-sm top-3 rounded-md px-0.5 py-1 shadow-md hover:shadow-lg transition-shadow duration-200"
+                        className="absolute right-3 sm:-right-[45px] top-4 sm:top-3 text-blue-500 text-xs sm:text-base"
                       >
                         Verify
                       </button>
@@ -347,19 +344,15 @@ function Signup() {
                         <span>Verified</span>
                       </div>
                     )}
-
                   </div>
-
                 )}
-
-
               </div>
               {emailError && (
                 <p className="text-red-500 text-left w-full">{emailError}</p>
               )}
 
               <div className="flex flex-col items-start ">
-                <div className="flex  justify-start md:flex-row gap-2 mt-2">
+                <div className="flex  justify-start md:flex-row gap-2 mt-[6.5px]">
                   {/* Country Code Dropdown */}
                   <div className="flex items-center">
                     <select
@@ -393,40 +386,42 @@ function Signup() {
                 )}
               </div>
 
-              {otpVerified &&<div className="flex flex-col items-center relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  value={password}
-                  placeholder="Password"
-                  onChange={handlePasswordChange}
-                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-10 w-full"
-                  required
-                />
-                {passwordError && (
-                  <p className="text-red-500 text-left w-full">
-                    {passwordError}
-                  </p>
-                )}
-
-                <button
-                  type="button"
-                  onClick={handlePasswordToggle}
-                  className="absolute right-2 top-[24px] transform -translate-y-1/2"
-                >
-                  {showPassword ? (
-                    <FontAwesomeIcon
-                      icon={faEye}
-                      className="w-5 h-5 text-gray-500"
-                    />
-                  ) : (
-                    <FontAwesomeIcon
-                      icon={faEyeSlash}
-                      className="w-5 h-5 text-gray-500"
-                    />
+              {otpVerified && (
+                <div className="flex flex-col items-center relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    value={password}
+                    placeholder="Password"
+                    onChange={handlePasswordChange}
+                    className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-10 w-full"
+                    required
+                  />
+                  {passwordError && (
+                    <p className="text-red-500 text-left w-full">
+                      {passwordError}
+                    </p>
                   )}
-                </button>
-              </div>}
+
+                  <button
+                    type="button"
+                    onClick={handlePasswordToggle}
+                    className="absolute right-2 top-[24px] transform -translate-y-1/2"
+                  >
+                    {showPassword ? (
+                      <FontAwesomeIcon
+                        icon={faEye}
+                        className="w-5 h-5 text-gray-500"
+                      />
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faEyeSlash}
+                        className="w-5 h-5 text-gray-500"
+                      />
+                    )}
+                  </button>
+                </div>
+              )}
 
               <button
                 type="submit"
@@ -440,7 +435,7 @@ function Signup() {
             </form>
           </div>
 
-          <p className="mt-1 text-center">OR</p>
+          <p className="mt-5 text-center">OR</p>
 
           <div className="w-[70%] mx-auto mt-8 mb-10 md:mb-0 space-y-3">
             <button
