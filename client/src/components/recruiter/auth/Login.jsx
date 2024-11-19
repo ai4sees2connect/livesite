@@ -110,19 +110,18 @@ function Login() {
         />
       </div>
 
-      <div className="mx-auto flex-1  mb-20">
+      <div className="mx-auto flex-1  mb-20 min-h-[635px]">
         {/* back button */}
         <div className="absolute left-0 top-5  rounded-full ">
-          <Link
-            to="/"
-            className="px-5 py-1 text-blue-400  font-semibold"
-          >
-            <GoBackButton/>
+          <Link to="/" className="px-5 py-1 text-blue-400  font-semibold">
+            <GoBackButton />
           </Link>
         </div>
         <div className=" flex flex-col items-center mt-[20px]">
-          <p className="text-5xl font-extrabold mb-8 md:mb-6">Login</p>
-          <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center">
+          <p className="text-5xl font-extrabold mb-8 md:mb-6 mt-10 lg:mt-0">
+            Login
+          </p>
+          <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center mt-5 md:mt-6">
             <ToggleButton type="recruiter" auth="login" />
             <ToggleButtonSecond type="recruiter" auth="login" />
           </div>
@@ -200,7 +199,7 @@ function Login() {
             </form>
           </div>
 
-          <p className="mt-5 text-center">OR</p>
+          <p className="mt-4 text-center">OR</p>
 
           <div className="w-[70%] mx-auto mt-8 mb-10 md:mb-0 space-y-3">
             <button

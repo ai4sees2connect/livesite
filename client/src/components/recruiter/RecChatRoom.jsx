@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -657,9 +658,9 @@ if(shortlistedStudents.length==0){
 }
 
   return (
-    <div className="flex justify-center h-[90vh]  mt-16 relative w-[100%] bg-gray-200 ">
+    <div className="flex justify-center h-[90vh]  mt-16 relative w-[100%] bg-black-700 ">
       {/* Left Column - Shortlisted Students */}
-      <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center   w-[90%]  lg:w-[36%] xl:w-[37%] bg-blue-500 py-4  shadow-2xl overflow-y-scroll  scrollbar-thin h-[99%] md:h-[100%]`}>
+      <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center   w-[90%]  lg:w-[36%] xl:w-[37%] bg-white py-4  shadow-2xl overflow-y-scroll  scrollbar-thin h-[99%] md:h-[100%]`}>
         <h2 className="text-xl text-white w-fit font-semibold mb-2">Messages from all internships</h2>
 
         <div className='flex flex-col justify-center w-[80%]'>
@@ -689,20 +690,20 @@ if(shortlistedStudents.length==0){
 
         <div className="flex items-center justify-center text-sm lg:text-base  space-x-1 lg:space-x-2 rounded-md w-fit sm:rounded-full mb-4">
           <button
-            className={`text-sm sm:text-base py-2 px-3 rounded-full text-white box-content  ${activeFilter === 'all' ? 'bg-blue-400 ' : 'bg-blue-500 border-2 '}`}
+            className={`text-sm sm:text-base py-2 px-3 rounded-full text-black box-content  ${activeFilter === 'all' ? 'bg-blue-100 ' : 'bg-blue-200 border-2 '}`}
             onClick={() => handleFilterChange('all')}
           >
             All Messages
           </button>
           <button
-            className={`py-2 px-4 rounded-full text-white box-content ${activeFilter === 'unread' ? 'bg-blue-400 ' : 'bg-blue-500 border-2'}`}
+            className={`py-2 px-4 rounded-full text-black box-content ${activeFilter === 'unread' ? 'bg-blue-100 ' : 'bg-blue-200 border-2'}`}
             onClick={() => handleFilterChange('unread')}
           >
             Unread({`${unreadCount}`})
           </button>
 
           <button
-            className={`py-2 px-3 rounded-full text-white box-content ${activeFilter === 'important' ? 'bg-blue-400 ' : 'bg-blue-500 border-2'}`}
+            className={`py-2 px-3 rounded-full text-black box-content ${activeFilter === 'important' ? 'bg-blue-100 ' : 'bg-blue-200 border-2'}`}
             onClick={() => handleFilterChange('important')}
           >
             Important
@@ -730,24 +731,24 @@ if(shortlistedStudents.length==0){
             return (
               <div
                 key={`${studentId}-${internshipId}`}
-                className={`student-internship-entry  shadow-lg rounded-lg p-4 mb-4 flex items-start space-x-4  hover:cursor-pointer hover:bg-blue-400 ${selectedInternship === internshipId ? 'bg-blue-400':'bg-blue-500'} w-full`}
+                className={`student-internship-entry  shadow-lg rounded-lg p-4 mb-4 flex items-start space-x-4  hover:cursor-pointer hover:bg-blue-200 ${selectedInternship === internshipId ? 'bg-blue-200':'bg-blue-100'} w-full`}
                 onClick={() => { handleStudentClick(studentId, internshipId); handleInfoSetter(firstname, lastname, internshipName, isActive) }}
               >
                 <div className="flex-grow">
-                  <div className="text-lg font-semibold text-white flex items-center relative">
+                  <div className="text-lg font-semibold text-black flex items-center relative">
                     <span className='capitalize flex items-center text-xl '>{firstname} {lastname}</span>
                     {isActive && (<div className='ml-2 bg-green-300 rounded-full w-2 h-2'></div>)}
-                    {lastMessage && <span className='absolute flex items-center right-0 text-sm font-normal text-white'>{student.importantForRecruiter && <FaStar className='mr-2 text-yellow-400' />}{formatSentAt(lastMessage.sentAt)}</span>}
+                    {lastMessage && <span className='absolute flex items-center right-0 text-sm font-normal text-black'>{student.importantForRecruiter && <FaStar className='mr-2 text-yellow-400' />}{formatSentAt(lastMessage.sentAt)}</span>}
                   </div>
-                  <p className="text-sm text-white">{internshipName}</p>
+                  <p className="text-sm text-black-300">{internshipName}</p>
                   {lastMessage && !latestMessagesSeenStatus[`${studentId}_${internshipId}`] && lastMessage.senderId !== recruiterId && (
-                    <div className="text-white font-semibold text-xs">New mesage</div>
+                    <div className="text-black-300 font-semibold text-xs">New mesage</div>
                   )}
 
                   {/* Display the most recent message */}
-                  {lastMessage && <p className="text-md text-gray-800">
-                    <span className='font-semibold text-white'>{lastMessage.senderId === recruiterId ? 'You:  ' : ''}</span>
-                    <span className={`${lastMessage.senderId !== recruiterId && !latestMessagesSeenStatus[`${studentId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-white'} text-md`}>
+                  {lastMessage && <p className="text-md text-black">
+                    <span className='font-semibold text-black'>{lastMessage.senderId === recruiterId ? 'You:  ' : ''}</span>
+                    <span className={`${lastMessage.senderId !== recruiterId && !latestMessagesSeenStatus[`${studentId}_${internshipId}`] ? 'text-blue-500 font-semibold' : 'text-black-100'} text-md`}>
                       {lastMessage ? (lastMessage.messageContent.slice(0, 20) + (lastMessage.messageContent.length > 20 ? "..." : "")) : "No messages exchanged yet"}
                     </span>
 
@@ -787,7 +788,7 @@ if(shortlistedStudents.length==0){
             <FaArrowLeft/>
             <span>back</span>
           </button>
-          <p className='font-semibold capitalize text-2xl'>{firstName} {lastName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
+                    <p className='font-semibold capitalize text-2xl'>{firstName} {lastName} {activeStatus && <span className='text-sm text-green-500'>online</span>}</p>
           <div className='flex space-x-5  relative '>
             <p className=''>{internshipName}</p>
             {/* <Link to={`/recruiter/${selectedInternship}/application-details/${selectedStudent}`} target="_blank"
@@ -835,12 +836,12 @@ if(shortlistedStudents.length==0){
                   )}
 
                   {!msg.isAssignment && !msg.isAttachment && <div
-                    className={`py-2 px-3 rounded inline-block break-words shadow-lg ${msg.senderId === recruiterId ? 'bg-[#ffffff] self-end text-right  ' : 'bg-blue-400 text-white '} `}
+                    className={`py-2 px-3 rounded inline-block break-words shadow-lg ${msg.senderId === recruiterId ? 'bg-[#ffffff] self-end text-right  ' : 'bg-blue-100 text-black '} `}
                     style={{ maxWidth: 'fit-content' }}
                   >
                     <p className='max-w-[230px] md:max-w-[400px] min-w-[70px]'>{msg.messageContent}</p>
                     <p className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right  text-gray-500`}>
-                      <span className={`${msg.senderId !== recruiterId ? 'text-white' : 'text-gray-600'}`}>{formatSentAt(msg.sentAt)}</span>
+                      <span className={`${msg.senderId !== recruiterId ? 'text-black-300' : 'text-gray-600'}`}>{formatSentAt(msg.sentAt)}</span>
                       {msg.senderId === recruiterId && <span><MdDoneAll className={`w-5 h-5 ${msg.seenStatus && 'text-blue-500'}`} /></span>}
                     </p>
                     {/* <p>{msg.senderId === recruiterId && msg.seenStatus && 'Seen'}</p> */}
@@ -870,7 +871,7 @@ if(shortlistedStudents.length==0){
                   {
                     msg.isAssignment && msg.senderId === selectedStudent && (
                       <div className='flex flex-col break-words max-w-[260px] md:max-w-[400px]'>
-                        <div className='relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full'>
+                        <div className='relative bg-blue-100 rounded-t-lg p-3 shadow-lg w-full'>
                           <FaCheckCircle className='absolute top-4 left-4 text-white' />
                           <h1 className='ml-8 text-white font-bold'>Assignment Received</h1>
                         </div>
@@ -965,7 +966,7 @@ if(shortlistedStudents.length==0){
         {chatBlocked[`${selectedStudent}_${selectedInternship}`] !== 'recruiter' && <div className="mt-4 flex flex-col space-y-4">
           <button
             onClick={toggleAssignmentModal}
-            className="bg-red-500 text-white text-sm sm:text-base w-fit  px-2 py-1 rounded-lg hover:scale-105 duration-300"
+            className="bg-red-400 text-white text-sm sm:text-base w-fit  px-2 py-1 rounded-lg hover:scale-105 duration-300"
           >
             Send Assignment
           </button>
@@ -991,7 +992,7 @@ if(shortlistedStudents.length==0){
 
             />
             <button disabled={newMessage === '' ? true : false}
-              className={`bg-blue-500 text-white border px-9 py-1 rounded-lg ${newMessage === '' && 'bg-gray-300'}`}
+              className={`bg-blue-500 text-white text-sm sm:text-base w-fit  px-2 py-1 rounded-lg hover:scale-105 duration-300 ${newMessage === '' && 'bg-blue-00'}`}
               onClick={sendMessage}
             >
               Send

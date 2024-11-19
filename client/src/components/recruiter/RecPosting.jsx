@@ -10,9 +10,12 @@ import api from "../common/server_url";
 import Select from "react-select";
 import { useRecruiter } from "./context/recruiterContext";
 import Spinner from "../common/Spinner";
+
 import { Link, useNavigate } from "react-router-dom";
 import statesAndCities from "../common/statesAndCities";
+
 import countryData from "../TESTJSONS/countries+states+cities.json";
+
 
 
 
@@ -43,12 +46,16 @@ const RecPosting = () => {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedPerks, setSelectedPerks] = useState([]);
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
+
   const [startQuesDays, setStartQuesDays] = useState(null);
   const { recruiter, refreshData } = useRecruiter();
+
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const navigate = useNavigate();
+
+
   const jobProfiles = [
     "3D Animation",
     "Account Management",
@@ -255,6 +262,7 @@ const RecPosting = () => {
     "Web Development",
   ];
 
+
   const states = selectedCountry
 ? countryData.find((c) => c.name === selectedCountry)?.states
 : [];
@@ -263,52 +271,7 @@ const cities = selectedState
 : [];
 
 
-  // const statesAndUTs = [
-  //   { value: "All Locations", label: "All Locations" },
-  //   { value: "Andhra Pradesh", label: "Andhra Pradesh" },
-  //   { value: "Arunachal Pradesh", label: "Arunachal Pradesh" },
-  //   { value: "Assam", label: "Assam" },
-  //   { value: "Bihar", label: "Bihar" },
-  //   { value: "Chhattisgarh", label: "Chhattisgarh" },
-  //   { value: "Chennai", label: "Chennai" },
-  //   { value: "Goa", label: "Goa" },
-  //   { value: "Gujarat", label: "Gujarat" },
-  //   { value: "Haryana", label: "Haryana" },
-  //   { value: "Himachal Pradesh", label: "Himachal Pradesh" },
-  //   { value: "Jharkhand", label: "Jharkhand" },
-  //   { value: "Karnataka", label: "Karnataka" },
-  //   { value: "Kerala", label: "Kerala" },
-  //   { value: "Madhya Pradesh", label: "Madhya Pradesh" },
-  //   { value: "Maharashtra", label: "Maharashtra" },
-  //   { value: "Manipur", label: "Manipur" },
-  //   { value: "Meghalaya", label: "Meghalaya" },
-  //   { value: "Mizoram", label: "Mizoram" },
-  //   { value: "Nagaland", label: "Nagaland" },
-  //   { value: "Odisha", label: "Odisha" },
-  //   { value: "Punjab", label: "Punjab" },
-  //   { value: "Rajasthan", label: "Rajasthan" },
-  //   { value: "Sikkim", label: "Sikkim" },
-  //   { value: "Tamil Nadu", label: "Tamil Nadu" },
-  //   { value: "Telangana", label: "Telangana" },
-  //   { value: "Tripura", label: "Tripura" },
-  //   { value: "Uttar Pradesh", label: "Uttar Pradesh" },
-  //   { value: "Uttarakhand", label: "Uttarakhand" },
-  //   { value: "West Bengal", label: "West Bengal" },
-  //   {
-  //     value: "Andaman and Nicobar Islands",
-  //     label: "Andaman and Nicobar Islands",
-  //   },
-  //   { value: "Chandigarh", label: "Chandigarh" },
-  //   {
-  //     value: "Dadra and Nagar Haveli and Daman and Diu",
-  //     label: "Dadra and Nagar Haveli and Daman and Diu",
-  //   },
-  //   { value: "Lakshadweep", label: "Lakshadweep" },
-  //   { value: "Delhi", label: "Delhi" },
-  //   { value: "Puducherry", label: "Puducherry" },
-  //   { value: "Jammu and Kashmir", label: "Jammu and Kashmir" },
-  //   { value: "Ladakh", label: "Ladakh" },
-  // ];
+
 
   const perks = [
     "Letter of recommendation",
@@ -323,8 +286,10 @@ const cities = selectedState
   console.log("this is recruite data", recruiter);
 
   useEffect(() => {
+
     // refreshData();
     const getData = () => {
+
 
       if (recruiter?.orgDescription === '' || recruiter?.companyCity === '' || recruiter?.industryType === '' || recruiter?.numOfEmployees === '') {
         toast.info('Please complete your profile');
@@ -339,7 +304,9 @@ const cities = selectedState
   }, [recruiter])
 
 
+
   useEffect(() => {
+
     const fetchSkills = async () => {
       try {
         const response = await axios.get(`${api}/recruiter/api/get-skills`);
@@ -506,9 +473,17 @@ const cities = selectedState
 
   if (!recruiter?.companyCertificate && !recruiter?.companyWebsite) {
     return (
-      <div className="flex items-center justify-center  text-gray-700 text-lg font-semibold h-screen">
-        Verification pending in profile section
-      </div>
+      <div className="flex flex-col justify-center items-center h-screen space-y-4">
+      <p className="text-xl font-semibold text-gray-500">
+        Complete your profile.
+      </p>
+      <Link
+        to={`/recruiter/profile/${userId}`}
+        className="px-2 py-1 bg-blue-500 text-white rounded-md"
+      >
+        Back to profile
+      </Link>
+    </div>
     );
   } else if (recruiter?.subscription.planType !== "Unlimited") {
     if (
@@ -516,8 +491,8 @@ const cities = selectedState
       recruiter?.subscription.postsRemaining < 1
     ) {
       return (
-        <div className="flex flex-col  items-center justify-center space-y-3 h-screen">
-          <div className="text-center text-gray-700 text-lg font-semibold">
+        <div className="flex flex-col  items-center justify-center space-y-3">
+          <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
             You have used your monthly available free postings
           </div>
           <Link
@@ -535,8 +510,8 @@ const cities = selectedState
       recruiter?.subscription.postsRemaining < 1
     ) {
       return (
-        <div className="flex flex-col space-y-3 h-screen items-center justify-center">
-          <div className="text-center text-gray-700 text-lg font-semibold">
+        <div className="flex flex-col space-y-3 h-screen">
+          <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
             You have used your available postings
           </div>
           <Link
@@ -549,6 +524,15 @@ const cities = selectedState
       );
     }
   }
+  // country state city Api
+
+  // Get available states and cities based on selections
+  const states = selectedCountry
+    ? countryData.find((c) => c.name === selectedCountry)?.states
+    : [];
+  const cities = selectedState
+    ? states.find((s) => s.name === selectedState)?.cities
+    : [];
 
   return (
     <div>
@@ -632,16 +616,20 @@ const cities = selectedState
             formData.internshipType === "Hybrid") && (
 
 
+
               <div className="flex flex-col gap-3">
                 {/* Country Dropdown */}
                 <select
                   className="border-2 py-1 rounded-md px-2"
+
                   id="country"
                   value={selectedCountry}
                   onChange={(e) => {
                     setSelectedCountry(e.target.value);
                     setSelectedState(""); // Reset state and cities dropdowns
+
                     setSelectedCity("");
+
                   }}
                 >
                   <option value="">-- Select Country --</option>
@@ -654,10 +642,12 @@ const cities = selectedState
 
                 {/* State Dropdown */}
                 <select
+
                   className="border-2 py-1 rounded-md px-2"
                   id="state"
                   value={selectedState}
                   onChange={(e) => { setSelectedState(e.target.value); setSelectedCity("") }}
+
                   disabled={!selectedCountry}
                 >
                   <option value="">-- Select State --</option>
@@ -671,10 +661,12 @@ const cities = selectedState
                 {/* City Dropdown */}
                 <select
                   id="city"
+
                   value={selectedCity}
                   disabled={!selectedState}
                   onChange={(e) => setSelectedCity(e.target.value)}
                   className="border-2 py-1 rounded-md px-2"
+
                 >
                   <option value="">-- Select City --</option>
                   {cities?.map((city) => (
@@ -684,7 +676,9 @@ const cities = selectedState
                   ))}
                 </select>
               </div>
+
             )}
+
 
           <div className="flex flex-col my-5 space-y-3">
             <p className="font-medium">Internship Start date</p>
@@ -714,46 +708,6 @@ const cities = selectedState
               </label>
             </div>
           </div>
-          {formData.internshipStartQues === "Later" && (
-            <div className="flex space-x-4">
-              <label>
-                <input
-                  type="radio"
-                  name="startTime"
-                  value="within a week"
-                  onChange={(e) =>
-                    setFormData({ ...formData, startTime: e.target.value })
-                  }
-                  className="mx-1"
-                />
-                Within a week
-              </label>
-
-              <label>
-                <input
-                  type="radio"
-                  name="startTime"
-                  value="within 15 days"
-                  onChange={(e) =>
-                    setFormData({ ...formData, startTime: e.target.value })
-                  }
-                />
-                Within 15 days
-              </label>
-
-              <label>
-                <input
-                  type="radio"
-                  name="startTime"
-                  value="more than 15 days"
-                  onChange={(e) =>
-                    setFormData({ ...formData, startTime: e.target.value })
-                  }
-                />
-                More than 15 days
-              </label>
-            </div>
-          )}
 
           <div className="flex flex-col my-5">
             <label className="mb-2 font-medium">No of Openings</label>

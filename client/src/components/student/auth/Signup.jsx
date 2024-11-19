@@ -199,21 +199,18 @@ function Signup() {
       <div className="relative flex-1 hidden lg:block ">
         <img src={login_bg} alt="" className=" w-full h-full" />
       </div>
-      <div className="flex-1 mx-auto w-[90%] mb-20">
+      <div className="flex-1 mx-auto w-[90%] mb-20 min-h-[635px]">
         {/* back button */}
         <div className="absolute left-0 top-5  rounded-full">
-        <Link
-            to="/"
-            className="px-5 py-1 text-blue-400  font-semibold"
-          >
-            <GoBackButton/>
+          <Link to="/" className="px-5 py-1 text-blue-400  font-semibold">
+            <GoBackButton />
           </Link>
         </div>
         <div className="flex flex-col items-center mt-[20px]">
-          <p className="text-3xl lg:text-5xl font-extrabold mb-5 md:mb-12">
+          <p className="text-5xl font-extrabold mb-5 md:mb-12 mt-10 lg:mt-0">
             Sign up
           </p>
-          <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center">
+          <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5  md:items-center mt-8 md:mt-0">
             <ToggleButton type="student" auth="signup" />
             <ToggleButtonSecond type="student" auth="signup" />
           </div>
@@ -222,7 +219,7 @@ function Signup() {
           {/* form starts from here */}
 
           <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full ">
-            <form className="space-y-4 w-[80%] lg:w-[60%]  md:max-w-xl px-5 lg:px-0">
+            <form className="space-y-4 w-full lg:w-[60%]  md:max-w-xl px-5 lg:px-0">
               <div className="mx-auto md:max-w-xl">
                 <input
                   type="text"

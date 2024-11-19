@@ -5,6 +5,7 @@ import {
   FaTimes,
   FaPen,
   FaPaperclip,
+  FaUpload,
 } from "react-icons/fa";
 import getUserIdFromToken from "./auth/authUtilsRecr";
 import {
@@ -23,6 +24,8 @@ import { toast } from "react-toastify";
 import TimeAgo from "../common/TimeAgo";
 import statesAndCities from "../common/statesAndCities";
 import Select from "react-select";
+// country
+import countryData from "../TESTJSONS/countries+states+cities.json";
 
 const RecProfile = () => {
   const fileInputRef = useRef(null);
@@ -50,7 +53,7 @@ const RecProfile = () => {
   const [companyLocation, setCompanyLocation] = useState("");
   const [industry, setIndustry] = useState("");
   const [employeesCount, setEmployeesCount] = useState("");
-  const [cityPresent, setCityPresent]=useState("");
+  const [cityPresent, setCityPresent] = useState("");
 
   console.log(recruiter);
 
@@ -73,7 +76,10 @@ const RecProfile = () => {
       setCompany(recruiter.companyName);
     }
 
-    if (recruiter?.independentRec === false || recruiter?.independentRec === true) {
+    if (
+      recruiter?.independentRec === false ||
+      recruiter?.independentRec === true
+    ) {
       setIndependentCheck(recruiter.independentRec);
     }
     if (recruiter?.orgDescription) {
@@ -82,23 +88,22 @@ const RecProfile = () => {
 
     if (recruiter?.designation) {
       setDesignation(recruiter.designation);
-      
     }
 
     if (recruiter?.companyCity) {
       setCompanyLocation(recruiter.companyCity);
     }
 
-    if(recruiter?.industryType){
+    if (recruiter?.industryType) {
       setIndustry(recruiter.industryType);
     }
 
-    if(recruiter?.numOfEmployees){
+    if (recruiter?.numOfEmployees) {
       setEmployeesCount(recruiter.numOfEmployees);
     }
   }, [recruiter]);
 
-console.log('this is location',companyLocation)
+  console.log("this is location", companyLocation);
 
   useEffect(() => {
     if (!token) {
@@ -196,7 +201,6 @@ console.log('this is location',companyLocation)
       toast.success("Logo uploaded successfully");
 
       fetchLogo();
-
     } catch (error) {
       // setUploading(false);
       console.error("Error uploading logo", error);
@@ -309,8 +313,6 @@ console.log('this is location',companyLocation)
 
   const handleDetailsUpdate = async () => {
     try {
-
-
       const phoneStr = String(phoneNumber); // Convert number to string
       if (phoneStr.length !== 10) {
         // console.log("This is length:", phoneStr.length);
@@ -320,11 +322,10 @@ console.log('this is location',companyLocation)
         return;
       }
 
-      if (designation === '') {
+      if (designation === "") {
         toast.error("Please enter your designation");
         return;
       }
-
 
       const response = await axios.put(
         `${api}/recruiter/update-details/${idFromToken}`,
@@ -333,7 +334,7 @@ console.log('this is location',companyLocation)
           countryCode,
           firstname: firstName,
           lastname: lastName,
-          designation
+          designation,
         }
       );
 
@@ -349,45 +350,40 @@ console.log('this is location',companyLocation)
   };
   const handleDetailsUpdate_2 = async () => {
     try {
-
-      if (company === '' && independentCheck === false) {
+      if (company === "" && independentCheck === false) {
         toast.error("Please enter your name of company");
         return;
       }
 
-      if (companyDesc === '') {
+      if (companyDesc === "") {
         toast.error("Please enter your company description");
         return;
       }
 
-      if(companyLocation===''){
+      if (companyLocation === "") {
         toast.error("Please enter your company location");
         return;
       }
 
-      if(industry===''){
+      if (industry === "") {
         toast.error("Please enter industry type");
         return;
       }
 
-      if(employeesCount===''){
+      if (employeesCount === "") {
         toast.error("Please enter number of employees ");
         return;
       }
 
-
-
       const response = await axios.put(
         `${api}/recruiter/update-details-2/${idFromToken}`,
         {
-
           companyName: company,
           independentRec: independentCheck,
           orgDescription: companyDesc,
-          companyCity:companyLocation,
-          industryType:industry,
+          companyCity: companyLocation,
+          industryType: industry,
           numOfEmployees: employeesCount,
-
         }
       );
 
@@ -454,7 +450,7 @@ console.log('this is location',companyLocation)
   // Industry functions
   // const [industry, setIndustry] = useState("");
   const [selectedIndustries, setSelectedIndustries] = useState([]);
-  const suggestions=[
+  const suggestions = [
     "Accounting",
     "Advertising",
     "Aerospace",
@@ -600,7 +596,7 @@ console.log('this is location',companyLocation)
     "Writing & Editing",
   ].map((item) => ({
     label: item,
-    value: item
+    value: item,
   }));
 
   // console.log(suggestions)
@@ -633,377 +629,42 @@ console.log('this is location',companyLocation)
   // );
   // company employee numbers
   const [totalEmployees, setTotalEmployees] = useState();
+  // state for country and state
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
   const handleCompanySizeChange = (e) => {
     setEmployeesCount(e.target.value);
+  };
+  // country state city Api
+
+  // Get available states and cities based on selections
+  const states = selectedCountry
+    ? countryData.find((c) => c.name === selectedCountry)?.states
+    : [];
+  const cities = selectedState
+    ? states.find((s) => s.name === selectedState)?.cities
+    : [];
+  const maxChars = 300; // Maximum character limit
+
+  const handleInputChange = (e) => {
+    if (e.target.value.length <= maxChars) {
+      setCompanyDesc(e.target.value);
+    }
   };
   return !recruiter ? (
     <Spinner />
   ) : (
-
-    // <div className="max-w-[1170px] mx-auto py-10 mt-[68px] min-h-screen px-3">
-    //   <div className="border-2 rounded-lg flex flex-col items-center space-y-3 py-5">
-    //     <h1 className="text-3xl font-bold mb-2 text-center">Profile</h1>
-    // <div className=" w-40 h-auto my-10 flex flex-col space-y-4 items-center">
-    //   {!logoUrl ? (
-    //     <FaBuilding className="text-gray-400 w-full h-full" />
-    //   ) : (
-    //     <img
-    //       src={logoUrl}
-    //       alt="Company Logo"
-    //       className="w-full h-40 my-2 rounded-full"
-    //     />
-    //   )}
-
-    //   {!logoUrl && !logo && (
-    //     <>
-    //       <div className="text-gray-500">Upload Company logo</div>
-    //       <button
-    //         onClick={handleSelect}
-    //         className="w-[70%] inline-block mx-auto bg-gray-300 rounded-lg py-1 px-2 hover:bg-blue-200 hover:scale-105 duration-300"
-    //       >
-    //         Select Logo
-    //       </button>
-    //       <input
-    //         ref={fileInputRef}
-    //         onChange={handleFileUpload}
-    //         type="file"
-    //         className="my-2 hover:cursor-pointer w-full hidden"
-    //       />
-    //     </>
-    //   )}
-    //   {logo && (
-    //     <button
-    //       type="submit"
-    //       onClick={handleFileUpload}
-    //       className={`  bg-gray-300 rounded-lg py-0 mt-4 px-2 hover:bg-green-200 hover:scale-105 duration-300  `}
-    //     >
-    //       UPLOAD
-    //     </button>
-    //   )}
-    //   {logoUrl && (
-    //     <button
-    //       className="text-blue-500 underline w-full"
-    //       onClick={handleDelete}
-    //     >
-    //       Change Logo
-    //     </button>
-    //   )}
-    // </div>
-    //     {/* box */}
-    //     {/* firstname and lastname */}
-    //     <div className="flex flex-col md:flex-row gap-5 w-full  lg:w-[70%] px-3 lg:px-0">
-    //       {/* first name */}
-    //       <div className="relative w-full">
-    //         <div className="flex flex-col">
-    //           <label>First Name</label>
-    //           <input
-    //             className="border-2 rounded-lg px-3 py-1"
-    //             defaultValue={firstName}
-    //             type="text"
-    //             onChange={(e) => setFirstName(e.target.value)}
-    //           />
-    //         </div>
-    //         {/* change button for first name */}
-    //         {/* <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
-    //           <FaPen className="text-sm text-gray-600 hover:cursor-pointer " />
-    //         </div> */}
-    //       </div>
-    //       {/* Last Name */}
-    //       <div className="relative w-full">
-    //         <div className="flex flex-col w-full">
-    //           <label>Last Name</label>
-    //           <input
-    //             onChange={(e) => setLastName(e.target.value)}
-    //             className="border-2 rounded-lg px-3 py-1"
-    //             defaultValue={lastName}
-    //             type="text"
-    //           />
-    //         </div>
-    //         {/* chnage button for last name */}
-    //         {/* <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
-    //           <FaPen className="text-sm text-gray-600 hover:cursor-pointer " />
-    //         </div> */}
-    //       </div>
-    //     </div>
-
-    //     {/* recruiter email & company name */}
-    //     <div className="flex flex-col items-end md:flex-row gap-5 w-full  lg:w-[70%] px-3 lg:px-0">
-    //       {/* Recruiter email */}
-    //       <div className="relative w-full">
-    //         <div className="flex flex-col">
-    //           <label>Recruiter Email</label>
-    //           <input
-    //             className="border-2 rounded-lg px-3 py-1"
-    //             defaultValue={recruiter?.email}
-    //             type="text"
-    //             readOnly
-    //           />
-    //         </div>
-    //         {/* change button for recruiter email */}
-    //         {/* <div className="p-2 bg-green-200 absolute right-3 top-[27px] rounded-lg">
-    //           <FaPen className="text-sm text-gray-600 hover:cursor-pointer " />
-    //         </div> */}
-    //       </div>
-
-    //       {/* company name */}
-    //       <div className="w-full">
-    //         {recruiter.companyName && (
-    //           <div className="relative">
-    //             <div className="flex flex-col">
-    //               <label>Company Name</label>
-    //               <input
-    //                 onChange={(e) => setCompany(e.target.value)}
-    //                 className="border-2 rounded-lg px-3 py-1"
-    //                 defaultValue={recruiter?.companyName}
-    //                 type="text"
-    //               />
-    //             </div>
-
-    //           </div>
-    //         )}
-    //         {!isCompanyEdit && !recruiter.companyName && (
-    //           <button
-    //             onClick={() => setIsCompanyEdit(true)}
-    //             className="bg-blue-500 text-white px-2 py-1"
-    //           >
-    //             Add Company Name
-    //           </button>
-    //         )}
-    //         {isCompanyEdit && (
-    //           <>
-    //             <div className=" flex space-x-3 items-center mt-3 relative">
-    //               <input
-    //                 type="text"
-    //                 value={companyName}
-    //                 onChange={(e) => setCompanyName(e.target.value)}
-    //                 className="border-2 border-gray-400 px-3 py-1 rounded-lg w-full text-center"
-    //               />
-    //               <FaTimes
-    //                 onClick={() => {
-    //                   setIsCompanyEdit(false);
-    //                   setCompanyName("");
-    //                 }}
-    //                 className="hover:cursor-pointer w-5 h-5 absolute right-2"
-    //               />
-    //             </div>
-    //             <button
-    //               onClick={handleCompanySave}
-    //               className="px-3 py-1 rounded-lg bg-green-300 hover:bg-green-500 my-2"
-    //             >
-    //               Save
-    //             </button>
-    //           </>
-    //         )}
-    //       </div>
-    //     </div>
-
-    //     {/* phone number */}
-    //     {/* <h1 className=" text-gray-600 ">Ph no- {recruiter.phone}</h1> */}
-    //     {/* country code */}
-
-    //     <div className="bg-white rounded-lg w-full lg:w-[70%]">
-    //       <div className="flex flex-col justify-center md:flex-row gap-2 mt-2 px-3 md:px-0 border-2 md:border-0 py-2 md:py-0 mx-3 rounded-lg">
-    //         {/* Country Code Dropdown */}
-    //         <div className="flex items-center">
-    //           <label className="text-gray-500 mr-2">Country Code</label>
-    //           <select
-    //             value={countryCode}
-    //             onChange={(e) => {
-    //               setCountryCode(e.target.value);
-    //               setPhoneNumber(phoneNumber); // Triggers a re-render
-    //             }}
-    //             className="text-sm outline-none rounded-lg h-full border border-gray-300 p-2"
-    //           >
-    //             <option value="+1">US (+1)</option>
-    //             <option value="+91">IND (+91)</option>
-    //             <option value="+44">EU (+44)</option>
-    //           </select>
-    //         </div>
-
-    //         {/* Phone Number */}
-    //         <div className="flex items-center">
-    //           <label className="text-gray-500 mr-2">Phone</label>
-    //           <input
-    //             type="number"
-    //             defaultValue={recruiter?.phone}
-    //             onChange={(e) => setPhoneNumber(e.target.value)}
-    //             className="w-full p-2 border border-gray-300 rounded-lg outline-none"
-    //             placeholder="Phone number"
-    //           />
-    //         </div>
-
-    //       </div>
-    //     </div>
-
-    //     <div>
-    //           <button
-    //             onClick={handleDetailsUpdate}
-    //             disabled={phoneNumber?.length < 10 || !phoneNumber}
-    //             className={`px-6 py-2 rounded-lg font-semibold text-white transition duration-200 w-full mt-3 md:mt-0
-    //             ${phoneNumber?.length < 10
-    //                 ? "bg-gray-300 cursor-not-allowed"
-    //                 : "bg-blue-500 hover:bg-blue-600 cursor-pointer"
-    //               }`}
-    //           >
-    //             Update
-    //           </button>
-    //         </div>
-
-    // {!recruiter.companyWebsite && !recruiter.companyCertificate && (
-    //   <div className="flex flex-col space-y-3  justify-center">
-    //     {/* Trigger button to open popup */}
-    //     <p className="text-red-400">
-    //       Upload company's incorporation certificate or Official website
-    //       link
-    //     </p>
-    //     <button
-    //       onClick={() => setIsModalOpen(true)}
-    //       className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-    //     >
-    //       Upload PDF or Enter URL
-    //     </button>
-
-    //     {/* Modal Popup */}
-    //     {isModalOpen && (
-    //       <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-500 bg-opacity-50 z-50 mt-10">
-    //         <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] flex flex-col space-y-4 justify-between relative">
-    //           {/* File Upload Section */}
-    //           <FaTimes
-    //             className="absolute right-3 top-3 text-red-500 hover:cursor-pointer"
-    //             onClick={() => {
-    //               setIsModalOpen(false);
-    //               setSelectedFile(null);
-    //               setCompanyUrl("");
-    //             }}
-    //           />
-    //           <div className="flex justify-center items-center">
-    //             {!companyUrl && (
-    //               <div className="w-[45%] flex flex-col items-center justify-center">
-    //                 <input
-    //                   id="fileinput"
-    //                   type="file"
-    //                   onChange={handleFileInput}
-    //                   className="hidden"
-    //                   accept=".pdf"
-    //                 />
-    //                 <label
-    //                   htmlFor="fileinput"
-    //                   className="text-blue-500 text-lg hover:cursor-pointer hover:scale-105 duration-300"
-    //                 >
-    //                   <span>Upload PDF</span>
-    //                 </label>
-    //                 {selectedFile && <p>{selectedFile.name}</p>}
-    //               </div>
-    //             )}
-
-    //             {/* OR Divider */}
-    //             {!selectedFile && !companyUrl && (
-    //               <div className="w-[10%] flex items-center justify-center">
-    //                 <span className="text-gray-400">OR</span>
-    //               </div>
-    //             )}
-
-    //             {/* URL Input Section */}
-    //             {!selectedFile && (
-    //               <div className="w-[45%] flex flex-col items-center">
-    //                 <input
-    //                   type="text"
-    //                   placeholder="Enter company's website URL"
-    //                   onChange={handleUrlInputChange}
-    //                   className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500"
-    //                 />
-    //               </div>
-    //             )}
-    //           </div>
-    //           <button
-    //             onClick={() => {
-    //               setIsModalOpen(false);
-    //               handleSubmit();
-    //             }}
-    //             className="bg-green-500 text-white mt-2 py-2 px-4 rounded hover:bg-green-700 "
-    //           >
-    //             Submit
-    //           </button>
-    //         </div>
-    //       </div>
-    //     )}
-    //   </div>
-    // )}
-
-    // {pdfUrl && (
-    //   <>
-    //     <a
-    //       href={pdfUrl}
-    //       download={recruiter.companyCertificate.filename}
-    //       className="text-blue-500"
-    //     >
-    //       Download Company Incorporation Certificate
-    //     </a>
-    //     <p className="text-gray-600">
-    //       (
-    //       {`Uploaded ${TimeAgo(recruiter.companyCertificate.uploadedDate)}`}
-    //       )
-    //     </p>
-    //     <p className="text-gray-600">
-    //       Verification:
-    //       <span
-    //         className={`${recruiter.companyCertificate.status === "pending"
-    //             ? "text-yellow-500"
-    //             : recruiter.companyCertificate.status === "Verified"
-    //               ? "text-green-500"
-    //               : recruiter.companyCertificate.status === "Rejected"
-    //                 ? "text-red-500"
-    //                 : ""
-    //           }`}
-    //       >
-    //         {recruiter.companyCertificate.status}
-    //       </span>
-    //     </p>
-    //     {recruiter.companyCertificate.status !== "Verified" && (
-    //       <>
-    //         <p className="text-red-400">
-    //           We will verify your certificate shortly!
-    //         </p>
-    //         <p className="text-red-400 text-center">
-    //           (Estimated time-24hrs)
-    //         </p>
-    //       </>
-    //     )}
-    //   </>
-    // )}
-
-    //     {recruiter.companyWebsite && (
-    //       <div className="my-4">
-    //         <p className="text-blue-500 text-center">
-    //           {recruiter.companyWebsite.link}
-    //         </p>
-    //         <p className="text-gray-700 text-center">
-    //           Verification: {recruiter.companyWebsite.status}
-    //         </p>
-    //         {recruiter?.companyWebsite.status !== "Verified" && (
-    //           <>
-    //             <p className="text-red-400">
-    //               We will verify your provided link shortly!
-    //             </p>
-    //             <p className="text-red-400 text-center">
-    //               (Estimated time-24hrs)
-    //             </p>
-    //           </>
-    //         )}
-    //       </div>
-    //     )}
-    //   </div>
-    // </div>
     <div className="min-h-screen mt-20">
       <div className="w-full lg:w-[50%] mx-auto p-4">
         {/* Tab Buttons */}
         <div className="flex space-x-4 justify-center items-center">
           {/* tab 1 */}
           <button
-            className={`py-2 px-4 flex flex-col justify-center items-center ${activeTab === "Tab1"
-              ? "text-blue-500 border-b-2 border-blue-500"
-              : "text-gray-500 border-b-2 border-white"
-              }`}
+            className={`py-2 px-4 flex flex-col justify-center items-center ${
+              activeTab === "Tab1"
+                ? "text-blue-500 border-b-2 border-blue-500"
+                : "text-gray-500 border-b-2 border-white"
+            }`}
             onClick={() => setActiveTab("Tab1")}
           >
             <CgProfile className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
@@ -1011,10 +672,11 @@ console.log('this is location',companyLocation)
           </button>
           {/* tab-2 */}
           <button
-            className={`py-2 px-4 flex flex-col justify-center items-center  ${activeTab === "Tab2"
-              ? "text-blue-500 border-b-2 border-blue-500"
-              : "text-gray-500 border-b-2 border-white"
-              }`}
+            className={`py-2 px-4 flex flex-col justify-center items-center  ${
+              activeTab === "Tab2"
+                ? "text-blue-500 border-b-2 border-blue-500"
+                : "text-gray-500 border-b-2 border-white"
+            }`}
             onClick={() => setActiveTab("Tab2")}
           >
             <IoIosBriefcase className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
@@ -1082,8 +744,9 @@ console.log('this is location',companyLocation)
 
                     <div className="relative flex items-center">
                       <select
-                        className={`border-2 rounded-md px-3 py-1 w-full ${showManualInput ? "appearance-none" : ""
-                          }`}
+                        className={`border-2 rounded-md px-3 py-1 w-full ${
+                          showManualInput ? "appearance-none" : ""
+                        }`}
                         value={showManualInput ? "notAvailable" : designation}
                         onChange={handleDesignationChange}
                       >
@@ -1138,54 +801,63 @@ console.log('this is location',companyLocation)
                         // defaultValue={recruiter?.phone}
                         value={phoneNumber}
                         onChange={(e) => {
-                          setPhoneNumber(e.target.value)
-                          if (e.target.value.trim().length < 10 || e.target.value.trim().length > 10) {
-
-                            setPhoneError('Enter a valid phone number')
+                          setPhoneNumber(e.target.value);
+                          if (
+                            e.target.value.trim().length < 10 ||
+                            e.target.value.trim().length > 10
+                          ) {
+                            setPhoneError("Enter a valid phone number");
+                          } else {
+                            setPhoneError("");
                           }
-                          else {
-                            setPhoneError('')
-                          }
-
                         }}
                         maxLength={10}
                         type="number"
                       />
-                      {phoneError !== '' && <div className="absolute text-red-500 text-sm top-8 left-[69px] md:left-28"> Enter a valid phone number</div>}
+                      {phoneError !== "" && (
+                        <div className="absolute text-red-500 text-sm top-8 left-[69px] md:left-28">
+                          {" "}
+                          Enter a valid phone number
+                        </div>
+                      )}
 
                       <p className="text-gray-600 ml-2 md:ml-5">
                         <span
-                          className={`flex items-center gap-[2px] ${recruiter?.companyCertificate?.status === "pending"
-                            ? "text-yellow-500"
-                            : recruiter?.companyCertificate?.status ===
-                              "Verified"
+                          className={`flex items-center gap-[2px] ${
+                            recruiter?.companyCertificate?.status === "pending"
+                              ? "text-yellow-500"
+                              : recruiter?.companyCertificate?.status ===
+                                "Verified"
                               ? "text-green-500"
                               : recruiter?.companyCertificate?.status ===
                                 "Rejected"
-                                ? "text-red-500"
-                                : ""
-                            }`}
+                              ? "text-red-500"
+                              : ""
+                          }`}
                         >
                           <MdOutlineCancel
-                            className={`${recruiter?.companyCertificate?.status ===
+                            className={`${
+                              recruiter?.companyCertificate?.status ===
                               "Rejected"
-                              ? "block"
-                              : "hidden"
-                              }`}
+                                ? "block"
+                                : "hidden"
+                            }`}
                           />
                           <MdVerifiedUser
-                            className={`${recruiter?.companyCertificate?.status ===
+                            className={`${
+                              recruiter?.companyCertificate?.status ===
                               "Verified"
-                              ? "block"
-                              : "hidden"
-                              }`}
+                                ? "block"
+                                : "hidden"
+                            }`}
                           />
                           <MdOutlinePendingActions
-                            className={`${recruiter?.companyCertificate?.status ===
+                            className={`${
+                              recruiter?.companyCertificate?.status ===
                               "pending"
-                              ? "block"
-                              : "hidden"
-                              }`}
+                                ? "block"
+                                : "hidden"
+                            }`}
                           />
                           {recruiter?.companyCertificate?.status}
                         </span>
@@ -1230,7 +902,7 @@ console.log('this is location',companyLocation)
                       className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded mt-[3px]"
                       checked={independentCheck}
                       onChange={handleCheckboxChange}
-                      disabled={company !== ''}
+                      disabled={company !== ""}
                     />
                     <label htmlFor="checkbox" className="text-sm text-gray-600">
                       I am an Independent Practitionar(Freelancer, Architect,
@@ -1244,44 +916,111 @@ console.log('this is location',companyLocation)
                   <label className="text-sm text-gray-600 mb-1 ml-1">
                     Organization Description
                   </label>
-                  <textarea
-                    className="border-2 rounded-md px-3 py-1"
-                    value={companyDesc}
-                    onChange={(e) => setCompanyDesc(e.target.value)}
-                    type="text"
-                    rows={5}
-                  />
+                  <div className="">
+                    <textarea
+                      className="border-2 rounded-md px-3 py-1 w-full"
+                      value={companyDesc}
+                      onChange={handleInputChange}
+                      type="text"
+                      rows={5}
+                      placeholder="Enter company description..."
+                    />
+
+                    {/* Character Count */}
+                    <div
+                      className={`mt-1 text-sm ${
+                        companyDesc.length === maxChars
+                          ? "text-red-500"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {maxChars - companyDesc.length} characters remaining
+                    </div>
+                  </div>
                 </div>
                 {/* Organization city */}
                 <div className="flex flex-col">
                   <label className="text-sm text-gray-600 mb-1 ml-1">
-                    Organization City
+                    Organization Location
                   </label>
-                  <Select
+                  {/* <Select
                     options={statesAndCities}
-                    value={statesAndCities.find(option => option.value === companyLocation)}
-                    onChange={(values)=> setCompanyLocation(values.value)}
+                    value={statesAndCities.find(
+                      (option) => option.value === companyLocation
+                    )}
+                    onChange={(values) => setCompanyLocation(values.value)}
                     placeholder="Select a location"
                     searchable={true}
                     className="w-full shadow-md"
                     classNamePrefix="custom-select-dropdown"
-                  />
-                  
+                  /> */}
+                  <div className="flex flex-col md:flex-row gap-3 w-full">
+                    {/* Country Dropdown */}
+                    <select
+                      className="border-2 py-1 rounded-md px-2 w-full"
+                      id="country"
+                      value={selectedCountry}
+                      onChange={(e) => {
+                        setSelectedCountry(e.target.value);
+                        setSelectedState(""); // Reset state and cities dropdowns
+                      }}
+                    >
+                      <option value="">-- Select Country --</option>
+                      {countryData.map((country) => (
+                        <option key={country.id} value={country.name}>
+                          {country.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* State Dropdown */}
+                    <select
+                      className="border-2 py-1 rounded-md px-2 w-full"
+                      id="state"
+                      value={selectedState}
+                      onChange={(e) => setSelectedState(e.target.value)}
+                      disabled={!selectedCountry}
+                    >
+                      <option value="">-- Select State --</option>
+                      {states?.map((state) => (
+                        <option key={state.id} value={state.name}>
+                          {state.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* City Dropdown */}
+                    <select
+                      id="city"
+                      disabled={!selectedState}
+                      className="border-2 py-1 rounded-md px-2 w-full"
+                    >
+                      <option value="">-- Select City --</option>
+                      {cities?.map((city) => (
+                        <option key={city.id} value={city.name}>
+                          {city.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
                 {/* Industry */}
                 <div className="flex flex-col">
-                <label className="text-sm text-gray-600 mb-1 ml-1">Industry Type</label>
-                <Select
+                  <label className="text-sm text-gray-600 mb-1 ml-1">
+                    Industry Type
+                  </label>
+                  <Select
                     options={suggestions}
                     // values={industry}
-                    value={suggestions.find(option=>option.value===industry)}
-                    onChange={(values)=> setIndustry(values.value)}
+                    value={suggestions.find(
+                      (option) => option.value === industry
+                    )}
+                    onChange={(values) => setIndustry(values.value)}
                     placeholder="Select Industry type"
                     searchable={true}
                     className="w-full shadow-md"
                     classNamePrefix="custom-select-dropdown"
                   />
-                   
                 </div>
                 {/* number of employees */}
                 <div className="flex flex-col w-full lg:w-1/2">
@@ -1322,9 +1061,10 @@ console.log('this is location',companyLocation)
                         {/* <div className="text-gray-500">Upload</div> */}
                         <button
                           onClick={handleSelect}
-                          className="border-2 border-dashed border-green-400 bg-green-100 rounded-sm py-1 px-5 hover:bg-green-200 hover:scale-105 duration-300"
+                          className="border-2 border-dashed border-green-400 bg-green-100 rounded-sm py-1 px-5 hover:bg-green-200 hover:scale-105 duration-300 flex items-center justify-center gap-2"
                         >
-                          Upload Logo
+                          <FaUpload className="text-blue-500" />
+                          <span>Upload Logo</span>
                         </button>
                         <input
                           ref={fileInputRef}
@@ -1365,15 +1105,15 @@ console.log('this is location',companyLocation)
                     </p>
                     <button
                       onClick={() => setIsModalOpen(true)}
-                      className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+                      className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 flex items-center justify-center gap-3"
                     >
-                      Upload PDF or Enter URL
+                      <FaUpload /> <span>Upload PDF or Enter URL</span>
                     </button>
 
                     {/* Modal Popup */}
                     {isModalOpen && (
-                      <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-500 bg-opacity-50 z-50 mt-10">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] flex flex-col space-y-4 justify-between relative">
+                      <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-500 bg-opacity-50 z-50 mt-10 w-full]">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-[90%]  lg:w-[600px] flex flex-col space-y-4 justify-between relative mx-5">
                           {/* File Upload Section */}
                           <FaTimes
                             className="absolute right-3 top-3 text-red-500 hover:cursor-pointer"
@@ -1383,44 +1123,54 @@ console.log('this is location',companyLocation)
                               setCompanyUrl("");
                             }}
                           />
-                          <div className="flex justify-center items-center">
-                            {!companyUrl && (
-                              <div className="w-[45%] flex flex-col items-center justify-center">
-                                <input
-                                  id="fileinput"
-                                  type="file"
-                                  onChange={handleFileInput}
-                                  className="hidden"
-                                  accept=".pdf"
-                                />
-                                <label
-                                  htmlFor="fileinput"
-                                  className="text-blue-500 text-lg hover:cursor-pointer hover:scale-105 duration-300"
-                                >
-                                  <span>Upload PDF</span>
-                                </label>
-                                {selectedFile && <p>{selectedFile.name}</p>}
-                              </div>
-                            )}
-
+                          <div className="flex flex-col md:flex-row  justify-center gap-5 items-center">
+                            <div>
+                              {!companyUrl && (
+                                <div className="w-full flex flex-col items-center justify-center">
+                                  <input
+                                    id="fileinput"
+                                    type="file"
+                                    onChange={handleFileInput}
+                                    className="hidden"
+                                    accept=".pdf"
+                                  />
+                                  <label
+                                    htmlFor="fileinput"
+                                    className="text-blue-500 text-lg hover:cursor-pointer hover:scale-105 duration-300 flex justify-center items-center gap-2 border-2 px-3 rounded-md border-dashed border-blue-500"
+                                  >
+                                    <FaUpload />
+                                    <span>Upload PDF</span>
+                                  </label>
+                                  {selectedFile && (
+                                    <p className="text-center mt-5">
+                                      {selectedFile.name}
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                             {/* OR Divider */}
-                            {!selectedFile && !companyUrl && (
-                              <div className="w-[10%] flex items-center justify-center">
-                                <span className="text-gray-400">OR</span>
-                              </div>
-                            )}
+                            <div>
+                              {!selectedFile && !companyUrl && (
+                                <div className="">
+                                  <span className="text-gray-400">OR</span>
+                                </div>
+                              )}
+                            </div>
 
                             {/* URL Input Section */}
-                            {!selectedFile && (
-                              <div className="w-[45%] flex flex-col items-center">
-                                <input
-                                  type="text"
-                                  placeholder="Enter company's website URL"
-                                  onChange={handleUrlInputChange}
-                                  className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500"
-                                />
-                              </div>
-                            )}
+                            <div>
+                              {!selectedFile && (
+                                <div className="w-full">
+                                  <input
+                                    type="text"
+                                    placeholder="Enter company's website URL"
+                                    onChange={handleUrlInputChange}
+                                    className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500 w-full"
+                                  />
+                                </div>
+                              )}
+                            </div>
                           </div>
                           <button
                             onClick={() => {
@@ -1456,16 +1206,17 @@ console.log('this is location',companyLocation)
                     <p className="text-gray-600">
                       Verification status:
                       <span
-                        className={`mx-1 ${recruiter.companyCertificate?.status === "pending"
-                          ? "text-yellow-500"
-                          : recruiter.companyCertificate?.status ===
-                            "Verified"
+                        className={`mx-1 ${
+                          recruiter.companyCertificate?.status === "pending"
+                            ? "text-yellow-500"
+                            : recruiter.companyCertificate?.status ===
+                              "Verified"
                             ? "text-green-500"
                             : recruiter.companyCertificate?.status ===
                               "Rejected"
-                              ? "text-red-500"
-                              : ""
-                          }`}
+                            ? "text-red-500"
+                            : ""
+                        }`}
                       >
                         {recruiter.companyCertificate?.status}
                       </span>
@@ -1484,7 +1235,10 @@ console.log('this is location',companyLocation)
                 )}
               </div>
               <div className="mt-5 text-right">
-                <button onClick={handleDetailsUpdate_2} className="px-5 py-1 bg-blue-500 text-white rounded-sm">
+                <button
+                  onClick={handleDetailsUpdate_2}
+                  className="px-5 py-1 bg-blue-500 text-white rounded-sm"
+                >
                   Done
                 </button>
               </div>
