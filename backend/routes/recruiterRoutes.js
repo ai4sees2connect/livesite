@@ -592,7 +592,7 @@ router.post(
 
       return res
         .status(200)
-        .json({ message: "Details updated successfully", recruiter });
+        .json({ message: "Details updated successfully", recruiter, companyCertificate: updateData.companyCertificate });
     } catch (error) {
       console.error("Error uploading company details:", error);
       res.status(500).json({ message: "Server error", error });

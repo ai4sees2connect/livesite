@@ -158,6 +158,12 @@ const RecProfile = () => {
     };
   }, [logo]);
 
+  const getCertificate = () => {
+    if (selectedFile) {
+
+    }
+  }
+
   useEffect(() => {
     if (recruiter?.companyCertificate?.data) {
       const byteArray = new Uint8Array(recruiter.companyCertificate.data.data);
@@ -211,22 +217,7 @@ const RecProfile = () => {
     fileInputRef.current.click();
   };
 
-  // const handleCompanySave = async () => {
-  //   try {
-  //     if (!company) {
-  //       toast.error("Company name cannot be empty");
-  //       return;
-  //     }
-  //     axios.put(`${api}/recruiter/api/${idFromToken}/add-company`, {
-  //       companyName: companyName,
-  //     });
-  //     toast.success("Company added successfully");
-  //     window.location.reload();
-  //   } catch (error) {
-  //     toast.error("Error saving company");
-  //     console.log(error);
-  //   }
-  // };
+
 
   const handleDelete = async () => {
     try {
@@ -244,7 +235,7 @@ const RecProfile = () => {
       console.error("Error deleting logo", error);
     }
   };
-  // console.log(companyName);
+  console.log('this is selected certificate', selectedFile);
 
   const handleFileInput = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -289,9 +280,12 @@ const RecProfile = () => {
 
       if (response.status === 200) {
         toast.success("Details submitted successfully!");
-        // Reset the form after successful submission
+        // console.log('this is from backend',response.data.companyCertificate)
+        const url = URL.createObjectURL(selectedFile);
+        setPdfUrl(url);
+
         setCompanyUrl("");
-        setSelectedFile(null);
+        // setSelectedFile(null);
         // window.location.reload();
       } else {
         toast.error("Failed to submit details. Please try again.");
@@ -660,11 +654,10 @@ const RecProfile = () => {
         <div className="flex space-x-4 justify-center items-center">
           {/* tab 1 */}
           <button
-            className={`py-2 px-4 flex flex-col justify-center items-center ${
-              activeTab === "Tab1"
+            className={`py-2 px-4 flex flex-col justify-center items-center ${activeTab === "Tab1"
                 ? "text-blue-500 border-b-2 border-blue-500"
                 : "text-gray-500 border-b-2 border-white"
-            }`}
+              }`}
             onClick={() => setActiveTab("Tab1")}
           >
             <CgProfile className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
@@ -672,11 +665,10 @@ const RecProfile = () => {
           </button>
           {/* tab-2 */}
           <button
-            className={`py-2 px-4 flex flex-col justify-center items-center  ${
-              activeTab === "Tab2"
+            className={`py-2 px-4 flex flex-col justify-center items-center  ${activeTab === "Tab2"
                 ? "text-blue-500 border-b-2 border-blue-500"
                 : "text-gray-500 border-b-2 border-white"
-            }`}
+              }`}
             onClick={() => setActiveTab("Tab2")}
           >
             <IoIosBriefcase className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
@@ -744,9 +736,8 @@ const RecProfile = () => {
 
                     <div className="relative flex items-center">
                       <select
-                        className={`border-2 rounded-md px-3 py-1 w-full ${
-                          showManualInput ? "appearance-none" : ""
-                        }`}
+                        className={`border-2 rounded-md px-3 py-1 w-full ${showManualInput ? "appearance-none" : ""
+                          }`}
                         value={showManualInput ? "notAvailable" : designation}
                         onChange={handleDesignationChange}
                       >
@@ -822,41 +813,37 @@ const RecProfile = () => {
 
                       <p className="text-gray-600 ml-2 md:ml-5">
                         <span
-                          className={`flex items-center gap-[2px] ${
-                            recruiter?.companyCertificate?.status === "pending"
+                          className={`flex items-center gap-[2px] ${recruiter?.companyCertificate?.status === "pending"
                               ? "text-yellow-500"
                               : recruiter?.companyCertificate?.status ===
                                 "Verified"
-                              ? "text-green-500"
-                              : recruiter?.companyCertificate?.status ===
-                                "Rejected"
-                              ? "text-red-500"
-                              : ""
-                          }`}
+                                ? "text-green-500"
+                                : recruiter?.companyCertificate?.status ===
+                                  "Rejected"
+                                  ? "text-red-500"
+                                  : ""
+                            }`}
                         >
                           <MdOutlineCancel
-                            className={`${
-                              recruiter?.companyCertificate?.status ===
-                              "Rejected"
+                            className={`${recruiter?.companyCertificate?.status ===
+                                "Rejected"
                                 ? "block"
                                 : "hidden"
-                            }`}
+                              }`}
                           />
                           <MdVerifiedUser
-                            className={`${
-                              recruiter?.companyCertificate?.status ===
-                              "Verified"
+                            className={`${recruiter?.companyCertificate?.status ===
+                                "Verified"
                                 ? "block"
                                 : "hidden"
-                            }`}
+                              }`}
                           />
                           <MdOutlinePendingActions
-                            className={`${
-                              recruiter?.companyCertificate?.status ===
-                              "pending"
+                            className={`${recruiter?.companyCertificate?.status ===
+                                "pending"
                                 ? "block"
                                 : "hidden"
-                            }`}
+                              }`}
                           />
                           {recruiter?.companyCertificate?.status}
                         </span>
@@ -927,11 +914,10 @@ const RecProfile = () => {
 
                     {/* Character Count */}
                     <div
-                      className={`mt-1 text-sm ${
-                        companyDesc.length === maxChars
+                      className={`mt-1 text-sm ${companyDesc.length === maxChars
                           ? "text-red-500"
                           : "text-gray-500"
-                      }`}
+                        }`}
                     >
                       {maxChars - companyDesc.length} characters remaining
                     </div>
@@ -1095,7 +1081,7 @@ const RecProfile = () => {
               </div>
               {/* File Upload */}
               <div className="p-5 border-2 mt-5 rounded-md">
-                {!recruiter.companyWebsite && !recruiter.companyCertificate && (
+                {!recruiter.companyWebsite && !recruiter.companyCertificate && !pdfUrl && (
                   <div className="flex flex-col space-y-3  justify-center">
                     {/* Trigger button to open popup */}
                     <p className="text-red-400">
@@ -1190,59 +1176,61 @@ const RecProfile = () => {
                   <div className="text-center space-y-2">
                     <a
                       href={pdfUrl}
-                      download={recruiter.companyCertificate.filename}
+                      download={
+                        recruiter?.companyCertificate
+                          ? recruiter.companyCertificate.filename
+                          : selectedFile?.name || "Company_Certificate.pdf"
+                      }
                       className="text-blue-500 text-lg underline"
                     >
                       Download Company Incorporation Certificate?
                     </a>
                     <p className="text-gray-600 text-md font-semibold">
                       (
-                      {`Uploaded ${TimeAgo(
-                        recruiter.companyCertificate.uploadedDate
-                      )}`}
+                      {recruiter?.companyCertificate
+                        ? `Uploaded ${TimeAgo(recruiter.companyCertificate.uploadedDate)}`
+                        : selectedFile
+                          ? `Uploaded just now`
+                          : "No details available"}
                       )
                     </p>
                     <p className="text-gray-600 text-md font-bold flex justify-center gap-2">
                       Verification status:
                       <span
-                        className={`flex items-center gap-[2px] ${
-                          recruiter?.companyCertificate?.status === "pending"
+                        className={`flex items-center gap-[2px] ${recruiter?.companyCertificate?.status === "pending"
                             ? "text-yellow-500"
                             : recruiter?.companyCertificate?.status ===
                               "Verified"
-                            ? "text-green-500"
-                            : recruiter?.companyCertificate?.status ===
-                              "Rejected"
-                            ? "text-red-500"
-                            : ""
-                        }`}
+                              ? "text-green-500"
+                              : recruiter?.companyCertificate?.status ===
+                                "Rejected"
+                                ? "text-red-500"
+                                : ""
+                          } `}
                       >
                         <MdOutlineCancel
-                          className={`${
-                            recruiter?.companyCertificate?.status === "Rejected"
+                          className={`${recruiter?.companyCertificate?.status === "Rejected"
                               ? "block"
                               : "hidden"
-                          }`}
+                            }`}
                         />
                         <MdVerifiedUser
-                          className={`${
-                            recruiter?.companyCertificate?.status === "Verified"
+                          className={`${recruiter?.companyCertificate?.status === "Verified"
                               ? "block"
                               : "hidden"
-                          }`}
+                            }`}
                         />
                         <MdOutlinePendingActions
-                          className={`${
-                            recruiter?.companyCertificate?.status === "pending"
+                          className={`${recruiter?.companyCertificate?.status === "pending"
                               ? "block"
                               : "hidden"
-                          }`}
+                            }`}
                         />
-                        {recruiter?.companyCertificate?.status}
+                        {recruiter?.companyCertificate?.status || "Pending"}
                       </span>
                     </p>
                     {recruiter.companyCertificate?.status !== "Verified" ||
-                    recruiter.companyCertificate?.status !== "Rejected" ? (
+                      recruiter.companyCertificate?.status !== "Rejected" ? (
                       ""
                     ) : (
                       <div className="flex flex-col md:flex-row items-center gap-1 justify-center text-md font-semibold">
