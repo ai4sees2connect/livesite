@@ -486,8 +486,8 @@ const RecPosting = () => {
       recruiter?.subscription.postsRemaining < 1
     ) {
       return (
-        <div className="flex flex-col  items-center justify-center space-y-3">
-          <div className="mt-[350px] text-center text-gray-700 text-lg font-semibold">
+        <div className="flex flex-col   h-screen items-center justify-center space-y-3">
+          <div className=" text-center text-gray-700 text-lg font-semibold">
             You have used your monthly available free postings
           </div>
           <Link
