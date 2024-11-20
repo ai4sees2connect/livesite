@@ -1297,6 +1297,55 @@ const RecProfile = () => {
                     <a href={companyUrl} target="_blank"
                       rel="noopener noreferrer">{companyUrl}</a>
                       <div onClick={()=>{setLinkPresent(false);setIsModalOpen(true);setPdfUrl(null);setCompanyUrl(null)}} className="hover:cursor-pointer bg-blue-500 rounded-md px-2 py-1 w-fit mx-auto text-white">Update Link</div>
+                      <p className="text-gray-600 text-md font-bold flex justify-center gap-2">
+                      Verification status:
+                      <span
+                        className={`flex items-center gap-[2px] ${recruiter?.companyWebsite?.status === "pending"
+                          ? "text-yellow-500"
+                          : recruiter?.companyWebsite?.status ===
+                            "Verified"
+                            ? "text-green-500"
+                            : recruiter?.companyWebsite?.status ===
+                              "Rejected"
+                              ? "text-red-500"
+                              : ""
+                          } `}
+                      >
+                        <MdOutlineCancel
+                          className={`${recruiter?.companyWebsite?.status === "Rejected"
+                            ? "block"
+                            : "hidden"
+                            }`}
+                        />
+                        <MdVerifiedUser
+                          className={`${recruiter?.companyWebsite?.status === "Verified"
+                            ? "block"
+                            : "hidden"
+                            }`}
+                        />
+                        <MdOutlinePendingActions
+                          className={`${recruiter?.companyWebsite?.status === "pending"
+                            ? "block"
+                            : "hidden"
+                            }`}
+                        />
+                        {recruiter?.companyWebsite?.status || "Pending"}
+                      </span>
+                    </p>
+
+                    {recruiter.companyWebsite?.status !== "Verified" ||
+                      recruiter.companyWebsite?.status !== "Rejected" ? (
+                      ""
+                    ) : (
+                      <div className="flex flex-col md:flex-row items-center gap-1 justify-center text-md font-semibold">
+                        <p className="text-red-600">
+                          We will verify your website shortly!
+                        </p>
+                        <p className="text-red-600 text-center">
+                          (Estimated time-24hrs)
+                        </p>
+                      </div>
+                    )}
                       
                   </div>
                 )}

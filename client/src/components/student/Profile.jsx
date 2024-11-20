@@ -29,7 +29,7 @@ const Profile = () => {
   const token = localStorage.getItem("token");
   const [skills, setSkills] = useState([]);
   // const [selectedSkills, setSelectedSkills] = useState([]);
-  const [selectedCity, setSelectedCity] = useState(null);
+  // const [selectedCity, setSelectedCity] = useState(null);
   const [cityEdit, setCityEdit] = useState(false);
   const [expEdit, setExpEdit] = useState(null);
   const [exp, setExp] = useState(null);
@@ -41,6 +41,7 @@ const Profile = () => {
   // state for country and state
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
 
   const nums = [
     { value: "no experience", label: "no experience" },
@@ -346,6 +347,7 @@ const Profile = () => {
                 onChange={(e) => {
                   setSelectedCountry(e.target.value);
                   setSelectedState(""); // Reset state and cities dropdowns
+                  setSelectedCity("");
                 }}
               >
                 <option value="">-- Select Country --</option>
@@ -361,7 +363,7 @@ const Profile = () => {
                 className="border-2 py-1 rounded-md px-2 w-full"
                 id="state"
                 value={selectedState}
-                onChange={(e) => setSelectedState(e.target.value)}
+                onChange={(e) => {setSelectedState(e.target.value);setSelectedCity("")}}
                 disabled={!selectedCountry}
               >
                 <option value="">-- Select State --</option>
@@ -377,6 +379,8 @@ const Profile = () => {
                 id="city"
                 disabled={!selectedState}
                 className="border-2 py-1 rounded-md px-2 w-full"
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
               >
                 <option value="">-- Select City --</option>
                 {cities?.map((city) => (
