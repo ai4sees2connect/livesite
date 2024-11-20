@@ -142,9 +142,10 @@ function Signup() {
     email.trim() === verifiedEmail &&
     password.trim() !== "" &&
     firstname.trim() !== "" &&
-    lastname.trim() !== "" &&
-    otp.trim() !== "" &&
-    otpVerified;
+    lastname.trim() !== "" 
+    // &&
+    // otp.trim() !== "" &&
+    // otpVerified;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -326,7 +327,7 @@ function Signup() {
                   required
                 />
 
-                {validateEmail(email) && !sendingOtp && !otpInput && (
+                {/* {validateEmail(email) && !sendingOtp && !otpInput && (
                   <button
                     className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
                     type="button"
@@ -334,8 +335,8 @@ function Signup() {
                   >
                     Send OTP
                   </button>
-                )}
-                {validateEmail(email) &&
+                )} */}
+                {/* {validateEmail(email) &&
                   !sendingOtp &&
                   otpInput &&
                   !otpVerified && (
@@ -351,8 +352,8 @@ function Signup() {
                         ? `Resend in ${countdown}s`
                         : "Resend OTP"}
                     </button>
-                  )}
-                {otpVerified && (
+                  )} */}
+                {/* {otpVerified && (
                   <button
                     className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
                     type="button"
@@ -362,17 +363,17 @@ function Signup() {
                       <span> Verified</span>
                     </div>
                   </button>
-                )}
+                )} */}
 
-                {sendingOtp && (
+                {/* {sendingOtp && (
                   <FontAwesomeIcon
                     icon={faSpinner}
                     spin
                     className="h-5 w-5 text-black absolute right-2 top-4"
                   />
-                )}
+                )} */}
 
-                {otpInput && !otpVerified && (
+                {/* {otpInput && !otpVerified && (
                   <div className="relative my-3 w-full">
                     <input
                       type="text"
@@ -393,13 +394,13 @@ function Signup() {
                       </button>
                     )}
                   </div>
-                )}
+                )} */}
               </div>
               {emailError && (
                 <p className="text-red-500 text-left w-full">{emailError}</p>
               )}
 
-              {otpVerified && (
+              {!otpVerified && (
                 <div className="flex flex-col items-start">
                   <div className="flex  justify-start md:flex-row gap-2 mt-[6.5px] w-full">
                     {/* Country Code Dropdown */}
@@ -438,7 +439,7 @@ function Signup() {
                 </div>
               )}
 
-              {otpVerified && (
+              {!otpVerified && (
                 <div className="flex flex-col items-center relative">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -480,7 +481,7 @@ function Signup() {
                 className={`w-full py-2 bg-blue-400 border-none h-[50px] text-white rounded-full ${
                   !isFormValid ? `bg-[rgb(224,226,217)]` : ""
                 } `}
-                disabled={!isFormValid}
+                // disabled={!isFormValid}
               >
                 Create Account
               </button>

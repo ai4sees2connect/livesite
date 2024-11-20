@@ -497,14 +497,14 @@ router.delete("/delete-picture/:studentId", async (req, res) => {
 
 router.put('/api/:studentId/save-location',async(req,res)=>{
   const {studentId}=req.params;
-  const {homeLocation,yearsOfExp}=req.body;
+  const {homeLocation}=req.body;
   try {
     const student =await Student.findById(studentId);
     if(!student){
       return res.status(404).json({success:false, message:'Student not found.'})
     }
     student.homeLocation =homeLocation;
-    student.yearsOfExp =yearsOfExp;
+    // student.yearsOfExp =yearsOfExp;
     await student.save();
     return res.status(200).json({ success: true, message: 'Location updated successfully.', student });
   } catch (error) {
@@ -603,7 +603,7 @@ router.get('/internships', async (req, res) => {
     const limit = 9;  // Number of internships per page
     const skip = (parseInt(page) - 1) * limit;  // Calculate skip value for pagination
 
-    const filters = { status: 'Active' };
+    const filters = { status: 'Active',recruiter: { $ne: null } };
 
     if (workType && workType !== 'All Internships') {
       filters.internshipType = workType;
