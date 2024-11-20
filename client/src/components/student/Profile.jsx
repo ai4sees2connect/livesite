@@ -73,6 +73,12 @@ const Profile = () => {
     }
   }, [student]);
 
+  useEffect(()=>{
+  if(student?.homeLocation?.country) setSelectedCountry(student.homeLocation.country)
+  if(student?.homeLocation?.state) setSelectedCountry(student.homeLocation.state)
+  if(student?.homeLocation?.city) setSelectedCountry(student.homeLocation.city)
+  },[student])
+
   useEffect(() => {
     if (!token) {
       navigate("/student/login");
@@ -204,14 +210,17 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
-    const cityName = selectedCity.value;
 
-    console.log("cityName", cityName);
     try {
       await axios.put(`${api}/student/api/${idFromToken}/save-location`, {
-        homeLocation: cityName,
+        homeLocation: {
+          country:selectedCountry,
+          state: selectedState,
+          city: selectedCity,
+        }
       });
       toast.success("Home Location Updated");
+      // refreshData();
       window.location.reload();
     } catch (error) {
       toast.error("Some error occured");
@@ -251,11 +260,9 @@ const Profile = () => {
       console.error("Error gender experience:", error);
     }
   };
-
-  console.log("this is exp", exp);
-  console.log("this is student", student);
-  console.log(picUrl);
-  console.log("this is student", student);
+console.log('this is country',selectedCountry);
+console.log('this is state',selectedState);
+console.log('this is city',selectedCity);
   // country state city Api
 
   // Get available states and cities based on selections
@@ -393,7 +400,7 @@ const Profile = () => {
             <div className="flex flex-col gap-3">
               {selectedCity && (
                 <button
-                  onClick={handleSave}
+                  onClick={()=>{handleSave();setCityEdit(false)}}
                   className="bg-green-300 py-1 px-3 rounded-lg hover:bg-green-500 h-10 text-white"
                 >
                   Save
@@ -414,11 +421,11 @@ const Profile = () => {
         {!cityEdit && (
           <div className="flex space-x-3 justify-center items-center">
             <h1 className="text-center text-gray-600">
-              {student.homeLocation}
+              {student?.homeLocation?.country+ "," + student?.homeLocation?.state + "," + student?.homeLocation?.city}
             </h1>
             {student.homeLocation && (
               <FaPen
-                onClick={() => setCityEdit(true)}
+                onClick={() => {setCityEdit(true);}}
                 className="w-3 h-3 hover:cursor-pointer hover:text-blue-400"
               />
             )}
