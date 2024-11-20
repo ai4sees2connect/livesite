@@ -154,11 +154,13 @@ const RightSide = () => {
     fetchInternships();
   }, []);
 
+  console.log(internships)
+
   const settings = {
-    dots: true, // Show dots for navigation
-    infinite: true,
+    dots: internships?.length > 1, // Show dots for navigation
+    infinite: false,
     speed: 500,
-    slidesToShow: 3, // Number of slides to show at once
+    slidesToShow:Math.min(internships.length, 3), // Number of slides to show at once
     slidesToScroll: 1,
     arrows: true,
     nextArrow: <NextArrow />,
@@ -168,19 +170,19 @@ const RightSide = () => {
       {
         breakpoint: 1100,
         settings: {
-          slidesToShow: 3,
+          slidesToShow: Math.min(internships.length, 3),
         },
       },
       {
         breakpoint: 1000,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: Math.min(internships.length, 2),
         },
       },
       {
         breakpoint: 500,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: Math.min(internships.length, 1),
         },
       },
     ],
@@ -259,7 +261,7 @@ const RightSide = () => {
         <div className="z-0 ">
           <Slider {...settings}>
             {internships?.map((intern, index) => (
-              <div key={index} className="mx-0 md:mx-3 mb-6">
+              <div key={index} className="mx-0  md:mx-3 mb-6">
                 <div
                   key={index}
                   className="shadow-lg border-2 p-4 rounded-lg max-h-[280px] bg-white mx-2"

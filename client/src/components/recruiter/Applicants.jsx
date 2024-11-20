@@ -41,6 +41,7 @@ const Applicants = () => {
   // state for country and state
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
 
   const yearOptions = [
     { value: "2024", label: "2024" },
@@ -568,7 +569,7 @@ const Applicants = () => {
         <div
           className={`${
             filterOpen ? "block opacity-100" : "hidden opacity-0"
-          } lg:block w-full mt-0 px-6 transition-all duration-300 ease-in-out rounded-md border right-2 shadow-xl border-t py-6 overflow-y-scroll bg-white lg:max-w-[300px]`}
+          } lg:block w-full mt-0 px-6 transition-all duration-300 ease-in-out rounded-md border right-2 shadow-xl border-t py-6 overflow-y-scroll scrollbar-thin h-[65vh] bg-white lg:max-w-[300px]`}
         >
           <input
             type="text"
@@ -635,6 +636,8 @@ const Applicants = () => {
                 id="city"
                 disabled={!selectedState}
                 className="border-2 py-1 rounded-md px-2 w-full"
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
               >
                 <option value="">-- Select City --</option>
                 {cities?.map((city) => (
