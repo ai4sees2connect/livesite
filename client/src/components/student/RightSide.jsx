@@ -382,7 +382,7 @@ const RightSide = () => {
           <div className="min-h-[350px] p-10 bg-blue-500 text-white flex justify-center items-center w-full lg:w-[35%]">
             <div className="">
               <h2 className="text-4xl md:text-5xl font-bold mb-5">
-                WANT TO HIRE?
+                WANT TO HIRE INTERN?
               </h2>
               <p className="text-xl mb-10">
                 Hire Interns with ease - Get Job Easy
