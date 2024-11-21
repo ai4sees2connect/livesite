@@ -154,13 +154,13 @@ const RightSide = () => {
     fetchInternships();
   }, []);
 
-  console.log(internships)
+  console.log(internships);
 
   const settings = {
     dots: internships?.length > 1, // Show dots for navigation
     infinite: false,
     speed: 500,
-    slidesToShow:Math.min(internships.length, 3), // Number of slides to show at once
+    slidesToShow: Math.min(internships.length, 3), // Number of slides to show at once
     slidesToScroll: 1,
     arrows: true,
     nextArrow: <NextArrow />,
@@ -305,7 +305,7 @@ const RightSide = () => {
                     <div className="flex items-center gap-2 text-sm">
                       <FontAwesomeIcon
                         icon={faLocationDot}
-                        className="text-gray-500"
+                        className="text-blue-500"
                       />
                       <span className="text-sm text-gray-600">
                         {intern.internLocation.country
@@ -315,13 +315,13 @@ const RightSide = () => {
                     </div>
 
                     <div className="text-sm md:text-base flex items-center text-gray-700 mb-2">
-                      <FaClock className="mr-1" />
+                      <FaClock className="mr-1 text-blue-500 text-sm" />
                       <span>{intern.duration} Months</span>
                     </div>
 
                     {intern.stipendType === "unpaid" && (
                       <div className="flex items-center text-gray-700 mb-2">
-                        <FaMoneyBillWave className="mr-1" />
+                        <FaMoneyBillWave className="mr-1 text-blue-500" />
                         <span className="mb-2">Unpaid</span>
                       </div>
                     )}
@@ -331,7 +331,10 @@ const RightSide = () => {
                         <div className="text-sm md:text-base text-gray-700 mb-2">
                           {/* <FaMoneyBillWave className="mr-1" /> */}
                           <span className="ml-0">
-                            {intern.currency} {intern.stipend} /month
+                            <span className="text-blue-500 ml-[2px]">
+                              {intern.currency}
+                            </span>{" "}
+                            {intern.stipend} /month
                           </span>
                         </div>
 
