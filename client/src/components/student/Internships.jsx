@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,useParams } from "react-router-dom";
 import axios from "axios";
 import {
   FaMapMarkerAlt,
@@ -266,8 +266,12 @@ const Internships = () => {
     setFilterOpen(isLargeScreen);
   }, []);
 
+  const { type } = useParams();
   const [selectedLocation, setSelectedLocation] = useState([]);
-  const [workType, setWorkType] = useState("All Internships");
+  // const [workType, setWorkType] = useState('All Internships')
+  const [workType, setWorkType] = useState(() => {
+    return type ? type.replace(/-/g, " ") : "All Internships";
+  });
   const [selectedStipend, setSelectedStipend] = useState(0);
   // const [isInterestedModalOpen, setIsInterestedModalOpen] = useState(false);
   const [availability, setAvailability] = useState(
@@ -280,11 +284,19 @@ const Internships = () => {
   // const [cachedInternships, setCachedInternships] = useState(null);
   console.log(workType);
   console.log('this student is from context',student);
+  console.log('yoooooooooooooooooooooooooooooooooooooooooooooooooooooo');
 
   useEffect(() => {
     refreshData();
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    const formattedType =
+      workType.replace(/\s+/g, "-").toLowerCase();
+
+    navigate(`/student/internships/${userId}/${formattedType}`, { replace: true });
+  }, [workType, navigate]);
 
 
   const constructQueryStringReset = () => {
