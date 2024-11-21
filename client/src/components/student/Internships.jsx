@@ -279,12 +279,14 @@ const Internships = () => {
   const [assessmentAns, setAssessmentAns] = useState("");
   // const [cachedInternships, setCachedInternships] = useState(null);
   console.log(workType);
-  console.log(student);
+  console.log('this student is from context',student);
 
   useEffect(() => {
+    refreshData();
     window.scrollTo(0, 0);
   }, []);
 
+  console.log('this is student gender',student?.gender);
 
   const constructQueryStringReset = () => {
     let query = `page=${1}`;
@@ -512,7 +514,7 @@ const Internships = () => {
 
   
   const openModal = async (internship) => {
-    refreshData();
+    
     setSelectedInternship(internship);
     console.log("selected internship", internship);
     try {
@@ -539,7 +541,7 @@ const Internships = () => {
         student.education.length == 0 ||
         student.skills.length == 0 ||
         !student.gender ||
-        !student.homeLocation ||
+        !student.homeLocation.city ||
         // !student.yearsOfExp ||
         !student.resume
       ) {
