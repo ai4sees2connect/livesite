@@ -140,8 +140,8 @@ const ApplicationDetails = () => {
 
               <p className="capitalize text-2xl font-bold">{`${firstname} ${lastname}`}</p>
 
-            <p className='text-gray-600'>{homeLocation} ({availability === 'Yes! Will join Immediately' ? 'can join immediately' : 'not an immediate joiner'})</p>
-            <p className='text-gray-600'>Exp: {yearsOfExp}</p>
+            <p className='text-gray-600'>{homeLocation.country + "," + homeLocation.state + ","+ homeLocation.city} ({availability === 'Yes! Will join Immediately' ? 'can join immediately' : 'not an immediate joiner'})</p>
+            <p className='text-gray-600'>Exp: {yearsOfExp} years</p>
           </div>
 
           <div className="mb-4">

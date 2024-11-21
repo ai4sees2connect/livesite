@@ -21,6 +21,7 @@ const studentSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
+      default:''
     },
     yearsOfExp: {
       type: String,
