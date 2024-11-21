@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import countryData from "../TESTJSONS/countries+states+cities.json";
@@ -40,6 +40,8 @@ const InternshipsUniversal = () => {
   const [error, setError] = useState(null);
   // const [selectedInternship, setSelectedInternship] = useState(null);
 
+ 
+  
   const { login } = useStudent();
   const userId = getUserIdFromToken();
   const [filterOpen, setFilterOpen] = useState(false);
@@ -270,9 +272,11 @@ const InternshipsUniversal = () => {
     const isLargeScreen = window.matchMedia("(min-width: 1024px)").matches;
     setFilterOpen(isLargeScreen);
   }, []);
-
+  const { type } = useParams();
   const [selectedLocation, setSelectedLocation] = useState([]);
-  const [workType, setWorkType] = useState("All Internships");
+  const [workType, setWorkType] = useState(() => {
+    return type ? type.replace(/-/g, " ") : "All Internships";
+  });
   const [selectedStipend, setSelectedStipend] = useState(0);
 
   // state for country and state
@@ -286,9 +290,20 @@ const InternshipsUniversal = () => {
   console.log("this is state", selectedState);
   console.log("this is city", selectedCity);
 
+  
+
+console.log('woooooowwwwwwwwwwwwwwwwwwwwwwwwwww')
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    const formattedType =
+      workType.replace(/\s+/g, "-").toLowerCase();
+
+    navigate(`/internships/${formattedType}`, { replace: true });
+  }, [workType, navigate]);
 
   const constructQueryStringReset = () => {
     let query = `page=${1}`;
