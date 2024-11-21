@@ -313,8 +313,6 @@ const Internships = () => {
 
   useEffect(() => {
     const fetchInternships = async () => {
-    
-
       try {
         setLoading(true);
         const queryString = constructQueryStringReset();
