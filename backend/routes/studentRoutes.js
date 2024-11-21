@@ -242,7 +242,8 @@ router.post('/signup', async (req, res) => {
       firstname,
       lastname,
       email,
-      password
+      password,
+      gender: "",
     })
     
     const token = jwt.sign({ id: newStudent._id, userType: 'Student' }, process.env.JWT_SECRET_KEY, { expiresIn: '10d' });
@@ -265,7 +266,8 @@ router.post('/signup/googleauth', async (req, res) => {
       student = new Student({
         firstname,
         lastname,
-        email
+        email,
+        gender: "",
         // Password can be omitted or a default value if using Google Auth
       });
       await student.save();
@@ -406,8 +408,9 @@ router.get('/details', async (req, res) => {
 
     // Find the user in the database
     const student = await Student.findById(userId);
-
+    
     if (!student) return res.status(200).json({success:false}); // Not found if user does not exist
+    console.log(student);
 
     // Send user data as response
     res.status(200).json({

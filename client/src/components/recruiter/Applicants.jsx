@@ -760,7 +760,7 @@ const Applicants = () => {
                           {student.firstname} {student.lastname}
                         </h2>
                         <div className="flex justify-between">
-                          <h2 className="mb-2">{student.homeLocation}</h2>
+                          <h2 className="mb-2">{student.homeLocation.country+ ","+ student.homeLocation.state + ","+ student.homeLocation.city}</h2>
                         </div>
 
                         <p key={student.appliedInternships.internship}>
