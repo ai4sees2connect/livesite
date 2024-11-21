@@ -275,7 +275,6 @@ const InternshipsUniversal = () => {
   const [workType, setWorkType] = useState("All Internships");
   const [selectedStipend, setSelectedStipend] = useState(0);
 
-
   // state for country and state
 
   const [selectedProfile, setSelectedProfile] = useState([]);
@@ -283,10 +282,9 @@ const InternshipsUniversal = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
 
-  console.log('this is country', selectedCountry)
-  console.log('this is state', selectedState)
-  console.log('this is city', selectedCity)
-
+  console.log("this is country", selectedCountry);
+  console.log("this is state", selectedState);
+  console.log("this is city", selectedCity);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -294,8 +292,10 @@ const InternshipsUniversal = () => {
 
   const constructQueryStringReset = () => {
     let query = `page=${1}`;
-    if (workType && workType !== 'All Internships') query += `&workType=${workType}`;
-    if (selectedProfile.length > 0) query += `&jobProfile=${selectedProfile.join(',')}`;
+    if (workType && workType !== "All Internships")
+      query += `&workType=${workType}`;
+    if (selectedProfile.length > 0)
+      query += `&jobProfile=${selectedProfile.join(",")}`;
     if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
     if (selectedCountry) query += `&country=${selectedCountry}`;
     if (selectedState) query += `&state=${selectedState}`;
@@ -305,8 +305,10 @@ const InternshipsUniversal = () => {
 
   const constructQueryStringPageUpdation = () => {
     let query = `page=${page}`;
-    if (workType && workType !== 'All Internships') query += `&workType=${workType}`;
-    if (selectedProfile.length > 0) query += `&jobProfile=${selectedProfile.join(',')}`;
+    if (workType && workType !== "All Internships")
+      query += `&workType=${workType}`;
+    if (selectedProfile.length > 0)
+      query += `&jobProfile=${selectedProfile.join(",")}`;
     if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
     if (selectedCountry) query += `&country=${selectedCountry}`;
     if (selectedState) query += `&state=${selectedState}`;
@@ -316,12 +318,12 @@ const InternshipsUniversal = () => {
 
   useEffect(() => {
     const fetchInternships = async () => {
-
       try {
-
         setLoading(true);
         const queryString = constructQueryStringReset();
-        const response = await axios.get(`${api}/student/internships?${queryString}`);
+        const response = await axios.get(
+          `${api}/student/internships?${queryString}`
+        );
         setTotalPages(response.data.totalPages);
         setInternshipsCount(response.data.numOfInternships);
 
@@ -372,7 +374,6 @@ const InternshipsUniversal = () => {
         // localStorage.setItem('cachedInternships', JSON.stringify(internshipsWithLogo));
         console.log("internhsipswith logo", internshipsWithLogo);
         setLoading(false);
-
       } catch (err) {
         console.error("Error fetching internships:", err);
         setError("Failed to fetch internships. Please try again later.");
@@ -382,16 +383,23 @@ const InternshipsUniversal = () => {
 
     fetchInternships();
     setPage(1);
-  }, [workType, selectedProfile, selectedStipend, selectedCountry,selectedState,selectedCity]);
+  }, [
+    workType,
+    selectedProfile,
+    selectedStipend,
+    selectedCountry,
+    selectedState,
+    selectedCity,
+  ]);
 
   useEffect(() => {
-
     const fetchInternships = async () => {
-
       try {
         setLoading(true);
         const queryString = constructQueryStringPageUpdation();
-        const response = await axios.get(`${api}/student/internships?${queryString}`);
+        const response = await axios.get(
+          `${api}/student/internships?${queryString}`
+        );
         setTotalPages(response.data.totalPages);
         setInternshipsCount(response.data.numOfInternships);
         const sortedInternships = response.data.internships.sort(
@@ -440,7 +448,6 @@ const InternshipsUniversal = () => {
         // localStorage.setItem('cachedInternships', JSON.stringify(internshipsWithLogo));
         console.log("internhsipswith logo", internshipsWithLogo);
         setLoading(false);
-
       } catch (err) {
         console.error("Error fetching internships:", err);
         setError("Failed to fetch internships. Please try again later.");
@@ -457,24 +464,20 @@ const InternshipsUniversal = () => {
 
   const handleNextPage = () => {
     setPage(page + 1);
-
   };
 
   const handlePreviousPage = () => {
     if (page > 1) {
       setPage(page - 1);
-
     }
   };
 
   useEffect(() => {
     if (internships.length > 0) {
       scrollToTop();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [internships])
-
+  }, [internships]);
 
   const scrollToTop = () => {
     scrollableRef.current.scrollTo({
@@ -482,7 +485,6 @@ const InternshipsUniversal = () => {
       behavior: "smooth",
     });
   };
-
 
   const handleChange = (value) => {
     setSelectedLocation(value);
@@ -495,9 +497,8 @@ const InternshipsUniversal = () => {
     setSelectedProfile([]);
   };
 
-
-  console.log('this is location', selectedLocation)
-  console.log('this is page no', page)
+  console.log("this is location", selectedLocation);
+  console.log("this is page no", page);
 
   if (loading) {
     return <Spinner />;
@@ -522,12 +523,12 @@ const InternshipsUniversal = () => {
 
   return (
     <div className="py-10 px-5 mt-10 min-h-screen bg-gray-100 relative">
-
-      <div className="flex flex-col lg:flex-row w-full lg:w-[90%] mx-auto gap-10">
+      <div className="flex flex-col lg:flex-row w-full lg:w-[90%] mx-auto gap-5">
         {/* this below div is filter button */}
         <div
-          className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400 mt-5 ${filterOpen && "border-blue-400"
-            }`}
+          className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400 mt-5 ${
+            filterOpen && "border-blue-400"
+          }`}
           onClick={() => setFilterOpen(!filterOpen)}
         >
           <span>Filters</span>
@@ -536,8 +537,9 @@ const InternshipsUniversal = () => {
 
         {/* this below div is filter options */}
         <div
-          className={` ${filterOpen ? "block" : "hidden"
-            } w-[84%] md:w-[90%] mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl border-t py-6 overflow-y-auto scrollbar-thin bg-white rounded-lg relative `}
+          className={` ${
+            filterOpen ? "block" : "hidden"
+          } w-[84%] md:w-[90%] mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl border-t py-6 overflow-y-auto scrollbar-thin bg-white rounded-lg relative `}
         >
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
@@ -614,7 +616,9 @@ const InternshipsUniversal = () => {
                 value: profile,
                 label: profile,
               }))}
-              onChange={(values) => setSelectedProfile(values.map((option) => option.value))}
+              onChange={(values) =>
+                setSelectedProfile(values.map((option) => option.value))
+              }
               options={jobProfiles.map((job) => ({
                 value: job,
                 label: job,
@@ -655,7 +659,10 @@ const InternshipsUniversal = () => {
                   className="border-2 py-1 rounded-md px-2"
                   id="state"
                   value={selectedState}
-                  onChange={(e) => { setSelectedState(e.target.value); setSelectedCity("") }}
+                  onChange={(e) => {
+                    setSelectedState(e.target.value);
+                    setSelectedCity("");
+                  }}
                   disabled={!selectedCountry}
                 >
                   <option value="">-- Select State --</option>
@@ -701,26 +708,33 @@ const InternshipsUniversal = () => {
             <div className="flex flex-col justify-center bg-gray-100 ">
               {/* this below div is list of internships */}
 
-              <div ref={scrollableRef} className="overflow-scroll scrollbar-thin h-[90vh] overflow-x-hidden ">
+              <div
+                ref={scrollableRef}
+                className="overflow-scroll scrollbar-thin h-[90vh] overflow-x-hidden flex flex-col gap-5"
+              >
                 {internships.map((internship) => (
                   <div
                     key={internship._id}
-                    className="bg-white shadow-md rounded-lg px-3 py-2 w-full  h-fit lg:w-[90%] mb-3 mx-auto relative "
+                    className="bg-white shadow-md rounded-lg p-5 w-full  h-fit lg:w-[90%] mx-auto relative space-y-1"
                   >
                     <div className="flex justify-between items-center">
                       <div className="mb-0">
-                        <h2 className="text-lg lg:text-2xl font-semibold md:mb-0">
+                        <h2 className="text-lg lg:text-xl font-bold">
                           {internship.internshipName}
                         </h2>
-                        <p className="text-gray-600">
-                          {internship.recruiter.companyName !== '' ? internship.recruiter.companyName : internship.recruiter.firstname + ' ' + internship.recruiter.lastname}
+                        <p className="text-gray-600 text-lg font-semibold mb-0">
+                          {internship.recruiter.companyName !== ""
+                            ? internship.recruiter.companyName
+                            : internship.recruiter.firstname +
+                              " " +
+                              internship.recruiter.lastname}
                         </p>
                       </div>
 
-                      <div className="flex space-x-3 items-center">
+                      <div className="flex space-x-3 items-start">
                         <button
                           onClick={handleRedirect}
-                          className="hidden sm:flex justify-center text-white ml-0 gap-2 items-center mx-auto  text-md bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-6 py-1 overflow-hidden border-2 rounded-md group h-fit  "
+                          className="hidden sm:flex justify-center text-white ml-0 gap-2 items-center mx-auto  text-sm bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-5 py-1 overflow-hidden border-2 rounded-md group h-fit  "
                         >
                           Apply
                         </button>
@@ -731,37 +745,39 @@ const InternshipsUniversal = () => {
                             className=" w-16 h-16"
                           />
                         ) : (
-                          <FaBuilding className=" w-16 h-16 text-gray-600" />
+                          <FaBuilding className=" w-16 h-16 text-blue-600" />
                         )}
                       </div>
                     </div>
 
                     <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row ">
-                      <div className="flex items-center text-gray-700 mb-2">
-                        <FaMapMarkerAlt className="mr-1" />
+                      <div className="flex items-center text-gray-700">
+                        <FaMapMarkerAlt className="mr-1 text-blue-500" />
                         <span>
-                          {internship.internLocation.country|| internship.internLocation.state||internship.internLocation.city
+                          {internship.internLocation.country ||
+                          internship.internLocation.state ||
+                          internship.internLocation.city
                             ? `${internship.internLocation.country}, ${internship.internLocation.state}, ${internship.internLocation.city}`
                             : "Remote"}
                         </span>
                       </div>
 
-                      <div className="flex items-center text-gray-700 mb-2">
-                        <FaClock className="mr-2" />
+                      <div className="flex items-center text-gray-700">
+                        <FaClock className="mr-2 text-blue-500" />
                         <span>{internship.duration} Months</span>
                       </div>
 
                       {internship.stipendType === "unpaid" && (
-                        <div className="flex items-center text-gray-700 mb-2">
-                          <FaMoneyBillWave className="mr-1" />
+                        <div className="flex items-center text-gray-700">
+                          <FaMoneyBillWave className="mr-1 text-blue-500" />
                           <span>Unpaid</span>
                         </div>
                       )}
 
                       {internship.stipendType !== "unpaid" && (
                         <div className="flex items-center space-x-1">
-                          <div className="flex items-center text-gray-700 mb-2">
-                            <FaMoneyBillWave className="mr-1" />
+                          <div className="flex items-center text-gray-700">
+                            <FaMoneyBillWave className="mr-1 text-blue-500" />
                             <span>
                               {internship.currency} {internship.stipend} /month
                             </span>
@@ -785,10 +801,11 @@ const InternshipsUniversal = () => {
 
                     <div className="flex text-sm md:text-base space-x-4 items-center">
                       <div
-                        className={`${internship.studentCount < 20
-                          ? "text-green-500"
-                          : "text-gray-500"
-                          }  w-fit my-2 sm:my-0 md:w-auto`}
+                        className={`${
+                          internship.studentCount < 20
+                            ? "text-green-500"
+                            : "text-gray-500"
+                        }  w-fit my-2 sm:my-0 md:w-auto`}
                       >
                         {internship.studentCount} Applicants
                       </div>
@@ -807,13 +824,16 @@ const InternshipsUniversal = () => {
                       )}
                     </div>
 
-                    <p className="text-gray-500 mb-2 md:mb-4 text-sm md:text-base">
-                      Posted: {TimeAgo(internship.createdAt)}
+                    <p className="text-gray-500 mb-2 md:mb-4 text-sm md:text-base font-semibold">
+                      Posted:
+                      <span className="text-gray-700 text-sm font-semibold ml-1">
+                        {TimeAgo(internship.createdAt)}
+                      </span>
                     </p>
 
                     <button
                       onClick={handleRedirect}
-                      className="flex sm:hidden justify-center text-white ml-0 gap-2 items-center mx-auto  text-md bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-6 py-1 overflow-hidden border-2 rounded-md group h-fit  "
+                      className="flex sm:hidden justify-center text-white ml-0 gap-2 items-center mx-auto  text-md bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-6 py-1 overflow-hidden border-2 rounded-md group h-fit"
                     >
                       Apply
                     </button>
@@ -821,38 +841,34 @@ const InternshipsUniversal = () => {
                 ))}
               </div>
 
-
-
-              {internships.length > 0 && <div className="flex justify-center my-4 space-x-4">
-                
-                <button
-                  onClick={handlePreviousPage}
-                  disabled={page === 1}
-                  className={`px-4 py-2 rounded-md ${page === 1
-                    ? 'bg-gray-300'
-                    : 'bg-blue-500 text-white'
-
+              {internships.length > 0 && (
+                <div className="flex justify-center my-4 space-x-4">
+                  <button
+                    onClick={handlePreviousPage}
+                    disabled={page === 1}
+                    className={`px-4 py-2 rounded-md ${
+                      page === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
                     }`}
-                >
-                  <FaAngleLeft />
-                </button>
+                  >
+                    <FaAngleLeft />
+                  </button>
 
-                <span>
-                  {page} / {totalPages}
-                </span>
-                <button
-                  onClick={handleNextPage}
-                  disabled={page === totalPages}
-                  className={`px-4 py-2 rounded-md ${page ===
-                    totalPages
-                    ? "bg-gray-300"
-                    : "bg-blue-500 text-white"
+                  <span>
+                    {page} / {totalPages}
+                  </span>
+                  <button
+                    onClick={handleNextPage}
+                    disabled={page === totalPages}
+                    className={`px-4 py-2 rounded-md ${
+                      page === totalPages
+                        ? "bg-gray-300"
+                        : "bg-blue-500 text-white"
                     }`}
-                >
-                  <FaAngleRight />
-                </button>
-              </div>
-              }
+                  >
+                    <FaAngleRight />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -162,7 +162,7 @@ function Signup() {
     try {
       await handleSendOtp(e);
       setButtonDisabled(true);
-      setCountdown(30);
+      setCountdown(60);
     } catch (error) {
       console.error("Error in handleResendOtp:", error);
     }
@@ -173,9 +173,9 @@ function Signup() {
     password.trim() !== "" &&
     firstname.trim() !== "" &&
     lastname.trim() !== "" &&
-    otp.trim() !== ""
-    //  &&
-    // otpVerified;
+    otp.trim() !== "";
+  //  &&
+  // otpVerified;
 
   const handleGoogleClick = async (e) => {
     e.preventDefault();
@@ -207,7 +207,7 @@ function Signup() {
     }
   };
   // resend button
-  const [countdown, setCountdown] = useState(30);
+  const [countdown, setCountdown] = useState(60);
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
   useEffect(() => {
@@ -423,7 +423,7 @@ function Signup() {
 
               <button
                 onClick={handleSubmit}
-                className={`w-full py-2 bg-blue-400 border-none h-[50px] text-white rounded-full ${
+                className={`w-full py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${
                   !isFormValid ? `bg-[rgb(224,226,217)]` : ""
                 } `}
                 // disabled={!isFormValid}

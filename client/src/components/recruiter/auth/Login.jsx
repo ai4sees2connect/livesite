@@ -110,10 +110,10 @@ function Login() {
         />
       </div>
 
-      <div className="mx-auto flex-1  mb-20 min-h-[635px]">
+      <div className="mx-auto flex-1  mb-20 min-h-[700px]">
         {/* back button */}
         <div className="absolute left-0 top-5  rounded-full ">
-          <Link to="/" className="px-5 py-1 text-blue-400  font-semibold">
+          <Link to="/" className="px-5 py-1 text-blue-500  font-semibold">
             <GoBackButton />
           </Link>
         </div>
@@ -189,8 +189,8 @@ function Login() {
 
               <button
                 type="submit"
-                className={`w-full py-2 bg-blue-400 border-none h-[50px] text-white rounded-full ${
-                  !isFormValid ? `bg-blue-400` : ""
+                className={`w-full py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${
+                  !isFormValid ? `bg-blue-500` : ""
                 } `}
                 disabled={!isFormValid}
               >

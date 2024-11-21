@@ -132,7 +132,7 @@ function Signup() {
     try {
       await handleSendOtp(e);
       setButtonDisabled(true);
-      setCountdown(30);
+      setCountdown(60);
     } catch (error) {
       console.error("Error in handleResendOtp:", error);
     }
@@ -142,10 +142,10 @@ function Signup() {
     email.trim() === verifiedEmail &&
     password.trim() !== "" &&
     firstname.trim() !== "" &&
-    lastname.trim() !== "" 
-    // &&
-    // otp.trim() !== "" &&
-    // otpVerified;
+    lastname.trim() !== "";
+  // &&
+  // otp.trim() !== "" &&
+  // otpVerified;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -218,7 +218,7 @@ function Signup() {
   };
 
   // resend button
-  const [countdown, setCountdown] = useState(30);
+  const [countdown, setCountdown] = useState(60);
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
   useEffect(() => {
@@ -246,7 +246,7 @@ function Signup() {
           className="absolute inset-0 w-full h-full"
         />
       </div>
-      <div className="mx-auto flex-1 mb-20 min-h-[635px]">
+      <div className="mx-auto flex-1 mb-20 min-h-[700px]">
         {/* back button */}
         <div className="absolute left-0 top-5  rounded-full">
           <Link to="/" className="px-5 py-1 text-blue-400  font-semibold">
@@ -478,7 +478,7 @@ function Signup() {
 
               <button
                 type="submit"
-                className={`w-full py-2 bg-blue-400 border-none h-[50px] text-white rounded-full ${
+                className={`w-full py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${
                   !isFormValid ? `bg-[rgb(224,226,217)]` : ""
                 } `}
                 // disabled={!isFormValid}

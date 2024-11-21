@@ -187,8 +187,8 @@ function Login() {
 
               <button
                 type="submit"
-                className={`w-full  py-2 bg-blue-400 border-none h-[50px] text-white rounded-full ${
-                  !isFormValid ? `bg-blue-400` : ""
+                className={`w-full  py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${
+                  !isFormValid ? `bg-blue-500` : ""
                 } `}
                 disabled={!isFormValid}
               >
