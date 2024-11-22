@@ -25,7 +25,7 @@ const Applicants = () => {
   const [internship, setInternship] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(null);
   const [searchName, setSearchName] = useState("");
   const [locationFilter, setLocationFilter] = useState([]);
   const [expFilter, setExpFilter] = useState(0);
@@ -42,7 +42,9 @@ const Applicants = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [selectedStudent,setSelectedStudent]=useState(null);
 
+  console.log('this is selected student', selectedStudent);
   const yearOptions = [
     { value: "2024", label: "2024" },
     { value: "2024 & before", label: "2024 & before" },
@@ -96,51 +98,6 @@ const Applicants = () => {
     { value: "2000 & before", label: "2000 & before" },
   ];
 
-  const statesAndUTs = [
-    { value: "Andhra Pradesh", label: "Andhra Pradesh" },
-    { value: "Arunachal Pradesh", label: "Arunachal Pradesh" },
-    { value: "Assam", label: "Assam" },
-    { value: "Bihar", label: "Bihar" },
-    { value: "Chhattisgarh", label: "Chhattisgarh" },
-    { value: "Chennai", label: "Chennai" },
-    { value: "Goa", label: "Goa" },
-    { value: "Gujarat", label: "Gujarat" },
-    { value: "Haryana", label: "Haryana" },
-    { value: "Himachal Pradesh", label: "Himachal Pradesh" },
-    { value: "Jharkhand", label: "Jharkhand" },
-    { value: "Karnataka", label: "Karnataka" },
-    { value: "Kerala", label: "Kerala" },
-    { value: "Madhya Pradesh", label: "Madhya Pradesh" },
-    { value: "Maharashtra", label: "Maharashtra" },
-    { value: "Manipur", label: "Manipur" },
-    { value: "Meghalaya", label: "Meghalaya" },
-    { value: "Mizoram", label: "Mizoram" },
-    { value: "Nagaland", label: "Nagaland" },
-    { value: "Odisha", label: "Odisha" },
-    { value: "Punjab", label: "Punjab" },
-    { value: "Rajasthan", label: "Rajasthan" },
-    { value: "Sikkim", label: "Sikkim" },
-    { value: "Tamil Nadu", label: "Tamil Nadu" },
-    { value: "Telangana", label: "Telangana" },
-    { value: "Tripura", label: "Tripura" },
-    { value: "Uttar Pradesh", label: "Uttar Pradesh" },
-    { value: "Uttarakhand", label: "Uttarakhand" },
-    { value: "West Bengal", label: "West Bengal" },
-    {
-      value: "Andaman and Nicobar Islands",
-      label: "Andaman and Nicobar Islands",
-    },
-    { value: "Chandigarh", label: "Chandigarh" },
-    {
-      value: "Dadra and Nagar Haveli and Daman and Diu",
-      label: "Dadra and Nagar Haveli and Daman and Diu",
-    },
-    { value: "Lakshadweep", label: "Lakshadweep" },
-    { value: "Delhi", label: "Delhi" },
-    { value: "Puducherry", label: "Puducherry" },
-    { value: "Jammu and Kashmir", label: "Jammu and Kashmir" },
-    { value: "Ladakh", label: "Ladakh" },
-  ];
 
   const cgpaToPercentage = (cgpa) => {
     const cgpaValue = parseFloat(cgpa);
@@ -743,6 +700,7 @@ const Applicants = () => {
         <div className="w-full flex flex-row">
           {/* applicants */}
           <div className="overflow-y-auto  w-full ">
+
             {selectedStatus === "Applications Received" && (
               <div className="bg-white shadow-md rounded-lg p-6 w-full">
                 {filteredApplicants.length === 0 ? (
@@ -783,8 +741,9 @@ const Applicants = () => {
                               .status === "Viewed") && (
                             <button
                               onClick={() => {
-                                setIsOpen(true);
+                                setIsOpen(student._id);
                                 handleViewProfile(student._id);
+                                // setSelectedStudent(student);
                               }}
                               className="absolute right-3 top-2 underline text-blue-400"
                             >
@@ -815,10 +774,10 @@ const Applicants = () => {
                           </Link>
                         )}
 
-                        {isOpen && (
+                        {isOpen===student._id && (
                           <div className="flex absolute right-3 top-2 space-x-4">
                             <button
-                              onClick={() => setIsOpen(false)}
+                              onClick={() => {setIsOpen(false); setSelectedStudent(null)}}
                               className=" right-3 top-2 underline text-blue-400"
                             >
                               Hide Profile
@@ -838,7 +797,7 @@ const Applicants = () => {
                               ) < 20
                                 ? "text-red-500"
                                 : calculateMatchPercentage(
-                                    student.skills,
+                                  student.skills,
                                     internship?.skills
                                   ) >= 20 &&
                                   calculateMatchPercentage(
@@ -847,7 +806,7 @@ const Applicants = () => {
                                   ) <= 60
                                 ? "text-orange-300"
                                 : calculateMatchPercentage(
-                                    student.skills,
+                                  student.skills,
                                     internship?.skills
                                   ) > 60 &&
                                   calculateMatchPercentage(
@@ -894,7 +853,7 @@ const Applicants = () => {
                           </Link>
                         </div>
 
-                        {isOpen && (
+                        {isOpen===student._id && (
                           <div className="relative">
                             {internship.assessment && (
                               <div className="mb-2">
@@ -1588,6 +1547,7 @@ const Applicants = () => {
               <span>0</span>
             </div>
           </div>
+
         </div>
       </div>
     </div>
