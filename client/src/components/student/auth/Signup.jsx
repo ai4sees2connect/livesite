@@ -250,7 +250,7 @@ function Signup() {
         <div>
           {/* form starts from here */}
 
-          <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full ">
+          <div className="flex flex-col justify-center items-center mt-[40px] md:mt-[36px] w-full ">
             <form className="space-y-4 w-full lg:w-[60%]  md:max-w-xl px-5 lg:px-0">
               <div className="mx-auto md:max-w-xl">
                 <input
@@ -431,34 +431,33 @@ function Signup() {
                 Create Account
               </button>
             </form>
-          </div>
 
-          <p className="mt-5 text-center">OR</p>
-
-          <div className="w-[70%] mx-auto mt-8 mb-10 md:mb-0 space-y-3">
-            <button
-              onClick={handleGoogleClick}
-              className="w-full mx-auto py-2 border border-gray-300 md:h-[50px] text-black text-[18px] rounded-full font-semibold"
-            >
-              <div className="flex items-center justify-center space-x-4">
-                <img
-                  src={google_pic}
-                  alt=""
-                  className="w-5 h-5 py-0 px-0 ml-5 mt-2"
-                />
-                <span className="mt-1 text-sm md:text-base text-center pr-2">
-                  Sign up with Google
-                </span>
-              </div>
-            </button>
-            {/* <button
-            className='w-full py-2 border border-gray-300 h-[50px] text-black text-[18px] rounded-full font-semibold'
-          >
-            <div className='inline-flex space-x-1 ml-0'>
-            <img src={apple_pic} alt="" className='w-10 h-10 py-0 px-0 ml-5 mt-[-4px]'/>
-            <span className='mt-1'>Sign up with Apple</span>
+            <div className="w-full md:w-[70%] lg:w-[60%] mt-8 mb-10 md:mb-0 space-y-3 px-5 md:px-0">
+              <p className="mb-5 text-center">OR</p>
+              <button
+                onClick={handleGoogleClick}
+                className="w-full mx-auto py-2 border border-gray-300 md:h-[50px] text-black text-[18px] rounded-full font-semibold"
+              >
+                <div className="flex items-center justify-center space-x-4">
+                  <img
+                    src={google_pic}
+                    alt=""
+                    className="w-5 h-5 py-0 px-0 ml-5 mt-2"
+                  />
+                  <span className="mt-1 text-sm md:text-base text-center pr-2">
+                    Sign up with Google
+                  </span>
+                </div>
+              </button>
+              {/* <button
+  className='w-full py-2 border border-gray-300 h-[50px] text-black text-[18px] rounded-full font-semibold'
+>
+  <div className='inline-flex space-x-1 ml-0'>
+  <img src={apple_pic} alt="" className='w-10 h-10 py-0 px-0 ml-5 mt-[-4px]'/>
+  <span className='mt-1'>Sign up with Apple</span>
+  </div>
+</button> */}
             </div>
-          </button> */}
           </div>
 
           {/* <div className='flex justify-center items-center space-x-7 mt-3'>

@@ -268,7 +268,7 @@ function Signup() {
           className="absolute inset-0 w-full h-full"
         />
       </div>
-      <div className="mx-auto flex-1 mb-20 min-h-[700px]">
+      <div className="mx-auto flex-1 mb-20 min-h-[730px]">
         {/* back button */}
         <div className="absolute left-0 top-5  rounded-full">
           <Link to="/" className="px-5 py-1 text-blue-400  font-semibold">
@@ -510,9 +510,9 @@ function Signup() {
             </form>
           </div>
 
-          <p className="mt-5 text-center">OR</p>
+          <p className="mt-7 text-center">OR</p>
 
-          <div className="w-[70%] mx-auto mt-8 mb-10 md:mb-0 space-y-3">
+          <div className="w-full md:w-[70%] lg:w-[60%] mt-8 mb-10 md:mb-0 space-y-3 px-5 md:px-0 mx-auto">
             <button
               onClick={handleGoogleClick}
               className="w-full mx-auto py-2 border border-gray-300 md:h-[50px] text-black text-[18px] rounded-full font-semibold"
