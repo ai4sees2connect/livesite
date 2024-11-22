@@ -1,0 +1,23 @@
+@keyframes rotate-scale {
+    0% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(0.75) rotate(180deg);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(1) rotate(360deg);
+      opacity: 1;
+    }
+  }
+  
+  .animate-rotate-scale {
+    animation: rotate-scale 1.5s ease-in-out infinite;
+  }
+  
+  .delay-200 {
+    animation-delay: 0.2s;
+  }
+  
