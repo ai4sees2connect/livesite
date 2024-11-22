@@ -378,10 +378,10 @@ const RightSide = () => {
 
       {/* Big Buttons */}
       {!token && (
-        <div className="flex flex-col md:flex-row justify-center items-center py-10 px-3 lg:px-0 ">
-          <div className="min-h-[350px] p-10 bg-blue-500 text-white flex justify-center items-center w-full lg:w-[35%]">
+        <div className="flex flex-col md:flex-row justify-center items-center py-0 md:py-10 px-3 lg:px-0 ">
+          <div className="min-h-[350px] p-5 lg:p-10 bg-blue-500 text-white flex justify-center items-center w-full lg:w-[35%]">
             <div className="">
-              <h2 className="text-4xl md:text-5xl font-bold mb-5">
+              <h2 className="text-2xl lg:text-4xl md:text-5xl font-bold mb-5">
                 WANT TO HIRE INTERN?
               </h2>
               <p className="text-xl mb-10">
@@ -392,9 +392,9 @@ const RightSide = () => {
               </button>
             </div>
           </div>
-          <div className="min-h-[350px] p-10 bg-[#252d40] text-white flex justify-center items-center w-full lg:w-[35%]">
+          <div className="min-h-[350px] p-5 lg:p-10 bg-[#252d40] text-white flex justify-center items-center w-full lg:w-[35%]">
             <div className="">
-              <h2 className="text-4xl md:text-5xl font-bold mb-5">
+              <h2 className="text-2xl lg:text-4xl md:text-5xl font-bold mb-5">
                 WANT TO BE HIRED?
               </h2>
               <p className="text-xl mb-10">

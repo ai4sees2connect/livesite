@@ -279,13 +279,12 @@ const Internships = () => {
   const [assessmentAns, setAssessmentAns] = useState("");
   // const [cachedInternships, setCachedInternships] = useState(null);
   console.log(workType);
-  console.log('this student is from context',student);
+  console.log("this student is from context", student);
 
   useEffect(() => {
     refreshData();
     window.scrollTo(0, 0);
   }, []);
-
 
   const constructQueryStringReset = () => {
     let query = `page=${1}`;
@@ -517,7 +516,6 @@ const Internships = () => {
   }, [internships]);
 
   const openModal = async (internship) => {
-    
     setSelectedInternship(internship);
     console.log("selected internship", internship);
     try {
@@ -850,14 +848,14 @@ const Internships = () => {
                         {!isAlreadyApplied(internship._id) ? (
                           <button
                             onClick={() => openModal(internship)}
-                            className=" md:w-auto block md:hidden  text-sm md:text-base rounded-md text-blue-500 "
+                            className=" md:w-auto hidden md:block underline   text-sm md:text-base rounded-md text-blue-500 "
                           >
                             View details
                           </button>
                         ) : (
                           <Link
                             to={`/student/myApplications/${userId}`}
-                            className=" w-auto md:hidden block text-sm md:text-base  rounded-md text-blue-500 "
+                            className=" w-auto hidden md:block text-sm md:text-base  rounded-md text-blue-500  underline"
                           >
                             Check Status
                           </Link>
@@ -866,7 +864,7 @@ const Internships = () => {
                           <img
                             src={internship.logoUrl}
                             alt={internship.logoUrl}
-                            className=" w-16 h-16"
+                            className=" w-16 h-16 ml-3"
                           />
                         ) : (
                           <FaBuilding className=" w-16 h-16 text-gray-600" />
@@ -924,7 +922,8 @@ const Internships = () => {
                     </div>
 
                     {isAlreadyApplied(internship._id) && (
-                      <p className="text-green-500 text-sm md:text-base inline-flex rounded-xl border border-green-500 px-2 py-1">
+                      <p className="text-green-500 text-sm md:text-base inline-flex rounded-xl border-green-500">
+                        <span className="text-gray-700 mr-1">Status:</span>{" "}
                         Applied
                         <FaCheck className="ml-2 mt-1" />
                       </p>
@@ -966,14 +965,14 @@ const Internships = () => {
                         {!isAlreadyApplied(internship._id) ? (
                           <button
                             onClick={() => openModal(internship)}
-                            className="underline w-auto mb-1 text-sm md:text-base rounded-md text-blue-500 "
+                            className="underline block md:hidden w-auto mb-1 text-sm md:text-base rounded-md text-blue-500 "
                           >
                             View details
                           </button>
                         ) : (
                           <Link
                             to={`/student/myApplications/${userId}`}
-                            className="underline w-auto hidden md:block mb-1 text-sm md:text-base  rounded-md text-blue-500 "
+                            className="underline w-auto  block md:hidden mb-1 text-sm md:text-base  rounded-md text-blue-500 "
                           >
                             Check Status
                           </Link>
