@@ -50,7 +50,7 @@ import Spinner from "../common/Spinner";
 import getUserIdFromToken from "./auth/authUtils";
 import { jwtDecode } from "jwt-decode";
 
-const userId = getUserIdFromToken();
+
 const token = localStorage.getItem("token");
 
 const NextArrow = ({ onClick }) => (
@@ -75,6 +75,9 @@ const RightSide = () => {
   const [internships, setInternships] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const userId = getUserIdFromToken();
+  console.log('this is id',userId)
+
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -83,6 +86,7 @@ const RightSide = () => {
     if (!token) {
       navigate("/");
     }
+
   }, [token]);
 
   useEffect(() => {
@@ -222,19 +226,20 @@ const RightSide = () => {
       {/* Quick Links */}
       <div className=" my-10 px-3 lg:px-0 rounded-md mx-auto lg:w-[90%]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 items-center gap-5 justify-center">
-          <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
-            <span> Remote</span> <FaLongArrowAltRight />
-          </button>
-          <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
+          <Link to={userId ? `/student/internships/${userId}/Work-from-Home` : `/internships/Work-from-Home`
+        } className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
+            <span > Remote</span> <FaLongArrowAltRight />
+          </Link>
+          <Link to={userId ? `/student/internships/${userId}/Work-from-Office` : `/internships/Work-from-Office`} className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
             <span> Work At Office</span> <FaLongArrowAltRight />
-          </button>
-          <button className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
+          </Link>
+          <Link to={userId ? `/student/internships/${userId}/Hybrid` : `/internships/Hybrid`} className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
             <span> Hybrid</span> <FaLongArrowAltRight />
-          </button>
+          </Link>
           <button className="px-5 py-2 rounded-md border-2  text-xl hover:scale-105 hover:transition-0.5s duration-300 text-white font-semibold  bg-[#475865] hover:bg-black border-1 border-white  transition-0.5s">
             <Link
               className="flex items-center justify-between"
-              to="/internships"
+              to={userId ? `/student/internships/All-Internships` : `/internships/All-Internships`}
             >
               <span> All Internships</span> <FaLongArrowAltRight />
             </Link>
@@ -378,10 +383,10 @@ const RightSide = () => {
 
       {/* Big Buttons */}
       {!token && (
-        <div className="flex flex-col md:flex-row justify-center items-center py-10 px-3 lg:px-0 ">
-          <div className="min-h-[350px] p-10 bg-blue-500 text-white flex justify-center items-center w-full lg:w-[35%]">
+        <div className="flex flex-col md:flex-row justify-center items-center py-0 md:py-10 px-3 lg:px-0 ">
+          <div className="min-h-[350px] p-5 lg:p-10 bg-blue-500 text-white flex justify-center items-center w-full lg:w-[35%]">
             <div className="">
-              <h2 className="text-4xl md:text-5xl font-bold mb-5">
+              <h2 className="text-2xl lg:text-4xl md:text-5xl font-bold mb-5">
                 WANT TO HIRE INTERN?
               </h2>
               <p className="text-xl mb-10">
@@ -392,9 +397,9 @@ const RightSide = () => {
               </button>
             </div>
           </div>
-          <div className="min-h-[350px] p-10 bg-[#252d40] text-white flex justify-center items-center w-full lg:w-[35%]">
+          <div className="min-h-[350px] p-5 lg:p-10 bg-[#252d40] text-white flex justify-center items-center w-full lg:w-[35%]">
             <div className="">
-              <h2 className="text-4xl md:text-5xl font-bold mb-5">
+              <h2 className="text-2xl lg:text-4xl md:text-5xl font-bold mb-5">
                 WANT TO BE HIRED?
               </h2>
               <p className="text-xl mb-10">

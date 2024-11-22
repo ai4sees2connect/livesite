@@ -197,9 +197,9 @@ function Login() {
             </form>
           </div>
 
-          <p className="my-4 text-center">OR</p>
+          <p className="mt-7 text-center">OR</p>
 
-          <div className="w-[70%] mx-auto mt-8 space-y-3 ">
+          <div className="w-full md:w-[70%] lg:w-[60%] mt-8 mb-10 md:mb-0 space-y-3 px-5 md:px-0 mx-auto">
             <button
               className="w-full py-2 border border-gray-300 md:h-[50px] text-black text-[18px] rounded-full font-semibold"
               onClick={handleGoogleClick}

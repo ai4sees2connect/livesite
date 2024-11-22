@@ -20,6 +20,8 @@ import ToggleButtonSecond from "../../common/ToogleButtonSecond";
 import api from "../../common/server_url";
 import { FaCheckCircle } from "react-icons/fa";
 import GoBackButton from "../../common/GoBackButton";
+import {jwtDecode} from 'jwt-decode';
+// import getUserIdFromToken from '../../student/auth/authUtils'
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -40,13 +42,33 @@ function Signup() {
   const [otp, setOtp] = useState("");
   const [sendingOtp, setSendingOtp] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
+  const idFromToken = getUserIdFromToken();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate(`/recruiter/dashboard/${userId}`);
+    if (!token) {
+      console.error("Token not found");
+      return; // Prevent further execution if token is missing
     }
-  }, [userId]);
+
+    try {
+      const decoded = jwtDecode(token);
+      const userType = decoded.userType;
+      const idFromToken = decoded.id; // Assuming ID is part of the decoded token
+
+      if (userType === "Recruiter") {
+        navigate(`/recruiter/dashboard/${idFromToken}`);
+        return;
+      }
+
+      if (userType === "Student") {
+        localStorage.removeItem("token"); // Remove token for students
+        return;
+      }
+    } catch (error) {
+      console.error("Invalid token", error);
+    }
+  }, [token, navigate]);
 
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
@@ -246,7 +268,7 @@ function Signup() {
           className="absolute inset-0 w-full h-full"
         />
       </div>
-      <div className="mx-auto flex-1 mb-20 min-h-[700px]">
+      <div className="mx-auto flex-1 mb-20 min-h-[730px]">
         {/* back button */}
         <div className="absolute left-0 top-5  rounded-full">
           <Link to="/" className="px-5 py-1 text-blue-400  font-semibold">
@@ -488,9 +510,9 @@ function Signup() {
             </form>
           </div>
 
-          <p className="mt-5 text-center">OR</p>
+          <p className="mt-7 text-center">OR</p>
 
-          <div className="w-[70%] mx-auto mt-8 mb-10 md:mb-0 space-y-3">
+          <div className="w-full md:w-[70%] lg:w-[60%] mt-8 mb-10 md:mb-0 space-y-3 px-5 md:px-0 mx-auto">
             <button
               onClick={handleGoogleClick}
               className="w-full mx-auto py-2 border border-gray-300 md:h-[50px] text-black text-[18px] rounded-full font-semibold"
