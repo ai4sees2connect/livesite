@@ -20,6 +20,8 @@ import ToggleButtonSecond from "../../common/ToogleButtonSecond";
 import api from "../../common/server_url";
 import { FaCheckCircle } from "react-icons/fa";
 import GoBackButton from "../../common/GoBackButton";
+import {jwtDecode} from 'jwt-decode';
+// import getUserIdFromToken from '../../student/auth/authUtils'
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -40,13 +42,33 @@ function Signup() {
   const [otp, setOtp] = useState("");
   const [sendingOtp, setSendingOtp] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
+  const idFromToken = getUserIdFromToken();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate(`/recruiter/dashboard/${userId}`);
+    if (!token) {
+      console.error("Token not found");
+      return; // Prevent further execution if token is missing
     }
-  }, [userId]);
+
+    try {
+      const decoded = jwtDecode(token);
+      const userType = decoded.userType;
+      const idFromToken = decoded.id; // Assuming ID is part of the decoded token
+
+      if (userType === "Recruiter") {
+        navigate(`/recruiter/dashboard/${idFromToken}`);
+        return;
+      }
+
+      if (userType === "Student") {
+        localStorage.removeItem("token"); // Remove token for students
+        return;
+      }
+    } catch (error) {
+      console.error("Invalid token", error);
+    }
+  }, [token, navigate]);
 
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
