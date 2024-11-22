@@ -102,7 +102,7 @@ const NavbarUniversal = () => {
                 Home
               </NavLink>
               <NavLink
-                to="/internships"
+                to="/internships/All-Internships"
                 className={({ isActive }) =>
                   `hover:text-blue-500 ${isActive ? "text-blue-500" : ""}`
                 }

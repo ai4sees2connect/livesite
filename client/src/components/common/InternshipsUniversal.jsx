@@ -273,9 +273,14 @@ const InternshipsUniversal = () => {
     setFilterOpen(isLargeScreen);
   }, []);
   const { type } = useParams();
+  
   const [selectedLocation, setSelectedLocation] = useState([]);
   const [workType, setWorkType] = useState(() => {
-    return type ? type.replace(/-/g, " ") : "All Internships";
+    return type
+      ? type
+          .replace(/-/g, " ") // Replace dashes with spaces
+          .replace(/\b\w/g, (char) => char.toUpperCase()) // Capitalize each word
+      : "All Internships";
   });
   const [selectedStipend, setSelectedStipend] = useState(0);
 
@@ -304,6 +309,9 @@ console.log('woooooowwwwwwwwwwwwwwwwwwwwwwwwwww')
 
     navigate(`/internships/${formattedType}`, { replace: true });
   }, [workType, navigate]);
+
+  console.log('this is type',type);
+  console.log('this is my work Type',workType)
 
   const constructQueryStringReset = () => {
     let query = `page=${1}`;
@@ -506,7 +514,9 @@ console.log('woooooowwwwwwwwwwwwwwwwwwwwwwwwwww')
   };
 
   const handleReset = () => {
-    setSelectedLocation([]);
+    setSelectedCountry("");
+    setSelectedState("");
+    setSelectedCity("");
     setWorkType("All Internships");
     setSelectedStipend(0);
     setSelectedProfile([]);
@@ -587,8 +597,8 @@ console.log('woooooowwwwwwwwwwwwwwwwwwwwwwwwwww')
               <input
                 type="radio"
                 name="work-type"
-                value="Work from Home"
-                checked={workType === "Work from Home"}
+                value="Work From Home"
+                checked={workType == "Work From Home"}
                 onChange={(e) => setWorkType(e.target.value)}
                 className="form-radio text-green-600 h-6 w-6"
               />
@@ -599,8 +609,8 @@ console.log('woooooowwwwwwwwwwwwwwwwwwwwwwwwwww')
               <input
                 type="radio"
                 name="work-type"
-                value="Work from Office"
-                checked={workType === "Work from Office"}
+                value="Work From Office"
+                checked={workType === "Work From Office"}
                 onChange={(e) => setWorkType(e.target.value)}
                 className="form-radio text-blue-600 h-6 w-6"
               />
@@ -645,7 +655,7 @@ console.log('woooooowwwwwwwwwwwwwwwwwwwwwwwwwww')
             />
           </div>
 
-          {(workType === "Work from Office" || workType === "Hybrid") && (
+          {(workType === "Work From Office" || workType === "Hybrid") && (
             <div className="mt-7">
               <p className="mt-6 mb-2 font-bold">Location</p>
 
