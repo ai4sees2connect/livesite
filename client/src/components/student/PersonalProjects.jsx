@@ -40,18 +40,9 @@ const PersonalProjects = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !description || !link) {
-      toast.error("Please enter all fields");
-      return;
-    }
 
     if (!validateDescription(description)) {
       toast.error("Description should be 100 words or less");
-      return;
-    }
-
-    if (!validateLink(link)) {
-      toast.error("Please enter a valid link");
       return;
     }
 
@@ -157,7 +148,6 @@ const PersonalProjects = () => {
             onChange={(e) => setLink(e.target.value)}
             placeholder="GitHub Link"
             className="border p-2 mb-2 w-full"
-            required
           />
 
           <button
@@ -203,6 +193,7 @@ const PersonalProjects = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-500"
+                        
                       >
                         {project.link}
                       </a>
