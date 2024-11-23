@@ -1038,7 +1038,7 @@ const RecProfile = () => {
                     className="border-2 rounded-md px-3 py-1"
                     onChange={handleCompanySizeChange}
                     value={employeesCount}
-                    disabled={independentCheck}
+                    
                   >
                     <option value="">Select Number of Employees</option>
                     <option value="0-5">0-5</option>
