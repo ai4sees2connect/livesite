@@ -602,131 +602,129 @@ const buildFilters = (req) => {
 
 router.get('/internships', async (req, res) => {
   try {
-    const { page = 1, workType, jobProfile, country,state,city, stipend } = req.query;
-    const limit = 9;  // Number of internships per page
-    const skip = (parseInt(page) - 1) * limit;  // Calculate skip value for pagination
+    const { page = 1, workType, jobProfile, country, state, city, stipend } = req.query;
+    const limit = 9; // Number of internships per page
+    const skip = (parseInt(page) - 1) * limit; // Calculate skip value for pagination
 
-    const filters = { status: 'Active',recruiter: { $ne: null } };
+    const filters = { status: 'Active', recruiter: { $ne: null } };
 
+    // Apply filters based on query parameters
     if (workType && workType !== 'All Internships') {
       filters.internshipType = workType;
     }
 
     if (jobProfile) {
-      // Split the jobProfile string into an array
-      const jobProfileArray = jobProfile.split(',').map((job) => job.trim()); // To handle comma-separated input
+      const jobProfileArray = jobProfile.split(',').map((job) => job.trim());
       if (jobProfileArray.length > 0) {
-        filters.jobProfile = { $in: jobProfileArray }; // Add the filter for job profile
+        filters.jobProfile = { $in: jobProfileArray };
       }
     }
 
     if (country || state || city) {
-      // Use dot notation to specify filters for nested fields
-      if (country) {
-        filters['internLocation.country'] = country;
-      }
-      if (state) {
-        filters['internLocation.state'] = state;
-      }
-      if (city) {
-        filters['internLocation.city'] = city;
-      }
+      if (country) filters['internLocation.country'] = country;
+      if (state) filters['internLocation.state'] = state;
+      if (city) filters['internLocation.city'] = city;
     }
 
     if (stipend && parseInt(stipend) > 0) {
       filters.stipend = { $gte: parseInt(stipend) };
     }
 
-    console.log('filters',filters);
+    console.log('Filters:', filters);
 
-  
-
-
-  
-      // Apply pagination: slice the internships based on the current page
-     
-      let internships = await Internship.find(filters)
+    // Fetch internships with recruiters in one query
+    const internships = await Internship.find(filters)
       .populate({
         path: 'recruiter',
-        select: 'firstname lastname email phone companyName', // Recruiter details
+        select: 'firstname lastname email phone companyName',
       })
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
 
+    // Get a list of internship IDs
+    const internshipIds = internships.map((internship) => internship._id);
 
-      if (stipend && parseInt(stipend) > 0) {
-        internships = internships.filter(internship => {
-          const stipendValue = parseInt(internship.stipend, 10); // Convert stipend to number
-          return stipendValue >= parseInt(stipend, 10);
-        });
-      }
-     
-      const totalInternships = await Internship.countDocuments(filters);
-      const totalPages = Math.ceil(totalInternships / limit); // Calculate total number of pages
+    // Fetch student counts for all internships in a single query
+    const studentCounts = await Student.aggregate([
+      { $unwind: '$appliedInternships' },
+      { $match: { 'appliedInternships.internship': { $in: internshipIds } } },
+      {
+        $group: {
+          _id: '$appliedInternships.internship',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
 
-    
-    for (const internship of internships) {
-      const students = await Student.find({ 'appliedInternships.internship': internship._id });
-      
-      // Add studentCount as a new property to the internship object
-      internship._doc.studentCount = students.length;
-    }
-    
+    // Map student counts to internships
+    const studentCountMap = studentCounts.reduce((acc, { _id, count }) => {
+      acc[_id] = count;
+      return acc;
+    }, {});
+
+    // Add student counts to each internship
+    const internshipsWithCounts = internships.map((internship) => ({
+      ...internship.toObject(),
+      studentCount: studentCountMap[internship._id] || 0, // Default to 0 if no students
+    }));
+
+    // Total internships for pagination
+    const totalInternships = await Internship.countDocuments(filters);
+    const totalPages = Math.ceil(totalInternships / limit);
+
+    // Send response
     res.status(200).json({
-      internships,
+      internships: internshipsWithCounts,
       totalPages,
-      numOfInternships:totalInternships
+      numOfInternships: totalInternships,
     });
-    
   } catch (error) {
     console.error('Error fetching internships:', error);
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
 router.get('/internships/top-15', async (req, res) => {
   try {
-    // const { workType, locationName,minStipend,profile } = req.query;
-    // console.log('Received workType:', workType);
-    // console.log('Received locationName:', locationName);
-    const recruiters = await Recruiter.find().populate({
-      path: 'internships',
-      match: { status: 'Active' },
-      options: { sort: { createdAt: -1 } } // Sort by createdAt in descending order
-    });
-    let internships = [];
+    // Step 1: Find all active internships, with the recruiter info populated.
+    const internships = await Internship.find({ status: 'Active' })
+      .populate({
+        path: 'recruiter',
+        select: 'firstname lastname email phone companyName', // Populating only necessary recruiter fields
+      })
+      .sort({ createdAt: -1 })
+      .limit(8); // Fetch top 15 internships
 
-    recruiters.forEach(recruiter => {
-      recruiter.internships.forEach(internship => {
-        internships.push({
-          ...internship._doc,
-          recruiter: {
-            _id: recruiter._id,
-            firstname: recruiter.firstname,
-            lastname: recruiter.lastname,
-            email: recruiter.email,
-            phone: recruiter.phone,
-            companyName: recruiter.companyName
-          }
-        });
-      });
+    // Step 2: For all internships, fetch the student count in a single query.
+    const internshipIds = internships.map(internship => internship._id);
+
+    const studentCounts = await Student.aggregate([
+      { $match: { 'appliedInternships.internship': { $in: internshipIds } } },
+      {
+        $group: {
+          _id: '$appliedInternships.internship', // Group by internship ID
+          count: { $sum: 1 }, // Count the number of students for each internship
+        },
+      },
+    ]);
+
+    // Step 3: Add the student count to each internship object
+    internships.forEach(internship => {
+      const studentCount = studentCounts.find(
+        count => count._id.toString() === internship._id.toString()
+      );
+      internship.studentCount = studentCount ? studentCount.count : 0;
     });
 
-    internships = internships.sort((a, b) => b.createdAt - a.createdAt).slice(0, 8);
-    
-    for (const internship of internships) {
-      const students = await Student.find({ 'appliedInternships.internship': internship._id });
-      
-      // Add studentCount as a new property to the internship object
-      internship.studentCount = students.length;
-    }
-    // console.log(internships);
-     res.status(200).json(internships);
+    // Step 4: Send the response with the internships data
+    res.status(200).json(internships);
   } catch (error) {
     console.error('Error fetching internships:', error);
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
 
 router.get('/api/get-skills',async(req,res)=>{
   try {

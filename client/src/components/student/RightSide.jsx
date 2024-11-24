@@ -97,55 +97,19 @@ const RightSide = () => {
         // console.log("LocationName", selectedLocation);
         // console.log("WorkType:", workType);
         // console.log("profile", selectedProfile);
+        console.log('hello')
 
         const response = await axios.get(`${api}/student/internships/top-15`);
+        console.log('internship fetched',response.data);
 
-        // setAppliedInternships(appliedResponse.data);
-        const sortedInternships = response.data.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+       
 
-        const internshipsWithLogo = await Promise.all(
-          sortedInternships.map(async (internship) => {
-            if (internship.recruiter && internship.recruiter._id) {
-              try {
-                // Kick off the logo fetch but don't await it here
-                const logoPromise = axios.get(
-                  `${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`,
-                  { responseType: "blob" }
-                );
 
-                // Once the promise resolves, process the logo
-                const res = await logoPromise;
-                const logoBlob = new Blob([res.data], {
-                  type: res.headers["content-type"],
-                });
-                const logoUrl = URL.createObjectURL(logoBlob);
 
-                // Return the internship with the logo URL
-                return {
-                  ...internship,
-                  logoUrl,
-                };
-              } catch (error) {
-                console.error("Error fetching logo:", error);
-
-                // Return internship with a default or null logo URL in case of an error
-                return {
-                  ...internship,
-                  logoUrl: null, // Or use a default image URL here
-                };
-              }
-            }
-
-            // If no recruiter, return the internship as is
-            return internship;
-          })
-        );
-
-        setInternships(internshipsWithLogo);
-        // localStorage.setItem('cachedInternships', JSON.stringify(internshipsWithLogo));
-        console.log("internhsipswith logo", internshipsWithLogo);
+        setInternships(response.data);
+      
+        // console.log("internhsipswith logo", internshipsWithLogo);
+        
 
         setLoading(false);
       } catch (err) {
@@ -157,6 +121,63 @@ const RightSide = () => {
 
     fetchInternships();
   }, []);
+
+  useEffect(()=>{
+  if(internships.length>0){
+    const fetchLogos=async()=>{
+    const internshipsWithLogo = await Promise.all(
+      internships.map(async (internship) => {
+        if (internship.recruiter && internship.recruiter._id) {
+          try {
+            // Kick off the logo fetch but don't await it here
+            const logoPromise = axios.get(
+              `${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`,
+              { responseType: "blob" }
+            );
+
+            // Once the promise resolves, process the logo
+            const res = await logoPromise;
+            const logoBlob = new Blob([res.data], {
+              type: res.headers["content-type"],
+            });
+            const logoUrl = URL.createObjectURL(logoBlob);
+
+            // Return the internship with the logo URL
+            return {
+              ...internship,
+              logoUrl,
+            };
+          } catch (error) {
+
+            if (error.response && error.response.status === 404) {
+              console.warn(`Logo not found for recruiter ${internship.recruiter._id}`);
+              return {
+                ...internship,
+                logoUrl: null, // No logo found, default to null or a placeholder URL
+              };
+            }
+            
+            console.error("Error fetching logo:", error);
+
+            // Return internship with a default or null logo URL in case of an error
+            return {
+              ...internship,
+              logoUrl: null, // Or use a default image URL here
+            };
+          }
+        }
+
+        // If no recruiter, return the internship as is
+        return internship;
+      })
+    );
+    setInternships(internshipsWithLogo);
+  }
+
+  fetchLogos();
+
+  }
+  },[internships])
 
   console.log(internships);
 

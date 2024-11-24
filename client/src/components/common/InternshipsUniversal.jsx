@@ -425,12 +425,12 @@ console.log('woooooowwwwwwwwwwwwwwwwwwwwwwwwwww')
         );
         setTotalPages(response.data.totalPages);
         setInternshipsCount(response.data.numOfInternships);
-        const sortedInternships = response.data.internships.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+        // const sortedInternships = response.data.internships.sort(
+        //   (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        // );
 
         const internshipsWithLogo = await Promise.all(
-          sortedInternships.map(async (internship) => {
+          response.data.internships.map(async (internship) => {
             if (internship.recruiter && internship.recruiter._id) {
               try {
                 // Kick off the logo fetch but don't await it here
