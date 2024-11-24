@@ -57,39 +57,60 @@ router.get("/:studentId/applied-internships", async (req, res) => {
   const { studentId } = req.params;
 
   try {
+    // Fetch the student and populate the internships they applied to, including recruiters
     const student = await Student.findById(studentId).populate({
-      path: "appliedInternships.internship", // Populate the internships the student applied to
+      path: "appliedInternships.internship",
       populate: {
-        path: "recruiter", // Further populate the recruiter details within each internship
-        select: "firstname lastname email companyName", // Select specific fields of the recruiter
+        path: "recruiter",
+        select: "firstname lastname email companyName",
       },
     });
+
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    let internships = student.appliedInternships.map((application) => ({
-      internship: application.internship, // Internship details
-      recruiter: application.internship.recruiter, // Recruiter details
-      appliedAt: application.appliedAt, // Applied date
+    const internships = student.appliedInternships.map((application) => ({
+      internship: application.internship,
+      recruiter: application.internship.recruiter,
+      appliedAt: application.appliedAt,
       internshipStatus: application.internshipStatus,
     }));
 
-    for (const internship of internships) {
-      const students = await Student.find({
-        "appliedInternships.internship": internship.internship._id,
-      });
+    // Extract internship IDs
+    const internshipIds = internships.map((application) => application.internship._id);
 
-      // Add studentCount as a new property to the internship object
-      internship.studentCount = students.length;
-    }
+    // Batch query: Fetch student counts for all internships in a single query
+    const studentCounts = await Student.aggregate([
+      { $unwind: "$appliedInternships" },
+      { $match: { "appliedInternships.internship": { $in: internshipIds } } },
+      {
+        $group: {
+          _id: "$appliedInternships.internship",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
 
-    res.status(200).json(internships);
+    // Map student counts to internships
+    const studentCountMap = studentCounts.reduce((acc, { _id, count }) => {
+      acc[_id] = count;
+      return acc;
+    }, {});
+
+    // Add the studentCount property to each internship
+    const internshipsWithCounts = internships.map((application) => ({
+      ...application,
+      studentCount: studentCountMap[application.internship._id] || 0, // Default to 0 if no students applied
+    }));
+
+    res.status(200).json(internshipsWithCounts);
   } catch (error) {
     console.error("Error fetching applied internships:", error);
     res.status(500).json({ message: "Server Error" });
   }
 });
+
 
 router.put("/:internshipId/view", async (req, res) => {
   const { internshipId } = req.params;
