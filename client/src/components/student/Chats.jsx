@@ -974,7 +974,7 @@ const Chats = () => {
                         } `}
                         style={{ maxWidth: "fit-content" }}
                       >
-                        <p className="max-w-[230px] md:max-w-[400px] min-w-[200px]">
+                        <p className="max-w-[230px] md:max-w-[400px] md:min-w-[200px]">
                           {msg.messageContent}
                         </p>
                         <p
