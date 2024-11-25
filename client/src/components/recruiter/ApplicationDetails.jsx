@@ -6,11 +6,15 @@ import Spinner from '../common/Spinner';
 // import { useRecruiter } from './context/recruiterContext';
 import getUserIdFromToken from './auth/authUtilsRecr';
 import TimeAgo from '../common/TimeAgo'
+import { FaSpinner } from 'react-icons/fa';
 
 const ApplicationDetails = () => {
   const { studentId, internshipId } = useParams(); // Get studentId and internshipId from URL
   const [studentDetails, setStudentDetails] = useState(null);
   const [internshipDetails, setInternshipDetails] = useState(null);
+  const [resumeUrl,setResumeUrl]=useState(null);
+  const [resumeLoading,setResumeLoading]=useState(true);
+  const [resumeFileName,setResumeFileName]=useState(null);
   // const {recruiter}=useRecruiter();
   const recruiterId = getUserIdFromToken();
   console.log(recruiterId);
@@ -35,6 +39,36 @@ const ApplicationDetails = () => {
     // Fetch the application details when the component mounts
     fetchApplicationDetails();
   }, [studentId, internshipId]); // Run effect when studentId or internshipId changes
+
+  useEffect(() => {
+    const fetchResume = async () => {
+      try {
+        const response = await axios.get(`${api}/student/resume/${studentId}`, {
+          responseType: 'blob', // Set to 'blob' to handle file downloads
+        });
+
+        const filename = response.headers['content-disposition']
+          .split('filename=')[1]
+          .replace(/"/g, ''); // Clean up any surrounding quotes
+
+        // If you need to create a URL for the resume file (for example, to display it in a link or a button)
+        const fileURL = URL.createObjectURL(response.data);
+
+        // Set the URL to the state
+        setResumeUrl(fileURL);
+        setResumeFileName(filename);
+        setResumeLoading(false);
+      } catch (error) {
+        console.log('Error fetching student resume:', error);
+        setResumeLoading(false);
+      }
+    };
+
+    fetchResume();
+  }, [studentId]);
+
+  console.log('this is resume',resumeUrl)
+  console.log('this is file name',resumeFileName)
 
   const calculateMatchPercentage = (studentSkills, requiredSkills) => {
     if (!requiredSkills || requiredSkills.length === 0) return 0;
@@ -79,7 +113,6 @@ const ApplicationDetails = () => {
     workExperience,
     certificates,
     skills,
-    resume
   } = studentDetails;
 
   const { aboutText, appliedAt, assessmentAns, availability, } = studentDetails.appliedInternships[0]
@@ -244,20 +277,33 @@ const ApplicationDetails = () => {
           </div>
 
           {/* Resume */}
-          {resume && resume.filename && (
+          {resumeLoading ? (
+        // Show a spinner or loading indicator while the resume is being fetched
+        <div className="spinner-container">
+          <div>Loading Resume</div>
+          <FaSpinner className="animate-spin text-blue-500 h-8 w-8"/>
+        </div>
+      ) : (
+        // Show the resume download link once the resume is available
+        <>
+          {resumeUrl ? (
             <>
               <p className="text-lg font-medium">Resume:</p>
               <div className="mb-6">
                 <a
-                  href={`data:${resume.contentType};base64,${resume.data}`}
-                  download={resume.filename}
-                  className=" text-blue-500 px-4 py-2 hover:underline transition-all"
+                  href={resumeUrl}
+                  download={resumeFileName} // Use the filename from backend
+                  className="text-blue-500  py-2 hover:underline transition-all"
                 >
                   Download Resume
                 </a>
               </div>
             </>
+          ) : (
+            <div>No resume found.</div>
           )}
+        </>
+      )}
 
           <div className="mb-4">
             <p className="text-lg font-medium">Email:</p>
