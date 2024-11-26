@@ -54,6 +54,8 @@ const Internships = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(null);
   const [internshipsCount, setInternshipsCount] = useState(null);
+  const [resumeUrl,setResumeUrl]=useState(null)
+  const [resumeName,setResumeName]=useState(null)
 
   const jobProfiles = [
     "3D Animation",
@@ -266,6 +268,33 @@ const Internships = () => {
     setFilterOpen(isLargeScreen);
   }, []);
 
+  useEffect(() => {
+    const fetchResume = async () => {
+      try {
+        const response = await axios.get(`${api}/student/resume/${userId}`, {
+          responseType: 'blob', // Set to 'blob' to handle file downloads
+        });
+
+        const filename = response.headers['content-disposition']
+          .split('filename=')[1]
+          .replace(/"/g, ''); // Clean up any surrounding quotes
+
+        // If you need to create a URL for the resume file (for example, to display it in a link or a button)
+        const fileURL = URL.createObjectURL(response.data);
+
+        // Set the URL to the state
+        setResumeUrl(fileURL);
+        setResumeName(filename);
+        // setResumeLoading(false);
+      } catch (error) {
+        console.log('Error fetching student resume:', error);
+        // setResumeLoading(false);
+      }
+    };
+
+    fetchResume();
+  }, [userId]);
+
   const { type } = useParams();
   const [selectedLocation, setSelectedLocation] = useState([]);
   // const [workType, setWorkType] = useState('All Internships')
@@ -281,8 +310,8 @@ const Internships = () => {
   const [availability, setAvailability] = useState(
     "Yes! Will join Immediately"
   );
-  const [resumeUrl, setResumeUrl] = useState(null);
-  const [resumeFilename, setResumeFilename] = useState(null);
+  // const [resumeUrl, setResumeUrl] = useState(null);
+  // const [resumeFilename, setResumeFilename] = useState(null);
   const [aboutText, setAboutText] = useState("");
   const [assessmentAns, setAssessmentAns] = useState("");
   // const [cachedInternships, setCachedInternships] = useState(null);
@@ -497,7 +526,7 @@ const Internships = () => {
         if (contentDisposition) {
           console.log("yattttaaa");
           const matches = /filename="([^"]*)"/.exec(contentDisposition);
-          if (matches) setResumeFilename(matches[1]);
+          if (matches) setResumeName(matches[1]);
         }
 
         // setResumeCreatedAt(createdAt);
@@ -1162,7 +1191,7 @@ const Internships = () => {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-blue-500"
-                                  download={resumeFilename}
+                                  download={resumeName}
                                 >
                                   Click to view
                                 </a>
