@@ -16,14 +16,11 @@ import statesAndCities from "../common/statesAndCities";
 
 import countryData from "../TESTJSONS/countries+states+cities.json";
 
-
-
-
 const RecPosting = () => {
   const [formData, setFormData] = useState({
     internshipName: "",
     internshipType: "",
-    internLocation:{},
+    internLocation: {},
     internshipStartQues: "",
     stipendType: "",
     incentiveDescription: "",
@@ -54,7 +51,6 @@ const RecPosting = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const navigate = useNavigate();
-
 
   const jobProfiles = [
     "3D Animation",
@@ -262,12 +258,6 @@ const RecPosting = () => {
     "Web Development",
   ];
 
-
-
-
-
-
-
   const perks = [
     "Letter of recommendation",
     "Flexible work hours",
@@ -281,27 +271,25 @@ const RecPosting = () => {
   console.log("this is recruite data", recruiter);
 
   useEffect(() => {
-
     // refreshData();
     const getData = () => {
-
-
-      if (recruiter?.orgDescription === '' || recruiter?.companyCity === '' || recruiter?.industryType === '' || recruiter?.numOfEmployees === '') {
-        toast.info('Please complete your profile');
-        navigate(`/recruiter/profile/${userId}`)
+      if (
+        recruiter?.orgDescription === "" ||
+        recruiter?.companyCity === "" ||
+        recruiter?.industryType === "" ||
+        recruiter?.numOfEmployees === ""
+      ) {
+        toast.info("Please complete your profile");
+        navigate(`/recruiter/profile/${userId}`);
         return;
       }
-    }
+    };
     setTimeout(() => {
       getData();
     }, 1000);
-
-  }, [recruiter])
-
-
+  }, [recruiter]);
 
   useEffect(() => {
-
     const fetchSkills = async () => {
       try {
         const response = await axios.get(`${api}/recruiter/api/get-skills`);
@@ -319,9 +307,14 @@ const RecPosting = () => {
   }, []);
 
   const handleChange = (e) => {
-    console.log(e.target.name);
-    console.log(e.target.value);
     const { name, value } = e.target;
+
+    // Ensure the value is not negative
+    if (value < 0) {
+      toast.error("Please give positiive number!");
+      return;
+    }
+
     setFormData({
       ...formData,
       [name]: value,
@@ -340,9 +333,9 @@ const RecPosting = () => {
     console.log("This is a skill set", selectedOptions);
   };
 
-  console.log('this is country', selectedCountry)
-  console.log('this is state', selectedState)
-  console.log('this is city', selectedCity)
+  console.log("this is country", selectedCountry);
+  console.log("this is state", selectedState);
+  console.log("this is city", selectedCity);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -399,14 +392,26 @@ const RecPosting = () => {
       postData.internLocation = { country: "", state: "", city: "" }; // Clear all location fields
     } else if (postData.internshipType === "Office") {
       postData.internshipType = "Work from Office";
-      if (!postData.internLocation.country || !postData.internLocation.state || !postData.internLocation.city) {
-        toast.info("Please provide a valid country, state, and city for 'Work from Office' internships.");
+      if (
+        !postData.internLocation.country ||
+        !postData.internLocation.state ||
+        !postData.internLocation.city
+      ) {
+        toast.info(
+          "Please provide a valid country, state, and city for 'Work from Office' internships."
+        );
         return;
       }
     } else if (postData.internshipType === "Hybrid") {
       postData.internshipType = "Hybrid";
-      if (!postData.internLocation.country || !postData.internLocation.state || !postData.internLocation.city) {
-        toast.info("Please provide country, state, and city for 'Hybrid' internships.");
+      if (
+        !postData.internLocation.country ||
+        !postData.internLocation.state ||
+        !postData.internLocation.city
+      ) {
+        toast.info(
+          "Please provide country, state, and city for 'Hybrid' internships."
+        );
         return;
       }
     }
@@ -469,16 +474,16 @@ const RecPosting = () => {
   if (!recruiter?.companyCertificate && !recruiter?.companyWebsite) {
     return (
       <div className="flex flex-col justify-center items-center h-screen space-y-4">
-      <p className="text-xl font-semibold text-gray-500">
-        Complete your profile.
-      </p>
-      <Link
-        to={`/recruiter/profile/${userId}`}
-        className="px-2 py-1 bg-blue-500 text-white rounded-md"
-      >
-        Back to profile
-      </Link>
-    </div>
+        <p className="text-xl font-semibold text-gray-500">
+          Complete your profile.
+        </p>
+        <Link
+          to={`/recruiter/profile/${userId}`}
+          className="px-2 py-1 bg-blue-500 text-white rounded-md"
+        >
+          Back to profile
+        </Link>
+      </div>
     );
   } else if (recruiter?.subscription.planType !== "Unlimited") {
     if (
@@ -609,71 +614,63 @@ const RecPosting = () => {
 
           {(formData.internshipType === "Office" ||
             formData.internshipType === "Hybrid") && (
+            <div className="flex flex-col gap-3">
+              {/* Country Dropdown */}
+              <select
+                className="border-2 py-1 rounded-md px-2"
+                id="country"
+                value={selectedCountry}
+                onChange={(e) => {
+                  setSelectedCountry(e.target.value);
+                  setSelectedState(""); // Reset state and cities dropdowns
 
+                  setSelectedCity("");
+                }}
+              >
+                <option value="">-- Select Country --</option>
+                {countryData.map((country) => (
+                  <option key={country.id} value={country.name}>
+                    {country.name}
+                  </option>
+                ))}
+              </select>
 
+              {/* State Dropdown */}
+              <select
+                className="border-2 py-1 rounded-md px-2"
+                id="state"
+                value={selectedState}
+                onChange={(e) => {
+                  setSelectedState(e.target.value);
+                  setSelectedCity("");
+                }}
+                disabled={!selectedCountry}
+              >
+                <option value="">-- Select State --</option>
+                {states?.map((state) => (
+                  <option key={state.id} value={state.name}>
+                    {state.name}
+                  </option>
+                ))}
+              </select>
 
-              <div className="flex flex-col gap-3">
-                {/* Country Dropdown */}
-                <select
-                  className="border-2 py-1 rounded-md px-2"
-
-                  id="country"
-                  value={selectedCountry}
-                  onChange={(e) => {
-                    setSelectedCountry(e.target.value);
-                    setSelectedState(""); // Reset state and cities dropdowns
-
-                    setSelectedCity("");
-
-                  }}
-                >
-                  <option value="">-- Select Country --</option>
-                  {countryData.map((country) => (
-                    <option key={country.id} value={country.name}>
-                      {country.name}
-                    </option>
-                  ))}
-                </select>
-
-                {/* State Dropdown */}
-                <select
-
-                  className="border-2 py-1 rounded-md px-2"
-                  id="state"
-                  value={selectedState}
-                  onChange={(e) => { setSelectedState(e.target.value); setSelectedCity("") }}
-
-                  disabled={!selectedCountry}
-                >
-                  <option value="">-- Select State --</option>
-                  {states?.map((state) => (
-                    <option key={state.id} value={state.name}>
-                      {state.name}
-                    </option>
-                  ))}
-                </select>
-
-                {/* City Dropdown */}
-                <select
-                  id="city"
-
-                  value={selectedCity}
-                  disabled={!selectedState}
-                  onChange={(e) => setSelectedCity(e.target.value)}
-                  className="border-2 py-1 rounded-md px-2"
-
-                >
-                  <option value="">-- Select City --</option>
-                  {cities?.map((city) => (
-                    <option key={city.id} value={city.name}>
-                      {city.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-            )}
-
+              {/* City Dropdown */}
+              <select
+                id="city"
+                value={selectedCity}
+                disabled={!selectedState}
+                onChange={(e) => setSelectedCity(e.target.value)}
+                className="border-2 py-1 rounded-md px-2"
+              >
+                <option value="">-- Select City --</option>
+                {cities?.map((city) => (
+                  <option key={city.id} value={city.name}>
+                    {city.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="flex flex-col my-5 space-y-3">
             <p className="font-medium">Internship Start date</p>
@@ -814,33 +811,34 @@ const RecPosting = () => {
             {(formData.stipendType === "fixed" ||
               formData.stipendType === "negotiable" ||
               formData.stipendType === "performance-based") && (
-                <div className="flex items-center mb-4">
-                  {/* Currency Selector */}
-                  <select
-                    name="currency"
-                    value={formData.currency}
-                    onChange={handleChange}
-                    className="p-1 border border-gray-300 rounded-md shadow-md mr-2"
-                  >
-                    <option value="₹">₹ (INR)</option>
-                    <option value="$">$ (USD)</option>
-                    <option value="€">€ (EUR)</option>
-                    <option value="£">£ (GBP)</option>
-                    <option value="¥">¥ (JPY)</option>
-                  </select>
-                  {/* Stipend Amount Input */}
-                  <input
-                    type="number"
-                    name="stipend"
-                    value={formData.stipend}
-                    onChange={handleChange}
-                    className="p-1 border w-28 border-gray-300 rounded-md shadow-md"
-                    placeholder="e.g 4000"
-                    required
-                  />{" "}
-                  /month
-                </div>
-              )}
+              <div className="flex items-center mb-4">
+                {/* Currency Selector */}
+                <select
+                  name="currency"
+                  value={formData.currency}
+                  onChange={handleChange}
+                  className="p-1 border border-gray-300 rounded-md shadow-md mr-2"
+                >
+                  <option value="₹">₹ (INR)</option>
+                  <option value="$">$ (USD)</option>
+                  <option value="€">€ (EUR)</option>
+                  <option value="£">£ (GBP)</option>
+                  <option value="¥">¥ (JPY)</option>
+                </select>
+                {/* Stipend Amount Input */}
+                <input
+                  type="number"
+                  name="stipend"
+                  value={formData.stipend}
+                  onChange={handleChange}
+                  className="p-1 border w-28 border-gray-300 rounded-md shadow-md"
+                  placeholder="e.g 4000"
+                  required
+                  min="0"
+                />
+                /month
+              </div>
+            )}
 
             {/* Conditionally render Incentive Description for Performance Based */}
             {formData.stipendType === "performance-based" && (
