@@ -48,18 +48,18 @@ const RecDashboard = () => {
         const response = await axios.get(
           `${api}/recruiter/internship/${recruiterId}/getInternships`
         );
-        const sortedInternships = response.data.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+        // const sortedInternships = response.data.sort(
+        //   (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        // );
 
         const internshipsWithApplicants = await Promise.all(
-          sortedInternships.map(async (internship) => {
+          response.data.map(async (internship) => {
             const applicantsResponse = await axios.get(
-              `${api}/recruiter/internship/${recruiterId}/applicants/${internship._id}`
+              `${api}/recruiter/internship/${recruiterId}/applicants-count/${internship._id}`
             );
             return {
               ...internship,
-              applicantCount: applicantsResponse.data.length,
+              applicantCount: applicantsResponse.data,
             };
           })
         );

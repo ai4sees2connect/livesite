@@ -571,34 +571,35 @@ router.get('/resume/:id', async (req, res) => {
   }
 });
 
-// Helper function to build the filter based on query parameters
-const buildFilters = (req) => {
-  const { workType, jobProfile, location, stipend } = req.query;
+router.post("/batch-get-logos", async (req, res) => {
+  try {
+    const { recruiterIds } = req.body;
 
-  let filter = {};
-  
-  // Filter by work type (if provided)
-  if (workType && workType !== 'All Internships') {
-    filter.internshipType = workType;
+    if (!recruiterIds || !Array.isArray(recruiterIds)) {
+      return res.status(400).json({ error: "Invalid recruiter IDs format" });
+    }
+
+    const recruiters = await Recruiter.find(
+      { _id: { $in: recruiterIds } },
+      "_id companyLogo"
+    );
+
+    const logos = recruiters.reduce((acc, recruiter) => {
+      const logoData = recruiter.companyLogo?.data;
+      const contentType = recruiter.companyLogo?.contentType;
+
+      acc[recruiter._id] = logoData
+        ? `data:${contentType};base64,${logoData.toString("base64")}`
+        : null; // Convert binary to Base64 for direct frontend use
+      return acc;
+    }, {});
+
+    res.status(200).json({ logos });
+  } catch (error) {
+    console.error("Error fetching logos:", error);
+    res.status(500).json({ error: "Failed to fetch recruiter logos" });
   }
-
-  // Filter by job profile (if provided)
-  if (jobProfile && jobProfile.length > 0) {
-    filter.jobProfile = { $in: jobProfile };
-  }
-
-  // Filter by location (if provided)
-  if (location && location.length > 0) {
-    filter.internLocation = { $in: location };
-  }
-
-  // Filter by stipend (if provided)
-  if (stipend && stipend > 0) {
-    filter.stipend = { $gte: stipend };  // Assuming stipend is a numeric value
-  }
-
-  return filter;
-};
+});
 
 router.get('/internships', async (req, res) => {
   try {

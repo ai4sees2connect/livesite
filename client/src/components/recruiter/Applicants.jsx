@@ -964,7 +964,7 @@ const Applicants = () => {
                               </p>
                             </div>
                             {/* Resume Link */}
-                            <div className="mb-2">
+                            {/* <div className="mb-2">
                               <h3 className="font-semibold">Resume:</h3>
                               <a
                                 href={`data:${
@@ -979,7 +979,7 @@ const Applicants = () => {
                               >
                                 Download Resume
                               </a>
-                            </div>
+                            </div> */}
                             {(student.appliedInternships[0].internshipStatus
                               .status === "Applied" ||
                               student.appliedInternships[0].internshipStatus

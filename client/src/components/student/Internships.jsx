@@ -54,6 +54,8 @@ const Internships = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(null);
   const [internshipsCount, setInternshipsCount] = useState(null);
+  const [resumeUrl,setResumeUrl]=useState(null)
+  const [resumeName,setResumeName]=useState(null)
 
   const jobProfiles = [
     "3D Animation",
@@ -266,6 +268,33 @@ const Internships = () => {
     setFilterOpen(isLargeScreen);
   }, []);
 
+  useEffect(() => {
+    const fetchResume = async () => {
+      try {
+        const response = await axios.get(`${api}/student/resume/${userId}`, {
+          responseType: 'blob', // Set to 'blob' to handle file downloads
+        });
+
+        const filename = response.headers['content-disposition']
+          .split('filename=')[1]
+          .replace(/"/g, ''); // Clean up any surrounding quotes
+
+        // If you need to create a URL for the resume file (for example, to display it in a link or a button)
+        const fileURL = URL.createObjectURL(response.data);
+
+        // Set the URL to the state
+        setResumeUrl(fileURL);
+        setResumeName(filename);
+        // setResumeLoading(false);
+      } catch (error) {
+        console.log('Error fetching student resume:', error);
+        // setResumeLoading(false);
+      }
+    };
+
+    fetchResume();
+  }, [userId]);
+
   const { type } = useParams();
   const [selectedLocation, setSelectedLocation] = useState([]);
   // const [workType, setWorkType] = useState('All Internships')
@@ -281,8 +310,8 @@ const Internships = () => {
   const [availability, setAvailability] = useState(
     "Yes! Will join Immediately"
   );
-  const [resumeUrl, setResumeUrl] = useState(null);
-  const [resumeFilename, setResumeFilename] = useState(null);
+  // const [resumeUrl, setResumeUrl] = useState(null);
+  // const [resumeFilename, setResumeFilename] = useState(null);
   const [aboutText, setAboutText] = useState("");
   const [assessmentAns, setAssessmentAns] = useState("");
   // const [cachedInternships, setCachedInternships] = useState(null);
@@ -345,53 +374,24 @@ const Internships = () => {
         setTotalPages(response.data.totalPages);
         setInternshipsCount(response.data.numOfInternships);
         setAppliedInternships(appliedResponse.data);
-        const sortedInternships = response.data.internships.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+        const internships = response.data.internships;
+       
+        const recruiterIds = [...new Set(internships.map(internship => internship.recruiter?._id).filter(Boolean))];
 
-        const internshipsWithLogo = await Promise.all(
-          sortedInternships.map(async (internship) => {
-            if (internship.recruiter && internship.recruiter._id) {
-              try {
-                // Kick off the logo fetch but don't await it here
-                const logoPromise = axios.get(
-                  `${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`,
-                  { responseType: "blob" }
-                );
+        // Fetch logos in bulk
+      const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
+      const logoMap = logosResponse.data.logos;
 
-                // Once the promise resolves, process the logo
-                const res = await logoPromise;
-                const logoBlob = new Blob([res.data], {
-                  type: res.headers["content-type"],
-                });
-                const logoUrl = URL.createObjectURL(logoBlob);
+      console.log('this is logo response',logoMap);
 
-                // Return the internship with the logo URL
-                return {
-                  ...internship,
-                  logoUrl,
-                };
-              } catch (error) {
-                console.error("Error fetching logo:", error);
+      const internshipsWithLogos = internships.map(internship => ({
+        ...internship,
+        logoUrl: logoMap[internship.recruiter?._id] || null, // Default to null if no logo found
+      }));
 
-                // Return internship with a default or null logo URL in case of an error
-                return {
-                  ...internship,
-                  logoUrl: null, // Or use a default image URL here
-                };
-              }
-            }
-
-            // If no recruiter, return the internship as is
-            return internship;
-          })
-        );
-
-        setInternships(internshipsWithLogo);
-        // localStorage.setItem('cachedInternships', JSON.stringify(internshipsWithLogo));
-        console.log("internhsipswith logo", internshipsWithLogo);
-
-        setLoading(false);
+      setInternships(internshipsWithLogos);
+      setLoading(false);
+        
       } catch (err) {
         console.error("Error fetching internships:", err);
         setError("Failed to fetch internships. Please try again later.");
@@ -420,52 +420,25 @@ const Internships = () => {
         );
         setTotalPages(response.data.totalPages);
         setInternshipsCount(response.data.numOfInternships);
-        const sortedInternships = response.data.internships.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+        const internships = response.data.internships;
+        
 
-        const internshipsWithLogo = await Promise.all(
-          sortedInternships.map(async (internship) => {
-            if (internship.recruiter && internship.recruiter._id) {
-              try {
-                // Kick off the logo fetch but don't await it here
-                const logoPromise = axios.get(
-                  `${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`,
-                  { responseType: "blob" }
-                );
+       const recruiterIds = [...new Set(internships.map(internship => internship.recruiter?._id).filter(Boolean))];
 
-                // Once the promise resolves, process the logo
-                const res = await logoPromise;
-                const logoBlob = new Blob([res.data], {
-                  type: res.headers["content-type"],
-                });
-                const logoUrl = URL.createObjectURL(logoBlob);
+        // Fetch logos in bulk
+      const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
+      const logoMap = logosResponse.data.logos;
 
-                // Return the internship with the logo URL
-                return {
-                  ...internship,
-                  logoUrl,
-                };
-              } catch (error) {
-                console.error("Error fetching logo:", error);
+      console.log('this is logo response',logoMap);
 
-                // Return internship with a default or null logo URL in case of an error
-                return {
-                  ...internship,
-                  logoUrl: null, // Or use a default image URL here
-                };
-              }
-            }
+      const internshipsWithLogos = internships.map(internship => ({
+        ...internship,
+        logoUrl: logoMap[internship.recruiter?._id] || null, // Default to null if no logo found
+      }));
 
-            // If no recruiter, return the internship as is
-            return internship;
-          })
-        );
-
-        setInternships(internshipsWithLogo);
-        // localStorage.setItem('cachedInternships', JSON.stringify(internshipsWithLogo));
-        console.log("internhsipswith logo", internshipsWithLogo);
-        setLoading(false);
+      setInternships(internshipsWithLogos);
+      setLoading(false);
+      
       } catch (err) {
         console.error("Error fetching internships:", err);
         setError("Failed to fetch internships. Please try again later.");
@@ -497,7 +470,7 @@ const Internships = () => {
         if (contentDisposition) {
           console.log("yattttaaa");
           const matches = /filename="([^"]*)"/.exec(contentDisposition);
-          if (matches) setResumeFilename(matches[1]);
+          if (matches) setResumeName(matches[1]);
         }
 
         // setResumeCreatedAt(createdAt);
@@ -1162,7 +1135,7 @@ const Internships = () => {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-blue-500"
-                                  download={resumeFilename}
+                                  download={resumeName}
                                 >
                                   Click to view
                                 </a>
