@@ -725,10 +725,10 @@ const RecChatRoom = () => {
       <div
         className={`${
           !chatListOpen ? "hidden" : "flex"
-        } border lg:flex  flex-col items-center  w-full  lg:w-[36%] xl:w-[37%] bg-blue-900/50  shadow-2xl overflow-y-scroll  scrollbar-thin`}
+        } border lg:flex  flex-col items-center  w-full  lg:w-[36%] xl:w-[37%] bg-white  shadow-2xl overflow-y-scroll  scrollbar-thin`}
       >
-        <div className="bg-blue-900 w-full flex flex-col items-center py-5">
-          <h2 className="text-xl text-white w-fit font-semibold mb-2">
+        <div className="bg-white w-full flex flex-col items-center py-5 border-b-2">
+          <h2 className="text-xl lg:text-2xl text-blue-500 w-fit font-semibold mb-2">
             Messages from all internships
           </h2>
 
@@ -819,7 +819,7 @@ const RecChatRoom = () => {
                 key={`${studentId}-${internshipId}`}
                 className={`student-internship-entry hover:bg-blue-400 border-b-2  p-4   hover:cursor-pointer  ${
                   selectedInternship === internshipId
-                    ? "bg-blue-500"
+                    ? "bg-blue-200 border-2 border-blue-500"
                     : "bg-blue-100"
                 } w-full`}
                 onClick={() => {
@@ -833,7 +833,7 @@ const RecChatRoom = () => {
                 }}
               >
                 <div className="flex-grow">
-                  <div className="text-lg font-semibold text-white flex items-center relative">
+                  <div className="text-lg font-semibold text-black flex items-center relative">
                     <span className="capitalize flex items-center text-xl ">
                       {firstname} {lastname}
                     </span>
@@ -849,13 +849,13 @@ const RecChatRoom = () => {
                       </span>
                     )}
                   </div>
-                  <p className="text-md font-semibold text-white mb-3">
+                  <p className="text-md font-semibold text-gray-600 mb-3">
                     {internshipName}
                   </p>
                   {lastMessage &&
                     !latestMessagesSeenStatus[`${studentId}_${internshipId}`] &&
                     lastMessage.senderId !== recruiterId && (
-                      <div className="text-black-300 font-semibold text-xs">
+                      <div className="text-black font-semibold text-xs">
                         New mesage
                       </div>
                     )}
@@ -863,7 +863,7 @@ const RecChatRoom = () => {
                   {/* Display the most recent message */}
                   {lastMessage && (
                     <p className="text-md">
-                      <span className="font-semibold text-white">
+                      <span className="font-semibold text-black">
                         {lastMessage.senderId === recruiterId ? "You:  " : ""}
                       </span>
                       <span
@@ -872,8 +872,8 @@ const RecChatRoom = () => {
                           !latestMessagesSeenStatus[
                             `${studentId}_${internshipId}`
                           ]
-                            ? "text-white font-semibold"
-                            : "text-white"
+                            ? "text-black font-semibold"
+                            : "text-black"
                         } text-md`}
                       >
                         {lastMessage
