@@ -1193,7 +1193,7 @@ const Chats = () => {
               htmlFor="fileUpload"
               className="my-auto text-black hover:cursor-pointer"
             >
-              <FaPaperclip className="w-5 h-5" />
+              <FaPaperclip className="w-5 h-5 text-blue-500" />
             </label>
             <input
               type="file"

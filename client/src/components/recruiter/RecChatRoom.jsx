@@ -1235,11 +1235,11 @@ const RecChatRoom = () => {
 
             {showAssignmentModal && (
               <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center md:items-center z-50">
-                <div className="bg-white p-6 rounded-lg mt-10 md:mt-0 shadow-lg w-[90%] md:w-[50%] h-[70%] md:h-[63%]">
+                <div className="bg-white p-6 rounded-lg mt-10 md:mt-0 shadow-lg w-[90%] lg:w-[50%] h-3/5 md:h-[40%] lg:h-[70%]">
                   <RecAssignment
                     onClose={toggleAssignmentModal}
                     sendAssignment={sendAssignment}
-                  />{" "}
+                  />
                   {/* Pass onClose to hide modal */}
                 </div>
               </div>
