@@ -717,11 +717,11 @@ const Chats = () => {
       <div
         className={`${
           !chatListOpen ? "hidden" : "flex"
-        }  lg:flex  flex-col items-center   w-full  lg:w-[36%] xl:w-[37%] bg-blue-900/50 shadow-2xl overflow-y-scroll  scrollbar-thin`}
+        }  lg:flex  flex-col items-center   w-full  lg:w-[36%] xl:w-[37%] bg-white shadow-2xl overflow-y-scroll  scrollbar-thin`}
       >
         {/* <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center  absolute  top-0 left-5 lg:left-4 md:left-20 w-[90%]  lg:w-[36%] xl:w-[30%] bg-gray-100 py-4 lg:px-1 shadow-lg overflow-y-auto h-[90%] md:h-[80vh]`}> */}
-        <div className="flex flex-col items-center bg-blue-900 w-full py-5">
-          <h2 className="text-xl text-white w-fit font-semibold mb-5">
+        <div className="flex flex-col items-center w-full mt-5 border-b-2">
+          <h2 className="text-xl lg:text-2xl text-blue-500 w-fit font-semibold mb-5">
             Shortlisted Internships
           </h2>
 
@@ -785,8 +785,10 @@ const Chats = () => {
             return (
               <div
                 key={`${recruiterId}-${internshipId}`}
-                className={`student-internship-entry hover:bg-blue-400 border-b-2  p-4 flex items-start   hover:cursor-pointer ${
-                  selectedInternship === internshipId ? "bg-blue-500 " : ""
+                className={`student-internship-entry hover:bg-blue-200 border-b-2  p-4 flex items-start   hover:cursor-pointer ${
+                  selectedInternship === internshipId
+                    ? "border-2 border-blue-500 bg-blue-100"
+                    : ""
                 }  w-full`}
                 onClick={() => {
                   handleInternClick(internshipId, recruiterId);
@@ -795,14 +797,14 @@ const Chats = () => {
               >
                 <div className="flex-grow">
                   <h3 className="text-lg font-semibold text-black flex items-center relative">
-                    <span className="flex items-center text-white text-xl capitalize">
+                    <span className="flex items-center text-black text-xl capitalize">
                       {companyName}
                     </span>
                     {isActive && (
                       <div className="ml-2 bg-green-300 rounded-full w-2 h-2"></div>
                     )}
                     {lastMessage && (
-                      <span className="absolute flex items-center right-0 text-sm font-normal text-white">
+                      <span className="absolute flex items-center right-0 text-sm font-normal">
                         {intern.importantForStudent && (
                           <FaStar className="mr-2 text-yellow-400" />
                         )}
@@ -810,7 +812,7 @@ const Chats = () => {
                       </span>
                     )}
                   </h3>
-                  <p className="text-sm text-white font-semibold mb-3">
+                  <p className="text-sm text-gray-600 font-semibold mb-3">
                     {internshipName}
                   </p>
                   {lastMessage &&
@@ -818,15 +820,15 @@ const Chats = () => {
                       `${recruiterId}_${internshipId}`
                     ] &&
                     lastMessage.senderId !== studentId && (
-                      <div className="text-white font-semibold text-xs">
+                      <div className="text-black font-semibold text-xs">
                         New mesage
                       </div>
                     )}
 
                   {/* Display the most recent message */}
                   {lastMessage && (
-                    <p className="text-sm text-white">
-                      <span className="font-semibold text-sm md:text-base text-white">
+                    <p className="text-sm text-black">
+                      <span className="font-semibold text-sm md:text-base text-black">
                         {lastMessage.senderId === studentId ? "You:  " : ""}
                       </span>
                       <span
@@ -835,8 +837,8 @@ const Chats = () => {
                           !latestMessagesSeenStatus[
                             `${recruiterId}_${internshipId}`
                           ]
-                            ? "text-white font-semibold"
-                            : "text-white"
+                            ? "text-black font-semibold"
+                            : "text-black"
                         } text-md`}
                       >
                         {lastMessage
@@ -888,7 +890,7 @@ const Chats = () => {
           chatListOpen && "hidden"
         } w-full lg:w-[70%] p-4 flex flex-col px-3`}
       >
-        <div className="w-full h-[15%] lg:h-[10%] my-4 ml-1 relative ">
+        <div className="w-full h-[15%] lg:h-[10%] my-4 ml-1 relative">
           <button
             onClick={() => setChatListOpen(true)}
             className="flex lg:hidden space-x-1 text-black items-center"
@@ -943,7 +945,7 @@ const Chats = () => {
           </div>
         )}
 
-        <div className="flex-grow mt-0 max-h-[450px] bg-gray-100 p-4 rounded-lg shadow-lg overflow-y-auto scrollbar-thin border-2 border-blue-300">
+        <div className="flex-grow max-h-[450px] bg-gray-100 p-4 rounded-lg shadow-lg overflow-y-auto scrollbar-thin border-2 border-blue-300 mt-5">
           {/* Chat messages */}
           <div className="flex flex-col space-y-4 overflow-y-auto bg-gray-100">
             {chatHistories[`${selectedRecruiter}_${selectedInternship}`]?.map(
@@ -1183,7 +1185,7 @@ const Chats = () => {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full p-2 border-2 rounded-lg shadow-md focus:border-0"
+              className="w-full px-2 py-3 border-2 rounded-lg shadow-md focus:border-0"
               placeholder="Type a message..."
             />
             <label
@@ -1215,7 +1217,7 @@ const Chats = () => {
                     className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition duration-200"
                     onClick={handleFileRemove}
                   >
-                    Delete{" "}
+                    Delete
                   </button>
                 </div>
               </div>
