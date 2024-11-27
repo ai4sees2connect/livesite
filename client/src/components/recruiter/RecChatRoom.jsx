@@ -28,6 +28,7 @@ import {
   FaExclamation,
   FaArrowLeft,
 } from "react-icons/fa";
+import { FaArrowRight } from "react-icons/fa6";
 import RecAssignment from "./RecAssignment";
 import { MdDoneAll } from "react-icons/md";
 import { toast } from "react-toastify";
@@ -940,25 +941,24 @@ const RecChatRoom = () => {
               <span className="text-sm text-green-500 ml-2">online</span>
             )}
           </p>
-          <div className="flex space-x-5  relative ">
+          <div className="flex justify-between">
             <p className="">{internshipName}</p>
             {/* <Link to={`/recruiter/${selectedInternship}/application-details/${selectedStudent}`} target="_blank"
               rel="noopener noreferrer" className='absolute  hidden md:flex top-6 -left-4  sm:items-center space-x-4 text-blue-500 font-semibold'>View application<FaCaretRight className='mt-1 mx-1' /></Link> */}
-            <div className="flex mt-2 md:mt-0 items-end md:items-center space-x-4 absolute right-5  font-semibold">
+            <div className="flex gap-5">
               <button
-                className="bg-green-400 hidden md:block mt-4 sm:mt-0 h-fit text-sm sm:text-base text-white rounded-lg px-4 py-1 hover:scale-105 duration-300 hover:bg-green-500"
+                className="bg-green-400 hidden md:block  mt-4 sm:mt-0 h-fit text-sm sm:text-base text-white rounded-lg px-4 py-1 hover:scale-105 duration-300 hover:bg-green-500"
                 onClick={() => handleStatusChange("Hire")}
               >
                 Hire
               </button>
 
               <button
-                className="bg-red-400  hidden md:block h-fit text-sm sm:text-base text-white rounded-lg px-2 py-1 hover:scale-105 duration-300 hover:bg-red-500"
+                className="bg-red-400 hidden md:block   h-fit text-sm sm:text-base text-white rounded-lg px-2 py-1 hover:scale-105 duration-300 hover:bg-red-500"
                 onClick={() => handleStatusChange("Reject")}
               >
                 Reject
               </button>
-
               <button
                 className="hover:cursor-pointer"
                 onClick={() => setIsOptionsOpen(!isOptionsOpen)}
@@ -967,7 +967,7 @@ const RecChatRoom = () => {
               </button>
 
               {isOptionsOpen && (
-                <div className="absolute -right-5 top-[36px] md:top-[51px] md:-right-5 bg-white  shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10">
+                <div className="absolute -right-5 top-[80px] md:top-[95px] lg:top-[70px] md:-right-5 bg-white  shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10">
                   <div
                     className="hover:text-blue-400 p-2 cursor-pointer"
                     onClick={handleMarkAsImportant}
@@ -1256,12 +1256,12 @@ const RecChatRoom = () => {
               />
               <button
                 disabled={newMessage === "" ? true : false}
-                className={`bg-blue-500 text-white text-sm sm:text-base w-fit  px-4 py-1 rounded-lg hover:scale-105 duration-300 cursor-pointer ${
+                className={`bg-blue-500 text-white text-sm sm:text-base w-fit  px-5 py-1 rounded-lg hover:scale-105 duration-300 cursor-pointer ${
                   newMessage === "" && "bg-blue-00"
                 }`}
                 onClick={sendMessage}
               >
-                Send
+                <FaArrowRight className="text-2xl" />
               </button>
             </div>
           </div>

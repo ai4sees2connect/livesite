@@ -23,6 +23,7 @@ import {
 import { MdDoneAll } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../common/Spinner";
+import { FaArrowRight } from "react-icons/fa6";
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Chats = () => {
@@ -712,7 +713,7 @@ const Chats = () => {
   }
 
   return (
-    <div className="flex justify-center min-h-[90vh] w-full  mt-[66px] relative bg-gray-200">
+    <div className="flex justify-center h-[90vh] w-full  mt-[66px] relative bg-gray-200">
       {/* Left Column - Shortlisted Students */}
       <div
         className={`${
@@ -812,7 +813,7 @@ const Chats = () => {
                       </span>
                     )}
                   </h3>
-                  <p className="text-sm text-gray-600 font-semibold mb-3">
+                  <p className="text-sm text-black font-semibold mb-3">
                     {internshipName}
                   </p>
                   {lastMessage &&
@@ -917,7 +918,7 @@ const Chats = () => {
         </div>
 
         {isOptionsOpen && (
-          <div className="absolute right-5 top-[70px] bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10">
+          <div className="absolute right-5 top-[80px] bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10">
             <div
               className="hover:text-blue-400 p-2 cursor-pointer"
               onClick={handleMarkAsImportant}
@@ -1225,12 +1226,12 @@ const Chats = () => {
 
             <button
               disabled={newMessage === "" ? true : false}
-              className={`bg-blue-500 text-white text-sm sm:text-base w-fit  px-9 py-1 rounded-lg hover:scale-105 duration-300 cursor-pointer ${
+              className={`bg-blue-500 text-white text-sm sm:text-base w-fit  px-5 py-1 rounded-lg hover:scale-105 duration-300 cursor-pointer ${
                 newMessage === "" && "bg-blue-00"
               }`}
               onClick={sendMessage}
             >
-              Send
+              <FaArrowRight className="text-2xl" />
             </button>
           </div>
         )}
