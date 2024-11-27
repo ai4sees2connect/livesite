@@ -112,7 +112,11 @@ const MyApplications = () => {
                 className="text-center text-gray-600 lg:border-b-2"
               >
                 <td className="px-4 py-2 w-[170px]">
-                  {applied.recruiter.companyName}
+                  {applied.recruiter.companyName !== ""
+                    ? applied.recruiter.companyName
+                    : applied.recruiter.firstname +
+                    " " +
+                    applied.recruiter.lastname}
                 </td>
                 <td className="px-4 py-2 w-[200px]">
                   {applied.internship.internshipName}
@@ -123,15 +127,13 @@ const MyApplications = () => {
                 <td className="px-4 py-2 w-[130px]">{applied.studentCount}</td>
                 <td className="px-4 py-2 w-[100px]">
                   <span
-                    className={`rounded-xl py-1 px-2 ${
-                      applied.internshipStatus.status === "Viewed" &&
+                    className={`rounded-xl py-1 px-2 ${applied.internshipStatus.status === "Viewed" &&
                       "text-yellow-400"
-                    } 
+                      } 
             ${applied.internshipStatus.status === "Rejected" && "text-red-500"} 
-            ${
-              applied.internshipStatus.status === "Shortlisted" &&
-              "text-green-600"
-            }`}
+            ${applied.internshipStatus.status === "Shortlisted" &&
+                      "text-green-600"
+                      }`}
                   >
                     {applied.internshipStatus.status}
                   </span>
@@ -184,16 +186,13 @@ const MyApplications = () => {
               </div>
               <div>
                 <span
-                  className={` py-1 flex items-center ${
-                    applied.internshipStatus.status === "Viewed" &&
+                  className={` py-1 flex items-center ${applied.internshipStatus.status === "Viewed" &&
                     "text-yellow-500"
-                  } ${
-                    applied.internshipStatus.status === "Rejected" &&
+                    } ${applied.internshipStatus.status === "Rejected" &&
                     "text-red-500"
-                  } ${
-                    applied.internshipStatus.status === "Shortlisted" &&
+                    } ${applied.internshipStatus.status === "Shortlisted" &&
                     "text-green-600"
-                  }`}
+                    }`}
                 >
                   {applied.internshipStatus.status === "Viewed" && (
                     <FaEye className=" mr-2" />

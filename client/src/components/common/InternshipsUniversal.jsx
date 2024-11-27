@@ -349,53 +349,23 @@ console.log('woooooowwwwwwwwwwwwwwwwwwwwwwwwwww')
         );
         setTotalPages(response.data.totalPages);
         setInternshipsCount(response.data.numOfInternships);
+        const internships = response.data.internships;
 
-        // setAppliedInternships(appliedResponse.data);
-        const sortedInternships = response.data.internships.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+        const recruiterIds = [...new Set(internships.map(internship => internship.recruiter?._id).filter(Boolean))];
 
-        const internshipsWithLogo = await Promise.all(
-          sortedInternships.map(async (internship) => {
-            if (internship.recruiter && internship.recruiter._id) {
-              try {
-                // Kick off the logo fetch but don't await it here
-                const logoPromise = axios.get(
-                  `${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`,
-                  { responseType: "blob" }
-                );
 
-                // Once the promise resolves, process the logo
-                const res = await logoPromise;
-                const logoBlob = new Blob([res.data], {
-                  type: res.headers["content-type"],
-                });
-                const logoUrl = URL.createObjectURL(logoBlob);
+        const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
+      const logoMap = logosResponse.data.logos;
 
-                // Return the internship with the logo URL
-                return {
-                  ...internship,
-                  logoUrl,
-                };
-              } catch (error) {
-                console.error("Error fetching logo:", error);
+      console.log('this is logo response',logoMap);
 
-                // Return internship with a default or null logo URL in case of an error
-                return {
-                  ...internship,
-                  logoUrl: null, // Or use a default image URL here
-                };
-              }
-            }
+      const internshipsWithLogos = internships.map(internship => ({
+        ...internship,
+        logoUrl: logoMap[internship.recruiter?._id] || null, // Default to null if no logo found
+      }));
 
-            // If no recruiter, return the internship as is
-            return internship;
-          })
-        );
-
-        setInternships(internshipsWithLogo);
-        // localStorage.setItem('cachedInternships', JSON.stringify(internshipsWithLogo));
-        console.log("internhsipswith logo", internshipsWithLogo);
+      setInternships(internshipsWithLogos);
+     
         setLoading(false);
       } catch (err) {
         console.error("Error fetching internships:", err);
@@ -425,51 +395,24 @@ console.log('woooooowwwwwwwwwwwwwwwwwwwwwwwwwww')
         );
         setTotalPages(response.data.totalPages);
         setInternshipsCount(response.data.numOfInternships);
-        // const sortedInternships = response.data.internships.sort(
-        //   (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        // );
+        const internships = response.data.internships;
+        
+        const recruiterIds = [...new Set(internships.map(internship => internship.recruiter?._id).filter(Boolean))];
 
-        const internshipsWithLogo = await Promise.all(
-          response.data.internships.map(async (internship) => {
-            if (internship.recruiter && internship.recruiter._id) {
-              try {
-                // Kick off the logo fetch but don't await it here
-                const logoPromise = axios.get(
-                  `${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`,
-                  { responseType: "blob" }
-                );
+        // Fetch logos in bulk
+      const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
+      const logoMap = logosResponse.data.logos;
 
-                // Once the promise resolves, process the logo
-                const res = await logoPromise;
-                const logoBlob = new Blob([res.data], {
-                  type: res.headers["content-type"],
-                });
-                const logoUrl = URL.createObjectURL(logoBlob);
+      console.log('this is logo response',logoMap);
 
-                // Return the internship with the logo URL
-                return {
-                  ...internship,
-                  logoUrl,
-                };
-              } catch (error) {
-                console.error("Error fetching logo:", error);
+      const internshipsWithLogos = internships.map(internship => ({
+        ...internship,
+        logoUrl: logoMap[internship.recruiter?._id] || null, // Default to null if no logo found
+      }));
 
-                // Return internship with a default or null logo URL in case of an error
-                return {
-                  ...internship,
-                  logoUrl: null, // Or use a default image URL here
-                };
-              }
-            }
-
-            // If no recruiter, return the internship as is
-            return internship;
-          })
-        );
-
-        setInternships(internshipsWithLogo);
+      setInternships(internshipsWithLogos);
         // localStorage.setItem('cachedInternships', JSON.stringify(internshipsWithLogo));
-        console.log("internhsipswith logo", internshipsWithLogo);
+        // console.log("internhsipswith logo", internshipsWithLogos);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching internships:", err);

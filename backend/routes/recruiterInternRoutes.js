@@ -65,7 +65,7 @@ router.get('/:recruiterId/getInternships',async(req,res)=>{
     const recruiter=await Recruiter.findById(recruiterId);
     if(!recruiter) return res.status(404).json({message:'Recruiter not found'});
     
-    const internships=await Internship.find({recruiter:recruiterId});
+    const internships=await Internship.find({recruiter:recruiterId}).sort({ createdAt: -1 });
     res.status(200).json(internships);
 
 
@@ -75,6 +75,31 @@ router.get('/:recruiterId/getInternships',async(req,res)=>{
   }
 })
 
+
+router.get('/:recruiterId/applicants-count/:internshipId', async (req, res) => {
+  const { recruiterId, internshipId } = req.params;
+
+  try {
+    // Check if the recruiter exists
+    const recruiter = await Recruiter.findById(recruiterId);
+    if (!recruiter) return res.status(404).json({ message: 'Recruiter not found' });
+
+    // Check if the internship exists and belongs to the recruiter
+    const internship = await Internship.findOne({ _id: internshipId, recruiter: recruiterId });
+    if (!internship) return res.status(404).json({ message: 'Internship not found' });
+
+    // Count the number of students who have applied for this internship
+    const applicantCount = await Student.countDocuments({
+      'appliedInternships.internship': internshipId
+    });
+
+    // Return the count
+    res.status(200).json( applicantCount );
+  } catch (error) {
+    console.error('Error fetching applicant count:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
 
 router.get('/:recruiterId/applicants/:internshipId', async (req, res) => {
   const { recruiterId, internshipId } = req.params;
@@ -88,34 +113,28 @@ router.get('/:recruiterId/applicants/:internshipId', async (req, res) => {
     const internship = await Internship.findOne({ _id: internshipId, recruiter: recruiterId });
     if (!internship) return res.status(404).json({ message: 'Internship not found' });
 
-    // Find students who have applied for this internship
-    const applicants = await Student.find({
-      'appliedInternships.internship': internshipId
-    }, {
-      password: 0, // Explicitly exclude the password field
-      updatedAt:0
+    // Fetch only relevant details of students who applied for this internship
+    const applicants = await Student.find(
+      { 'appliedInternships.internship': internshipId },
+      {
+        
+        password:0,
+        profilePic:0,
 
-    });
+        resume:0,
 
-    const filteredApplicants = applicants.map(applicant => {
-      // Find the specific internship instead of filtering the array
-      const matchedInternship = applicant.appliedInternships.find(
-        internship => internship.internship.toString() === internshipId
-      );
-    
-      return {
-        ...applicant.toObject(),
-        appliedInternships: matchedInternship ? [matchedInternship] : [] // Include only the matched internship or empty array
-      };
-    });
+        appliedInternships: { $elemMatch: { internship: internshipId } } 
+      }
+    );
 
     // Return the list of applicants
-    res.status(200).json(filteredApplicants);
+    res.status(200).json(applicants);
   } catch (error) {
     console.error('Error fetching applicants:', error);
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
 
 router.get('/:recruiterId/getDetails/:internshipId',async(req,res)=>{
   const {recruiterId,internshipId}=req.params;
@@ -194,25 +213,36 @@ router.get('/:studentId/:internshipId/application-details', async (req, res) => 
 
   try {
     // Find the student by studentId
-    const student = await Student.findOne({ _id: studentId }).select('-password -updatedAt'); // Exclude password and updatedAt fields
+    const student = await Student.findOne(
+      { _id: studentId },
+      {
+        password: 0,
+        resume: 0,
+       
+        appliedInternships: { $elemMatch: { internship: internshipId } },
+      }
+    );
 
     if (!student) {
       return res.status(404).json({ message: 'Student not found.' });
     }
 
-    // Find the specific internship applied by the student
-    const appliedInternship = student.appliedInternships.find(
-      (internship) => internship.internship.toString() === internshipId
-    );
-
-    if (!appliedInternship) {
-      return res.status(404).json({ message: 'Internship not found in applied internships.' });
+    if (!student.appliedInternships || student.appliedInternships.length === 0) {
+      return res
+        .status(404)
+        .json({ message: 'Internship not found in applied internships.' });
     }
 
     // Return the student profile along with the specific applied internship details
+    // const studentProfile = {
+    //   ...student.toObject(),
+    //   appliedInternships: [appliedInternship], // Only return the internship that matches
+    // };
+
     const studentProfile = {
-      ...student.toObject(),
-      appliedInternships: [appliedInternship], // Only return the internship that matches
+     ...student.toObject(),
+      appliedInternship:student.appliedInternships[0], // Only the matching internship
+      resumeUrl: `/api/students/${studentId}/resume`, // Lazy load resume
     };
 
     res.status(200).json(studentProfile);
