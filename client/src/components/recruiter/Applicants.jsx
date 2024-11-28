@@ -50,7 +50,7 @@ const Applicants = () => {
   const [totalStudents,setTotalStudents]=useState(null);
   const scrollRef=useRef(null);
 
-  console.log('this is selected student', selectedStudent);
+  // console.log('this is selected student', selectedStudent);
   const yearOptions = [
     { value: "2024", label: "2024" },
     { value: "2024 & before", label: "2024 & before" },
@@ -164,7 +164,7 @@ const Applicants = () => {
         setApplicants(applicantsResponse.data.applicants);
         setTotalPages(applicantsResponse.data.totalPages);
         setTotalStudents(applicantsResponse.data.totalApplicants);
-        console.log('this is student list',applicantsResponse.data.totalApplicants);
+        console.log('this is student list',applicantsResponse.data.applicants);
 
         setLoading(false);
         // console.log("this is list of applicants", applicantsResponse.data);
@@ -232,134 +232,134 @@ const Applicants = () => {
     return Math.round(matchPercentage);
   };
 
-  const filteredApplicants = applicants.filter((student) => {
-    const matchesName = `${student.firstname} ${student.lastname}`
-      .toLowerCase()
-      .includes(searchName.toLowerCase());
+  // const filteredApplicants = applicants.filter((student) => {
+  //   const matchesName = `${student.firstname} ${student.lastname}`
+  //     .toLowerCase()
+  //     .includes(searchName.toLowerCase());
 
-    // Check if any selected location matches student's homeLocation
-    const matchesLocation =
-      locationFilter.length === 0 || // If no location is selected, show all applicants
-      locationFilter.some(
-        (location) =>
-          location.value.toLowerCase() === student.homeLocation.toLowerCase()
-      );
+  //   // Check if any selected location matches student's homeLocation
+  //   const matchesLocation =
+  //     locationFilter.length === 0 || // If no location is selected, show all applicants
+  //     locationFilter.some(
+  //       (location) =>
+  //         location.value.toLowerCase() === student.homeLocation.toLowerCase()
+  //     );
 
-    let studentExperience;
-    if (
-      student.yearsOfExp === "no experience" ||
-      student.yearsOfExp === "fresher"
-    ) {
-      studentExperience = 0;
-    } else if (student.yearsOfExp === "10+") {
-      studentExperience = 10;
-    } else {
-      studentExperience = parseInt(student.yearsOfExp);
-    }
+  //   let studentExperience;
+  //   if (
+  //     student.yearsOfExp === "no experience" ||
+  //     student.yearsOfExp === "fresher"
+  //   ) {
+  //     studentExperience = 0;
+  //   } else if (student.yearsOfExp === "10+") {
+  //     studentExperience = 10;
+  //   } else {
+  //     studentExperience = parseInt(student.yearsOfExp);
+  //   }
 
-    const matchesExperience = studentExperience >= expFilter;
+  //   const matchesExperience = studentExperience >= expFilter;
 
-    // Return true if all filters match
-    const matchesSkills =
-      skillsFilter.length === 0 ||
-      skillsFilter.some((selectedSkill) =>
-        student.skills.some(
-          (skill) =>
-            skill.skillName.toLowerCase() === selectedSkill.value.toLowerCase()
-        )
-      );
+  //   // Return true if all filters match
+  //   const matchesSkills =
+  //     skillsFilter.length === 0 ||
+  //     skillsFilter.some((selectedSkill) =>
+  //       student.skills.some(
+  //         (skill) =>
+  //           skill.skillName.toLowerCase() === selectedSkill.value.toLowerCase()
+  //       )
+  //     );
 
-    const matchesEducation =
-      eduFilter.length === 0 || // If no education filter is selected, show all applicants
-      eduFilter.some((selectedDegree) =>
-        student.education.some(
-          (edu) =>
-            edu.degree.toLowerCase() === selectedDegree.value.toLowerCase()
-        )
-      );
+  //   const matchesEducation =
+  //     eduFilter.length === 0 || // If no education filter is selected, show all applicants
+  //     eduFilter.some((selectedDegree) =>
+  //       student.education.some(
+  //         (edu) =>
+  //           edu.degree.toLowerCase() === selectedDegree.value.toLowerCase()
+  //       )
+  //     );
 
-    const matchPercentage = calculateMatchPercentage(
-      student.skills,
-      internship.skills
-    );
+  //   const matchPercentage = calculateMatchPercentage(
+  //     student.skills,
+  //     internship.skills
+  //   );
 
-    // Matching logic based on selectedMatch value
-    let matchesMatching;
-    if (selectedMatch === 0) {
-      matchesMatching = true; // Return all applicants regardless of match percentage
-    } else if (selectedMatch === 1) {
-      matchesMatching = matchPercentage >= 50; // Return applicants with 50% match or above
-    } else if (selectedMatch === 2) {
-      matchesMatching = matchPercentage >= 80; // Return applicants with 80% match or above
-    }
+  //   // Matching logic based on selectedMatch value
+  //   let matchesMatching;
+  //   if (selectedMatch === 0) {
+  //     matchesMatching = true; // Return all applicants regardless of match percentage
+  //   } else if (selectedMatch === 1) {
+  //     matchesMatching = matchPercentage >= 50; // Return applicants with 50% match or above
+  //   } else if (selectedMatch === 2) {
+  //     matchesMatching = matchPercentage >= 80; // Return applicants with 80% match or above
+  //   }
 
-    const matchesGender =
-      selectedGenders.length === 0 || selectedGenders.includes(student.gender);
+  //   const matchesGender =
+  //     selectedGenders.length === 0 || selectedGenders.includes(student.gender);
 
-    const matchesGraduationYear =
-      selectedGradYears.length === 0 ||
-      selectedGradYears.some((selectedYear) => {
-        // Find the graduation degree
-        const graduationEducation = student.education.find((edu) =>
-          graduationDegrees.includes(edu.degree)
-        );
-        if (!graduationEducation) return false;
+  //   const matchesGraduationYear =
+  //     selectedGradYears.length === 0 ||
+  //     selectedGradYears.some((selectedYear) => {
+  //       // Find the graduation degree
+  //       const graduationEducation = student.education.find((edu) =>
+  //         graduationDegrees.includes(edu.degree)
+  //       );
+  //       if (!graduationEducation) return false;
 
-        // Check if the graduation year matches the filter
-        const studentGraduationYear = graduationEducation.endYear;
-        // console.log(typeof(studentGraduationYear))
-        return (
-          studentGraduationYear === selectedYear.value ||
-          (selectedYear.value.includes("before") &&
-            parseInt(studentGraduationYear) <=
-              parseInt(selectedYear.value.split(" ")[0]))
-        );
-      });
+  //       // Check if the graduation year matches the filter
+  //       const studentGraduationYear = graduationEducation.endYear;
+  //       // console.log(typeof(studentGraduationYear))
+  //       return (
+  //         studentGraduationYear === selectedYear.value ||
+  //         (selectedYear.value.includes("before") &&
+  //           parseInt(studentGraduationYear) <=
+  //             parseInt(selectedYear.value.split(" ")[0]))
+  //       );
+  //     });
 
-    const scoreFilterThreshold = {
-      0: 0,
-      1: 60,
-      2: 70,
-      3: 80,
-      4: 90,
-    };
+  //   const scoreFilterThreshold = {
+  //     0: 0,
+  //     1: 60,
+  //     2: 70,
+  //     3: 80,
+  //     4: 90,
+  //   };
 
-    const performanceThreshold = scoreFilterThreshold[selectedPer];
+  //   const performanceThreshold = scoreFilterThreshold[selectedPer];
 
-    const convertScoreToPercentage = (score) => {
-      if (score.endsWith("%")) {
-        return parseFloat(score);
-      } else if (score.includes("CGPA")) {
-        return cgpaToPercentage(score.split(" ")[0]);
-      }
-      return 0; // Default case, assuming other formats are not expected
-    };
+  //   const convertScoreToPercentage = (score) => {
+  //     if (score.endsWith("%")) {
+  //       return parseFloat(score);
+  //     } else if (score.includes("CGPA")) {
+  //       return cgpaToPercentage(score.split(" ")[0]);
+  //     }
+  //     return 0; // Default case, assuming other formats are not expected
+  //   };
 
-    const matchesPerformance =
-      selectedPer === 0 ||
-      student.education.some((edu) => {
-        const degree = edu.degree;
-        const isGraduationDegree = graduationDegrees.includes(degree);
-        if (!isGraduationDegree) return false;
-        const score = edu.score;
-        const percentage = convertScoreToPercentage(score);
-        console.log(percentage);
-        return percentage >= performanceThreshold;
-      });
+  //   const matchesPerformance =
+  //     selectedPer === 0 ||
+  //     student.education.some((edu) => {
+  //       const degree = edu.degree;
+  //       const isGraduationDegree = graduationDegrees.includes(degree);
+  //       if (!isGraduationDegree) return false;
+  //       const score = edu.score;
+  //       const percentage = convertScoreToPercentage(score);
+  //       // console.log(percentage);
+  //       return percentage >= performanceThreshold;
+  //     });
 
-    // Return true if all filters match
-    return (
-      matchesName &&
-      matchesLocation &&
-      matchesExperience &&
-      matchesSkills &&
-      matchesEducation &&
-      matchesMatching &&
-      matchesGender &&
-      matchesGraduationYear &&
-      matchesPerformance
-    );
-  });
+  //   // Return true if all filters match
+  //   return (
+  //     matchesName &&
+  //     matchesLocation &&
+  //     matchesExperience &&
+  //     matchesSkills &&
+  //     matchesEducation &&
+  //     matchesMatching &&
+  //     matchesGender &&
+  //     matchesGraduationYear &&
+  //     matchesPerformance
+  //   );
+  // });
 
   // const shortlistedApplicants = filteredApplicants.filter((applicant) =>
   //   applicant.appliedInternships.some(
@@ -371,7 +371,7 @@ const Applicants = () => {
   //     (internship) => internship.internshipStatus.status === "Rejected"
   //   )
   // );
-
+  const filteredApplicants=applicants
   const shortlistedApplicants=applicants
   const rejectedApplicants=applicants
 
@@ -390,7 +390,7 @@ const Applicants = () => {
         `${api}/student/internship/${studentId}/${internshipId}/viewed`
       );
       // Optionally handle success (e.g., show a message or update state)
-      console.log("worked");
+      // console.log("worked");
     } catch (error) {
       console.error("Error updating status:", error);
       // Optionally handle error (e.g., show an error message)
@@ -403,7 +403,7 @@ const Applicants = () => {
         `${api}/student/internship/${studentId}/${internshipId}/${recruiterId}/shortlist`
       );
       // Optionally handle success (e.g., show a message or update state)
-      console.log("worked shortlisting");
+      // console.log("worked shortlisting");
       toast.success("Applicant shortlisted");
       window.location.reload();
     } catch (error) {
@@ -418,7 +418,7 @@ const Applicants = () => {
         `${api}/student/internship/${studentId}/${internshipId}/reject`
       );
       // Optionally handle success (e.g., show a message or update state)
-      console.log("worked reject");
+      // console.log("worked reject");
       toast.success("Applicant Rejected");
       window.location.reload();
     } catch (error) {
@@ -446,6 +446,17 @@ const Applicants = () => {
     }
   }, [applicants]);
 
+  console.log('this is searched name',searchName);
+  console.log('this is country',selectedCountry)
+  console.log('this is state',selectedState)
+  console.log('this is city',selectedCity)
+  console.log('this is work exp',expFilter);
+  console.log('this is skills filter',skillsFilter);
+  console.log('this is education filter',eduFilter);
+  console.log('this is selected match',selectedMatch);
+  console.log('this is list of genders',selectedGenders);
+  console.log('this is list of graduation years',selectedGradYears);
+  console.log('this is percentage',selectedPer);
  
 
   if (loading) {
@@ -570,6 +581,9 @@ const Applicants = () => {
             filterOpen ? "block opacity-100" : "hidden opacity-0"
           } lg:block w-full mt-0 px-6 transition-all duration-300 ease-in-out rounded-md border right-2 shadow-xl border-t py-6 overflow-y-scroll scrollbar-thin h-[65vh] bg-white lg:max-w-[300px]`}
         >
+        <button className="mb-4 text-blue-400 underline">
+            Reset filters
+          </button>
           <input
             type="text"
             placeholder="Search by name..."
@@ -581,20 +595,10 @@ const Applicants = () => {
             Filters
           </h1>
 
-          <button className="mb-2 text-blue-400 underline">
-            Reset filters
-          </button>
+          
           <div className="flex flex-col space-y-4">
             <label>Location:</label>
-            {/* <Select
-              isMulti
-              options={statesAndUTs}
-              values={locationFilter}
-              onChange={(values) => setLocationFilter(values)}
-              placeholder="Select a location"
-              searchable={true}
-              className="w-full shadow-md "
-            /> */}
+           
             <div className="flex flex-col gap-3 w-full">
               {/* Country Dropdown */}
               <select
@@ -658,7 +662,7 @@ const Applicants = () => {
                 isMulti
                 options={skills}
                 values={skillsFilter}
-                onChange={(values) => setSkillsFilter(values)}
+                onChange={(values) => setSkillsFilter(values.map((v) => v.value))}
                 placeholder="Select the skills"
                 searchable={true}
                 className="w-full shadow-md mb-3"
@@ -671,7 +675,7 @@ const Applicants = () => {
                 isMulti
                 options={degreeOptions}
                 values={eduFilter}
-                onChange={(values) => setEduFilter(values)}
+                onChange={(values) => setEduFilter(values.map(v=>v.value))}
                 placeholder="e.g MBA"
                 searchable={true}
                 className="w-full shadow-md "
@@ -691,7 +695,7 @@ const Applicants = () => {
                 isMulti
                 options={yearOptions}
                 values={selectedGradYears}
-                onChange={(values) => setSelectedGradYears(values)}
+                onChange={(values) => setSelectedGradYears(values.map(v=>v.value))}
                 placeholder="e.g 2024, 2022"
                 searchable={true}
                 className="w-full shadow-md mt-2 mb-4"

@@ -51,14 +51,14 @@ const RecNavbar = () => {
             responseType: "blob", // Fetching as a blob for image rendering
           }
         );
-        console.log("response", response.status);
+        // console.log("response", response.status);
 
         const logoBlob = new Blob([response.data], {
           type: response.headers["content-type"],
         });
         const Url = URL.createObjectURL(logoBlob);
-        console.log("logoUrl", Url);
-        console.log("logo", logo);
+        // console.log("logoUrl", Url);
+        // console.log("logo", logo);
         setLogoUrl(Url);
       } catch (error) {
         if (error.response && error.response.status === 404) {
