@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import Spinner from "../common/Spinner";
@@ -9,6 +9,8 @@ import {
   FaAngleUp,
   FaAngleDown,
   FaAudible,
+  FaAngleLeft,
+  FaAngleRight,
 } from "react-icons/fa";
 import Select from "react-select";
 import ExperienceSlider from "./common/ExperienceSlider";
@@ -43,6 +45,10 @@ const Applicants = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedStudent,setSelectedStudent]=useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages,setTotalPages]=useState(null);
+  const [totalStudents,setTotalStudents]=useState(null);
+  const scrollRef=useRef(null);
 
   console.log('this is selected student', selectedStudent);
   const yearOptions = [
@@ -134,23 +140,34 @@ const Applicants = () => {
     setFilterOpen(isLargeScreen);
   }, []);
 
+  const constructQueryString = () => {
+    let query = `page=${page}`;
+   
+    return query;
+  };
+
   useEffect(() => {
     const fetchApplicantsAndInternship = async () => {
       try {
         // Fetch the internship details
+        setLoading(true);
         const internshipResponse = await axios.get(
           `${api}/recruiter/internship/${recruiterId}/getDetails/${internshipId}`
         );
         setInternship(internshipResponse.data);
 
         // Fetch the applicants
+        const queryString=constructQueryString();
         const applicantsResponse = await axios.get(
-          `${api}/recruiter/internship/${recruiterId}/applicants/${internshipId}`
+          `${api}/recruiter/internship/${recruiterId}/applicants/${internshipId}?${queryString}`
         );
-        setApplicants(applicantsResponse.data);
+        setApplicants(applicantsResponse.data.applicants);
+        setTotalPages(applicantsResponse.data.totalPages);
+        setTotalStudents(applicantsResponse.data.totalApplicants);
+        console.log('this is student list',applicantsResponse.data.totalApplicants);
 
         setLoading(false);
-        console.log("this is list of applicants", applicantsResponse.data);
+        // console.log("this is list of applicants", applicantsResponse.data);
       } catch (err) {
         console.error("Error fetching applicants or internship details:", err);
         setError("Failed to fetch data. Please try again later.");
@@ -159,7 +176,17 @@ const Applicants = () => {
     };
 
     fetchApplicantsAndInternship();
-  }, [recruiterId, internshipId]);
+  }, [recruiterId, internshipId,page]);
+
+
+  const scrollToTop = () => {
+    scrollRef.current.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -334,16 +361,19 @@ const Applicants = () => {
     );
   });
 
-  const shortlistedApplicants = filteredApplicants.filter((applicant) =>
-    applicant.appliedInternships.some(
-      (internship) => internship.internshipStatus.status === "Shortlisted"
-    )
-  );
-  const rejectedApplicants = filteredApplicants.filter((applicant) =>
-    applicant.appliedInternships.some(
-      (internship) => internship.internshipStatus.status === "Rejected"
-    )
-  );
+  // const shortlistedApplicants = filteredApplicants.filter((applicant) =>
+  //   applicant.appliedInternships.some(
+  //     (internship) => internship.internshipStatus.status === "Shortlisted"
+  //   )
+  // );
+  // const rejectedApplicants = filteredApplicants.filter((applicant) =>
+  //   applicant.appliedInternships.some(
+  //     (internship) => internship.internshipStatus.status === "Rejected"
+  //   )
+  // );
+
+  const shortlistedApplicants=applicants
+  const rejectedApplicants=applicants
 
   const handleCheckboxChange = (event) => {
     const value = event.target.value;
@@ -397,14 +427,26 @@ const Applicants = () => {
     }
   };
 
-  // console.log(internship);
-  // console.log(filteredApplicants);
-  // console.log('this is selectedMatch', selectedMatch);\
-  // console.log('selected year',selectedGradYears)
-  console.log("selected performance", selectedPer);
-  console.log("filteredApplicants", filteredApplicants);
-  // console.log('Education Filter', eduFilter);
-  // console.log(locationFilter);
+  const handleNextPage = () => {
+    setPage(page + 1);
+    scrollToTop();
+  };
+
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+      scrollToTop();
+    }
+  };
+
+  useEffect(() => {
+    if (applicants?.length > 0) {
+      scrollToTop();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [applicants]);
+
+ 
 
   if (loading) {
     return <Spinner />;
@@ -436,7 +478,7 @@ const Applicants = () => {
           {selectedStatus} for {internship.internshipName}
         </h1>
         <h1 className="text-gray-600 text-lg font-semibold text-center">
-          Showing {filteredApplicants.length} results
+          Showing {totalStudents} results
         </h1>
       </div>
 
@@ -697,22 +739,24 @@ const Applicants = () => {
             </div>
           </div>
         </div>
+
         <div className="w-full flex flex-row">
           {/* applicants */}
-          <div className="overflow-y-auto  w-full ">
+          <div className="flex flex-col w-full">
+          <div className="overflow-y-auto   ">
 
             {selectedStatus === "Applications Received" && (
               <div className="bg-white shadow-md rounded-lg p-6 w-full">
-                {filteredApplicants.length === 0 ? (
+                {applicants.length === 0 ? (
                   <p className="text-center text-gray-500">
                     No applicants for this internship yet.
                   </p>
                 ) : (
-                  <div className="space-y-4 ">
-                    {filteredApplicants.map((student) => (
+                  <div ref={scrollRef} className="space-y-4 overflow-y-auto h-screen scrollbar-thin">
+                    {applicants.map((student) => (
                       <div
                         key={student._id}
-                        className="p-4 border rounded-lg shadow-sm bg-gray-50  max-h-[400px] relative overflow-y-auto "
+                        className="p-4 border rounded-lg shadow-sm bg-gray-50  relative  "
                       >
                         <h2 className="text-lg md:text-2xl font-semibold mb-1 capitalize">
                           {student.firstname} {student.lastname}
@@ -722,7 +766,7 @@ const Applicants = () => {
                         </div>
 
                         <p key={student.appliedInternships.internship}>
-                          {student.appliedInternships[0].availability ===
+                          {student.appliedInternships.availability ===
                           "Yes! Will join Immediately" ? (
                             <span className="text-green-600">
                               Immediate Joiner
@@ -735,9 +779,9 @@ const Applicants = () => {
                         </p>
 
                         {!isOpen &&
-                          (student.appliedInternships[0].internshipStatus
+                          (student.appliedInternships.internshipStatus
                             .status === "Applied" ||
-                            student.appliedInternships[0].internshipStatus
+                            student.appliedInternships.internshipStatus
                               .status === "Viewed") && (
                             <button
                               onClick={() => {
@@ -751,20 +795,20 @@ const Applicants = () => {
                             </button>
                           )}
 
-                        {student.appliedInternships[0].internshipStatus
+                        {student.appliedInternships.internshipStatus
                           .status === "Shortlisted" && (
                           <h2 className="text-sm md:text-base font-semibold absolute right-3 top-2  text-green-500">
                             Shortlisted
                           </h2>
                         )}
-                        {student.appliedInternships[0].internshipStatus
+                        {student.appliedInternships.internshipStatus
                           .status === "Rejected" && (
                           <h2 className="text-sm md:text-base absolute right-3 top-2  text-red-500">
                             Rejected
                           </h2>
                         )}
 
-                        {student.appliedInternships[0].internshipStatus
+                        {student.appliedInternships.internshipStatus
                           .status === "Shortlisted" && (
                           <Link
                             to={`/recruiter/${recruiterId}/chatroom`}
@@ -846,7 +890,7 @@ const Applicants = () => {
 
                         <div className="mb-2 mt-2">
                           <Link
-                            to={`/recruiter/${student.appliedInternships[0].internship}/application-details/${student._id}`}
+                            to={`/recruiter/${student.appliedInternships.internship}/application-details/${student._id}`}
                             className="text-sm md:text-base text-blue-400 font-semibold underline "
                           >
                             View Application
@@ -878,19 +922,16 @@ const Applicants = () => {
 
                             <div>
                               <p className="font-semibold">About the student</p>
-                              {student.appliedInternships.map(
-                                (appliedInternship) =>
-                                  appliedInternship.internship ===
-                                  internship._id ? (
+                              
                                     <p
-                                      key={appliedInternship.internship}
+                                      key={student.appliedInternships.internship}
                                       className="text-gray-600"
                                     >
                                       {" "}
-                                      {appliedInternship.aboutText}
+                                      {student.appliedInternships.aboutText}
                                     </p>
-                                  ) : null
-                              )}
+                                  
+                              
                             </div>
 
                             {/* Education */}
@@ -980,9 +1021,9 @@ const Applicants = () => {
                                 Download Resume
                               </a>
                             </div> */}
-                            {(student.appliedInternships[0].internshipStatus
+                            {(student.appliedInternships.internshipStatus
                               .status === "Applied" ||
-                              student.appliedInternships[0].internshipStatus
+                              student.appliedInternships.internshipStatus
                                 .status === "Viewed") && (
                               <div className="absolute bottom-5 right-5 space-x-4">
                                 <button
@@ -1496,6 +1537,37 @@ const Applicants = () => {
               </div>
             )}
           </div>
+
+          {filteredApplicants.length > 0 && (
+                <div className="flex justify-center my-4 space-x-4">
+                  <button
+                    onClick={handlePreviousPage}
+                    disabled={page === 1}
+                    className={`px-4 py-2 rounded-md ${
+                      page === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
+                    }`}
+                  >
+                    <FaAngleLeft />
+                  </button>
+
+                  <span>
+                    {page} / {totalPages}
+                  </span>
+                  <button
+                    onClick={handleNextPage}
+                    disabled={page === totalPages}
+                    className={`px-4 py-2 rounded-md ${
+                      page === totalPages
+                        ? "bg-gray-300"
+                        : "bg-blue-500 text-white"
+                    }`}
+                  >
+                    <FaAngleRight />
+                  </button>
+                </div>
+              )}
+
+              </div>
 
           {/* board */}
           <div className="mb-5 hidden lg:flex lg:flex-col bg-white shadow-md rounded-lg p-6 left-2  space-y-7 w-full lg:w-[300px] lg:ml-5">

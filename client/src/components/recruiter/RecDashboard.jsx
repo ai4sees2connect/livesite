@@ -240,7 +240,7 @@ const RecDashboard = () => {
               {internship.views}
             </div>
             <Link
-              to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}`}
+              to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}/page-1`}
               className="sm:ml-3 md:mx-auto text-xs px-1 sm:text-base lg:ml-4 text-center my-auto rounded-xl bg-blue-400 text-white w-20 md:w-24 lg:w-[190px] hover:bg-blue-700 hover:cursor-pointer py-1"
             >
               Applications ({internship.applicantCount})

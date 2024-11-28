@@ -456,78 +456,149 @@ router.get("/api/get-skills", async (req, res) => {
   }
 });
 
+// router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
+//   const { recruiterId } = req.params;
+
+//   try {
+//     // Find the recruiter and populate the internships they posted
+//     const recruiter = await Recruiter.findById(recruiterId).populate(
+//       "internships"
+//     );
+
+//     if (!recruiter) {
+//       return res.status(404).json({ message: "Recruiter not found" });
+//     }
+
+//     // Get the list of internship IDs posted by the recruiter
+//     const internshipIds = recruiter.internships.map(
+//       (internship) => internship._id
+//     );
+
+//     // Find students who applied for these internships and have been shortlisted
+//     const shortlistedStudents = await Student.find({
+//       "appliedInternships.internship": { $in: internshipIds },
+//       "appliedInternships.internshipStatus.status": "Shortlisted",
+//     }).populate({
+//       path: "appliedInternships.internship", // Path to the field you want to populate
+//       select: "internshipName", // Fields to select from the Internship schema
+//     });
+
+//     const chatRooms = await ChatRoom.find({
+//       recruiter: recruiterId,
+//       internship: { $in: internshipIds },
+//       student: { $in: shortlistedStudents.map((student) => student._id) },
+//     }).select("student internship importantForRecruiter studentStatus");
+
+//     // console.log(shortlistedStudents[0].appliedInternships);
+
+//     const formattedStudents = shortlistedStudents.map((student) => {
+//       // console.log('type of Internship ID 1:', internshipIds[0]);
+//       // console.log('Applied Internships:', student.appliedInternships);
+
+//       const shortlistedInternships = student.appliedInternships.filter(
+//         (appliedInternship) =>
+//           internshipIds.some((id) =>
+//             id.equals(appliedInternship.internship._id)
+//           ) && appliedInternship.internshipStatus.status === "Shortlisted"
+//       );
+//       // console.log(shortlistedInternships);
+
+//       return {
+//         _id: student._id,
+//         firstname: student.firstname,
+//         lastname: student.lastname,
+//         email: student.email,
+//         shortlistedInternships: shortlistedInternships.map(
+//           (shortlistedInternship) => {
+//             const chatRoom = chatRooms.find(
+//               (room) =>
+//                 room.student.equals(student._id) &&
+//                 room.internship.equals(shortlistedInternship.internship._id)
+//             );
+
+//             return {
+//               internshipId: shortlistedInternship.internship._id,
+//               internshipName: shortlistedInternship.internship.internshipName,
+//               statusUpdatedAt:
+//                 shortlistedInternship.internshipStatus.statusUpdatedAt,
+//               importantForRecruiter: chatRoom
+//                 ? chatRoom.importantForRecruiter
+//                 : false,
+//               studentStatus: chatRoom.studentStatus, // Default to false if no chatRoom is found
+//             };
+//           }
+//         ),
+//       };
+//     });
+
+//     res.status(200).json(formattedStudents);
+//   } catch (error) {
+//     console.error("Error fetching shortlisted students:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
+
+
 router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
   const { recruiterId } = req.params;
 
   try {
-    // Find the recruiter and populate the internships they posted
-    const recruiter = await Recruiter.findById(recruiterId).populate(
-      "internships"
-    );
+    // Fetch the recruiter with their internships
+    const recruiter = await Recruiter.findById(recruiterId).populate({
+      path: "internships",
+      select: "_id internshipName",
+    });
 
     if (!recruiter) {
       return res.status(404).json({ message: "Recruiter not found" });
     }
 
-    // Get the list of internship IDs posted by the recruiter
-    const internshipIds = recruiter.internships.map(
-      (internship) => internship._id
-    );
+    const internshipIds = recruiter.internships.map((internship) => internship._id);
 
-    // Find students who applied for these internships and have been shortlisted
+    // Fetch all students who have applied for these internships and are shortlisted
     const shortlistedStudents = await Student.find({
       "appliedInternships.internship": { $in: internshipIds },
       "appliedInternships.internshipStatus.status": "Shortlisted",
     }).populate({
-      path: "appliedInternships.internship", // Path to the field you want to populate
-      select: "internshipName", // Fields to select from the Internship schema
+      path: "appliedInternships.internship",
+      select: "internshipName", // Select only needed fields
     });
 
+    // Fetch chat rooms for the recruiter and their internships
     const chatRooms = await ChatRoom.find({
       recruiter: recruiterId,
       internship: { $in: internshipIds },
       student: { $in: shortlistedStudents.map((student) => student._id) },
     }).select("student internship importantForRecruiter studentStatus");
 
-    // console.log(shortlistedStudents[0].appliedInternships);
-
+    // Format the data
     const formattedStudents = shortlistedStudents.map((student) => {
-      // console.log('type of Internship ID 1:', internshipIds[0]);
-      // console.log('Applied Internships:', student.appliedInternships);
-
       const shortlistedInternships = student.appliedInternships.filter(
         (appliedInternship) =>
-          internshipIds.some((id) =>
-            id.equals(appliedInternship.internship._id)
-          ) && appliedInternship.internshipStatus.status === "Shortlisted"
+          internshipIds.some((id) => id.equals(appliedInternship.internship._id)) &&
+          appliedInternship.internshipStatus.status === "Shortlisted"
       );
-      // console.log(shortlistedInternships);
 
       return {
         _id: student._id,
         firstname: student.firstname,
         lastname: student.lastname,
         email: student.email,
-        shortlistedInternships: shortlistedInternships.map(
-          (shortlistedInternship) => {
-            const chatRoom = chatRooms.find(
-              (room) =>
-                room.student.equals(student._id) &&
-                room.internship.equals(shortlistedInternship.internship._id)
-            );
+        shortlistedInternships: shortlistedInternships.map((shortlistedInternship) => {
+          const chatRoom = chatRooms.find(
+            (room) =>
+              room.student.equals(student._id) &&
+              room.internship.equals(shortlistedInternship.internship._id)
+          );
 
-            return {
-              internshipId: shortlistedInternship.internship._id,
-              internshipName: shortlistedInternship.internship.internshipName,
-              statusUpdatedAt:
-                shortlistedInternship.internshipStatus.statusUpdatedAt,
-              importantForRecruiter: chatRoom
-                ? chatRoom.importantForRecruiter
-                : false,
-              studentStatus: chatRoom.studentStatus, // Default to false if no chatRoom is found
-            };
-          }
-        ),
+          return {
+            internshipId: shortlistedInternship.internship._id,
+            internshipName: shortlistedInternship.internship.internshipName,
+            statusUpdatedAt: shortlistedInternship.internshipStatus.statusUpdatedAt,
+            importantForRecruiter: chatRoom ? chatRoom.importantForRecruiter : false,
+            studentStatus: chatRoom?.studentStatus || null,
+          };
+        }),
       };
     });
 
@@ -537,6 +608,8 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
 
 router.get("/blocked-chats", async (req, res) => {
   try {
