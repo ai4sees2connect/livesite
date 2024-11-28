@@ -101,39 +101,75 @@ router.get('/:recruiterId/applicants-count/:internshipId', async (req, res) => {
   }
 });
 
+
 router.get('/:recruiterId/applicants/:internshipId', async (req, res) => {
   const { recruiterId, internshipId } = req.params;
+  const { page = 1 } = req.query; // Default to page 1 if not provided
+  const limit = 3; // Number of applicants per page
 
   try {
-    // Check if the recruiter exists
+    // Validate recruiter existence
     const recruiter = await Recruiter.findById(recruiterId);
     if (!recruiter) return res.status(404).json({ message: 'Recruiter not found' });
 
-    // Check if the internship exists and belongs to the recruiter
+    // Validate internship existence and ownership
     const internship = await Internship.findOne({ _id: internshipId, recruiter: recruiterId });
     if (!internship) return res.status(404).json({ message: 'Internship not found' });
 
-    // Fetch only relevant details of students who applied for this internship
-    const applicants = await Student.find(
-      { 'appliedInternships.internship': internshipId },
+    // Convert internshipId to ObjectId
+    const internshipObjectId = new mongoose.Types.ObjectId(internshipId);
+
+    // Step 1: Count total number of matching applicants
+    const totalApplicants = await Student.countDocuments({
+      'appliedInternships.internship': internshipObjectId,
+    });
+
+    // Step 2: Calculate total pages
+    const totalPages = Math.ceil(totalApplicants / limit);
+
+    // Step 3: Get paginated applicants
+    const applicants = await Student.aggregate([
+      // Match students who applied for the specific internship
+      { $match: { 'appliedInternships.internship': internshipObjectId } },
+
+      // Unwind the appliedInternships array
+      { $unwind: '$appliedInternships' },
+
+      // Match the specific internshipId after unwind
+      { $match: { 'appliedInternships.internship': internshipObjectId } },
+
+      // Sort by appliedAt in descending order
+      { $sort: { 'appliedInternships.appliedAt': -1 } },
+
+      // Skip documents for previous pages
+      { $skip: (page - 1) * limit },
+
+      // Limit the number of documents to the specified limit
+      { $limit: limit },
+
+      // Exclude specific fields while including all others
       {
-        
-        password:0,
-        profilePic:0,
+        $project: {
+          profilePic: 0,
+          resume: 0,
+          password: 0,
+        },
+      },
+    ]);
 
-        resume:0,
-
-        appliedInternships: { $elemMatch: { internship: internshipId } } 
-      }
-    );
-
-    // Return the list of applicants
-    res.status(200).json(applicants);
+    // Step 4: Return applicants with total count and total pages
+    res.status(200).json({
+      totalApplicants,
+      totalPages,
+      applicants,
+    });
   } catch (error) {
     console.error('Error fetching applicants:', error);
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
+
 
 
 router.get('/:recruiterId/getDetails/:internshipId',async(req,res)=>{

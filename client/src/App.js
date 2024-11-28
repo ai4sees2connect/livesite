@@ -109,7 +109,7 @@ function App() {
         <Route path="/recruiter/profile/:userId" element={<RecProfile />} />
         <Route path="/recruiter/dashboard/:userId" element={<RecDashboard />} />
         <Route
-          path="/recruiter/dashboard/:recruiterId/applicants/:internshipId"
+          path="/recruiter/dashboard/:recruiterId/applicants/:internshipId/:pageNum?"
           element={<Applicants />}
         />
         <Route path="/recruiter/posting/:userId" element={<RecPosting />} />
