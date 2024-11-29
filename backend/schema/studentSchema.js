@@ -119,6 +119,7 @@ const studentSchema = new mongoose.Schema(
           type: Date,
           default: Date.now, 
         },
+        matchPer: { type: Number, default: 0 },
         assessmentAns: {
           type: String,
           default: "",

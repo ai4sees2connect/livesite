@@ -50,6 +50,7 @@ const Applicants = () => {
   const [totalStudents, setTotalStudents] = useState(null);
   const scrollRef = useRef(null);
   const [isReset, setIsReset] = useState(false);
+  const [isSkillsReady, setIsSkillsReady] = useState(false);
 
   // console.log('this is selected student', selectedStudent);
   const yearOptions = [
@@ -144,6 +145,13 @@ const Applicants = () => {
   const skillsArray = internship?.skills || [];
   console.log(skillsArray);
 
+  useEffect(() => {
+    if (skillsArray.length > 0) {
+      setIsSkillsReady(true); // Mark as ready once skillsArray is populated
+    }
+  }, [skillsArray]);
+
+
   const constructQueryStringApplicantFilters = () => {
     let query = `page=${page}`;
 
@@ -159,7 +167,7 @@ const Applicants = () => {
     if (selectedGradYears.length > 0)
       query += `&graduationYears=${selectedGradYears.join(",")}`;
     if (selectedPer) query += `&percentage=${selectedPer}`;
-    if(skillsArray.length > 0) query +=`&internSkills=${skillsArray.join(",")}`;
+    // if(skillsArray.length > 0) query +=`&internSkills=${skillsArray.join(",")}`;
     return query;
   };
 
@@ -167,13 +175,12 @@ const Applicants = () => {
     try {
       // Fetch the internship details
       setLoading(true);
-      const internshipResponse = await axios.get(
-        `${api}/recruiter/internship/${recruiterId}/getDetails/${internshipId}`
-      );
-      setInternship(internshipResponse.data);
+      
 
       // Fetch the applicants
       const queryString = constructQueryStringApplicantFilters();
+      console.log(queryString);
+      // console.log(internshipResponse.data.skills);
       const applicantsResponse = await axios.get(
         `${api}/recruiter/internship/${recruiterId}/applicants/${internshipId}?${queryString}`
       );
@@ -191,14 +198,23 @@ const Applicants = () => {
     }
   };
 
+  const fetchInternships=async()=>{
+    const internshipResponse = await axios.get(
+      `${api}/recruiter/internship/${recruiterId}/getDetails/${internshipId}`
+    );
+    setInternship(internshipResponse.data);
+  }
+
 
   useEffect(() => {
-
-
+    fetchInternships();
+    if (isSkillsReady) {
     fetchApplicantsAndInternship();
-  }, [recruiterId, internshipId, page]);
+    }
+  }, [recruiterId, internshipId, page,isSkillsReady]);
 
   const handleApplyFilters=()=>{
+    setPage(1);
     fetchApplicantsAndInternship();
     // console.log('this is query',query);
   }

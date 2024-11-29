@@ -8,6 +8,15 @@ const ChatRoom = require("../schema/chatRoomSchema");
 dotenv.config();
 const router = express.Router();
 
+
+const calculateSkillMatch = (applicantSkills, internSkills) => {
+
+
+  const applicantSkillNames = applicantSkills.map(skill => skill.skillName.toLowerCase());
+  const matchedSkills = internSkills.filter(skill => applicantSkillNames.includes(skill.toLowerCase()));
+  return (matchedSkills.length / internSkills.length) * 100;
+};
+
 router.post("/:studentId/apply/:internshipId", async (req, res) => {
   const { studentId, internshipId } = req.params;
   const { availability, aboutText, assessmentAns } = req.body;
@@ -18,6 +27,7 @@ router.post("/:studentId/apply/:internshipId", async (req, res) => {
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
+    const internship=await Internship.findById(internshipId);
 
     const alreadyApplied = student.appliedInternships.some((application) =>
       application.internship.equals(internshipObjectId)
@@ -32,9 +42,12 @@ router.post("/:studentId/apply/:internshipId", async (req, res) => {
         });
     }
 
+    const matchPercentage = calculateSkillMatch(student.skills, internship.skills);
+
     student.appliedInternships.push({
       internship: internshipObjectId,
       appliedAt: new Date(), // Save the current date and time
+      matchPer: matchPercentage,
       availability,
       aboutText,
       assessmentAns,

@@ -132,15 +132,48 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       workExperience,
       skills,
       education,
-      match,
+      match = 0,
       genders,
       graduationYears,
-      percentage,
-      internSkills
-    } = req.query; // Default to page 1 if not provided
-    const limit = 3; // Number of applicants per page
-    const matchValue = match || 0;
+      percentage
+    } = req.query; 
+    const limit = 3; 
+    let matchPercentageFilter;
+    if (match == 0) {
+      matchPercentageFilter = 0; 
+    } else if (match == 1) {
+      matchPercentageFilter = 50; 
+    } else if (match == 2) {
+      matchPercentageFilter = 80; 
+    }
+
+    const percentageMap = {
+      0: 0,     // 0% or below
+      1: 60,    // 60% or above
+      2: 70,    // 70% or above
+      3: 80,    // 80% or above
+      4: 90,    // 90% or above
+    };
+
+    const percentageThreshold = percentageMap[percentage];
+
     const filters = {};
+ 
+    console.log("this is page value", page);
+
+    const recruiter = await Recruiter.findById(recruiterId);
+    if (!recruiter)
+      return res.status(404).json({ message: "Recruiter not found" });
+
+    const internship = await Internship.findOne({
+      _id: internshipId,
+      recruiter: recruiterId,
+    });
+    if (!internship)
+      return res.status(404).json({ message: "Internship not found" });
+
+    // Convert internshipId to ObjectId
+    const internshipObjectId = new mongoose.Types.ObjectId(internshipId);
 
     // Apply filters based on query parameters
     if (searchName) {
@@ -179,29 +212,31 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
     }
 
     if (skills) {
-      const skillsArray = skills.split(',').map(skill => skill.trim()); // Split the skills query into an array
+      const skillsArray = skills.split(",").map((skill) => skill.trim()); // Split the skills query into an array
       if (skillsArray.length > 0) {
         filters.skills = {
           $elemMatch: {
-            skillName: { $in: skillsArray.map(skill => new RegExp(skill, 'i')) } // Case-insensitive match for skillName
-          }
+            skillName: {
+              $in: skillsArray.map((skill) => new RegExp(skill, "i")),
+            }, // Case-insensitive match for skillName
+          },
         };
       }
     }
 
     if (education) {
-      const educationArray = education.split(',').map(degree => degree.trim()); // Split the education query into an array
+      const educationArray = education
+        .split(",")
+        .map((degree) => degree.trim()); // Split the education query into an array
       if (educationArray.length > 0) {
         filters.education = {
           $elemMatch: {
-            degree: { $in: educationArray.map(degree => new RegExp(degree, 'i')) } // Match degree with case-insensitive regex
-          }
+            degree: {
+              $in: educationArray.map((degree) => new RegExp(degree, "i")),
+            }, // Match degree with case-insensitive regex
+          },
         };
       }
-    }
-
-    if (match) {
-      filters.match = parseInt(match); // Match percentage or criteria
     }
 
     if (genders) {
@@ -220,70 +255,62 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       }
     }
 
-    if (percentage && parseInt(percentage) > 0) {
-      filters.percentage = { $gte: parseInt(percentage) }; // Minimum percentage
-    }
+    filters["education"] = {
+      $elemMatch: {
+        // Check if score is a percentage or CGPA
+        $or: [
+          // For percentage scores (e.g., "87%")
+          { score: { $regex: /^[0-9]+(\.[0-9]+)?%$/, $options: 'i' }, $where: `parseFloat(this.score.replace('%', '')) >= ${percentageThreshold}` },
+  
+          // For CGPA scores (e.g., "8.4 CGPA")
+          { score: { $regex: /^[0-9]+(\.[0-9]+)? CGPA$/, $options: 'i' }, $where: `parseFloat(this.score.replace(' CGPA', '').trim()) * 10 >= ${percentageThreshold}` }
+        ]
+      }
+    };
 
-    console.log("Filters:", filters);
+   
+    // filters["appliedInternships"] = {
+    //   $elemMatch: {
+    //     matchPer: { $gte: matchPercentageFilter }
+    //   }
+    // };
+    
+      console.log("Filters:", JSON.stringify(filters, null, 2));
 
-    // Validate recruiter existence
-    const recruiter = await Recruiter.findById(recruiterId);
-    if (!recruiter)
-      return res.status(404).json({ message: "Recruiter not found" });
 
-    // Validate internship existence and ownership
-    const internship = await Internship.findOne({
-      _id: internshipId,
-      recruiter: recruiterId,
-    });
-    if (!internship)
-      return res.status(404).json({ message: "Internship not found" });
 
-    // Convert internshipId to ObjectId
-    const internshipObjectId = new mongoose.Types.ObjectId(internshipId);
-
-    // Step 1: Count total number of matching applicants
-    const totalApplicantsResult = await Student.aggregate([
-      {
-        $match: {
-          "appliedInternships.internship": internshipObjectId,
-          ...filters, // Add filters here
-        },
-      },
-      {
-        $count: "total", // Add a stage to count the documents
-      },
-    ]);
-
-    const totalApplicants = totalApplicantsResult[0]?.total || 0;
-
-    // Step 2: Calculate total pages
-    const totalPages = Math.ceil(totalApplicants / limit);
+    
 
     const applicants = await Student.aggregate([
       // Match students who applied for the specific internship
       {
         $match: {
           "appliedInternships.internship": internshipObjectId,
-          ...filters, // Add filters here
+          ...filters, // Add filters here (filters can be an empty object if no filters are set)
         },
       },
-
+    
       // Unwind the appliedInternships array
       { $unwind: "$appliedInternships" },
-
-      // Match the specific internshipId after unwind
-      { $match: { "appliedInternships.internship": internshipObjectId } },
-
+    
+      // Match the specific internshipId after unwind (this ensures we filter based on the internshipId)
+      {
+        $match: {
+          "appliedInternships.internship": internshipObjectId,
+          // "appliedInternships.matchPer": { $gte: matchPercentageFilter },
+          
+        },
+      },
+    
       // Sort by appliedAt in descending order
       { $sort: { "appliedInternships.appliedAt": -1 } },
-
+    
       // Skip documents for previous pages
       { $skip: (page - 1) * limit },
-
+    
       // Limit the number of documents to the specified limit
       { $limit: limit },
-
+    
       // Exclude specific fields while including all others
       {
         $project: {
@@ -292,14 +319,50 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
           password: 0,
         },
       },
-    ]); 
+    ]);
 
-    // Step 4: Return applicants with total count and total pages
+    const totalApplicantsCount = await Student.aggregate([
+      // Match students who applied for the specific internship
+      {
+        $match: {
+          "appliedInternships.internship": internshipObjectId,
+          ...filters, // Add filters here
+        },
+      },
+    
+      // Unwind the appliedInternships array
+      { $unwind: "$appliedInternships" },
+    
+      // Match the specific internshipId after unwind
+      {
+        $match: {
+          "appliedInternships.internship": internshipObjectId,
+        },
+      },
+    
+      // Group by null and count the number of applicants
+      {
+        $group: {
+          _id: null, // No grouping, just count all documents
+          totalApplicants: { $sum: 1 },
+        },
+      },
+    ]);
+
+    console.log("Initial applicants:", applicants.length);
+    // console.log("Initial applicants details:", applicants[0]);
+
+    const totalCount =totalApplicantsCount.length > 0 ? totalApplicantsCount[0].totalApplicants : 0;
+    const totalPages = Math.ceil(totalCount/ limit);
+    console.log('this is count',totalCount)
+
     res.status(200).json({
-      totalApplicants,
+      totalApplicants: totalCount,
       totalPages,
-      applicants,
+      applicants: applicants,
     });
+
+
   } catch (error) {
     console.error("Error fetching applicants:", error);
     res.status(500).json({ message: "Server Error" });

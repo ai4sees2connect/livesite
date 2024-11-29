@@ -76,6 +76,7 @@ const RightSide = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const userId = getUserIdFromToken();
+  const [internshipFetched,setInternshipFetched]=useState(false);
   console.log('this is id',userId)
 
 
@@ -108,7 +109,7 @@ const RightSide = () => {
 
         setInternships(response.data);
       
-        // console.log("internhsipswith logo", internshipsWithLogo);
+        setInternshipFetched(true);
         
 
         setLoading(false);
@@ -177,7 +178,7 @@ const RightSide = () => {
   fetchLogos();
 
   }
-  },[internships])
+  },[internshipFetched])
 
   console.log(internships);
 

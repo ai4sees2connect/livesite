@@ -428,7 +428,8 @@ router.get('/details', async (req, res) => {
         personalProjects:student.personalProjects,
         skills:student.skills,
         portfolioLink:student.portfolioLink,
-        resume:student.resume.data
+        resume:student.resume.data,
+        appliedInternships:student.appliedInternships
 
       }
     });
