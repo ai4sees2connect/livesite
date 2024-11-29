@@ -49,6 +49,7 @@ const Applicants = () => {
   const [totalPages, setTotalPages] = useState(null);
   const [totalStudents, setTotalStudents] = useState(null);
   const scrollRef = useRef(null);
+  const [isReset, setIsReset] = useState(false);
 
   // console.log('this is selected student', selectedStudent);
   const yearOptions = [
@@ -140,6 +141,9 @@ const Applicants = () => {
     setFilterOpen(isLargeScreen);
   }, []);
 
+  const skillsArray = internship?.skills || [];
+  console.log(skillsArray);
+
   const constructQueryStringApplicantFilters = () => {
     let query = `page=${page}`;
 
@@ -149,48 +153,79 @@ const Applicants = () => {
     if (selectedCity) query += `&city=${encodeURIComponent(selectedCity)}`;
     if (expFilter) query += `&workExperience=${expFilter}`;
     if (skillsFilter.length > 0) query += `&skills=${skillsFilter.join(",")}`;
-    if (eduFilter) query += `&education=${encodeURIComponent(eduFilter)}`;
+    if (eduFilter.length > 0) query += `&education=${eduFilter.join(",")}`;
     if (selectedMatch) query += `&match=${selectedMatch}`;
     if (selectedGenders.length > 0) query += `&genders=${selectedGenders.join(",")}`;
     if (selectedGradYears.length > 0)
       query += `&graduationYears=${selectedGradYears.join(",")}`;
     if (selectedPer) query += `&percentage=${selectedPer}`;
-
+    if(skillsArray.length > 0) query +=`&internSkills=${skillsArray.join(",")}`;
     return query;
+  };
+
+  const fetchApplicantsAndInternship = async () => {
+    try {
+      // Fetch the internship details
+      setLoading(true);
+      const internshipResponse = await axios.get(
+        `${api}/recruiter/internship/${recruiterId}/getDetails/${internshipId}`
+      );
+      setInternship(internshipResponse.data);
+
+      // Fetch the applicants
+      const queryString = constructQueryStringApplicantFilters();
+      const applicantsResponse = await axios.get(
+        `${api}/recruiter/internship/${recruiterId}/applicants/${internshipId}?${queryString}`
+      );
+      setApplicants(applicantsResponse.data.applicants);
+      setTotalPages(applicantsResponse.data.totalPages);
+      setTotalStudents(applicantsResponse.data.totalApplicants);
+      console.log('this is student list', applicantsResponse.data.applicants);
+
+      setLoading(false);
+      // console.log("this is list of applicants", applicantsResponse.data);
+    } catch (err) {
+      console.error("Error fetching applicants or internship details:", err);
+      setError("Failed to fetch data. Please try again later.");
+      setLoading(false);
+    }
   };
 
 
   useEffect(() => {
-    const fetchApplicantsAndInternship = async () => {
-      try {
-        // Fetch the internship details
-        setLoading(true);
-        const internshipResponse = await axios.get(
-          `${api}/recruiter/internship/${recruiterId}/getDetails/${internshipId}`
-        );
-        setInternship(internshipResponse.data);
 
-        // Fetch the applicants
-        const queryString = constructQueryStringApplicantFilters();
-        const applicantsResponse = await axios.get(
-          `${api}/recruiter/internship/${recruiterId}/applicants/${internshipId}?${queryString}`
-        );
-        setApplicants(applicantsResponse.data.applicants);
-        setTotalPages(applicantsResponse.data.totalPages);
-        setTotalStudents(applicantsResponse.data.totalApplicants);
-        console.log('this is student list', applicantsResponse.data.applicants);
-
-        setLoading(false);
-        // console.log("this is list of applicants", applicantsResponse.data);
-      } catch (err) {
-        console.error("Error fetching applicants or internship details:", err);
-        setError("Failed to fetch data. Please try again later.");
-        setLoading(false);
-      }
-    };
 
     fetchApplicantsAndInternship();
   }, [recruiterId, internshipId, page]);
+
+  const handleApplyFilters=()=>{
+    fetchApplicantsAndInternship();
+    // console.log('this is query',query);
+  }
+
+  const handleReset=()=>{
+    setSearchName("");
+    setSelectedCountry("");
+    setSelectedState("");
+    setSelectedCity("");
+    setExpFilter(0);
+    setSkillsFilter([]);
+    setEduFilter([]);
+    setSelectedMatch(0);
+    setSelectedGenders([]);
+    setSelectedGradYears([]);
+    setSelectedPer(0);
+    setPage(1);
+    setIsReset(true);
+    
+  }
+
+  useEffect(() => {
+    if (isReset) {
+      fetchApplicantsAndInternship();
+      setIsReset(false); // Reset the flag
+    }
+  }, [isReset]);
 
 
   const scrollToTop = () => {
@@ -246,134 +281,7 @@ const Applicants = () => {
     return Math.round(matchPercentage);
   };
 
-  // const filteredApplicants = applicants.filter((student) => {
-  //   const matchesName = `${student.firstname} ${student.lastname}`
-  //     .toLowerCase()
-  //     .includes(searchName.toLowerCase());
-
-  //   // Check if any selected location matches student's homeLocation
-  //   const matchesLocation =
-  //     locationFilter.length === 0 || // If no location is selected, show all applicants
-  //     locationFilter.some(
-  //       (location) =>
-  //         location.value.toLowerCase() === student.homeLocation.toLowerCase()
-  //     );
-
-  //   let studentExperience;
-  //   if (
-  //     student.yearsOfExp === "no experience" ||
-  //     student.yearsOfExp === "fresher"
-  //   ) {
-  //     studentExperience = 0;
-  //   } else if (student.yearsOfExp === "10+") {
-  //     studentExperience = 10;
-  //   } else {
-  //     studentExperience = parseInt(student.yearsOfExp);
-  //   }
-
-  //   const matchesExperience = studentExperience >= expFilter;
-
-  //   // Return true if all filters match
-  //   const matchesSkills =
-  //     skillsFilter.length === 0 ||
-  //     skillsFilter.some((selectedSkill) =>
-  //       student.skills.some(
-  //         (skill) =>
-  //           skill.skillName.toLowerCase() === selectedSkill.value.toLowerCase()
-  //       )
-  //     );
-
-  //   const matchesEducation =
-  //     eduFilter.length === 0 || // If no education filter is selected, show all applicants
-  //     eduFilter.some((selectedDegree) =>
-  //       student.education.some(
-  //         (edu) =>
-  //           edu.degree.toLowerCase() === selectedDegree.value.toLowerCase()
-  //       )
-  //     );
-
-  //   const matchPercentage = calculateMatchPercentage(
-  //     student.skills,
-  //     internship.skills
-  //   );
-
-  //   // Matching logic based on selectedMatch value
-  //   let matchesMatching;
-  //   if (selectedMatch === 0) {
-  //     matchesMatching = true; // Return all applicants regardless of match percentage
-  //   } else if (selectedMatch === 1) {
-  //     matchesMatching = matchPercentage >= 50; // Return applicants with 50% match or above
-  //   } else if (selectedMatch === 2) {
-  //     matchesMatching = matchPercentage >= 80; // Return applicants with 80% match or above
-  //   }
-
-  //   const matchesGender =
-  //     selectedGenders.length === 0 || selectedGenders.includes(student.gender);
-
-  //   const matchesGraduationYear =
-  //     selectedGradYears.length === 0 ||
-  //     selectedGradYears.some((selectedYear) => {
-  //       // Find the graduation degree
-  //       const graduationEducation = student.education.find((edu) =>
-  //         graduationDegrees.includes(edu.degree)
-  //       );
-  //       if (!graduationEducation) return false;
-
-  //       // Check if the graduation year matches the filter
-  //       const studentGraduationYear = graduationEducation.endYear;
-  //       // console.log(typeof(studentGraduationYear))
-  //       return (
-  //         studentGraduationYear === selectedYear.value ||
-  //         (selectedYear.value.includes("before") &&
-  //           parseInt(studentGraduationYear) <=
-  //             parseInt(selectedYear.value.split(" ")[0]))
-  //       );
-  //     });
-
-  //   const scoreFilterThreshold = {
-  //     0: 0,
-  //     1: 60,
-  //     2: 70,
-  //     3: 80,
-  //     4: 90,
-  //   };
-
-  //   const performanceThreshold = scoreFilterThreshold[selectedPer];
-
-  //   const convertScoreToPercentage = (score) => {
-  //     if (score.endsWith("%")) {
-  //       return parseFloat(score);
-  //     } else if (score.includes("CGPA")) {
-  //       return cgpaToPercentage(score.split(" ")[0]);
-  //     }
-  //     return 0; // Default case, assuming other formats are not expected
-  //   };
-
-  //   const matchesPerformance =
-  //     selectedPer === 0 ||
-  //     student.education.some((edu) => {
-  //       const degree = edu.degree;
-  //       const isGraduationDegree = graduationDegrees.includes(degree);
-  //       if (!isGraduationDegree) return false;
-  //       const score = edu.score;
-  //       const percentage = convertScoreToPercentage(score);
-  //       // console.log(percentage);
-  //       return percentage >= performanceThreshold;
-  //     });
-
-  //   // Return true if all filters match
-  //   return (
-  //     matchesName &&
-  //     matchesLocation &&
-  //     matchesExperience &&
-  //     matchesSkills &&
-  //     matchesEducation &&
-  //     matchesMatching &&
-  //     matchesGender &&
-  //     matchesGraduationYear &&
-  //     matchesPerformance
-  //   );
-  // });
+  
 
   // const shortlistedApplicants = filteredApplicants.filter((applicant) =>
   //   applicant.appliedInternships.some(
@@ -460,17 +368,17 @@ const Applicants = () => {
     }
   }, [applicants]);
 
-  console.log('this is searched name', searchName);
-  console.log('this is country', selectedCountry)
-  console.log('this is state', selectedState)
-  console.log('this is city', selectedCity)
-  console.log('this is work exp', expFilter);
+  // console.log('this is searched name', searchName);
+  // console.log('this is country', selectedCountry)
+  // console.log('this is state', selectedState)
+  // console.log('this is city', selectedCity)
+  // console.log('this is work exp', expFilter);
   console.log('this is skills filter', skillsFilter);
-  console.log('this is education filter', eduFilter);
+  // console.log('this is education filter', eduFilter);
   console.log('this is selected match', selectedMatch);
-  console.log('this is list of genders', selectedGenders);
-  console.log('this is list of graduation years', selectedGradYears);
-  console.log('this is percentage', selectedPer);
+  // console.log('this is list of genders', selectedGenders);
+  // console.log('this is list of graduation years', selectedGradYears);
+  // console.log('this is percentage', selectedPer);
 
 
   if (loading) {
@@ -584,15 +492,17 @@ const Applicants = () => {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row items-start gap-5">
+      <div className="flex flex-col lg:flex-row items-start gap-5  relative">
         {/*filter  */}
         <div
           className={`${filterOpen ? "block opacity-100" : "hidden opacity-0"
-            } lg:block w-full mt-0 px-6 transition-all duration-300 ease-in-out rounded-md border right-2 shadow-xl border-t py-6 overflow-y-scroll scrollbar-thin h-[65vh] bg-white lg:max-w-[300px]`}
+            } lg:block w-full mt-0 px-6 transition-all duration-300 ease-in-out rounded-md border right-2 shadow-xl border-t py-6 overflow-y-scroll scrollbar-thin h-[65vh] bg-white lg:max-w-[300px] `}
         >
-          <button className="mb-4 text-blue-400 underline">
+          <button onClick={handleReset} className="absolute -top-9 left-30 px-2 py-1 bg-blue-500 text-white rounded-md">
             Reset filters
           </button>
+
+          <button onClick={handleApplyFilters} className="absolute -top-9 left-40 px-2 py-1 bg-blue-500 text-white rounded-md">Apply Filters</button>
           <input
             type="text"
             placeholder="Search by name..."
@@ -670,7 +580,7 @@ const Applicants = () => {
               <Select
                 isMulti
                 options={skills}
-                values={skillsFilter}
+                value={skillsFilter.map((skill) => ({ value: skill, label: skill }))}
                 onChange={(values) => setSkillsFilter(values.map((v) => v.value))}
                 placeholder="Select the skills"
                 searchable={true}
@@ -683,7 +593,7 @@ const Applicants = () => {
               <Select
                 isMulti
                 options={degreeOptions}
-                values={eduFilter}
+                value={eduFilter.map((education)=>({value:education,label:education}))}
                 onChange={(values) => setEduFilter(values.map(v => v.value))}
                 placeholder="e.g MBA"
                 searchable={true}
@@ -703,7 +613,7 @@ const Applicants = () => {
               <Select
                 isMulti
                 options={yearOptions}
-                values={selectedGradYears}
+                value={selectedGradYears.map((year)=>({value:year,label:year}))}
                 onChange={(values) => setSelectedGradYears(values.map(v => v.value))}
                 placeholder="e.g 2024, 2022"
                 searchable={true}
