@@ -31,7 +31,7 @@ router.get("/:userId/education", async (req, res) => {
 
 router.post("/:userId/education", async (req, res) => {
   try {
-    const { degree, fieldOfStudy, institution, startYear, endYear, score } =
+    const { degree, fieldOfStudy, institution, startYear, endYear, score,gradeType } =
       req.body;
     const userId = req.params.userId;
 
@@ -48,6 +48,7 @@ router.post("/:userId/education", async (req, res) => {
       startYear,
       endYear,
       score,
+      gradeType
     });
 
     // Save the updated student document
@@ -65,7 +66,7 @@ router.post("/:userId/education", async (req, res) => {
 
 router.put("/:userId/education/:index", async (req, res) => {
   const { userId, index } = req.params;
-  const { degree, fieldOfStudy, institution, startYear, endYear, score } =
+  const { degree, fieldOfStudy, institution, startYear, endYear, score,gradeType } =
     req.body;
 
   try {
@@ -87,6 +88,7 @@ router.put("/:userId/education/:index", async (req, res) => {
       startYear,
       endYear,
       score,
+      gradeType
     };
     await student.save();
 

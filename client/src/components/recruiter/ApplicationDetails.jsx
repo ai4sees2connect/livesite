@@ -223,6 +223,7 @@ const ApplicationDetails = () => {
                 {education.map((edu, index) => (
                   <li key={index} className='text-sm sm:text-base'>
                     {edu.degree}, {edu.fieldOfStudy} - {edu.institution} ({edu.startYear} - {edu.endYear})
+                    -({edu.score +" "+ edu.gradeType})
                   </li>
                 ))}
               </ul>
