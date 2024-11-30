@@ -255,18 +255,18 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       }
     }
 
-    filters["education"] = {
-      $elemMatch: {
-        // Check if score is a percentage or CGPA
-        $or: [
-          // For percentage scores (e.g., "87%")
-          { score: { $regex: /^[0-9]+(\.[0-9]+)?%$/, $options: 'i' }, $where: `parseFloat(this.score.replace('%', '')) >= ${percentageThreshold}` },
+    // filters["education"] = {
+    //   $elemMatch: {
+    //     // Check if score is a percentage or CGPA
+    //     $or: [
+    //       // For percentage scores (e.g., "87%")
+    //       { score: { $regex: /^[0-9]+(\.[0-9]+)?%$/, $options: 'i' }, $where: `parseFloat(this.score.replace('%', '')) >= ${percentageThreshold}` },
   
-          // For CGPA scores (e.g., "8.4 CGPA")
-          { score: { $regex: /^[0-9]+(\.[0-9]+)? CGPA$/, $options: 'i' }, $where: `parseFloat(this.score.replace(' CGPA', '').trim()) * 10 >= ${percentageThreshold}` }
-        ]
-      }
-    };
+    //       // For CGPA scores (e.g., "8.4 CGPA")
+    //       { score: { $regex: /^[0-9]+(\.[0-9]+)? CGPA$/, $options: 'i' }, $where: `parseFloat(this.score.replace(' CGPA', '').trim()) * 10 >= ${percentageThreshold}` }
+    //     ]
+    //   }
+    // };
 
    
     // filters["appliedInternships"] = {
