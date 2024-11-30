@@ -53,58 +53,10 @@ const Applicants = () => {
   const [isSkillsReady, setIsSkillsReady] = useState(false);
 
   // console.log('this is selected student', selectedStudent);
-  const yearOptions = [
-    { value: "2024", label: "2024" },
-    { value: "2024 & before", label: "2024 & before" },
-    { value: "2023", label: "2023" },
-    { value: "2023 & before", label: "2023 & before" },
-    { value: "2022", label: "2022" },
-    { value: "2022 & before", label: "2022 & before" },
-    { value: "2021", label: "2021" },
-    { value: "2021 & before", label: "2021 & before" },
-    { value: "2020", label: "2020" },
-    { value: "2020 & before", label: "2020 & before" },
-    { value: "2019", label: "2019" },
-    { value: "2019 & before", label: "2019 & before" },
-    { value: "2018", label: "2018" },
-    { value: "2018 & before", label: "2018 & before" },
-    { value: "2017", label: "2017" },
-    { value: "2017 & before", label: "2017 & before" },
-    { value: "2016", label: "2016" },
-    { value: "2016 & before", label: "2016 & before" },
-    { value: "2015", label: "2015" },
-    { value: "2015 & before", label: "2015 & before" },
-    { value: "2014", label: "2014" },
-    { value: "2014 & before", label: "2014 & before" },
-    { value: "2013", label: "2013" },
-    { value: "2013 & before", label: "2013 & before" },
-    { value: "2012", label: "2012" },
-    { value: "2012 & before", label: "2012 & before" },
-    { value: "2011", label: "2011" },
-    { value: "2011 & before", label: "2011 & before" },
-    { value: "2010", label: "2010" },
-    { value: "2010 & before", label: "2010 & before" },
-    { value: "2009", label: "2009" },
-    { value: "2009 & before", label: "2009 & before" },
-    { value: "2008", label: "2008" },
-    { value: "2008 & before", label: "2008 & before" },
-    { value: "2007", label: "2007" },
-    { value: "2007 & before", label: "2007 & before" },
-    { value: "2006", label: "2006" },
-    { value: "2006 & before", label: "2006 & before" },
-    { value: "2005", label: "2005" },
-    { value: "2005 & before", label: "2005 & before" },
-    { value: "2004", label: "2004" },
-    { value: "2004 & before", label: "2004 & before" },
-    { value: "2003", label: "2003" },
-    { value: "2003 & before", label: "2003 & before" },
-    { value: "2002", label: "2002" },
-    { value: "2002 & before", label: "2002 & before" },
-    { value: "2001", label: "2001" },
-    { value: "2001 & before", label: "2001 & before" },
-    { value: "2000", label: "2000" },
-    { value: "2000 & before", label: "2000 & before" },
-  ];
+  const yearOptions = Array.from({ length: 31 }, (_, i) => {
+    const year = 2000 + i;
+    return { value: year.toString(), label: year.toString() };
+  }).reverse();
 
 
   const cgpaToPercentage = (cgpa) => {
@@ -152,8 +104,8 @@ const Applicants = () => {
   }, [skillsArray]);
 
 
-  const constructQueryStringApplicantFilters = () => {
-    let query = `page=${page}`;
+  const constructQueryStringApplicantFilters = (pageSent) => {
+    let query = `page=${pageSent}`;
 
     if (searchName) query += `&searchName=${encodeURIComponent(searchName)}`;
     if (selectedCountry) query += `&country=${encodeURIComponent(selectedCountry)}`;
@@ -164,21 +116,21 @@ const Applicants = () => {
     if (eduFilter.length > 0) query += `&education=${eduFilter.join(",")}`;
     if (selectedMatch) query += `&match=${selectedMatch}`;
     if (selectedGenders.length > 0) query += `&genders=${selectedGenders.join(",")}`;
-    if (selectedGradYears.length > 0)
-      query += `&graduationYears=${selectedGradYears.join(",")}`;
-    if (selectedPer) query += `&percentage=${selectedPer}`;
+    // if (selectedGradYears.length > 0)
+    //   query += `&graduationYears=${selectedGradYears.join(",")}`;
+    // if (selectedPer) query += `&percentage=${selectedPer}`;
     // if(skillsArray.length > 0) query +=`&internSkills=${skillsArray.join(",")}`;
     return query;
   };
 
-  const fetchApplicantsAndInternship = async () => {
+  const fetchApplicantsAndInternship = async (pageSent) => {
     try {
       // Fetch the internship details
       setLoading(true);
       
 
       // Fetch the applicants
-      const queryString = constructQueryStringApplicantFilters();
+      const queryString = constructQueryStringApplicantFilters(pageSent);
       console.log(queryString);
       // console.log(internshipResponse.data.skills);
       const applicantsResponse = await axios.get(
@@ -209,15 +161,16 @@ const Applicants = () => {
   useEffect(() => {
     fetchInternships();
     if (isSkillsReady) {
-    fetchApplicantsAndInternship();
+    fetchApplicantsAndInternship(page);
     }
   }, [recruiterId, internshipId, page,isSkillsReady]);
 
   const handleApplyFilters=()=>{
     setPage(1);
-    fetchApplicantsAndInternship();
+    fetchApplicantsAndInternship(1);
     // console.log('this is query',query);
   }
+  
 
   const handleReset=()=>{
     setSearchName("");
@@ -238,7 +191,7 @@ const Applicants = () => {
 
   useEffect(() => {
     if (isReset) {
-      fetchApplicantsAndInternship();
+      fetchApplicantsAndInternship(1);
       setIsReset(false); // Reset the flag
     }
   }, [isReset]);
@@ -512,7 +465,7 @@ const Applicants = () => {
         {/*filter  */}
         <div
           className={`${filterOpen ? "block opacity-100" : "hidden opacity-0"
-            } lg:block w-full mt-0 px-6 transition-all duration-300 ease-in-out rounded-md border right-2 shadow-xl border-t py-6 overflow-y-scroll scrollbar-thin h-[65vh] bg-white lg:max-w-[300px] `}
+            } lg:block w-full mt-0 px-6 transition-all duration-300 ease-in-out rounded-md border right-2 shadow-xl border-t py-6 overflow-y-scroll scrollbar-thin h-[80vh] bg-white lg:max-w-[300px] `}
         >
           <button onClick={handleReset} className="absolute -top-9 left-30 px-2 py-1 bg-blue-500 text-white rounded-md">
             Reset filters
@@ -624,7 +577,7 @@ const Applicants = () => {
               />
             </div>
 
-            <label>
+            {/* <label>
               Graduation year
               <Select
                 isMulti
@@ -635,7 +588,7 @@ const Applicants = () => {
                 searchable={true}
                 className="w-full shadow-md mt-2 mb-4"
               />
-            </label>
+            </label> */}
 
             <div className="flex space-x-5 mx-auto">
               <label className="flex items-center">
@@ -670,12 +623,12 @@ const Applicants = () => {
               </label>
             </div>
 
-            <div>
+            {/* <div>
               <PerformanceSlider
                 selectedPer={selectedPer}
                 setSelectedPer={setSelectedPer}
               />
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -879,7 +832,7 @@ const Applicants = () => {
                                   <p key={index} className="text-gray-600">
                                     {edu.degree} in {edu.fieldOfStudy} from{" "}
                                     {edu.institution} ({edu.startYear} -{" "}
-                                    {edu.endYear}) ({edu.score})
+                                    {edu.endYear}) ({edu.score + " " + edu.gradeType })
                                   </p>
                                 ))}
                               </div>

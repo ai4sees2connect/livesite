@@ -302,7 +302,8 @@ const Education = () => {
       institution,
       startYear,
       endYear,
-      score: score + " " + gradeType,
+      score,
+      gradeType
     };
 
     console.log("educationData", educationData);
@@ -313,7 +314,8 @@ const Education = () => {
       !institution ||
       !startYear ||
       !endYear ||
-      !score
+      !score ||
+      !gradeType
     ) {
       toast.error("Please enter all fields");
       return;
@@ -348,6 +350,7 @@ const Education = () => {
       setStartYear("");
       setEndYear("");
       setScore("");
+      setGradeType("CGPA");
       setEditIndex(null);
       setIsEditing(false);
       // refreshData();
@@ -364,6 +367,7 @@ const Education = () => {
     setStartYear("");
     setEndYear("");
     setScore("");
+    setGradeType("CGPA");
     setEditIndex(null);
     setIsEditing(false);
   };
@@ -396,6 +400,7 @@ const Education = () => {
     setStartYear(edu.startYear);
     setEndYear(edu.endYear);
     setScore(edu.score);
+    setGradeType(edu.gradeType);
 
     setEditIndex(index);
   };
@@ -421,7 +426,7 @@ const Education = () => {
         setScore(''); // Reset the field for invalid input
         setScoreError('Enter a valid CGPA up to 2 decimal places');
       }
-    } else if (gradeType === "%") {
+    } else if (gradeType === "Percentage") {
       // Allow up to 100.00 with 2 decimal places
       if (/^\d{0,3}(\.\d{0,2})?$/.test(value)) {
         if (parseFloat(value) <= 100) {
@@ -554,7 +559,7 @@ const Education = () => {
               className="mx-3 border p-2 w-fit"
             >
               <option value="CGPA">CGPA</option>
-              <option value="%">Percentage</option>
+              <option value="Percentage">Percentage</option>
             </select>
           </div>
           <input
@@ -609,7 +614,7 @@ const Education = () => {
                     <p>{edu?.institution}</p>
                     <p>Start Year: {edu?.startYear}</p>
                     <p>Year of Completion: {edu?.endYear}</p>
-                    <p>Score: {edu?.score}</p>
+                    <p>Score: {edu?.score} {edu?.gradeType}</p>
                   </div>
                 </div>
               </div>

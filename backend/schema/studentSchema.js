@@ -59,6 +59,7 @@ const studentSchema = new mongoose.Schema(
         fieldOfStudy: String,
         institution: String,
         score: String,
+        gradeType:String,
         startYear: String,
         endYear: String,
       },
