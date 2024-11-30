@@ -4,7 +4,7 @@
 
 // const api='http://localhost:4000'
 
-const api='https://livesite-backend-k7nb.onrender.com'
+const api='https://livesite-backend-74ut.onrender.com'
 
 
 export default api;
