@@ -134,9 +134,10 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       education,
       match = 0,
       genders,
+      selectedStatus
 
     } = req.query;
-    const limit = 20;
+    const limit = 4;
     let matchPercentageFilter;
     if (match == 0) {
       matchPercentageFilter = 0;
@@ -146,15 +147,7 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       matchPercentageFilter = 80;
     }
 
-    // const graduationYearsArray = graduationYears
-    //   ? graduationYears.split(",").map((year) => year.trim())
-    //   : null; // Split only if graduationYears is provided
-
-    //   console.log('this is year',graduationYearsArray);
-
-      // const degreeOptions = [
-      //   "B.Tech", "M.Tech", "B.Sc", "M.Sc", "BCA", "B.Com", "MCA", "BBA", "MBA", "Diploma"
-      // ];
+    
     const filters = {};
 
     console.log("this is page value", page);
@@ -241,6 +234,18 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       const gendersArray = genders.split(",").map((gender) => gender.trim());
       if (gendersArray.length > 0) {
         filters.gender = { $in: gendersArray }; // Match any selected gender
+      }
+    }
+
+    if (selectedStatus) {
+      if (selectedStatus === "Applications Received") {
+        // No additional filtering; include all statuses
+      } else if (selectedStatus === "Not Interested") {
+        filters["appliedInternships.internshipStatus.status"] = "Rejected";
+      } else if (selectedStatus === "Hired") {
+        filters["appliedInternships.internshipStatus.status"] = "Hired";
+      } else if (selectedStatus === "Shortlisted") {
+        filters["appliedInternships.internshipStatus.status"] = "Shortlisted";
       }
     }
 
@@ -331,14 +336,14 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
     ]);
 
     console.log("Initial applicants:", applicants.length);
-    console.log('Education records:', applicants.map(applicant => applicant.education));
+    // console.log('Education records:', applicants.map(applicant => applicant.education));
 
     const totalCount =
       totalApplicantsCount.length > 0
         ? totalApplicantsCount[0].totalApplicants
         : 0;
     const totalPages = Math.ceil(totalCount / limit);
-    console.log("this is count", totalCount);
+    // console.log("this is count", totalCount);
 
     res.status(200).json({
       totalApplicants: totalCount,
