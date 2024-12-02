@@ -3,6 +3,7 @@ const createOrGetChatRoom = require("./utils/chatRoomCreation");
 const Message = require("./schema/messageSchema");
 const mongoose = require("mongoose");
 const ChatRoom = require("./schema/chatRoomSchema");
+const Student = require("./schema/studentSchema");
 
 const initSocket = (server) => {
   const io = new Server(server, {
@@ -19,7 +20,7 @@ const initSocket = (server) => {
   io.on("connection", (socket) => {
     const { userId, userType } = socket.handshake.query;
     console.log(`${userType} connected: ${socket.id}`);
-    console.log(`the user type is ${userType}`);
+    // console.log(`the user type is ${userType}`);
 
     if (userType === "Student") {
       // Add student to the active list
@@ -96,7 +97,7 @@ const initSocket = (server) => {
 
           const receiverId = type === "Recruiter" ? studentId : recruiterId;
           // console.log(' chatHistory',chatHistory);
-          console.log(`emiting history to ${type}`);
+          // console.log(`emiting history to ${type}`);
           socket.emit(
             `chatHistory_${receiverId}_${internshipId}`,
             chatHistoryWithInternshipId
@@ -163,103 +164,146 @@ const initSocket = (server) => {
       }
     );
 
-    socket.on("markAsImportant", async ({ studentId, recruiterId,internshipId, type }) => {
-      try {
-        // Determine the field to update based on the user type
-        let updateField;
-    
-        if (type === "Student") {
-          updateField = { "importantForStudent": true };
-        } else if (type === "Recruiter") {
-          updateField = { "importantForRecruiter": true };
-        } else {
-          throw new Error("Invalid user type");
+    socket.on(
+      "markAsImportant",
+      async ({ studentId, recruiterId, internshipId, type }) => {
+        try {
+          // Determine the field to update based on the user type
+          let updateField;
+
+          if (type === "Student") {
+            updateField = { importantForStudent: true };
+          } else if (type === "Recruiter") {
+            updateField = { importantForRecruiter: true };
+          } else {
+            throw new Error("Invalid user type");
+          }
+
+          // Update the chat room to mark it as important for the respective user
+          const chatRoomFromFunc = await createOrGetChatRoom(
+            recruiterId,
+            studentId,
+            internshipId
+          );
+
+          if (!chatRoomFromFunc) {
+            throw new Error("Chat room not found");
+          }
+
+          const chatRoom = await ChatRoom.findByIdAndUpdate(
+            chatRoomFromFunc._id,
+            { $set: updateField },
+            { new: true }
+          );
+        } catch (error) {
+          console.error("Error marking chat room as important:", error);
+          socket.emit("error", {
+            message: "Failed to mark chat room as important",
+          });
         }
-    
-        // Update the chat room to mark it as important for the respective user
-        const chatRoomFromFunc = await createOrGetChatRoom(
-          recruiterId,
-          studentId,
-          internshipId
-        );
-    
-        if (!chatRoomFromFunc) {
-          throw new Error("Chat room not found");
+      }
+    );
+
+    socket.on(
+      "removeAsImportant",
+      async ({ studentId, recruiterId, internshipId, type }) => {
+        try {
+          // Determine the field to update based on the user type
+          let updateField;
+
+          if (type === "Student") {
+            updateField = { importantForStudent: false };
+          } else if (type === "Recruiter") {
+            updateField = { importantForRecruiter: false };
+          } else {
+            throw new Error("Invalid user type");
+          }
+
+          // Update the chat room to mark it as important for the respective user
+          const chatRoomFromFunc = await createOrGetChatRoom(
+            recruiterId,
+            studentId,
+            internshipId
+          );
+
+          if (!chatRoomFromFunc) {
+            throw new Error("Chat room not found");
+          }
+
+          const chatRoom = await ChatRoom.findByIdAndUpdate(
+            chatRoomFromFunc._id,
+            { $set: updateField },
+            { new: true }
+          );
+        } catch (error) {
+          console.error("Error marking chat room as important:", error);
+          socket.emit("error", {
+            message: "Failed to mark chat room as important",
+          });
         }
-        
-        const chatRoom = await ChatRoom.findByIdAndUpdate(
-          chatRoomFromFunc._id,
-          { $set: updateField },
-          { new: true }
-        );
+      }
+    );
+
+    socket.on(
+      "studentStatusChanged",
+      async ({ studentId, recruiterId, internshipId, valueToChange }) => {
+        try {
+          const chatRoomFromFunc = await createOrGetChatRoom(
+            recruiterId,
+            studentId,
+            internshipId
+          );
+
+          if (!chatRoomFromFunc) {
+            throw new Error("Chat room not found");
+          }
+
+          const chatRoom = await ChatRoom.findByIdAndUpdate(
+            chatRoomFromFunc._id,
+            { $set: { studentStatus: valueToChange } },
+            { new: true }
+          );
+          console.log('this is value to change',valueToChange);
+          let statusToSet = "";
+          if (valueToChange === "Hired") {
+            statusToSet = "Hired";
+          } else{
+            statusToSet = "Rejected";
+            console.log("Founddddd")
+          }
+
+          console.log('changinggggg',statusToSet)
+
+          const student = await Student.findOneAndUpdate(
+            {
+              _id: studentId,
+              "appliedInternships.internship": internshipId, // Match the specific internship
+            },
+            {
+              $set: {
+                "appliedInternships.$.internshipStatus.status": statusToSet, // Use positional operator t
+                "appliedInternships.$.statusUpdatedAt": new Date(),
+              },
+            },
+            { new: true }
+          );
+          console.log('this is changed student',student)
       
-      } catch (error) {
-        console.error("Error marking chat room as important:", error);
-        socket.emit("error", { message: "Failed to mark chat room as important" });
+          if (!student) {
+            throw new Error("Student or internship not found");
+          }
+
+
+          socket
+            .to(chatRoomFromFunc._id.toString())
+            .emit("studentStatusChangedAck", {
+              studentStatus: valueToChange,
+              recruiterId,
+              internshipId,
+            });
+        } catch (error) {}
       }
-    });
-
-    socket.on("removeAsImportant", async ({ studentId, recruiterId,internshipId, type }) => {
-      try {
-        // Determine the field to update based on the user type
-        let updateField;
-    
-        if (type === "Student") {
-          updateField = { "importantForStudent": false };
-        } else if (type === "Recruiter") {
-          updateField = { "importantForRecruiter": false };
-        } else {
-          throw new Error("Invalid user type");
-        }
-    
-        // Update the chat room to mark it as important for the respective user
-        const chatRoomFromFunc = await createOrGetChatRoom(
-          recruiterId,
-          studentId,
-          internshipId
-        );
-    
-        if (!chatRoomFromFunc) {
-          throw new Error("Chat room not found");
-        }
-        
-        const chatRoom = await ChatRoom.findByIdAndUpdate(
-          chatRoomFromFunc._id,
-          { $set: updateField },
-          { new: true }
-        );
-      
-      } catch (error) {
-        console.error("Error marking chat room as important:", error);
-        socket.emit("error", { message: "Failed to mark chat room as important" });
-      }
-    });
-
-    socket.on("studentStatusChanged",async({studentId, recruiterId,internshipId, valueToChange})=>{
-      try {
-        
-        const chatRoomFromFunc = await createOrGetChatRoom(
-          recruiterId,
-          studentId,
-          internshipId
-        );
-
-        if (!chatRoomFromFunc) {
-          throw new Error("Chat room not found");
-        }
-
-        const chatRoom = await ChatRoom.findByIdAndUpdate(
-          chatRoomFromFunc._id,
-          { $set: {studentStatus:valueToChange}},
-          { new: true }
-        );
-
-        socket.to( chatRoomFromFunc._id.toString()).emit("studentStatusChangedAck",{studentStatus:valueToChange,recruiterId,internshipId})
-
-      } catch (error) {
-        
-      }
-    })
+    );
 
     // Move sendMessageRecruiter listener outside
     socket.on("sendMessage", async (messageData) => {
@@ -364,49 +408,58 @@ const initSocket = (server) => {
       }
     });
 
-    socket.on("sentAttachment",async({file,recruiterId,studentId,internshipId,fileId,fileName,fileSize})=>{
-    try {
-      const chatRoom = await createOrGetChatRoom(
+    socket.on(
+      "sentAttachment",
+      async ({
+        file,
         recruiterId,
         studentId,
-        internshipId
-      );
-      console.log(file);
-
-      const newAttachment = new Message({
-        chatRoomId: chatRoom._id,
-        senderId: studentId,
-        senderType: "Student",
-        receiverId: recruiterId,
-        receiverType: "Recruiter",
-        messageContent: "Attachment sent", 
-        isAttachment: true, 
-        attachment: {
-          fileName,
-          fileId:fileId,
-          fileSize
-
-        },
-      });
-
-      await newAttachment.save();
-
-      const newAttachmentWithInternship = {
-        ...newAttachment.toObject(), // Converts Mongoose model to a plain object
-        internshipId, // Attach the internshipId field
-      };
-
-      socket
-          .to(chatRoom._id.toString())
-          .emit(
-            `receiveMessages_${studentId}_${internshipId}`,
-            newAttachmentWithInternship
+        internshipId,
+        fileId,
+        fileName,
+        fileSize,
+      }) => {
+        try {
+          const chatRoom = await createOrGetChatRoom(
+            recruiterId,
+            studentId,
+            internshipId
           );
+          console.log(file);
 
-    } catch (error) {
-      console.error("Error sending attachment:", err);
-    }
-    })
+          const newAttachment = new Message({
+            chatRoomId: chatRoom._id,
+            senderId: studentId,
+            senderType: "Student",
+            receiverId: recruiterId,
+            receiverType: "Recruiter",
+            messageContent: "Attachment sent",
+            isAttachment: true,
+            attachment: {
+              fileName,
+              fileId: fileId,
+              fileSize,
+            },
+          });
+
+          await newAttachment.save();
+
+          const newAttachmentWithInternship = {
+            ...newAttachment.toObject(), // Converts Mongoose model to a plain object
+            internshipId, // Attach the internshipId field
+          };
+
+          socket
+            .to(chatRoom._id.toString())
+            .emit(
+              `receiveMessages_${studentId}_${internshipId}`,
+              newAttachmentWithInternship
+            );
+        } catch (error) {
+          console.error("Error sending attachment:", err);
+        }
+      }
+    );
 
     socket.on("submitAssignment", async (submissionData) => {
       try {
@@ -466,47 +519,67 @@ const initSocket = (server) => {
       }
     });
 
+    socket.on(
+      "blockInitiatedByRecruiter",
+      async ({ recruiterId, studentId, internshipId, blockedByRecruiter }) => {
+        try {
+          // Update the chat room status in the database
+          const chatRoom = await ChatRoom.findOneAndUpdate(
+            {
+              recruiter: recruiterId,
+              student: studentId,
+              internship: internshipId,
+            },
+            { blockedByRecruiter },
+            { new: true }
+          );
 
-    socket.on('blockInitiatedByRecruiter', async ({ recruiterId, studentId, internshipId, blockedByRecruiter }) => {
-      try {
-        // Update the chat room status in the database
-        const chatRoom = await ChatRoom.findOneAndUpdate(
-          { recruiter: recruiterId, student: studentId, internship: internshipId },
-          { blockedByRecruiter },
-          { new: true }
-        );
+          // Notify both users about the updated block status
+          io.to(chatRoom._id.toString()).emit("chatBlocked", {
+            recruiterId,
+            studentId,
+            internshipId,
+            blockedBy: "recruiter",
+            blocked: true,
+          });
 
-    
-        // Notify both users about the updated block status
-        io.to(chatRoom._id.toString()).emit('chatBlocked', { recruiterId, studentId, internshipId, blockedBy: 'recruiter', blocked: true });
-
-        console.log('emitted');
-      } catch (error) {
-        console.error('Failed to block chat:', error);
+          console.log("emitted");
+        } catch (error) {
+          console.error("Failed to block chat:", error);
+        }
       }
-    });
+    );
 
-    socket.on('unblockInitiatedByRecruiter', async ({ recruiterId, studentId, internshipId, blockedByRecruiter }) => {
-      try {
-        // Update the chat room status in the database
-        const chatRoom = await ChatRoom.findOneAndUpdate(
-          { recruiter: recruiterId, student: studentId, internship: internshipId },
-          { blockedByRecruiter },
-          { new: true }
-        );
+    socket.on(
+      "unblockInitiatedByRecruiter",
+      async ({ recruiterId, studentId, internshipId, blockedByRecruiter }) => {
+        try {
+          // Update the chat room status in the database
+          const chatRoom = await ChatRoom.findOneAndUpdate(
+            {
+              recruiter: recruiterId,
+              student: studentId,
+              internship: internshipId,
+            },
+            { blockedByRecruiter },
+            { new: true }
+          );
 
-    
-        // Notify both users about the updated block status
-        io.to(chatRoom._id.toString()).emit('chatBlocked', { recruiterId, studentId, internshipId, blockedBy: 'recruiter', blocked: false });
+          // Notify both users about the updated block status
+          io.to(chatRoom._id.toString()).emit("chatBlocked", {
+            recruiterId,
+            studentId,
+            internshipId,
+            blockedBy: "recruiter",
+            blocked: false,
+          });
 
-        console.log('emitted');
-      } catch (error) {
-        console.error('Failed to block chat:', error);
+          console.log("emitted");
+        } catch (error) {
+          console.error("Failed to block chat:", error);
+        }
       }
-    });
-
-
-
+    );
   });
 
   return io;

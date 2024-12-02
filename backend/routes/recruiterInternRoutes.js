@@ -134,6 +134,7 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       education,
       match = 0,
       genders,
+      selectedStatus
 
     } = req.query;
     const limit = 20;
@@ -146,18 +147,10 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       matchPercentageFilter = 80;
     }
 
-    // const graduationYearsArray = graduationYears
-    //   ? graduationYears.split(",").map((year) => year.trim())
-    //   : null; // Split only if graduationYears is provided
-
-    //   console.log('this is year',graduationYearsArray);
-
-      // const degreeOptions = [
-      //   "B.Tech", "M.Tech", "B.Sc", "M.Sc", "BCA", "B.Com", "MCA", "BBA", "MBA", "Diploma"
-      // ];
+    
     const filters = {};
 
-    console.log("this is page value", page);
+    // console.log("this is page value", page);
 
     const recruiter = await Recruiter.findById(recruiterId);
     if (!recruiter)
@@ -244,6 +237,18 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       }
     }
 
+    if (selectedStatus) {
+      if (selectedStatus === "Applications Received") {
+        // No additional filtering; include all statuses
+      } else if (selectedStatus === "Not Interested") {
+        filters["appliedInternships.internshipStatus.status"] = "Rejected";
+      } else if (selectedStatus === "Hired") {
+        filters["appliedInternships.internshipStatus.status"] = "Hired";
+      } else if (selectedStatus === "Shortlisted") {
+        filters["appliedInternships.internshipStatus.status"] = "Shortlisted";
+      }
+    }
+
     console.log("Filters:", JSON.stringify(filters, null, 2));
 
     const applicants = await Student.aggregate([
@@ -302,7 +307,11 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       { $limit: limit },
     ]);
 
-    const totalApplicantsCount = await Student.aggregate([
+    console.log("list size",applicants.length)
+
+    delete filters["appliedInternships.internshipStatus.status"];
+
+    const applicantsCounts = await Student.aggregate([
       // Match students who applied for the specific internship
       {
         $match: {
@@ -310,40 +319,57 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
           ...filters, // Add filters here
         },
       },
-
+    
       // Unwind the appliedInternships array
       { $unwind: "$appliedInternships" },
-
+    
       // Match the specific internshipId after unwind
       {
         $match: {
           "appliedInternships.internship": internshipObjectId,
         },
       },
-
-      // Group by null and count the number of applicants
+    
+      // Group by internshipStatus.status and count each status
       {
         $group: {
-          _id: null, // No grouping, just count all documents
-          totalApplicants: { $sum: 1 },
+          _id: "$appliedInternships.internshipStatus.status", // Group by status
+          count: { $sum: 1 }, // Count the documents for each status
+        },
+      },
+    
+      // Add a stage to calculate the total count and consolidate counts by status
+      {
+        $group: {
+          _id: null,
+          totalApplicants: { $sum: "$count" }, // Sum all counts for total
+          countsByStatus: {
+            $push: {
+              status: "$_id",
+              count: "$count",
+            },
+          },
         },
       },
     ]);
 
-    console.log("Initial applicants:", applicants.length);
-    console.log('Education records:', applicants.map(applicant => applicant.education));
-
-    const totalCount =
-      totalApplicantsCount.length > 0
-        ? totalApplicantsCount[0].totalApplicants
-        : 0;
+    // console.log("Initial applicants:", applicants.length);
+    // console.log('Education records:', applicants.map(applicant => applicant.education));
+    const countsByStatus = applicantsCounts[0]?.countsByStatus || [];
+    const totalCount = applicantsCounts[0]?.totalApplicants || 0;
     const totalPages = Math.ceil(totalCount / limit);
-    console.log("this is count", totalCount);
-
+    // console.log("this is count", totalCount);
+    const hiredCount = countsByStatus.find(item => item.status === "Hired")?.count || 0;
+    const shortlistedCount = countsByStatus.find(item => item.status === "Shortlisted")?.count || 0;
+    const rejectedCount = countsByStatus.find(item => item.status === "Rejected")?.count || 0;
+     console.log(shortlistedCount)
     res.status(200).json({
       totalApplicants: totalCount,
       totalPages,
       applicants: applicants,
+      hiredCount,
+      shortlistedCount,
+      rejectedCount
     });
   } catch (error) {
     console.error("Error fetching applicants:", error);
