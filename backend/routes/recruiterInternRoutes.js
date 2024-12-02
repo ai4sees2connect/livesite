@@ -256,7 +256,7 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       {
         $match: {
           "appliedInternships.internship": internshipObjectId,
-          ...filters, // Apply other filters here (filters can be an empty object if no filters are set)
+           // Apply other filters here (filters can be an empty object if no filters are set)
         },
       },
     
@@ -267,6 +267,7 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       {
         $match: {
           "appliedInternships.internship": internshipObjectId,
+          ...filters,
         },
       },
     
@@ -307,7 +308,7 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       { $limit: limit },
     ]);
 
-    console.log("list size",applicants.length)
+    // console.log("list size",applicants[1])
 
     delete filters["appliedInternships.internshipStatus.status"];
 

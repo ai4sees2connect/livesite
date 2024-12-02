@@ -264,21 +264,7 @@ const Applicants = () => {
     return Math.round(matchPercentage);
   };
 
-  
 
-  // const shortlistedApplicants = filteredApplicants.filter((applicant) =>
-  //   applicant.appliedInternships.some(
-  //     (internship) => internship.internshipStatus.status === "Shortlisted"
-  //   )
-  // );
-  // const rejectedApplicants = filteredApplicants.filter((applicant) =>
-  //   applicant.appliedInternships.some(
-  //     (internship) => internship.internshipStatus.status === "Rejected"
-  //   )
-  // );
-  // const filteredApplicants = applicants
-  // const shortlistedApplicants = applicants
-  // const rejectedApplicants = applicants
 
   const handleCheckboxChange = (event) => {
     const value = event.target.value;
@@ -611,7 +597,7 @@ const Applicants = () => {
                 onChange={(values) => setEduFilter(values.map(v => v.value))}
                 placeholder="e.g MBA"
                 searchable={true}
-                className="w-full shadow-md "
+                className="w-full shadow-md"
               />
             </label>
 
