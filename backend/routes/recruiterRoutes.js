@@ -296,7 +296,7 @@ router.get("/details", async (req, res) => {
 
     await refreshPostsForNewMonth(recruiter);
     // Send user data as response
-    console.log(recruiter);
+    // console.log(recruiter);
     res.status(200).json({
       success: true,
       recruiter: {
@@ -558,11 +558,17 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
     // Fetch all students who have applied for these internships and are shortlisted
     const shortlistedStudents = await Student.find({
       "appliedInternships.internship": { $in: internshipIds },
-      "appliedInternships.internshipStatus.status": "Shortlisted",
+      $or: [
+        { "appliedInternships.internshipStatus.status": "Shortlisted" },
+        { "appliedInternships.internshipStatus.status": "Hired" },
+        { "appliedInternships.internshipStatus.status": "Rejected" },
+      ],
     }).populate({
       path: "appliedInternships.internship",
       select: "internshipName", // Select only needed fields
     });
+
+    // console.log('shortlisted students',shortlistedStudents[0].appliedInternships)
 
     // Fetch chat rooms for the recruiter and their internships
     const chatRooms = await ChatRoom.find({
@@ -576,7 +582,7 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
       const shortlistedInternships = student.appliedInternships.filter(
         (appliedInternship) =>
           internshipIds.some((id) => id.equals(appliedInternship.internship._id)) &&
-          appliedInternship.internshipStatus.status === "Shortlisted"
+          (appliedInternship.internshipStatus.status === "Shortlisted" || appliedInternship.internshipStatus.status === "Hired")
       );
 
       return {
@@ -603,6 +609,8 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
     });
 
     res.status(200).json(formattedStudents);
+
+    // console.log('this is final list',formattedStudents[0].appliedInternships.status);
   } catch (error) {
     console.error("Error fetching shortlisted students:", error);
     res.status(500).json({ message: "Server error" });

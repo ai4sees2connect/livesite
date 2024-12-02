@@ -59,6 +59,7 @@ const RecChatRoom = () => {
   const [chatBlocked, setChatBlocked] = useState({});
   const [chatListOpen, setChatListOpen] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [firstFetched, setFirstFetched] = useState(false);
 
   useEffect(() => {
     const fetchInternships = async () => {
@@ -106,6 +107,8 @@ const RecChatRoom = () => {
         );
         const students = response.data;
 
+        console.log('dataaaaaa',students)
+
         // Flatten the list of students with their internships
         let flat = students.flatMap((student) => {
           return student.shortlistedInternships.map((shortlisted) => ({
@@ -122,7 +125,7 @@ const RecChatRoom = () => {
 
         // Set the flattened student list in state
         setShortlistedStudents(flat);
-        // sortAndSetShortlistedStudents();
+        
         setIsLoading(false);
         console.log("students fetchedddddddddddddddddd", flat);
         console.log("hello");
@@ -226,6 +229,7 @@ const RecChatRoom = () => {
     };
 
     fetchShortlistedStudents();
+    setFirstFetched(true);
   }, [recruiterId]);
 
   console.log("seen status", latestMessagesSeenStatus);
@@ -280,7 +284,7 @@ const RecChatRoom = () => {
       setIsLoading(false);
       console.log("loading status:", isLoading);
     }
-  }, [socket, shortlistedStudents]);
+  }, [socket, firstFetched]);
 
   useEffect(() => {
     const scrollToBottom = () => {
@@ -299,6 +303,7 @@ const RecChatRoom = () => {
     setSelectedStudent(studentId);
     setSelectedInternship(internshipId);
     setChatListOpen(false);
+    console.log("trigerred");
 
     socket.emit("markLastMessageAsSeen", {
       studentId,
@@ -569,14 +574,15 @@ const RecChatRoom = () => {
 
     setShortlistedStudents((prevStudents) =>
       prevStudents.map((student) => {
-        if (student.internshipId === selectedInternship) {
+        if (student.internshipId === selectedInternship && student.studentId === selectedStudent) {
           // Mark as important for the student in the frontend
           return { ...student, importantForRecruiter: true };
-        }
+        }else
         return student;
       })
     );
   };
+
 
   const handleRemoveImportant = () => {
     socket.emit("removeAsImportant", {
@@ -623,13 +629,17 @@ const RecChatRoom = () => {
 
     setShortlistedStudents((prevStudents) =>
       prevStudents.map((student) => {
-        if (student.internshipId === selectedInternship) {
+        if (student.studentId === selectedStudent) {
+          // setSelectedStudent(student.studentId);
+          // setSelectedInternship(student.internshipId);
           return { ...student, studentStatus: valueToChange };
         } else {
           return student;
         }
       })
     );
+    // setSelectedStudent(selectedStudent);
+    
     toast.success("Status changes successfully");
   };
 

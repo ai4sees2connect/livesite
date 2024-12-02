@@ -51,6 +51,9 @@ const Applicants = () => {
   const scrollRef = useRef(null);
   const [isReset, setIsReset] = useState(false);
   const [isSkillsReady, setIsSkillsReady] = useState(false);
+  const [rejectedCount,setRejectedCount] = useState(null);
+  const [shortlistedCount,setShortlistedCount] = useState(null);
+  const [hiredCount,setHiredCount] = useState(null);
 
   // console.log('this is selected student', selectedStudent);
   const yearOptions = Array.from({ length: 31 }, (_, i) => {
@@ -132,6 +135,9 @@ const Applicants = () => {
       setApplicants(applicantsResponse.data.applicants);
       setTotalPages(applicantsResponse.data.totalPages);
       setTotalStudents(applicantsResponse.data.totalApplicants);
+      setRejectedCount(applicantsResponse.data.rejectedCount);
+      setHiredCount(applicantsResponse.data.hiredCount);
+      setShortlistedCount(applicantsResponse.data.shortlistedCount);
       console.log('this is student list', applicantsResponse.data.applicants);
 
       setLoading(false);
@@ -304,7 +310,23 @@ const Applicants = () => {
       // Optionally handle success (e.g., show a message or update state)
       // console.log("worked shortlisting");
       toast.success("Applicant shortlisted");
-      window.location.reload();
+      setApplicants((prevApplicants) => 
+        prevApplicants.map((applicant) => {
+          if (applicant._id === studentId) {
+            return {
+              ...applicant,
+              appliedInternships: {
+                ...applicant.appliedInternships,
+                internshipStatus: {
+                  ...applicant.appliedInternships.internshipStatus,
+                  status: "Shortlisted",
+                },
+              },
+            };
+          }
+          return applicant;
+        })
+      );
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Some error occured");
@@ -316,10 +338,25 @@ const Applicants = () => {
       await axios.put(
         `${api}/student/internship/${studentId}/${internshipId}/reject`
       );
-      // Optionally handle success (e.g., show a message or update state)
-      // console.log("worked reject");
+      setApplicants((prevApplicants) => 
+        prevApplicants.map((applicant) => {
+          if (applicant._id === studentId) {
+            return {
+              ...applicant,
+              appliedInternships: {
+                ...applicant.appliedInternships,
+                internshipStatus: {
+                  ...applicant.appliedInternships.internshipStatus,
+                  status: "Rejected",
+                },
+              },
+            };
+          }
+          return applicant;
+        })
+      );
       toast.success("Applicant Rejected");
-      window.location.reload();
+     
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Some error occured");
@@ -706,9 +743,16 @@ const Applicants = () => {
                                 Rejected
                               </h2>
                             )}
-
                           {student.appliedInternships.internshipStatus
-                            .status === "Shortlisted" && (
+                            .status === "Hired" && (
+                              <h2 className="text-sm md:text-base absolute right-3 top-2  text-green-500">
+                                Hired
+                              </h2>
+                            )}
+
+                          {(student.appliedInternships.internshipStatus
+                            .status === "Shortlisted" || student.appliedInternships.internshipStatus
+                            .status === "Hired") && (
                               <Link
                                 to={`/recruiter/${recruiterId}/chatroom`}
                                 className="text-sm md:text-base text-blue-400 font-semibold underline absolute right-3 top-10"
@@ -991,7 +1035,7 @@ const Applicants = () => {
                 }`}
             >
               <p>Applications Received</p>{" "}
-              <span>{applicants.length}</span>
+              <span>{totalStudents}</span>
             </div>
 
             <div
@@ -1002,7 +1046,7 @@ const Applicants = () => {
                 }`}
             >
               <p>Shortlisted</p>
-              <span>{applicants.length}</span>
+              <span>{shortlistedCount}</span>
             </div>
 
             <div
@@ -1013,7 +1057,7 @@ const Applicants = () => {
                 }`}
             >
               <p>Not Interested</p>
-              <span>{applicants.length}</span>
+              <span>{rejectedCount}</span>
             </div>
 
             <div
@@ -1024,7 +1068,7 @@ const Applicants = () => {
                 }`}
             >
               <p>Hired</p>
-              <span>0</span>
+              <span>{hiredCount}</span>
             </div>
           </div>
 
