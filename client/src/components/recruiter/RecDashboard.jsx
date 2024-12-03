@@ -186,7 +186,7 @@ const RecDashboard = () => {
           <div className="text-xs ml-4 lg:text-base lg:w-[90px] lg:ml-16 md:mr-3">
             View Applicants
           </div>
-          <div className="text-xs ml-6 lg:text-base lg:w-[90px] lg:ml-20 md:mr-4">
+          <div className="text-xs ml-6 lg:text-base lg:w-[90px] lg:ml-[93px] md:mr-4">
             View Details
           </div>
         </div>
@@ -197,11 +197,11 @@ const RecDashboard = () => {
             key={internship._id}
             className="grid grid-cols-5 gap-2 py-2 border-b-2"
           >
-            <div className="text-xs text-left ml-0 my-3 w-[80%] sm:text-center sm:text-sm sm:ml-2 lg:text-base lg:ml-10 lg:w-[190px]">
+            <div className="text-xs text-left ml-3 my-3 w-[80%] sm:text-center sm:text-sm sm:ml-4 lg:text-base lg:ml-10 lg:w-[190px]">
               {internship.internshipName}
             </div>
 
-            <div className="relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-3 lg:ml-28 group">
+            <div className="relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-4 sm:ml-5 md:ml-6 lg:ml-28 group">
               <div className="flex items-center text-xs sm:text-base">
                 <span
                   className={`${
@@ -241,11 +241,11 @@ const RecDashboard = () => {
             </div>
             <Link
               to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}/page-1`}
-              className="sm:ml-3 md:mx-auto text-xs px-1 sm:text-base lg:ml-4 text-center my-auto rounded-xl bg-blue-400 text-white w-20 md:w-24 lg:w-[190px] hover:bg-blue-700 hover:cursor-pointer py-1"
+              className=" md:mx-auto text-xs px-1 sm:text-base ml-4  lg:ml-4 text-center my-auto rounded-xl bg-blue-400 text-white w-20 sm:w-24 lg:w-[190px] hover:bg-blue-700 hover:cursor-pointer py-1"
             >
               Applications ({internship.applicantCount})
             </Link>
-            <div className="text-center text-xs sm:text-base ml-8 sm:ml-12 lg:w-36 mx-auto my-auto">
+            <div className="text-center text-xs sm:text-base ml-10 sm:ml-12 md:ml-16  lg:w-32 mx-auto my-auto">
               <button
                 onClick={() => openModal(internship)}
                 className="text-blue-500 hover:underline"
