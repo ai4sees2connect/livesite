@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
 const { jwtDecode } = require("jwt-decode");
+const Skill = require("../schema/skillsSchema");
 
 dotenv.config();
 const router = express.Router();
@@ -41,6 +42,20 @@ router.post("/post/:userId", async (req, res) => {
     recruiter.subscription.postsRemaining =
       parseInt(recruiter.subscription.postsRemaining) - 1;
 
+       // Get existing skills from the Skills schema
+    const existingSkills = await Skill.find({}, { name: 1 });
+    const existingSkillNames = existingSkills.map((skill) => skill.name);
+
+    // Identify new skills
+    const newSkills = skills.filter((skill) => !existingSkillNames.includes(skill));
+    
+
+    if (newSkills.length > 0) {
+      const newSkillsToSave = newSkills.map((skill) => ({ name: skill }));
+      await Skill.insertMany(newSkillsToSave);
+    }
+
+    
     const newInternship = new Internship({
       internshipName,
       internshipType,
