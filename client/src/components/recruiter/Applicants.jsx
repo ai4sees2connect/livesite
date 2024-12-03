@@ -51,9 +51,9 @@ const Applicants = () => {
   const scrollRef = useRef(null);
   const [isReset, setIsReset] = useState(false);
   const [isSkillsReady, setIsSkillsReady] = useState(false);
-  const [rejectedCount,setRejectedCount] = useState(null);
-  const [shortlistedCount,setShortlistedCount] = useState(null);
-  const [hiredCount,setHiredCount] = useState(null);
+  const [rejectedCount, setRejectedCount] = useState(null);
+  const [shortlistedCount, setShortlistedCount] = useState(null);
+  const [hiredCount, setHiredCount] = useState(null);
 
   // console.log('this is selected student', selectedStudent);
   const yearOptions = Array.from({ length: 31 }, (_, i) => {
@@ -97,13 +97,13 @@ const Applicants = () => {
     setFilterOpen(isLargeScreen);
   }, []);
 
-  
+
   // console.log(skillsArray);
 
 
 
 
-  const constructQueryStringApplicantFilters = (pageSent,status) => {
+  const constructQueryStringApplicantFilters = (pageSent, status) => {
     let query = `page=${pageSent}`;
 
     if (searchName) query += `&searchName=${encodeURIComponent(searchName)}`;
@@ -115,18 +115,18 @@ const Applicants = () => {
     if (eduFilter.length > 0) query += `&education=${eduFilter.join(",")}`;
     if (selectedMatch) query += `&match=${selectedMatch}`;
     if (selectedGenders.length > 0) query += `&genders=${selectedGenders.join(",")}`;
-    if (selectedStatus) query+=`&selectedStatus=${encodeURIComponent(status)}`
+    if (selectedStatus) query += `&selectedStatus=${encodeURIComponent(status)}`
     return query;
   };
 
-  const fetchApplicantsAndInternship = async (pageSent,status) => {
+  const fetchApplicantsAndInternship = async (pageSent, status) => {
     try {
       // Fetch the internship details
       setLoading(true);
-      
+
 
       // Fetch the applicants
-      const queryString = constructQueryStringApplicantFilters(pageSent,status);
+      const queryString = constructQueryStringApplicantFilters(pageSent, status);
       // console.log(queryString);
       // console.log(internshipResponse.data.skills);
       const applicantsResponse = await axios.get(
@@ -149,7 +149,7 @@ const Applicants = () => {
     }
   };
 
-  const fetchInternships=async()=>{
+  const fetchInternships = async () => {
     const internshipResponse = await axios.get(
       `${api}/recruiter/internship/${recruiterId}/getDetails/${internshipId}`
     );
@@ -157,36 +157,36 @@ const Applicants = () => {
 
     return internshipResponse.data;
   }
-  
-  useEffect(()=>{
-    const internResponse=fetchInternships();
+
+  useEffect(() => {
+    const internResponse = fetchInternships();
     const skillsArray = internResponse?.skills || [];
-   
-      setIsSkillsReady(true); // Mark as ready once skillsArray is populated
-  },[internshipId,recruiterId])
+
+    setIsSkillsReady(true); // Mark as ready once skillsArray is populated
+  }, [internshipId, recruiterId])
 
 
   useEffect(() => {
     if (isSkillsReady) {
-    fetchApplicantsAndInternship(page,selectedStatus);
+      fetchApplicantsAndInternship(page, selectedStatus);
     }
-  }, [internshipId,recruiterId,page,isSkillsReady]);
+  }, [internshipId, recruiterId, page, isSkillsReady]);
 
-  const handleApplyFilters=()=>{
+  const handleApplyFilters = () => {
     setPage(1);
-    fetchApplicantsAndInternship(1,selectedStatus);
+    fetchApplicantsAndInternship(1, selectedStatus);
     // console.log('this is query',query);
   }
 
-  const handleStatusChange=(statusValue)=>{
-    console.log('status changed',statusValue);
+  const handleStatusChange = (statusValue) => {
+    console.log('status changed', statusValue);
     setSelectedStatus(statusValue);
     setPage(1);
-    fetchApplicantsAndInternship(1,statusValue)
+    fetchApplicantsAndInternship(1, statusValue)
   }
-  
 
-  const handleReset=()=>{
+
+  const handleReset = () => {
     setSearchName("");
     setSelectedCountry("");
     setSelectedState("");
@@ -200,12 +200,12 @@ const Applicants = () => {
     setSelectedPer(0);
     setPage(1);
     setIsReset(true);
-    
+
   }
 
   useEffect(() => {
     if (isReset) {
-      fetchApplicantsAndInternship(1,selectedStatus);
+      fetchApplicantsAndInternship(1, selectedStatus);
       setIsReset(false); // Reset the flag
     }
   }, [isReset]);
@@ -296,7 +296,7 @@ const Applicants = () => {
       // Optionally handle success (e.g., show a message or update state)
       // console.log("worked shortlisting");
       toast.success("Applicant shortlisted");
-      setApplicants((prevApplicants) => 
+      setApplicants((prevApplicants) =>
         prevApplicants.map((applicant) => {
           if (applicant._id === studentId) {
             return {
@@ -324,7 +324,7 @@ const Applicants = () => {
       await axios.put(
         `${api}/student/internship/${studentId}/${internshipId}/reject`
       );
-      setApplicants((prevApplicants) => 
+      setApplicants((prevApplicants) =>
         prevApplicants.map((applicant) => {
           if (applicant._id === studentId) {
             return {
@@ -342,7 +342,7 @@ const Applicants = () => {
         })
       );
       toast.success("Applicant Rejected");
-     
+
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Some error occured");
@@ -424,7 +424,17 @@ const Applicants = () => {
               className="px-4 py-2 bg-white text-blue-500 rounded w-full flex space-x-2 items-center justify-center font-bold"
             >
               <span>
-                {selectedStatus} ({applicants.length})
+                {selectedStatus} (
+                {selectedStatus === "Shortlisted"
+                  ? shortlistedCount
+                  : selectedStatus === "Applications Received"
+                    ? totalStudents
+                    : selectedStatus === "Not Interested"
+                      ? rejectedCount
+                      : selectedStatus === "Hired"
+                        ? hiredCount
+                        : applicants.length}
+                )
               </span>
               {showOptions ? (
                 <FaAngleDown className="w-5 h-5" />
@@ -435,46 +445,58 @@ const Applicants = () => {
 
             <div
               className={`absolute z-10 mb-2 left-0 h-full w-full  bg-white border rounded shadow-lg transition-all duration-300 ease-in-out ${showOptions
-                  ? "bottom-[138px] opacity-100"
-                  : "-bottom-12 opacity-0"
+                ? "bottom-[138px] opacity-100"
+                : "-bottom-12 opacity-0"
                 } `}
             >
               <ul className="text-left bg-white">
                 <li
                   onClick={() => {
-                    setSelectedStatus("Applications Received");
+                    handleStatusChange("Applications Received");
                     setShowOptions(false);
                   }}
                   className={`py-3 px-2 hover:text-blue-300 cursor-pointer  ${selectedStatus === "Applications Received"
-                      ? "text-blue-500 font-semibold"
-                      : "text-gray-800"
+                    ? "text-blue-500 font-semibold"
+                    : "text-gray-800"
                     }`}
                 >
-                  Applications Received ({applicants.length})
+                  Applications Received ({totalStudents})
                 </li>
                 <li
                   onClick={() => {
-                    setSelectedStatus("Shortlisted");
+                    handleStatusChange("Shortlisted");
                     setShowOptions(false);
                   }}
                   className={`py-3 px-2 hover:text-blue-300 cursor-pointer  ${selectedStatus === "Shortlisted"
-                      ? "text-blue-500 font-semibold"
-                      : "text-gray-800"
+                    ? "text-blue-500 font-semibold"
+                    : "text-gray-800"
                     }`}
                 >
-                  Shortlisted ({applicants.length})
+                  Shortlisted ({shortlistedCount})
                 </li>
                 <li
                   onClick={() => {
-                    setSelectedStatus("Not Interested");
+                    handleStatusChange("Not Interested");
                     setShowOptions(false);
                   }}
                   className={`py-3 px-2 hover:text-blue-300 cursor-pointer ${selectedStatus === "Not Interested"
-                      ? "text-blue-500 font-semibold"
-                      : "text-gray-800"
+                    ? "text-blue-500 font-semibold"
+                    : "text-gray-800"
                     }`}
                 >
-                  Not selected ({applicants.length})
+                  Not selected ({rejectedCount})
+                </li>
+                <li
+                  onClick={() => {
+                    handleStatusChange("Hired");
+                    setShowOptions(false);
+                  }}
+                  className={`py-3 px-2 hover:text-blue-300 cursor-pointer ${selectedStatus === "Hired"
+                    ? "text-blue-500 font-semibold"
+                    : "text-gray-800"
+                    }`}
+                >
+                  Hired ({hiredCount})
                 </li>
               </ul>
             </div>
@@ -502,7 +524,7 @@ const Applicants = () => {
             Reset filters
           </button>
 
-          <button onClick={handleApplyFilters} className="absolute -top-9 left-40 px-2 py-1 bg-blue-500 text-white rounded-md">Apply Filters</button>
+          <button onClick={handleApplyFilters} className="absolute -top-9 right-5 lg:right-auto lg:left-40 px-2 py-1 bg-blue-500 text-white rounded-md">Apply Filters</button>
           <input
             type="text"
             placeholder="Search by name..."
@@ -593,7 +615,7 @@ const Applicants = () => {
               <Select
                 isMulti
                 options={degreeOptions}
-                value={eduFilter.map((education)=>({value:education,label:education}))}
+                value={eduFilter.map((education) => ({ value: education, label: education }))}
                 onChange={(values) => setEduFilter(values.map(v => v.value))}
                 placeholder="e.g MBA"
                 searchable={true}
@@ -666,274 +688,274 @@ const Applicants = () => {
         <div className="w-full flex flex-row">
           {/* applicants */}
           <div className="flex flex-col w-full">
-            <div className="overflow-y-auto   ">
-              
-                <div className="bg-white shadow-md rounded-lg p-6 w-full">
-                  {applicants.length === 0 ? (
-                    <p className="text-center text-gray-500">
-                      No applicants for this internship yet.
-                    </p>
-                  ) : (
-                    <div ref={scrollRef} className="space-y-4 overflow-y-auto h-screen scrollbar-thin">
-                      {applicants.map((student) => (
-                        <div
-                          key={student._id}
-                          className="p-4 border rounded-lg shadow-sm bg-gray-50  relative  "
-                        >
-                          <h2 className="text-lg md:text-2xl font-semibold mb-1 capitalize">
-                            {student.firstname} {student.lastname}
-                          </h2>
-                          <div className="flex justify-between">
-                            <h2 className="mb-2">{student.homeLocation.country + "," + student.homeLocation.state + "," + student.homeLocation.city}</h2>
-                          </div>
+            <div className="  ">
 
-                          <p key={student.appliedInternships.internship}>
-                            {student.appliedInternships.availability ===
-                              "Yes! Will join Immediately" ? (
-                              <span className="text-green-600">
-                                Immediate Joiner
-                              </span>
-                            ) : (
-                              <span className="text-red-500">
-                                Not an Immediate Joiner
-                              </span>
-                            )}
-                          </p>
+              <div className="bg-white shadow-md rounded-lg p-6 w-full">
+                {applicants.length === 0 ? (
+                  <p className="text-center text-gray-500">
+                    No applicants for this internship yet.
+                  </p>
+                ) : (
+                  <div ref={scrollRef} className="space-y-4 overflow-y-auto h-screen scrollbar-thin">
+                    {applicants.map((student) => (
+                      <div
+                        key={student._id}
+                        className="p-4 border rounded-lg shadow-sm bg-gray-50  relative  mx-2"
+                      >
+                        <h2 className="text-lg md:text-2xl font-semibold mb-1 capitalize">
+                          {student.firstname} {student.lastname}
+                        </h2>
+                        <div className="flex justify-between">
+                          <h2 className="mb-2">{student.homeLocation.country + "," + student.homeLocation.state + "," + student.homeLocation.city}</h2>
+                        </div>
 
-                          {!isOpen &&
-                            (student.appliedInternships.internshipStatus
-                              .status === "Applied" ||
-                              student.appliedInternships.internshipStatus
-                                .status === "Viewed") && (
-                              <button
-                                onClick={() => {
-                                  setIsOpen(student._id);
-                                  handleViewProfile(student._id);
-                                  // setSelectedStudent(student);
-                                }}
-                                className="absolute right-3 top-2 underline text-blue-400"
-                              >
-                                View Profile
-                              </button>
-                            )}
+                        <p key={student.appliedInternships.internship}>
+                          {student.appliedInternships.availability ===
+                            "Yes! Will join Immediately" ? (
+                            <span className="text-green-600">
+                              Immediate Joiner
+                            </span>
+                          ) : (
+                            <span className="text-red-500">
+                              Not an Immediate Joiner
+                            </span>
+                          )}
+                        </p>
 
-                          {student.appliedInternships.internshipStatus
-                            .status === "Shortlisted" && (
-                              <h2 className="text-sm md:text-base font-semibold absolute right-3 top-2  text-green-500">
-                                Shortlisted
-                              </h2>
-                            )}
-                          {student.appliedInternships.internshipStatus
-                            .status === "Rejected" && (
-                              <h2 className="text-sm md:text-base absolute right-3 top-2  text-red-500">
-                                Rejected
-                              </h2>
-                            )}
-                          {student.appliedInternships.internshipStatus
-                            .status === "Hired" && (
-                              <h2 className="text-sm md:text-base absolute right-3 top-2  text-green-500">
-                                Hired
-                              </h2>
-                            )}
-
-                          {(student.appliedInternships.internshipStatus
-                            .status === "Shortlisted" || student.appliedInternships.internshipStatus
-                            .status === "Hired") && (
-                              <Link
-                                to={`/recruiter/${recruiterId}/chatroom`}
-                                className="text-sm md:text-base text-blue-400 font-semibold underline absolute right-3 top-10"
-                              >
-                                View messages
-                              </Link>
-                            )}
-
-                          {isOpen === student._id && (
-                            <div className="flex absolute right-3 top-2 space-x-4">
-                              <button
-                                onClick={() => { setIsOpen(false); setSelectedStudent(null) }}
-                                className=" right-3 top-2 underline text-blue-400"
-                              >
-                                Hide Profile
-                              </button>
-                            </div>
+                        {!isOpen &&
+                          (student.appliedInternships.internshipStatus
+                            .status === "Applied" ||
+                            student.appliedInternships.internshipStatus
+                              .status === "Viewed") && (
+                            <button
+                              onClick={() => {
+                                setIsOpen(student._id);
+                                handleViewProfile(student._id);
+                                // setSelectedStudent(student);
+                              }}
+                              className="absolute right-3 top-2 underline text-blue-400"
+                            >
+                              View Profile
+                            </button>
                           )}
 
-                          {/* Skills */}
+                        {student.appliedInternships.internshipStatus
+                          .status === "Shortlisted" && (
+                            <h2 className="text-sm md:text-base font-semibold absolute right-3 top-4 lg:top-6  text-green-500">
+                              Shortlisted
+                            </h2>
+                          )}
+                        {student.appliedInternships.internshipStatus
+                          .status === "Rejected" && (
+                            <h2 className="text-sm md:text-base absolute right-3 top-4 lg:top-6 font-semibold text-red-500">
+                              Rejected
+                            </h2>
+                          )}
+                        {student.appliedInternships.internshipStatus
+                          .status === "Hired" && (
+                            <h2 className="text-sm md:text-base absolute right-3 top-4 lg:top-6 font-semibold text-green-500">
+                              Hired
+                            </h2>
+                          )}
 
-                          {/* Match Percentage */}
-                          <div className="mb-2">
-                            <p
-                              className={`font-semibold ${calculateMatchPercentage(
+                        {(student.appliedInternships.internshipStatus
+                          .status === "Shortlisted" || student.appliedInternships.internshipStatus
+                            .status === "Hired") && (
+                            <Link
+                              to={`/recruiter/${recruiterId}/chatroom`}
+                              className="text-sm md:text-base text-blue-400 font-semibold  absolute right-3 bottom-6  lg:top-14"
+                            >
+                              View messages
+                            </Link>
+                          )}
+
+                        {isOpen === student._id && (
+                          <div className="flex absolute right-3 top-2 space-x-4">
+                            <button
+                              onClick={() => { setIsOpen(false); setSelectedStudent(null) }}
+                              className=" right-3 top-2 underline text-blue-400"
+                            >
+                              Hide Profile
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Skills */}
+
+                        {/* Match Percentage */}
+                        <div className="mb-2">
+                          <p
+                            className={`font-semibold ${calculateMatchPercentage(
+                              student.skills,
+                              internship?.skills
+                            ) < 20
+                              ? "text-red-500"
+                              : calculateMatchPercentage(
                                 student.skills,
                                 internship?.skills
-                              ) < 20
-                                  ? "text-red-500"
-                                  : calculateMatchPercentage(
+                              ) >= 20 &&
+                                calculateMatchPercentage(
+                                  student.skills,
+                                  internship?.skills
+                                ) <= 60
+                                ? "text-orange-300"
+                                : calculateMatchPercentage(
+                                  student.skills,
+                                  internship?.skills
+                                ) > 60 &&
+                                  calculateMatchPercentage(
                                     student.skills,
                                     internship?.skills
-                                  ) >= 20 &&
-                                    calculateMatchPercentage(
-                                      student.skills,
-                                      internship?.skills
-                                    ) <= 60
-                                    ? "text-orange-300"
-                                    : calculateMatchPercentage(
-                                      student.skills,
-                                      internship?.skills
-                                    ) > 60 &&
-                                      calculateMatchPercentage(
-                                        student.skills,
-                                        internship?.skills
-                                      ) <= 90
-                                      ? "text-yellow-500"
-                                      : "text-green-500"
-                                }`}
-                            >
-                              {calculateMatchPercentage(
-                                student.skills,
-                                internship?.skills
-                              )}
-                              % Matched
-                            </p>
+                                  ) <= 90
+                                  ? "text-yellow-500"
+                                  : "text-green-500"
+                              }`}
+                          >
+                            {calculateMatchPercentage(
+                              student.skills,
+                              internship?.skills
+                            )}
+                            % Matched
+                          </p>
+                        </div>
+
+                        <div className="mb-2 hidden lg:block">
+                          <h3 className="font-semibold">Skills:</h3>
+                          <div className="flex flex-wrap gap-3">
+                            {student.skills.slice(0, 5).map((skill, index) => (
+                              <p
+                                key={index}
+                                className="text-sm md:text-base rounded-lg bg-gray-100 border capitalize px-1 md:px-2 py-1"
+                              >
+                                {skill.skillName}
+                              </p>
+                            ))}
+                            {student.skills.length > 5 && (
+                              <p className="text-sm md:text-base text-gray-500">
+                                +{student.skills.length - 5} more
+                              </p>
+                            )}
                           </div>
+                        </div>
 
-                          <div className="mb-2">
-                            <h3 className="font-semibold">Skills:</h3>
-                            <div className="flex flex-wrap gap-3">
-                              {student.skills.slice(0, 5).map((skill, index) => (
-                                <p
-                                  key={index}
-                                  className="text-sm md:text-base rounded-lg bg-gray-100 border capitalize px-1 md:px-2 py-1"
-                                >
-                                  {skill.skillName}
-                                </p>
-                              ))}
-                              {student.skills.length > 5 && (
-                                <p className="text-sm md:text-base text-gray-500">
-                                  +{student.skills.length - 5} more
-                                </p>
-                              )}
-                            </div>
-                          </div>
+                        <div className="mb-2 lg:mt-2 ">
+                          <Link
+                            to={`/recruiter/${student.appliedInternships.internship}/application-details/${student._id}`}
+                            className="text-sm md:text-base text-blue-400 font-semibold  "
+                          >
+                            View Application
+                          </Link>
+                        </div>
 
-                          <div className="mb-2 mt-2">
-                            <Link
-                              to={`/recruiter/${student.appliedInternships.internship}/application-details/${student._id}`}
-                              className="text-sm md:text-base text-blue-400 font-semibold underline "
-                            >
-                              View Application
-                            </Link>
-                          </div>
-
-                          {isOpen === student._id && (
-                            <div className="relative">
-                              {internship.assessment && (
-                                <div className="mb-2">
-                                  <h3 className="font-semibold">
-                                    Assessment Question
-                                  </h3>
-                                  <p>Ques: {internship.assessment}</p>
-                                  {student.appliedInternships.map(
-                                    (appliedInternship) =>
-                                      appliedInternship.internship ===
-                                        internship._id ? (
-                                        <p
-                                          key={appliedInternship.internship}
-                                          className="text-gray-600"
-                                        >
-                                          Ans: {appliedInternship.assessmentAns}
-                                        </p>
-                                      ) : null
-                                  )}
-                                </div>
-                              )}
-
-                              <div>
-                                <p className="font-semibold">About the student</p>
-
-                                <p
-                                  key={student.appliedInternships.internship}
-                                  className="text-gray-600"
-                                >
-                                  {" "}
-                                  {student.appliedInternships.aboutText}
-                                </p>
-
-
-                              </div>
-
-                              {/* Education */}
-                              <div className="mb-2">
-                                <h3 className="font-semibold">Education:</h3>
-                                {student.education.map((edu, index) => (
-                                  <p key={index} className="text-gray-600">
-                                    {edu.degree} in {edu.fieldOfStudy} from{" "}
-                                    {edu.institution} ({edu.startYear} -{" "}
-                                    {edu.endYear}) ({edu.score + " " + edu.gradeType })
-                                  </p>
-                                ))}
-                              </div>
-
-                              {/* Work Experience */}
+                        {isOpen === student._id && (
+                          <div className="relative">
+                            {internship.assessment && (
                               <div className="mb-2">
                                 <h3 className="font-semibold">
-                                  Work Experience:
+                                  Assessment Question
                                 </h3>
-                                {student.workExperience.map((work, index) => (
-                                  <p key={index} className="text-gray-600">
-                                    {work.role} at {work.company} (
-                                    {work.startDate} - {work.endDate})
-                                  </p>
-                                ))}
-                              </div>
-
-                              {/* Certificates */}
-                              <div className="mb-2">
-                                <h3 className="font-semibold">Certificates:</h3>
-                                {student.certificates.map((cert, index) => (
-                                  <p key={index} className="text-gray-600">
-                                    {cert.title} - {cert.issuingOrganization} (
-                                    {cert.issueDate})
-                                  </p>
-                                ))}
-                              </div>
-
-                              {/* Personal Projects */}
-                              <div className="mb-2">
-                                <h3 className="font-semibold">
-                                  Personal Projects:
-                                </h3>
-                                {student.personalProjects.map(
-                                  (project, index) => (
-                                    <p key={index} className="text-gray-600">
-                                      {project.title} - {project.description}
-                                    </p>
-                                  )
+                                <p>Ques: {internship.assessment}</p>
+                                {student.appliedInternships.map(
+                                  (appliedInternship) =>
+                                    appliedInternship.internship ===
+                                      internship._id ? (
+                                      <p
+                                        key={appliedInternship.internship}
+                                        className="text-gray-600"
+                                      >
+                                        Ans: {appliedInternship.assessmentAns}
+                                      </p>
+                                    ) : null
                                 )}
                               </div>
+                            )}
 
-                              {/* Portfolio Links */}
-                              <div className="mb-2">
-                                <h3 className="font-semibold">
-                                  Portfolio Links:
-                                </h3>
-                                {student.portfolioLink.map((link, index) => (
-                                  <p key={index}>
-                                    {link.linkType}:{" "}
-                                    <a
-                                      href={link.linkUrl}
-                                      className="text-blue-500 hover:underline"
-                                    >
-                                      {link.linkUrl}
-                                    </a>
-                                  </p>
-                                ))}
-                                <p className="text-gray-700 mb-1">
-                                  <strong>Email:</strong> {student.email}
+                            <div>
+                              <p className="font-semibold">About the student</p>
+
+                              <p
+                                key={student.appliedInternships.internship}
+                                className="text-gray-600"
+                              >
+                                {" "}
+                                {student.appliedInternships.aboutText}
+                              </p>
+
+
+                            </div>
+
+                            {/* Education */}
+                            <div className="mb-2">
+                              <h3 className="font-semibold">Education:</h3>
+                              {student.education.map((edu, index) => (
+                                <p key={index} className="text-gray-600">
+                                  {edu.degree} in {edu.fieldOfStudy} from{" "}
+                                  {edu.institution} ({edu.startYear} -{" "}
+                                  {edu.endYear}) ({edu.score + " " + edu.gradeType})
                                 </p>
-                              </div>
-                              {/* Resume Link */}
-                              {/* <div className="mb-2">
+                              ))}
+                            </div>
+
+                            {/* Work Experience */}
+                            <div className="mb-2">
+                              <h3 className="font-semibold">
+                                Work Experience:
+                              </h3>
+                              {student.workExperience.map((work, index) => (
+                                <p key={index} className="text-gray-600">
+                                  {work.role} at {work.company} (
+                                  {work.startDate} - {work.endDate})
+                                </p>
+                              ))}
+                            </div>
+
+                            {/* Certificates */}
+                            <div className="mb-2">
+                              <h3 className="font-semibold">Certificates:</h3>
+                              {student.certificates.map((cert, index) => (
+                                <p key={index} className="text-gray-600">
+                                  {cert.title} - {cert.issuingOrganization} (
+                                  {cert.issueDate})
+                                </p>
+                              ))}
+                            </div>
+
+                            {/* Personal Projects */}
+                            <div className="mb-2">
+                              <h3 className="font-semibold">
+                                Personal Projects:
+                              </h3>
+                              {student.personalProjects.map(
+                                (project, index) => (
+                                  <p key={index} className="text-gray-600">
+                                    {project.title} - {project.description}
+                                  </p>
+                                )
+                              )}
+                            </div>
+
+                            {/* Portfolio Links */}
+                            <div className="mb-2">
+                              <h3 className="font-semibold">
+                                Portfolio Links:
+                              </h3>
+                              {student.portfolioLink.map((link, index) => (
+                                <p key={index}>
+                                  {link.linkType}:{" "}
+                                  <a
+                                    href={link.linkUrl}
+                                    className="text-blue-500 hover:underline"
+                                  >
+                                    {link.linkUrl}
+                                  </a>
+                                </p>
+                              ))}
+                              <p className="text-gray-700 mb-1">
+                                <strong>Email:</strong> {student.email}
+                              </p>
+                            </div>
+                            {/* Resume Link */}
+                            {/* <div className="mb-2">
                               <h3 className="font-semibold">Resume:</h3>
                               <a
                                 href={`data:${
@@ -949,36 +971,36 @@ const Applicants = () => {
                                 Download Resume
                               </a>
                             </div> */}
-                              {(student.appliedInternships.internshipStatus
-                                .status === "Applied" ||
-                                student.appliedInternships.internshipStatus
-                                  .status === "Viewed") && (
-                                  <div className="absolute bottom-5 right-5 space-x-4">
-                                    <button
-                                      onClick={() =>
-                                        handleShortlistProfile(student._id)
-                                      }
-                                      className=" rounded-lg font-semibold text-green-600 shadow-md hover:scale-105 duration-300 px-2 py-1"
-                                    >
-                                      Shortlist
-                                    </button>
-                                    <button
-                                      onClick={() =>
-                                        handleRejectProfile(student._id)
-                                      }
-                                      className=" rounded-lg font-semibold text-red-600 shadow-md hover:scale-105 duration-300 px-2 py-1"
-                                    >
-                                      Reject
-                                    </button>
-                                  </div>
-                                )}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                            {(student.appliedInternships.internshipStatus
+                              .status === "Applied" ||
+                              student.appliedInternships.internshipStatus
+                                .status === "Viewed") && (
+                                <div className="absolute bottom-5 right-5 space-x-4">
+                                  <button
+                                    onClick={() =>
+                                      handleShortlistProfile(student._id)
+                                    }
+                                    className=" rounded-lg font-semibold text-green-600 shadow-md hover:scale-105 duration-300 px-2 py-1"
+                                  >
+                                    Shortlist
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      handleRejectProfile(student._id)
+                                    }
+                                    className=" rounded-lg font-semibold text-red-600 shadow-md hover:scale-105 duration-300 px-2 py-1"
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
+                              )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* pagination here */}
@@ -1000,8 +1022,8 @@ const Applicants = () => {
                   onClick={handleNextPage}
                   disabled={page === totalPages}
                   className={`px-4 py-2 rounded-md ${page === totalPages
-                      ? "bg-gray-300"
-                      : "bg-blue-500 text-white"
+                    ? "bg-gray-300"
+                    : "bg-blue-500 text-white"
                     }`}
                 >
                   <FaAngleRight />
@@ -1016,8 +1038,8 @@ const Applicants = () => {
             <div
               onClick={() => handleStatusChange("Applications Received")} // Click handler
               className={`flex cursor-pointer justify-between ${selectedStatus === "Applications Received"
-                  ? "text-blue-500 font-semibold"
-                  : "text-gray-800"
+                ? "text-blue-500 font-semibold"
+                : "text-gray-800"
                 }`}
             >
               <p>Applications Received</p>{" "}
@@ -1027,8 +1049,8 @@ const Applicants = () => {
             <div
               onClick={() => handleStatusChange("Shortlisted")} // Click handler
               className={`flex cursor-pointer justify-between ${selectedStatus === "Shortlisted"
-                  ? "text-blue-500 font-semibold"
-                  : "text-gray-800"
+                ? "text-blue-500 font-semibold"
+                : "text-gray-800"
                 }`}
             >
               <p>Shortlisted</p>
@@ -1038,8 +1060,8 @@ const Applicants = () => {
             <div
               onClick={() => handleStatusChange("Not Interested")} // Click handler
               className={`flex cursor-pointer justify-between ${selectedStatus === "Not Interested"
-                  ? "text-blue-500 font-semibold"
-                  : "text-gray-800"
+                ? "text-blue-500 font-semibold"
+                : "text-gray-800"
                 }`}
             >
               <p>Not Interested</p>
@@ -1049,8 +1071,8 @@ const Applicants = () => {
             <div
               onClick={() => handleStatusChange("Hired")} // Click handler
               className={`flex cursor-pointer justify-between ${selectedStatus === "Hired"
-                  ? "text-blue-500 font-semibold"
-                  : "text-gray-800"
+                ? "text-blue-500 font-semibold"
+                : "text-gray-800"
                 }`}
             >
               <p>Hired</p>
