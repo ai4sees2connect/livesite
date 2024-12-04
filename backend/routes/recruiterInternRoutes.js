@@ -42,20 +42,28 @@ router.post("/post/:userId", async (req, res) => {
     recruiter.subscription.postsRemaining =
       parseInt(recruiter.subscription.postsRemaining) - 1;
 
-       // Get existing skills from the Skills schema
+    // Get existing skills from the Skills schema
     const existingSkills = await Skill.find({}, { name: 1 });
     const existingSkillNames = existingSkills.map((skill) => skill.name);
 
     // Identify new skills
-    const newSkills = skills.filter((skill) => !existingSkillNames.includes(skill));
-    
+    const newSkills = skills
+      .filter((skill) => !existingSkillNames.includes(skill))
+      .sort();
 
     if (newSkills.length > 0) {
-      const newSkillsToSave = newSkills.map((skill) => ({ name: skill }));
+      const newSkillsToSave = newSkills
+        .map((skill) => ({ name: skill }))
+        .sort((a, b) => a.name.localeCompare(b.name));
       await Skill.insertMany(newSkillsToSave);
     }
 
-    
+    const existingProfile = await Profile.findOne({ name: jobProfile });
+
+    if (!existingProfile) {
+      await Profile.create({ name: jobProfile });
+    }
+
     const newInternship = new Internship({
       internshipName,
       internshipType,
@@ -149,8 +157,7 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       education,
       match = 0,
       genders,
-      selectedStatus
-
+      selectedStatus,
     } = req.query;
     const limit = 20;
     let matchPercentageFilter;
@@ -162,7 +169,6 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       matchPercentageFilter = 80;
     }
 
-    
     const filters = {};
 
     // console.log("this is page value", page);
@@ -271,13 +277,13 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       {
         $match: {
           "appliedInternships.internship": internshipObjectId,
-           // Apply other filters here (filters can be an empty object if no filters are set)
+          // Apply other filters here (filters can be an empty object if no filters are set)
         },
       },
-    
+
       // Unwind the appliedInternships array
       { $unwind: "$appliedInternships" },
-    
+
       // Match the specific internshipId after unwind
       {
         $match: {
@@ -285,7 +291,7 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
           ...filters,
         },
       },
-    
+
       // Include necessary fields and filter 'education' array based on degree and graduation year
       {
         $project: {
@@ -297,13 +303,13 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
           yearsOfExp: 1,
           homeLocation: 1,
           appliedInternships: 1, // Include appliedInternships
-          education:1,
+          education: 1,
           workExperience: 1,
           certificates: 1,
           personalProjects: 1,
           skills: 1,
           portfolioLink: 1,
-        }
+        },
       },
       {
         $project: {
@@ -312,13 +318,13 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
           password: 0,
         },
       },
-    
+
       // Sort by appliedAt in descending order
       { $sort: { "appliedInternships.appliedAt": -1 } },
-    
+
       // Pagination: Skip documents for previous pages
       { $skip: (page - 1) * limit },
-    
+
       // Limit to the specified number of documents
       { $limit: limit },
     ]);
@@ -335,17 +341,17 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
           ...filters, // Add filters here
         },
       },
-    
+
       // Unwind the appliedInternships array
       { $unwind: "$appliedInternships" },
-    
+
       // Match the specific internshipId after unwind
       {
         $match: {
           "appliedInternships.internship": internshipObjectId,
         },
       },
-    
+
       // Group by internshipStatus.status and count each status
       {
         $group: {
@@ -353,7 +359,7 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
           count: { $sum: 1 }, // Count the documents for each status
         },
       },
-    
+
       // Add a stage to calculate the total count and consolidate counts by status
       {
         $group: {
@@ -375,17 +381,20 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
     const totalCount = applicantsCounts[0]?.totalApplicants || 0;
     const totalPages = Math.ceil(totalCount / limit);
     // console.log("this is count", totalCount);
-    const hiredCount = countsByStatus.find(item => item.status === "Hired")?.count || 0;
-    const shortlistedCount = countsByStatus.find(item => item.status === "Shortlisted")?.count || 0;
-    const rejectedCount = countsByStatus.find(item => item.status === "Rejected")?.count || 0;
-     console.log(shortlistedCount)
+    const hiredCount =
+      countsByStatus.find((item) => item.status === "Hired")?.count || 0;
+    const shortlistedCount =
+      countsByStatus.find((item) => item.status === "Shortlisted")?.count || 0;
+    const rejectedCount =
+      countsByStatus.find((item) => item.status === "Rejected")?.count || 0;
+    console.log(shortlistedCount);
     res.status(200).json({
       totalApplicants: totalCount,
       totalPages,
       applicants: applicants,
       hiredCount,
       shortlistedCount,
-      rejectedCount
+      rejectedCount,
     });
   } catch (error) {
     console.error("Error fetching applicants:", error);

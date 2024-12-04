@@ -37,10 +37,12 @@ const RecPosting = () => {
   // const [mode, setMode]=useState('');
 
   const [skills, setSkills] = useState([]);
+  const [jobProfiles,setJobProfiles] = useState([]);
+  const [customProfile,setCustomProfile] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [customSkill, setCustomSkill] = useState("");
   const userId = getUserIdFromToken();
-  const [formKey, setFormKey] = useState(0);
+  // const [formKey, setFormKey] = useState(0);
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedPerks, setSelectedPerks] = useState([]);
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
@@ -53,211 +55,6 @@ const RecPosting = () => {
   const [selectedCity, setSelectedCity] = useState("");
   const navigate = useNavigate();
 
-  const jobProfiles = [
-    "3D Animation",
-    "Account Management",
-    "Accounting & Auditing",
-    "Acting/Performing Arts",
-    "Administrative Assistant",
-    "Advertising Specialist",
-    "Aerospace Engineering",
-    "AI (Artificial Intelligence)",
-    "Android Development",
-    "Animation Design",
-    "App Developer",
-    "Application Support Engineer",
-    "Architecture",
-    "Art Director",
-    "Asset Management",
-    "Assistant Producer",
-    "Audio Engineer",
-    "Automation Engineer",
-    "Automotive Engineering",
-    "AWS Development",
-    "Back-End Development",
-    "Bank Teller",
-    "Banking Operations",
-    "Big Data Engineer",
-    "Bioinformatics Researcher",
-    "Biomedical Engineering",
-    "Blockchain Development",
-    "Brand Management",
-    "Broadcast Engineering",
-    "Budget Analyst",
-    "Building Inspector",
-    "Business Analyst",
-    "Business Consultant",
-    "Business Development",
-    "Business Intelligence Analyst",
-    "Call Center Agent",
-    "Cartography",
-    "Chemical Engineering",
-    "Civil Engineering",
-    "Claims Adjuster",
-    "Cloud Architect",
-    "Cloud Computing",
-    "Cloud Security Engineer",
-    "Communications Specialist",
-    "Compliance Officer",
-    "Computer Hardware Engineer",
-    "Construction Manager",
-    "Content Creation",
-    "Content Editor",
-    "Content Management",
-    "Content Marketing",
-    "Content Strategist",
-    "Content Writing",
-    "Corporate Law Intern",
-    "Corporate Trainer",
-    "Cost Estimator",
-    "Creative Director",
-    "CRM Development",
-    "Customer Success Manager",
-    "Cybersecurity",
-    "Data Analytics",
-    "Data Architect",
-    "Data Engineering",
-    "Data Entry Clerk",
-    "Data Governance Specialist",
-    "Data Quality Analyst",
-    "Data Science",
-    "Database Administration",
-    "Debt Collection Officer",
-    "Dental Assistant",
-    "Dentist",
-    "Design Engineer",
-    "Desktop Support Technician",
-    "DevOps Engineer",
-    "Digital Illustrator",
-    "Digital Marketing",
-    "Digital Product Designer",
-    "E-Commerce Management",
-    "Electrical Engineering",
-    "Elementary School Teacher",
-    "Embedded Systems Development",
-    "Environmental Engineer",
-    "ERP Development",
-    "Event Coordination",
-    "Event Management",
-    "Exhibition Designer",
-    "Fashion Design",
-    "Fashion Marketing",
-    "Fashion Stylist",
-    "Film Director",
-    "Film Editor",
-    "FinTech Development",
-    "Financial Analyst",
-    "Financial Planner",
-    "Fitness Trainer",
-    "Flutter Development",
-    "Food Technology",
-    "Forensic Scientist",
-    "Front-End Development",
-    "Full-Stack Development",
-    "Fundraising Coordinator",
-    "Game Design",
-    "Game Development",
-    "General Practitioner (Doctor)",
-    "Genetic Counselor",
-    "Geologist",
-    "Graphic Design",
-    "Green Energy Consultant",
-    "Hair Stylist",
-    "Hardware Development",
-    "Healthcare Administration",
-    "Healthcare Management",
-    "Hotel Management",
-    "HR Business Partner",
-    "HR Generalist",
-    "HR Management",
-    "HVAC Engineer",
-    "Illustrator",
-    "Industrial Designer",
-    "Industrial Engineering",
-    "Information Security Analyst",
-    "Information Systems Manager",
-    "Interior Design",
-    "International Trade Specialist",
-    "Investment Banking",
-    "IT Consultant",
-    "IT Security Specialist",
-    "IT Support",
-    "IT Systems Administrator",
-    "Java Development",
-    "Journalism",
-    "Lab Technician",
-    "Language Translation",
-    "Law/Legal Intern",
-    "Litigation Assistant",
-    "Logistics Coordinator",
-    "Machine Learning Engineer",
-    "Maintenance Engineer",
-    "Manufacturing Engineering",
-    "Marine Biologist",
-    "Market Research",
-    "Marketing Analyst",
-    "Marketing Manager",
-    "Materials Engineer",
-    "Mechanical Engineering",
-    "Medical Assistant",
-    "Medical Coding",
-    "Medical Equipment Technician",
-    "Medical Laboratory Scientist",
-    "Medical Research",
-    "Microbiologist",
-    "Mobile App Development (Android)",
-    "Mobile App Development (iOS)",
-    "Motion Graphics Design",
-    "Museum Curator",
-    "Music Producer",
-    "Network Administrator",
-    "Network Engineer",
-    "Nutritionist/Dietician",
-    "Occupational Therapist",
-    "Office Administrator",
-    "Oil and Gas Engineer",
-    "Operations Analyst",
-    "Operations Management",
-    "Packaging Design",
-    "Paralegal",
-    "Patent Analyst",
-    "Payroll Specialist",
-    "Performance Marketing Specialist",
-    "Personal Assistant",
-    "Petroleum Engineer",
-    "Pharmacist",
-    "Photographer",
-    "PHP Development",
-    "Physical Therapist",
-    "Physiotherapist",
-    "Pilates Instructor",
-    "Policy Analyst",
-    "Political Campaign Manager",
-    "Portfolio Manager",
-    "PR (Public Relations) Specialist",
-    "Private Equity Analyst",
-    "Product Design",
-    "Product Management",
-    "Production Assistant",
-    "Production Engineer",
-    "Project Management",
-    "Property Manager",
-    "Python Development",
-    "Quality Assurance (QA)",
-    "Quality Control Analyst",
-    "React Native Development",
-    "Real Estate Development",
-    "Recruiter",
-    "Renewable Energy Engineer",
-    "Research Analyst",
-    "Respiratory Therapist",
-    "Restaurant Manager",
-    "Risk Management Analyst",
-    "Ruby on Rails Development",
-    "Travels",
-    "Tourism",
-    "Web Development",
-  ];
 
   const perks = [
     "Letter of recommendation",
@@ -307,6 +104,25 @@ const RecPosting = () => {
     fetchSkills();
   }, []);
 
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      try {
+        const response = await axios.get(`${api}/recruiter/api/get-profiles`);
+        const profilesData = response.data.map((profile) => ({
+          label: profile.name, // Map 'name' field to 'label'
+          value: profile.name, // Map 'name' field to 'value'
+        }));
+        setJobProfiles(profilesData);
+      } catch (error) {
+        console.error("Error fetching Profiles:", error);
+      }
+    };
+
+    fetchProfiles();
+  }, []);
+
+  // console.log(jobProfiles)
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -335,6 +151,36 @@ const RecPosting = () => {
   };
 
   console.log('this is selected skills',selectedSkills)
+
+  const capitalizeWords = (str) => {
+    return str
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+  
+
+  const addCustomProfile = () => {
+    if (!customProfile.trim()) return; // Prevent empty or whitespace-only entries
+  
+    const formattedProfile = capitalizeWords(customProfile); // Capitalize each word
+    const newProfile = {
+      label: formattedProfile,
+      value: formattedProfile, // Make value and label the same
+    };
+  
+    // Check if the custom profile already exists
+    if (!jobProfiles.some((profile) => profile.value === newProfile.value)) {
+      setJobProfiles((prev) => [...prev, newProfile]); // Add to jobProfiles
+      setSelectedProfile(newProfile); 
+    }
+    else{
+        toast.error("Profile already avaialble");
+    }
+  
+    // Set the custom profile as the selected value
+    setCustomProfile(""); // Clear the input field
+  };
 
   const addCustomSkill = () => {
     if (customSkill.trim()) {
@@ -477,6 +323,9 @@ const RecPosting = () => {
   console.log("this is assessment question", formData.assessment);
   console.log("this is my location", formData.internLocation);
   console.log("this is my currency", formData.currency);
+
+  console.log('this is custom profile',customProfile);
+  console.log('this is selected profile',selectedProfile);
 
   let status = null;
 
@@ -780,13 +629,23 @@ const RecPosting = () => {
             <Select
               value={selectedProfile}
               onChange={(values) => setSelectedProfile(values)}
-              options={jobProfiles.map((job) => ({
-                value: job,
-                label: job,
-              }))}
+              options={jobProfiles}
               placeholder="e.g Web development"
               className="w-full mb-3 shadow-md"
             />
+            <input
+                type="text"
+                value={customProfile}
+                onChange={(e)=>setCustomProfile(e.target.value)}
+                placeholder="Add custom profile"
+                className="border rounded px-2 py-1 shadow-md w-60"
+              />
+              <button
+                onClick={addCustomProfile}
+                className="bg-blue-500 w-fit text-white px-4 py-1 my-2 rounded shadow-md hover:bg-blue-600"
+              >
+                Add
+              </button>
           </div>
 
           <div className="flex flex-col my-5 h-[320px]">
