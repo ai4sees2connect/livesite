@@ -268,10 +268,10 @@ const RecPosting = () => {
     console.log(postData);
 
     if (postData.internshipType === "Remote") {
-      postData.internshipType = "Work from Home";
+      postData.internshipType = "Work From Home";
       postData.internLocation = { country: "", state: "", city: "" }; // Clear all location fields
     } else if (postData.internshipType === "Office") {
-      postData.internshipType = "Work from Office";
+      postData.internshipType = "Work From Office";
       if (
         !postData.internLocation.country ||
         !postData.internLocation.state ||
