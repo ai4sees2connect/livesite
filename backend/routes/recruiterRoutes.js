@@ -12,6 +12,7 @@ const ChatRoom = require("../schema/chatRoomSchema");
 const Otp = require("../schema/otpSchema");
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const Profile = require("../schema/profileSchema");
 
 dotenv.config();
 const router = express.Router();
@@ -451,6 +452,14 @@ router.get("/api/get-skills", async (req, res) => {
   try {
     const skills = await Skill.find();
     res.status(200).json(skills);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+router.get("/api/get-profiles", async (req, res) => {
+  try {
+    const profiles = await Profile.find();
+    res.status(200).json(profiles);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

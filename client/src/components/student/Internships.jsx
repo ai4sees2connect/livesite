@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate,useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import {
   FaMapMarkerAlt,
@@ -54,8 +54,8 @@ const Internships = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(null);
   const [internshipsCount, setInternshipsCount] = useState(null);
-  const [resumeUrl,setResumeUrl]=useState(null)
-  const [resumeName,setResumeName]=useState(null)
+  const [resumeUrl, setResumeUrl] = useState(null)
+  const [resumeName, setResumeName] = useState(null)
 
   const jobProfiles = [
     "3D Animation",
@@ -301,8 +301,8 @@ const Internships = () => {
   const [workType, setWorkType] = useState(() => {
     return type
       ? type
-          .replace(/-/g, " ") // Replace dashes with spaces
-          .replace(/\b\w/g, (char) => char.toUpperCase()) // Capitalize each word
+        .replace(/-/g, " ") // Replace dashes with spaces
+        .replace(/\b\w/g, (char) => char.toUpperCase()) // Capitalize each word
       : "All Internships";
   });
   const [selectedStipend, setSelectedStipend] = useState(0);
@@ -314,6 +314,7 @@ const Internships = () => {
   // const [resumeFilename, setResumeFilename] = useState(null);
   const [aboutText, setAboutText] = useState("");
   const [assessmentAns, setAssessmentAns] = useState("");
+  const [detailedAvailability, setDetailedAvailability] = useState("");
   // const [cachedInternships, setCachedInternships] = useState(null);
   console.log(workType);
   console.log("this student is from context", student);
@@ -375,23 +376,23 @@ const Internships = () => {
         setInternshipsCount(response.data.numOfInternships);
         setAppliedInternships(appliedResponse.data);
         const internships = response.data.internships;
-       
+
         const recruiterIds = [...new Set(internships.map(internship => internship.recruiter?._id).filter(Boolean))];
 
         // Fetch logos in bulk
-      const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
-      const logoMap = logosResponse.data.logos;
+        const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
+        const logoMap = logosResponse.data.logos;
 
-      console.log('this is logo response',logoMap);
+        console.log('this is logo response', logoMap);
 
-      const internshipsWithLogos = internships.map(internship => ({
-        ...internship,
-        logoUrl: logoMap[internship.recruiter?._id] || null, // Default to null if no logo found
-      }));
+        const internshipsWithLogos = internships.map(internship => ({
+          ...internship,
+          logoUrl: logoMap[internship.recruiter?._id] || null, // Default to null if no logo found
+        }));
 
-      setInternships(internshipsWithLogos);
-      setLoading(false);
-        
+        setInternships(internshipsWithLogos);
+        setLoading(false);
+
       } catch (err) {
         console.error("Error fetching internships:", err);
         setError("Failed to fetch internships. Please try again later.");
@@ -421,24 +422,24 @@ const Internships = () => {
         setTotalPages(response.data.totalPages);
         setInternshipsCount(response.data.numOfInternships);
         const internships = response.data.internships;
-        
 
-       const recruiterIds = [...new Set(internships.map(internship => internship.recruiter?._id).filter(Boolean))];
+
+        const recruiterIds = [...new Set(internships.map(internship => internship.recruiter?._id).filter(Boolean))];
 
         // Fetch logos in bulk
-      const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
-      const logoMap = logosResponse.data.logos;
+        const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
+        const logoMap = logosResponse.data.logos;
 
-      console.log('this is logo response',logoMap);
+        console.log('this is logo response', logoMap);
 
-      const internshipsWithLogos = internships.map(internship => ({
-        ...internship,
-        logoUrl: logoMap[internship.recruiter?._id] || null, // Default to null if no logo found
-      }));
+        const internshipsWithLogos = internships.map(internship => ({
+          ...internship,
+          logoUrl: logoMap[internship.recruiter?._id] || null, // Default to null if no logo found
+        }));
 
-      setInternships(internshipsWithLogos);
-      setLoading(false);
-      
+        setInternships(internshipsWithLogos);
+        setLoading(false);
+
       } catch (err) {
         console.error("Error fetching internships:", err);
         setError("Failed to fetch internships. Please try again later.");
@@ -548,8 +549,14 @@ const Internships = () => {
         toast.error("Please Enter all fields");
         return;
       }
+
+      if(availability==='No! Cannot Join immediately' && !detailedAvailability){
+        toast.error("Please provide date of joining");
+        return;
+      }
+
       const formData = {
-        availability,
+        availability:availability==='Yes! Will join Immediately'?availability:detailedAvailability,
         aboutText,
         assessmentAns,
       };
@@ -602,7 +609,10 @@ const Internships = () => {
   };
 
   const handleRadioChange = (e) => {
-    if (e.target.value === "Yes") setAvailability("Yes! Will join Immediately");
+    if (e.target.value === "Yes"){
+      setAvailability("Yes! Will join Immediately");
+      setDetailedAvailability("");
+    }
     else if (e.target.value === "No")
       setAvailability("No! Cannot Join immediately");
   };
@@ -611,6 +621,8 @@ const Internships = () => {
   // console.log(aboutText);
   console.log(assessmentAns);
   console.log(userId);
+  console.log('this is availability',availability);
+  console.log('this is detailed availability',detailedAvailability);
 
   if (loading) {
     return <Spinner />;
@@ -638,9 +650,8 @@ const Internships = () => {
       <div className="flex flex-col lg:flex-row w-full lg:w-[90%] mx-auto  gap-10 ">
         {/* this below div is filter button */}
         <div
-          className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${
-            filterOpen && "border-blue-400"
-          }`}
+          className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${filterOpen && "border-blue-400"
+            }`}
           onClick={() => setFilterOpen(!filterOpen)}
         >
           <span>Filters</span>
@@ -649,9 +660,8 @@ const Internships = () => {
 
         {/* this below div is filter div */}
         <div
-          className={` ${
-            filterOpen ? "block" : "hidden"
-          } w-[84%] md:w-[90%]  lg:ml-10 mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl rounded-md border-t py-6 overflow-y-auto scrollbar-thin bg-white  relative`}
+          className={` ${filterOpen ? "block" : "hidden"
+            } w-[84%] md:w-[90%]  lg:ml-10 mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl rounded-md border-t py-6 overflow-y-auto scrollbar-thin bg-white  relative`}
         >
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
@@ -835,8 +845,8 @@ const Internships = () => {
                           {internship.recruiter.companyName !== ""
                             ? internship.recruiter.companyName
                             : internship.recruiter.firstname +
-                              " " +
-                              internship.recruiter.lastname}
+                            " " +
+                            internship.recruiter.lastname}
                         </p>
                       </div>
 
@@ -873,8 +883,8 @@ const Internships = () => {
                         <FaMapMarkerAlt className="mr-1" />
                         <span>
                           {internship.internLocation.country ||
-                          internship.internLocation.state ||
-                          internship.internLocation.city
+                            internship.internLocation.state ||
+                            internship.internLocation.city
                             ? `${internship.internLocation.country}, ${internship.internLocation.state}, ${internship.internLocation.city}`
                             : "Remote"}
                         </span>
@@ -926,11 +936,10 @@ const Internships = () => {
                     )}
                     <div className="flex text-sm md:text-base space-x-4 items-center">
                       <div
-                        className={`${
-                          internship.studentCount < 20
+                        className={`${internship.studentCount < 20
                             ? "text-green-500"
                             : "text-gray-500"
-                        } my-2 w-fit sm:my-0 md:w-auto`}
+                          } my-2 w-fit sm:my-0 md:w-auto`}
                       >
                         {internship.studentCount} Applicants
                       </div>
@@ -985,9 +994,8 @@ const Internships = () => {
                   <button
                     onClick={handlePreviousPage}
                     disabled={page === 1}
-                    className={`px-4 py-2 rounded-md ${
-                      page === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
-                    }`}
+                    className={`px-4 py-2 rounded-md ${page === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
+                      }`}
                   >
                     <FaAngleLeft />
                   </button>
@@ -998,11 +1006,10 @@ const Internships = () => {
                   <button
                     onClick={handleNextPage}
                     disabled={page === totalPages}
-                    className={`px-4 py-2 rounded-md ${
-                      page === totalPages
+                    className={`px-4 py-2 rounded-md ${page === totalPages
                         ? "bg-gray-300"
                         : "bg-blue-500 text-white"
-                    }`}
+                      }`}
                   >
                     <FaAngleRight />
                   </button>
@@ -1045,13 +1052,12 @@ const Internships = () => {
                           <FaMapMarkerAlt className="mr-2" />
                           <span>
                             {selectedInternship.internLocation.country
-                              ? `${
-                                  selectedInternship.internLocation.country +
-                                  "," +
-                                  selectedInternship.internLocation.state +
-                                  "," +
-                                  selectedInternship.internLocation.city
-                                }`
+                              ? `${selectedInternship.internLocation.country +
+                              "," +
+                              selectedInternship.internLocation.state +
+                              "," +
+                              selectedInternship.internLocation.city
+                              }`
                               : "Remote"}
                           </span>
                         </div>
@@ -1198,7 +1204,41 @@ const Internships = () => {
                                 />
                                 <span className="mx-1">No</span>
                               </label>
+
                             </div>
+
+                            {availability === "No! Cannot Join immediately" && (
+                              <div className="detailed-availability flex flex-col text-gray-600 my-2">
+                                <h2>When can you join?</h2>
+                                <label>
+                                  <input
+                                    type="radio"
+                                    value="Within a week"
+                                    checked={detailedAvailability === "Within a week"}
+                                    onChange={(e)=>setDetailedAvailability(e.target.value)}
+                                  />
+                                  <span className="mx-1">Within a week</span>
+                                </label>
+                                <label>
+                                  <input
+                                    type="radio"
+                                    value="Within 1-3 weeks"
+                                    checked={detailedAvailability === "Within 1-3 weeks"}
+                                    onChange={(e)=>setDetailedAvailability(e.target.value)}
+                                  />
+                                  <span className="mx-1">Within 1-3 weeks</span>
+                                </label>
+                                <label>
+                                  <input
+                                    type="radio"
+                                    value="More than a month"
+                                    checked={detailedAvailability === "More than a month"}
+                                    onChange={(e)=>setDetailedAvailability(e.target.value)}
+                                  />
+                                  <span className="mx-1">More than a month</span>
+                                </label>
+                              </div>
+                            )}
                           </div>
 
                           {selectedInternship.assessment && (

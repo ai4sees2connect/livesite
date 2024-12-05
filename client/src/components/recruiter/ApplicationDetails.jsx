@@ -209,6 +209,11 @@ const ApplicationDetails = () => {
             <p className="text-sm sm:text-base text-gray-700 ">Ans: <span className='ml-2'>{assessmentAns}</span></p>
           </div>
 
+          <div className='mb-4'>
+          <p className="text-lg font-medium">Availability </p>
+          {availability!=='Yes! Will join Immediately'? <p className='text-yellow-400'>{availability}</p>: <p className='text-green-600'>Immediate Joiner</p>}
+          </div>
+
 
         </div>
         <h1 className='w-[90%] md:w-[70%] mx-auto mt-8 text-2xl font-semibold'>Profile</h1>
