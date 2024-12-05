@@ -855,18 +855,15 @@ const Applicants = () => {
                                   Assessment Question
                                 </h3>
                                 <p>Ques: {internship.assessment}</p>
-                                {student.appliedInternships.map(
-                                  (appliedInternship) =>
-                                    appliedInternship.internship ===
-                                      internship._id ? (
+                                
                                       <p
-                                        key={appliedInternship.internship}
+                                        
                                         className="text-gray-600"
                                       >
-                                        Ans: {appliedInternship.assessmentAns}
+                                        Ans: {student.appliedInternships.assessmentAns}
                                       </p>
-                                    ) : null
-                                )}
+                                    
+                                
                               </div>
                             )}
 
