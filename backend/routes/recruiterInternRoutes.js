@@ -99,20 +99,46 @@ router.post("/post/:userId", async (req, res) => {
 
 router.get("/:recruiterId/getInternships", async (req, res) => {
   const { recruiterId } = req.params;
+  const { page = 1, searchName } = req.query; // Default to page 1 if no query is provided
+  const limit = 20; // Limit the results to 3 internships per page
+
   try {
+    // Find the recruiter by ID
     const recruiter = await Recruiter.findById(recruiterId);
     if (!recruiter)
       return res.status(404).json({ message: "Recruiter not found" });
 
-    const internships = await Internship.find({ recruiter: recruiterId }).sort({
-      createdAt: -1,
+    // Build the search criteria
+    const searchCriteria = { recruiter: recruiterId };
+    if (searchName) {
+      searchCriteria.internshipName = {
+        $regex: searchName,
+        $options: "i", // Case-insensitive matching
+      };
+    }
+
+    // Count total internships matching the criteria
+    const totalInternships = await Internship.countDocuments(searchCriteria);
+    const totalPages = Math.ceil(totalInternships / limit);
+    const skip = (page - 1) * limit;
+
+    // Fetch internships with filters and pagination
+    const internships = await Internship.find(searchCriteria)
+      .sort({ createdAt: -1 }) // Reverse sorted order
+      .skip(skip) // Skip the internships for previous pages
+      .limit(limit); // Limit to 3 internships per page
+
+    res.status(200).json({
+      internships,
+      totalPages,
     });
-    res.status(200).json(internships);
   } catch (error) {
     console.error("Error fetching internships:", error);
     res.status(500).json({ message: "Server Error" });
   }
 });
+
+
 
 router.get("/:recruiterId/applicants-count/:internshipId", async (req, res) => {
   const { recruiterId, internshipId } = req.params;

@@ -27,13 +27,14 @@ const RecDashboard = () => {
   const [selectedInternship, setSelectedInternship] = useState(null);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
-  const {refreshData}=useRecruiter();
+  const [searchName, setSearchName] = useState("");
+  const { refreshData } = useRecruiter();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(null);
   const itemsPerPage = 10;
-  const scrollRef=useRef();
+  const scrollRef = useRef();
 
   useEffect(() => {
     if (!token) {
@@ -42,39 +43,46 @@ const RecDashboard = () => {
     refreshData();
   }, [token]);
 
+  const constructQueryStringPageUpdation = (page,name) => {
+    let query = `page=${page}`;
+    if(name) query+=`&searchName=${name}`;
+    return query;
+  };
+
+
+  const fetchInternships = async (pageNo,name) => {
+    try {
+      setLoading(true);
+      const queryString = constructQueryStringPageUpdation(pageNo,name);
+      const response = await axios.get(
+        `${api}/recruiter/internship/${recruiterId}/getInternships?${queryString}`
+      );
+
+      setTotalPages(response.data.totalPages);
+
+      const internshipsWithApplicants = await Promise.all(
+        response.data.internships.map(async (internship) => {
+          const applicantsResponse = await axios.get(
+            `${api}/recruiter/internship/${recruiterId}/applicants-count/${internship._id}`
+          );
+          return {
+            ...internship,
+            applicantCount: applicantsResponse.data,
+          };
+        })
+      );
+
+      setInternships(internshipsWithApplicants);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching internships:", err);
+      setError("Failed to fetch internships. Please try again later.");
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchInternships = async () => {
-      try {
-        const response = await axios.get(
-          `${api}/recruiter/internship/${recruiterId}/getInternships`
-        );
-        // const sortedInternships = response.data.sort(
-        //   (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        // );
-
-        const internshipsWithApplicants = await Promise.all(
-          response.data.map(async (internship) => {
-            const applicantsResponse = await axios.get(
-              `${api}/recruiter/internship/${recruiterId}/applicants-count/${internship._id}`
-            );
-            return {
-              ...internship,
-              applicantCount: applicantsResponse.data,
-            };
-          })
-        );
-
-        setInternships(internshipsWithApplicants);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching internships:", err);
-        setError("Failed to fetch internships. Please try again later.");
-        setLoading(false);
-      }
-    };
-
-    fetchInternships();
-  }, [recruiterId]);
+    fetchInternships(currentPage,searchName);
+  }, [recruiterId,currentPage]);
 
   const openModal = (internship) => {
     setSelectedInternship(internship);
@@ -83,6 +91,17 @@ const RecDashboard = () => {
   const closeModal = () => {
     setSelectedInternship(null);
   };
+
+  const handleSearchName=()=>{
+    if(searchName){
+      fetchInternships(1,searchName);
+    }
+  }
+
+  const handleClearSearch=()=>{
+    setSearchName("");
+    fetchInternships(1,"");
+  }
 
   const updateStatus = async (newStatus, internshipId) => {
     try {
@@ -101,10 +120,22 @@ const RecDashboard = () => {
     }
   };
 
-  const handleScroll=()=>{
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      handleScroll()
+    }
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(currentPage + 1);
+    handleScroll();
+  };
+
+  const handleScroll = () => {
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 1000);
+    }, 500);
     scrollRef.current.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -124,20 +155,20 @@ const RecDashboard = () => {
   }
 
   // Calculate internships to display based on current page
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedInternships = internships.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  // const startIndex = (currentPage - 1) * itemsPerPage;
+  // const paginatedInternships = internships.slice(
+  //   startIndex,
+  //   startIndex + itemsPerPage
+  // );
 
-  const totalPages = Math.ceil(internships.length / itemsPerPage);
-  console.log("these are internships:", paginatedInternships);
+  // // const totalPages = Math.ceil(internships.length / itemsPerPage);
+  // console.log("these are internships:", paginatedInternships);
 
-  const filteredInternships = paginatedInternships
-    .filter((internship) =>
-      internship.internshipName.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  // const filteredInternships = paginatedInternships
+  //   .filter((internship) =>
+  //     internship.internshipName.toLowerCase().includes(searchTerm.toLowerCase())
+  //   )
+  //   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   if (internships.length === 0) {
     return (
@@ -162,14 +193,16 @@ const RecDashboard = () => {
       </h1>
       <div className="relative">
         <FaSearch className="absolute left-4 top-[13px]" />
-        <div className="mb-4 lg:w-[30%]">
+        <div className="mb-4 lg:w-[30%] flex space-x-4">
           <input
             type="text"
             placeholder="Search by internship name"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
             className="w-full p-2 border pl-10 border-gray-300 rounded-lg text-sm lg:text-base"
           />
+          <button onClick={handleSearchName} className="text-white bg-blue-400 rounded-md px-3 ">Search</button>
+          <button onClick={handleClearSearch} className="text-white bg-red-400 rounded-md px-3">Clear</button>
         </div>
       </div>
       <div className="bg-white w-full shadow-md rounded-lg p-2 lg:p-6 my-3 sm:mx-auto">
@@ -190,93 +223,98 @@ const RecDashboard = () => {
             View Details
           </div>
         </div>
-        
-        <div ref={scrollRef} className="overflow-y-auto h-screen scrollbar-thin">
-        {filteredInternships.map((internship) => (
-          <div
-            key={internship._id}
-            className="grid grid-cols-5 gap-2 py-2 border-b-2"
-          >
-            <div className="text-xs text-left ml-3 my-3 w-[80%] sm:text-center sm:text-sm sm:ml-4 lg:text-base lg:ml-10 lg:w-[190px]">
-              {internship.internshipName}
-            </div>
 
-            <div className="relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-4 sm:ml-5 md:ml-6 lg:ml-28 group">
-              <div className="flex items-center text-xs sm:text-base">
-                <span
-                  className={`${
-                    internship.status === "On Hold" && "bg-orange-300"
-                  } ${
-                    internship.status === "Fulfilled" && "bg-green-400"
-                  } bg-gray-200 rounded-lg px-2 py-1`}
-                >
-                  {internship.status}
-                </span>
-              </div>
-              <div className="absolute top-[90%] left-0 mt-1 text-sm lg:text-base hidden w-20 lg:w-32 bg-white border rounded shadow-md group-hover:block z-10">
-                <ul className="text-gray-700">
-                  <li
-                    className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => updateStatus("Active", internship._id)}
-                  >
-                    Active
-                  </li>
-                  <li
-                    className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => updateStatus("On Hold", internship._id)}
-                  >
-                    On Hold
-                  </li>
-                  <li
-                    className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => updateStatus("Fulfilled", internship._id)}
-                  >
-                    Fulfilled
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div className="w-[80%] text-xs sm:text-base lg:w-[80px] mx-auto text-center h-6 my-auto ml-3 lg:ml-20">
-              {internship.views}
-            </div>
-            <Link
-              to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}/page-1`}
-              className=" md:mx-auto text-xs px-1 sm:text-base ml-4  lg:ml-4 text-center my-auto rounded-xl bg-blue-400 text-white w-20 sm:w-24 lg:w-[190px] hover:bg-blue-700 hover:cursor-pointer py-1"
+        <div ref={scrollRef} className="overflow-y-auto h-screen scrollbar-thin">
+          {internships.map((internship) => (
+            <div
+              key={internship._id}
+              className="grid grid-cols-5 gap-2 py-2 border-b-2"
             >
-              Applications ({internship.applicantCount})
-            </Link>
-            <div className="text-center text-xs sm:text-base ml-10 sm:ml-12 md:ml-16  lg:w-32 mx-auto my-auto">
-              <button
-                onClick={() => openModal(internship)}
-                className="text-blue-500 hover:underline"
+              <div className="text-xs text-left ml-1 my-3 w-[80%] sm:text-center sm:text-sm sm:ml-4 lg:text-base lg:ml-10 lg:w-[190px]">
+                {internship.internshipName}
+              </div>
+
+              <div className="relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-4 sm:ml-5 md:ml-6 lg:ml-28 group">
+                <div className="flex items-center text-xs sm:text-base">
+                  <span
+                    className={`${internship.status === "On Hold" && "bg-orange-300"
+                      } ${internship.status === "Fulfilled" && "bg-green-400"
+                      } bg-gray-200 rounded-lg px-2 py-1`}
+                  >
+                    {internship.status}
+                  </span>
+                </div>
+                <div className="absolute top-[90%] left-0 mt-1 text-sm lg:text-base hidden w-20 lg:w-32 bg-white border rounded shadow-md group-hover:block z-10">
+                  <ul className="text-gray-700">
+                    <li
+                      className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => updateStatus("Active", internship._id)}
+                    >
+                      Active
+                    </li>
+                    <li
+                      className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => updateStatus("On Hold", internship._id)}
+                    >
+                      On Hold
+                    </li>
+                    <li
+                      className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => updateStatus("Fulfilled", internship._id)}
+                    >
+                      Fulfilled
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="w-[80%] text-xs sm:text-base lg:w-[80px] mx-auto text-center h-6 my-auto ml-3 lg:ml-20">
+                {internship.views}
+              </div>
+              <Link
+                to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}/page-1`}
+                className=" md:mx-auto text-xs px-1 sm:text-base mx-auto  sm:ml-5 lg:ml-4 text-center my-auto rounded-xl bg-blue-400 text-white w-20 sm:w-24 lg:w-[190px] hover:bg-blue-700 hover:cursor-pointer py-1"
               >
-                View
-              </button>
+                Applications ({internship.applicantCount})
+              </Link>
+              <div className="text-center text-xs sm:text-base mx-auto sm:ml-14 md:ml-16  lg:w-32 my-auto">
+                <button
+                  onClick={() => openModal(internship)}
+                  className="text-blue-500 hover:underline"
+                >
+                  View
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
         </div>
 
         {/* Pagination Controls */}
-        <div className="flex justify-center items-center mt-6">
-          <button
-            onClick={() => {setCurrentPage((prev) => Math.max(prev - 1, 1)); handleScroll()}}
-            disabled={currentPage === 1}
-            className="px-3 py-2 bg-blue-500 text-white rounded-md disabled:bg-blue-300"
-          >
-            <FaAngleLeft />
-          </button>
-          <span className="px-4 text-white-600">{` ${currentPage} / ${totalPages} `}</span>
-          <button
-            onClick={() =>
-              {setCurrentPage((prev) => Math.min(prev + 1, totalPages));handleScroll()}
-            }
-            disabled={currentPage === totalPages}
-            className="px-3 py-2 bg-blue-500 text-white rounded-md disabled:bg-blue-300"
-          >
-            <FaAngleRight />
-          </button>
-        </div>
+        {internships.length > 0 && (
+          <div className="flex justify-center my-4 space-x-4">
+            <button
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 rounded-md ${currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
+                }`}
+            >
+              <FaAngleLeft />
+            </button>
+
+            <span>
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className={`px-4 py-2 rounded-md ${currentPage === totalPages
+                ? "bg-gray-300"
+                : "bg-blue-500 text-white"
+                }`}
+            >
+              <FaAngleRight />
+            </button>
+          </div>
+        )}
 
         {selectedInternship && (
           <>
