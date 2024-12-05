@@ -9,6 +9,7 @@ const mongoose = require("mongoose");
 
 const { jwtDecode } = require("jwt-decode");
 const Skill = require("../schema/skillsSchema");
+const Profile = require("../schema/profileSchema");
 
 dotenv.config();
 const router = express.Router();
