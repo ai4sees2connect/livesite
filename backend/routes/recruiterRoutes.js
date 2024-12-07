@@ -146,8 +146,8 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ message: "Recruiter already exists" });
     }
     const currentDate = new Date();
-    const oneMonthLater = new Date(currentDate);
-    oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+    // const oneMonthLater = new Date(currentDate);
+    // oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
 
     recruiter = await Recruiter.create({
       firstname,
@@ -159,8 +159,8 @@ router.post("/signup", async (req, res) => {
       subscription: { // Initialize the subscription field
         planType: 'free', // You can set a default plan type
         activationDate: currentDate,
-        expirationDate: oneMonthLater,
-        status: 'inactive', // Default status
+        expirationDate: null,
+        status: 'active', // Default status
       }
     });
 
@@ -182,11 +182,22 @@ router.post("/signup/googleauth", async (req, res) => {
     let recruiter = await Recruiter.findOne({ email });
 
     if (!recruiter) {
+
+      const currentDate = new Date();
+    // const oneMonthLater = new Date(currentDate);
+    // oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+
       // If user doesn't exist, create a new one
       recruiter = new Recruiter({
         firstname,
         lastname,
         email,
+        subscription: { // Initialize the subscription field
+          planType: 'free', // You can set a default plan type
+          activationDate: currentDate,
+          expirationDate: null,
+          status: 'active', // Default status
+        }
         // Password can be omitted or a default value if using Google Auth
       });
       await recruiter.save();
@@ -251,30 +262,36 @@ router.post("/login/googleauth", async (req, res) => {
 });
 
 
-const refreshPostsForNewMonth = async (recruiter) => {
-  const currentDate = new Date();
-  const activationDate = new Date(recruiter.subscription.activationDate);
-  const currentMonth = currentDate.getMonth();
-  const activationMonth = activationDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-  const activationYear = activationDate.getFullYear();
+const activateFreePlan = async (recruiter) => {
+  try {
+    const currentDate = new Date();
 
-  // Check if a new month has started since activation
-  if (currentMonth !== activationMonth || currentYear !== activationYear) {
-    // Refresh the postsRemaining based on the plan type
-    if (recruiter.subscription.planType === 'free') {
-      recruiter.subscription.postsRemaining = 1; // Free version gets 1 post per month
-    } else if (recruiter.subscription.planType === '1-month') {
-      recruiter.subscription.postsRemaining = 3; // Reset to 3 for 1-month plan
-    } else if (recruiter.subscription.planType === '3-month') {
-      recruiter.subscription.postsRemaining = 4; // Reset to 4 for 3-month plan
-    } else if (recruiter.subscription.planType === '1-year') {
-      recruiter.subscription.postsRemaining = 10; // Reset to 10 for 1-year plan
+    // Check if both conditions are true
+    if (
+      recruiter.subscription.postsRemaining === 0 &&
+      recruiter.subscription.expirationDate &&
+      currentDate >= new Date(recruiter.subscription.expirationDate)
+    ) {
+      // Activate the free plan
+      recruiter.subscription.planType = "free";
+      recruiter.subscription.postsRemaining = 1; // Free plan gets 1 post per month
+      recruiter.subscription.activationDate = new Date();
+
+      // Set expiration date to exactly one month from activation date
+      recruiter.subscription.expirationDate = new Date(
+        currentDate.setMonth(currentDate.getMonth() + 1)
+      ); // One month after activation
+
+      await recruiter.save(); // Save the changes
+      console.log("Free plan activated for recruiter:", recruiter._id);
+      return { success: true, message: "Free plan activated successfully." };
     }
 
-    // Update activation date to the current month
-    recruiter.subscription.activationDate = new Date(currentYear, currentMonth, 1);
-    await recruiter.save(); // Save the recruiter with the updated subscription details
+    // If conditions aren't met, return without making changes
+    return { success: false, message: "Conditions for free plan not met." };
+  } catch (error) {
+    console.error("Error activating free plan:", error);
+    return { success: false, message: "Error activating free plan." };
   }
 };
 
@@ -292,10 +309,24 @@ router.get("/details", async (req, res) => {
 
     // Find the user in the database
     const recruiter = await Recruiter.findById(userId);
-
+    
     if (!recruiter) return res.json({ success: false });
+    
+    const currentDate = new Date();
+    if (
+      recruiter.subscription.postsRemaining === 0 &&
+      recruiter.subscription.expirationDate &&
+      currentDate >= new Date(recruiter.subscription.expirationDate)
+    ) {
+      // Try activating the free plan
+      const freePlanResult = await activateFreePlan(recruiter);
 
-    await refreshPostsForNewMonth(recruiter);
+      if (!freePlanResult.success) {
+        console.error("Free plan activation failed:", freePlanResult.message);
+        // Continue login process, even if free plan activation fails
+      }
+    }
+    // await refreshPostsForNewMonth(recruiter);
     // Send user data as response
     // console.log(recruiter);
     res.status(200).json({

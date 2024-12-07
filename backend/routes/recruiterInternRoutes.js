@@ -34,20 +34,37 @@ router.post("/post/:userId", async (req, res) => {
     incentiveDescription,
     ppoCheck,
   } = req.body;
+
   try {
     const recruiter = await Recruiter.findById(userId);
 
-    if (!recruiter)
+    if (!recruiter) {
       return res.status(404).json({ message: "Recruiter not found" });
+    }
 
-    recruiter.subscription.postsRemaining =
+    // Check if the subscription is active
+    if (recruiter.subscription.status !== "active") {
+      return res.status(403).json({ message: "Subscription is inactive." });
+    }
+
+    // Decrement postsRemaining
+    recruiter.subscription.postsRemaining = 
       parseInt(recruiter.subscription.postsRemaining) - 1;
 
-    // Get existing skills from the Skills schema
+    // Check if the subscription should be set to inactive
+    const currentDate = new Date();
+    const expirationDate = new Date(recruiter.subscription.expirationDate);
+    if (
+      recruiter.subscription.postsRemaining <= 0 || 
+      currentDate > expirationDate
+    ) {
+      recruiter.subscription.status = "inactive"; // Set subscription to inactive
+    }
+
+    // Handle new skills logic
     const existingSkills = await Skill.find({}, { name: 1 });
     const existingSkillNames = existingSkills.map((skill) => skill.name);
 
-    // Identify new skills
     const newSkills = skills
       .filter((skill) => !existingSkillNames.includes(skill))
       .sort();
@@ -59,12 +76,13 @@ router.post("/post/:userId", async (req, res) => {
       await Skill.insertMany(newSkillsToSave);
     }
 
+    // Handle new profile logic
     const existingProfile = await Profile.findOne({ name: jobProfile });
-
     if (!existingProfile) {
       await Profile.create({ name: jobProfile });
     }
 
+    // Create new internship
     const newInternship = new Internship({
       internshipName,
       internshipType,
@@ -86,7 +104,6 @@ router.post("/post/:userId", async (req, res) => {
     });
     await newInternship.save();
 
-    console.log("Recruiter object:", recruiter);
     recruiter.internships.push(newInternship._id);
     await recruiter.save();
 
@@ -96,6 +113,7 @@ router.post("/post/:userId", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 router.get("/:recruiterId/getInternships", async (req, res) => {
   const { recruiterId } = req.params;
