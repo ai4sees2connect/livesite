@@ -134,8 +134,8 @@ const recruiterSchema = new mongoose.Schema({
       type: Date, // Automatically calculated when plan is purchased
     },
     postsRemaining:{
-      type: String,
-      default: "1"
+      type: Number,
+      default: 1
     },
     status: {
       type: String,
