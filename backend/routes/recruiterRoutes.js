@@ -13,6 +13,7 @@ const Otp = require("../schema/otpSchema");
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const Profile = require("../schema/profileSchema");
+const Order = require("../schema/ordersSchema");
 
 dotenv.config();
 const router = express.Router();
@@ -816,6 +817,18 @@ router.post('/verify-otp', async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+router.get('/:userId/get-orders', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const orders = await Order.find({ recruiterId: userId }).sort({ transactionDate: -1 });
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve orders' });
   }
 });
 

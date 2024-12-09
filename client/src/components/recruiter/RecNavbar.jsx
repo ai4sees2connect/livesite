@@ -146,6 +146,11 @@ const RecNavbar = () => {
                     `hover:text-blue-500 ${isActive ? 'text-blue-500' : ''}`
                   }>Profile</NavLink>
                 </li>
+                <li className={`py-2 px-4 hover:text-blue-500 ${navbarState === 'Orders' && 'text-blue-500'}`}>
+                  <NavLink to={`/recruiter/orders/${userId}`} className={({ isActive }) =>
+                    `hover:text-blue-500 ${isActive ? 'text-blue-500' : ''}`
+                  }>Orders</NavLink>
+                </li>
                 <li className={`py-2 px-4 hover:text-blue-500 `}>
                   <button onClick={() => handleLogout()}>Logout</button>
                 </li>
@@ -215,6 +220,17 @@ const RecNavbar = () => {
           >
             Profile
           </NavLink>
+          <NavLink
+            to={`/recruiter/orders/${userId}`}
+            onClick={toggleSidebar}
+            className={({ isActive }) =>
+              `py-2 hover:text-blue-500 ${isActive ? 'text-blue-500' : ''}`
+            }
+          >
+            Orders
+          </NavLink>
+
+          
 
           <button
             onClick={() => { handleLogout(); toggleSidebar(); }}

@@ -51,6 +51,7 @@ import InternshipsUniversal from "./components/common/InternshipsUniversal";
 // import ForgetPassword from "./components/common/ForgetPassword";
 import ForgetPasswordRecruiter from "./components/common/ForgetPasswordRecruiter";
 import ForgetPasswordStudent from "./components/common/ForgetPasswordStudent";
+import RecOrders from "./components/recruiter/RecOrders";
 
 // import InternshipDetails from "./components/student/InternshipDetails";
 
@@ -108,6 +109,7 @@ function App() {
         <Route path="/recruiter/home/:userId" element={<RecruiterHome />} />
         <Route path="/recruiter/profile/:userId" element={<RecProfile />} />
         <Route path="/recruiter/dashboard/:userId" element={<RecDashboard />} />
+        <Route path="/recruiter/orders/:userId" element={<RecOrders/>} />
         <Route
           path="/recruiter/dashboard/:recruiterId/applicants/:internshipId/:pageNum?"
           element={<Applicants />}
