@@ -18,6 +18,8 @@ import TimeAgo from "../common/TimeAgo";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRecruiter } from "./context/recruiterContext";
+import ReactQuill from "react-quill";
+// import { useRecruiter } from "./context/recruiterContext";
 
 const RecDashboard = () => {
   const [internships, setInternships] = useState([]);
@@ -28,7 +30,12 @@ const RecDashboard = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [searchName, setSearchName] = useState("");
-  const { refreshData } = useRecruiter();
+  const { refreshData,recruiter } = useRecruiter();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [updatedInternship, setUpdatedInternship] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [postsleft,setPostsLeft]=useState(null);
+  //  const { recruiter, refreshData } = useRecruiter();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,17 +50,25 @@ const RecDashboard = () => {
     refreshData();
   }, [token]);
 
-  const constructQueryStringPageUpdation = (page,name) => {
+  useEffect(()=>{
+    if(recruiter){
+    setPostsLeft(recruiter.subscription.postsRemaining);
+    }
+  },[recruiter])
+
+  console.log(postsleft);
+
+  const constructQueryStringPageUpdation = (page, name) => {
     let query = `page=${page}`;
-    if(name) query+=`&searchName=${name}`;
+    if (name) query += `&searchName=${name}`;
     return query;
   };
 
 
-  const fetchInternships = async (pageNo,name) => {
+  const fetchInternships = async (pageNo, name) => {
     try {
       setLoading(true);
-      const queryString = constructQueryStringPageUpdation(pageNo,name);
+      const queryString = constructQueryStringPageUpdation(pageNo, name);
       const response = await axios.get(
         `${api}/recruiter/internship/${recruiterId}/getInternships?${queryString}`
       );
@@ -81,8 +96,8 @@ const RecDashboard = () => {
     }
   };
   useEffect(() => {
-    fetchInternships(currentPage,searchName);
-  }, [recruiterId,currentPage]);
+    fetchInternships(currentPage, searchName);
+  }, [recruiterId, currentPage]);
 
   const openModal = (internship) => {
     setSelectedInternship(internship);
@@ -92,15 +107,15 @@ const RecDashboard = () => {
     setSelectedInternship(null);
   };
 
-  const handleSearchName=()=>{
-    if(searchName){
-      fetchInternships(1,searchName);
+  const handleSearchName = () => {
+    if (searchName) {
+      fetchInternships(1, searchName);
     }
   }
 
-  const handleClearSearch=()=>{
+  const handleClearSearch = () => {
     setSearchName("");
-    fetchInternships(1,"");
+    fetchInternships(1, "");
   }
 
   const updateStatus = async (newStatus, internshipId) => {
@@ -141,6 +156,51 @@ const RecDashboard = () => {
       behavior: "smooth",
     });
   }
+
+  const openEditModal = (internship) => {
+    setUpdatedInternship(internship); // Populate with current internship details
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+  const handleUpdateInternship = async () => {
+    if(postsleft<1){
+      toast.error("You have reached your post limit. Please upgrade your subscription to continue");
+      return;
+    }else{
+    try {
+     
+
+      
+      const { internshipName, description, numberOfOpenings,_id } = updatedInternship;
+  
+      // Example API call (replace URL with your endpoint)
+      const response = await axios.put(`${api}/internship/${_id}/update`, {
+        internshipName,
+        description,
+        numberOfOpenings,
+        recruiterId
+      });
+  
+      // Log success response or show success message
+      console.log("Internship updated successfully:", response.data);
+      toast.success("Internship updated successfully!");
+  
+      // Close modals
+      setShowConfirmation(false);
+      closeEditModal();
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating internship:", error);
+      toast.error("Failed to update the internship. Please try again.");
+    }
+  }
+  };
+
+
+  console.log('this is updated internship', updatedInternship)
 
   if (loading) {
     return <Spinner />;
@@ -206,42 +266,47 @@ const RecDashboard = () => {
         </div>
       </div>
       <div className="bg-white w-full shadow-md rounded-lg p-2 lg:p-6 my-3 sm:mx-auto">
-        <div className="grid grid-cols-5 font-semibold mb-2 border-b-2 pb-2 text-center">
+        <div className="grid grid-cols-4 font-semibold mb-2 border-b-2 pb-2 text-center">
           <div className="text-xs -ml-3 lg:text-base lg:w-[190px] lg:ml-10">
             Post
           </div>
           <div className="text-xs ml-3 lg:text-base lg:w-[90px] lg:ml-28">
             Status
           </div>
-          <div className="text-xs ml-3 lg:text-base lg:w-[90px] lg:ml-20">
+          {/* <div className="text-xs ml-3 lg:text-base lg:w-[90px] lg:ml-20">
             Total Views
-          </div>
+          </div> */}
           <div className="text-xs ml-4 lg:text-base lg:w-[90px] lg:ml-16 md:mr-3">
             View Applicants
           </div>
           <div className="text-xs ml-6 lg:text-base lg:w-[90px] lg:ml-[93px] md:mr-4">
             View Details
           </div>
+          {/* <div className="text-xs ml-6 lg:text-base lg:w-[90px] lg:ml-[93px] md:mr-4">
+            Edit
+          </div> */}
         </div>
 
         <div ref={scrollRef} className="overflow-y-auto h-screen scrollbar-thin">
           {internships.map((internship) => (
             <div
               key={internship._id}
-              className="grid grid-cols-5 gap-2 py-2 border-b-2"
+              className="grid grid-cols-4 gap-2 py-2 border-b-2"
             >
               <div className="text-xs text-left ml-1 my-3 w-[80%] sm:text-center sm:text-sm sm:ml-4 lg:text-base lg:ml-10 lg:w-[190px]">
                 {internship.internshipName}
               </div>
 
-              <div className="relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-4 sm:ml-5 md:ml-6 lg:ml-28 group">
+              <div className="relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-4 sm:ml-5 md:ml-6 lg:ml-28  group">
                 <div className="flex items-center text-xs sm:text-base">
                   <span
                     className={`${internship.status === "On Hold" && "bg-orange-300"
                       } ${internship.status === "Fulfilled" && "bg-green-400"
-                      } bg-gray-200 rounded-lg px-2 py-1`}
+                      } bg-gray-200 rounded-lg px-2 py-1 flex flex-col items-center`}
                   >
                     {internship.status}
+
+                    <p className="text-blue-400">({internship.applicantCount} views)</p>
                   </span>
                 </div>
                 <div className="absolute top-[90%] left-0 mt-1 text-sm lg:text-base hidden w-20 lg:w-32 bg-white border rounded shadow-md group-hover:block z-10">
@@ -267,23 +332,28 @@ const RecDashboard = () => {
                   </ul>
                 </div>
               </div>
-              <div className="w-[80%] text-xs sm:text-base lg:w-[80px] mx-auto text-center h-6 my-auto ml-3 lg:ml-20">
+              {/* <div className="w-[80%] text-xs sm:text-base lg:w-[80px] mx-auto text-center h-6 my-auto ml-3 lg:ml-20">
                 {internship.views}
-              </div>
+              </div> */}
+
               <Link
                 to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}/page-1`}
                 className=" md:mx-auto text-xs px-1 sm:text-base mx-auto  sm:ml-5 lg:ml-4 text-center my-auto rounded-xl bg-blue-400 text-white w-20 sm:w-24 lg:w-[190px] hover:bg-blue-700 hover:cursor-pointer py-1"
               >
-                Applications ({internship.applicantCount})
+                {internship.applicantCount} Applicants
               </Link>
-              <div className="text-center text-xs sm:text-base mx-auto sm:ml-14 md:ml-16  lg:w-32 my-auto">
+              <div className="flex space-x-3 items-center justify-center text-xs sm:text-base mx-auto sm:ml-14 md:ml-16  lg:w-32 my-auto">
                 <button
                   onClick={() => openModal(internship)}
                   className="text-blue-500 hover:underline"
                 >
                   View
                 </button>
+                <span>/</span>
+                <button onClick={() => openEditModal(internship)} className="text-blue-500 hover:underline">Edit</button>
               </div>
+
+
             </div>
           ))}
         </div>
@@ -349,7 +419,8 @@ const RecDashboard = () => {
 
                 <div className="flex items-center text-gray-700 mb-2">
                   <FaMoneyBillWave className="mr-2" />
-                  <span>₹ {selectedInternship.stipend}</span>
+                  {selectedInternship.stipend && <span>{selectedInternship.currency} {selectedInternship.stipend}</span>}
+                  {!selectedInternship.stipend && <span>Unpaid</span>}
                 </div>
                 <div className="flex items-center text-gray-700 mb-2">
                   <FaClock className="mr-2" />
@@ -403,6 +474,148 @@ const RecDashboard = () => {
             </div>
           </>
         )}
+
+        {isEditModalOpen && (
+          <>
+            {/* Background overlay */}
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={closeEditModal}></div>
+
+            {/* Edit Modal */}
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-full lg:w-[60%] h-[80%] p-6 relative overflow-auto mx-1 lg:mx-0">
+                <h2 className="text-2xl font-semibold mb-4">Edit Internship</h2>
+                <button
+                  onClick={closeEditModal}
+                  className="absolute top-7 right-4 text-blue-500 hover:text-blue-700 focus:outline-none"
+                >
+                  <FaTimes />
+                </button>
+
+                <form className="space-y-4">
+                  <div>
+                    <label className="block font-medium">Internship Name:</label>
+                    <input
+                      type="text"
+                      name="internshipName"
+                      value={updatedInternship?.internshipName || ""}
+                      onChange={(e) =>
+                        setUpdatedInternship((prev) => ({
+                          ...prev,
+                          internshipName: e.target.value,
+                        }))
+                      }
+                      className="border rounded w-full p-2"
+                    />
+                  </div>
+
+                  {/* <div>
+                    <label className="block font-medium">Location:</label>
+                    <input
+                      type="text"
+                      name="internLocation"
+                      value={updatedInternship?.internLocation?.city || ""}
+                      onChange={(e) =>
+                        setUpdatedInternship((prev) => ({
+                          ...prev,
+                          internLocation: { ...prev.internLocation, city: e.target.value },
+                        }))
+                      }
+                      className="border rounded w-full p-2"
+                    />
+                  </div> */}
+
+                  <div className="flex flex-col my-5">
+                    <label htmlFor="numberOfOpenings" className="mb-2 font-medium">
+                      Number of Openings
+                    </label>
+                    <input
+                      id="numberOfOpenings"
+                      type="number"
+                      name="numberOfOpenings"
+                      value={updatedInternship?.numberOfOpenings || ""}
+                      onChange={(e) =>
+                        setUpdatedInternship((prev) => ({
+                          ...prev,
+                          numberOfOpenings: e.target.value,
+                        }))
+                      }
+                      className="p-2 border border-gray-300 rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="e.g., 4"
+                      min={1}
+                      max={100}
+                    />
+                  </div>
+
+                  <div className="flex flex-col my-5 h-[320px]">
+                    <label className="my-2 ml-2 font-medium">
+                      Intern's responsibilities
+                    </label>
+                    <ReactQuill
+                      value={updatedInternship?.description}
+                      onChange={(val) =>
+                        setUpdatedInternship((prev) => ({
+                          ...prev,
+                          description: val,
+                        }))
+                      }
+                      className="p-2 rounded-md h-[200px]"
+                      theme="snow"
+                      placeholder="Enter the requirements...."
+                    />
+                  </div>
+
+
+
+                  {/* Add more fields as needed */}
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmation(true)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    Update
+                  </button>
+                </form>
+              </div>
+            </div>
+          </>
+        )}
+
+        {showConfirmation && (
+          <>
+            {/* Background overlay */}
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              onClick={() => setShowConfirmation(false)} // Close modal on outside click
+            ></div>
+
+            {/* Modal Content */}
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="bg-white border border-gray-300 rounded-lg p-6 w-full max-w-md mx-4 shadow-lg">
+                <h2 className="text-xl font-semibold mb-4">Confirm Update</h2>
+                <p className="mb-6 text-gray-700">
+                  Your available postings will be deducted by 1. Do you wish to update this internship?
+                </p>
+                <div className="flex justify-end space-x-4">
+                  <button
+                    onClick={() => setShowConfirmation(false)} // Cancel
+                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 focus:outline-none"
+                  >
+                    No
+                  </button>
+                  <button
+                    onClick={handleUpdateInternship}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
+                  >
+                    Yes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+
+
       </div>
     </div>
   );
