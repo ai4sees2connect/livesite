@@ -20,7 +20,7 @@ const axios = require('axios');
 const job =require('./cron')
 
 
-// job.start();
+job.start();
 const app = express();
 const PORT=process.env.PORT || 4000;
 dotenv.config();
