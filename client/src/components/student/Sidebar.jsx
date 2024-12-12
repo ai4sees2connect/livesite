@@ -30,7 +30,7 @@ const Sidebar = ({ student }) => {
       {/* Header */}
       <div className="mt-7 py-12">
         {!student ? (
-          <div className="text-3xl lg:text-5xl  lg:py-10 z-20">
+          <div className="text-3xl lg:text-5xl  lg:py-10 z-20 ">
             <div className="relative w-fit mx-auto z-0 text-white">
               Transform Your Dream Job into Reality
               <div
@@ -38,6 +38,7 @@ const Sidebar = ({ student }) => {
                   `}
               ></div>
             </div>
+            {/* <div className="lg:text-2xl text-white z-0 relative">AI4SEE PVT LTD</div> */}
           </div>
         ) : (
           <div>
@@ -56,6 +57,7 @@ const Sidebar = ({ student }) => {
       </div>
       {/* Pending Assignment */}
       {/* Uncomment and implement your pending assignments here */}
+      <div className="text-lg md:text-2xl lg:text-4xl text-blue-200 z-0 relative mb-3 font-semibold">AI4SEE PVT LTD</div>
     </div>
   );
 };
