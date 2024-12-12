@@ -11,7 +11,7 @@ import Spinner from "../common/Spinner";
 import { useStudent } from "../student/context/studentContext";
 import Sidebar from "../student/Sidebar";
 // import jwt from 'jsonwebtoken';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 const HomeUniversal = () => {
   const navigate = useNavigate();
@@ -34,15 +34,15 @@ const HomeUniversal = () => {
   }, []);
 
   useEffect(() => {
-   
-    if(token){
+
+    if (token) {
       try {
         const decoded = jwtDecode(token);
         if (decoded) {
           const userType = decoded.userType; // 'student' or 'recruiter'
-          
+
           console.log('User Type:', userType);
-    
+
           // Navigate or render components based on user type
           if (userType === 'Student') {
             navigate(`/student/dashboard/${idFromToken}`)
@@ -58,7 +58,7 @@ const HomeUniversal = () => {
     }
 
     console.log(userId);
-  }, [ idFromToken, token]);
+  }, [idFromToken, token]);
 
   // if (!student) {
   //   return <Spinner />;
@@ -66,10 +66,10 @@ const HomeUniversal = () => {
 
   return (
     <>
-    
-      <div className="mt-7 text-center">
-      
-      <div className="text-center">
+
+      <div className="mt-7 text-center overflow-x-hidden">
+
+        <div className="border border-black w-[96vw] mx-auto">
           <Sidebar student={student} />
         </div>
         <RightSide />
