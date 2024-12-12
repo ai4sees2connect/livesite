@@ -69,7 +69,7 @@ const HomeUniversal = () => {
 
       <div className="mt-7 text-center overflow-x-hidden">
 
-        <div className="border border-black w-[96vw] mx-auto">
+        <div className=" w-[96vw] mx-auto">
           <Sidebar student={student} />
         </div>
         <RightSide />
