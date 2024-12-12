@@ -19,14 +19,14 @@ const Sidebar = ({ student }) => {
 
   return (
     <div
-      className="pt-10 px-8 bg-[#f0fbff] relative lg:min-h-[300px]"
+      className="pt-10 px-8 bg-[#f0fbff] relative lg:min-h-[300px] w-[96vw] mx-auto "
       style={{
         backgroundImage: `url(${bannerImg})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div className="absolute w-full h-full bottom-0 left-0 bg-black/40"></div>
+      <div className="absolute w-[96vw] h-full bottom-0 left-0 bg-black/40 "></div>
       {/* Header */}
       <div className="mt-7 py-12">
         {!student ? (

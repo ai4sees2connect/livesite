@@ -9,15 +9,15 @@ const Footer = () => {
   const [hoveredIcon, setHoveredIcon] = useState(null);
 
   return (
-    <footer className="h-auto bg-gray-700 text-white py-5">
-      <div className="text-xs sm:text-base flex flex-col space-y-9 items-center max-w-full ">
+    <footer className="h-auto bg-gray-700 text-white py-5  ">
+      <div className="text-xs sm:text-base flex flex-col space-y-9 items-center  ">
         
         
-        <div className="flex text-center   space-x-1   sm:space-x-4 border-b py-1 my-3 ">
-          <Link to="/about-us" className="  md:px-2 hover:text-blue-300">
+        <div className="flex text-center space-x-0  sm:space-x-4 border-b py-1 my-3 ">
+          <Link to="/about-us" className="px-3  md:px-2 hover:text-blue-300">
             About us
           </Link>
-          <Link to="/contact" className=" px-1 md:px-2 hover:text-blue-300">
+          <Link to="/contact" className=" px-3 md:px-2 hover:text-blue-300">
             Contact us
           </Link>
           <Link
@@ -28,11 +28,11 @@ const Footer = () => {
           </Link>
           <Link
             to="/terms-conditions"
-            className="px-1 md:px-2 hover:text-blue-300"
+            className=" md:px-2 hover:text-blue-300"
           >
             Terms and conditions
           </Link>
-          <Link to="/cancellation" className="px-1 md:px-2 hover:text-blue-300">
+          <Link to="/cancellation" className=" md:px-2 hover:text-blue-300">
             Cancellation policy
           </Link>
         </div>
@@ -73,7 +73,7 @@ const Footer = () => {
         <div className="flex flex-col justify-center items-center">
           <p>© Copyright 2024 Internsnest</p>
           <p>( Powered by AI4SEE PVT LTD )</p>
-          <p>9th Main Road, Vysya Bank Colony, New Gurappana Palya, 1st Stage, BTM 1st Stage, Bengaluru, Karnataka</p>
+          <p className="text-center">9th Main Road, Vysya Bank Colony, New Gurappana Palya, 1st Stage, BTM 1st Stage, Bengaluru, Karnataka</p>
 
         </div>
 

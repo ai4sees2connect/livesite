@@ -220,31 +220,7 @@ const RightSide = () => {
 
   return (
     <div className="">
-      {/* <button className="fixed right-10 bottom-5 border border-black h-[46px] w-[220px] text-center bg-blue-400 rounded-md z-20 font-semibold hover:bg-green-600">
-      <FontAwesomeIcon icon={faPhone} className="text-black mr-2" />
-      Contact Us</button> */}
-      {/* Trending Courses */}
-      <div className="px-3 lg:px-5 ">
-        {/* <h1 className="text-2xl font-bold py-5 text-center mb-5">
-          Trending on InternsNest
-          <FontAwesomeIcon
-            icon={faFire}
-            className="text-orange-600 ml-2 fa-beat"
-          />
-        </h1> */}
 
-        {/* <div className="w-full overflow-hidden">
-          <video
-            src={vids2}
-            autoPlay
-            muted
-            loop
-            className="md:w-[50%] md:h-[30%] mx-auto  "
-          >
-            Your browser does not support the video tag.
-          </video>
-        </div> */}
-      </div>
       {/* Quick Links */}
       <div className=" my-10 px-3 lg:px-0 rounded-md mx-auto lg:w-[90%]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 items-center gap-5 justify-center">
@@ -458,7 +434,7 @@ const RightSide = () => {
       </div>
       {/* footer top */}
       {!token && (
-        <div className="bg-footer  h-64 w-full bg-no-repeat bg-cover px-5 py-5 lg:py-0">
+        <div className="bg-footer  h-64 w-full bg-no-repeat bg-cover px-5 py-5 lg:py-0 ">
           <div className="flex flex-col lg:flex-row justify-center items-center h-full gap-5">
             <h2 className="lg:flex-1 text-3xl lg:text-5xl text-white font-bold">
               Boost your career with InternsNest today
