@@ -71,9 +71,9 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col justify-center items-center">
-          <p>© Copyright 2024 Internsnest</p>
-          <p>( Powered by AI4SEE PVT LTD )</p>
-          <p className="text-center">9th Main Road, Vysya Bank Colony, New Gurappana Palya, 1st Stage, BTM 1st Stage, Bengaluru, Karnataka</p>
+          <p className="text-center ">© Copyright 2024 Internsnest</p>
+          <p className="text-center">( Powered by AI4SEE PVT LTD )</p>
+          <p className="text-center px-3">9th Main Road, Vysya Bank Colony, New Gurappana Palya, 1st Stage, BTM 1st Stage, Bengaluru, Karnataka</p>
 
         </div>
 
