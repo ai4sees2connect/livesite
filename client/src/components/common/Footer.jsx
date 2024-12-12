@@ -9,8 +9,10 @@ const Footer = () => {
   const [hoveredIcon, setHoveredIcon] = useState(null);
 
   return (
-    <footer className="h-[220px] bg-gray-700 text-white">
+    <footer className="h-auto bg-gray-700 text-white py-5">
       <div className="text-xs sm:text-base flex flex-col space-y-9 items-center max-w-full ">
+        
+        
         <div className="flex text-center   space-x-1   sm:space-x-4 border-b py-1 my-3 ">
           <Link to="/about-us" className="  md:px-2 hover:text-blue-300">
             About us
@@ -35,38 +37,46 @@ const Footer = () => {
           </Link>
         </div>
         <div className="flex space-x-10">
-  <a
-    href="https://www.instagram.com/ai4seespvtltd/?next=%2F&hl=en"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <FaInstagram className="w-7 h-8 hover:text-pink-500 cursor-pointer" />
-  </a>
-  <a
-    href=" https://www.facebook.com/profile.php?id=61565777621917 "
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <FaFacebook className="w-7 h-8 hover:text-blue-400 cursor-pointer" />
-  </a>
-  <a
-    href="https://www.linkedin.com/company/ai4sees/?originalSubdomain=in"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <FaLinkedin className="w-7 h-8 hover:text-blue-500 cursor-pointer" />
-  </a>
-  <a
-    href="https://twitter.com/uzzaman_al"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <FontAwesomeIcon
-      icon={faXTwitter}
-      className="w-7 h-8 hover:text-black cursor-pointer"
-    />
-  </a>
-</div>
+          <a
+            href="https://www.instagram.com/ai4seespvtltd/?next=%2F&hl=en"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaInstagram className="w-7 h-8 hover:text-pink-500 cursor-pointer" />
+          </a>
+          <a
+            href=" https://www.facebook.com/profile.php?id=61565777621917 "
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaFacebook className="w-7 h-8 hover:text-blue-400 cursor-pointer" />
+          </a>
+          <a
+            href="https://www.linkedin.com/company/ai4sees/?originalSubdomain=in"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaLinkedin className="w-7 h-8 hover:text-blue-500 cursor-pointer" />
+          </a>
+          <a
+            href="https://twitter.com/uzzaman_al"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FontAwesomeIcon
+              icon={faXTwitter}
+              className="w-7 h-8 hover:text-black cursor-pointer"
+            />
+          </a>
+        </div>
+
+        <div className="flex flex-col justify-center items-center">
+          <p>© Copyright 2024 Internsnest</p>
+          <p>( Powered by AI4SEE PVT LTD )</p>
+          <p>9th Main Road, Vysya Bank Colony, New Gurappana Palya, 1st Stage, BTM 1st Stage, Bengaluru, Karnataka</p>
+
+        </div>
+
       </div>
     </footer>
   );
