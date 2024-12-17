@@ -57,7 +57,7 @@ const Sidebar = ({ student }) => {
       </div>
       {/* Pending Assignment */}
       {/* Uncomment and implement your pending assignments here */}
-      <div className="text-lg md:text-2xl lg:text-4xl text-blue-200 z-0 relative mb-3 font-semibold">AI4SEE PVT LTD</div>
+      {/* <div className="text-lg md:text-2xl lg:text-4xl text-blue-200 z-0 relative mb-3 font-semibold">AI4SEE PVT LTD</div> */}
     </div>
   );
 };
