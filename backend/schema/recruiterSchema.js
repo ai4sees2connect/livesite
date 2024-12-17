@@ -135,7 +135,7 @@ const recruiterSchema = new mongoose.Schema({
     },
     postsRemaining:{
       type: Number,
-      default: 1
+      default: 2
     },
     status: {
       type: String,

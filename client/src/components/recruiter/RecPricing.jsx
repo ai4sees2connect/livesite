@@ -12,7 +12,7 @@ const RecPricing = () => {
   const { recruiterId } = useParams();
   const { recruiter } = useRecruiter();
   const [selectedPosts, setSelectedPosts] = useState(1);
-  const pricePerPost = 2;
+  const pricePerPost = 100;
   const [showDialog, setShowDialog] = useState(false);
   const [pendingPlan, setPendingPlan] = useState(null);
 
@@ -152,8 +152,8 @@ const RecPricing = () => {
           <hr />
           <p className="text-gray-600 my-4">Best for trial period</p>
 
-          <p className="text-blue-600 mb-4">Total Posting: 1 per month</p>
-          <p className="text-2xl font-bold">&#8377;0.00</p>
+          <p className="text-blue-600 mb-4">Posting: 2 per month</p>
+          <p className="text-2xl font-bold">&#8377;0</p>
         </div>
 
         {/* 1 Month Plan */}
@@ -163,13 +163,13 @@ const RecPricing = () => {
             <hr />
             <p className="text-gray-600 my-4">Best for short-term hiring.</p>
 
-            <p className="text-blue-600  mb-4">Total Posting: 3 per month</p>
-            <p className="text-2xl font-bold">&#8377;1</p>
+            <p className="text-blue-600  mb-4">Total Posting: 5 per month</p>
+            <p className="text-2xl font-bold">&#8377;99</p>
           </div>
 
           <button
             className=" bg-orange-500 text-white py-2 px-4 rounded-lg"
-            onClick={() => handlePayment(100, "1-month")}
+            onClick={() => handlePayment(9900, "1-month")}
           >
             Buy Now
           </button>
@@ -183,12 +183,12 @@ const RecPricing = () => {
             <p className="text-gray-600 my-4">
               Popular choice for consistent hiring.
             </p>
-            <p className="text-blue-600  mb-4">Total Posting: 4 per month</p>
-            <p className="text-2xl font-bold">&#8377;2</p>
+            <p className="text-blue-600  mb-4">Total Posting: 8 per month</p>
+            <p className="text-2xl font-bold">&#8377;199</p>
           </div>
           <button
             className=" bg-orange-500 text-white py-2 px-4 rounded-lg"
-            onClick={() => handlePayment(200, "3-month")}
+            onClick={() => handlePayment(19900, "3-month")}
           >
             Buy Now
           </button>
@@ -204,11 +204,11 @@ const RecPricing = () => {
               Best value for long-term hiring needs.
             </p>
             <p className="text-blue-600  mb-4">Total Posting: 10 per month</p>
-            <p className="text-2xl font-bold">&#8377;3</p>
+            <p className="text-2xl font-bold">&#8377;499</p>
           </div>
           <button
             className=" bg-orange-500 text-white py-2 px-4 rounded-lg"
-            onClick={() => handlePayment(300, "1-year")}
+            onClick={() => handlePayment(49900, "1-year")}
           >
             Buy Now
           </button>
