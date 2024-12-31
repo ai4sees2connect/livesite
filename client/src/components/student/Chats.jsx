@@ -37,6 +37,7 @@ const Chats = () => {
   const [selectedInternship, setSelectedInternship] = useState(null);
 
   const [companyName, setCompanyName] = useState("");
+  const [recruiterName, setRecruiterName]=useState("");
 
   const [internshipName, setInternshipName] = useState("");
   const [activeStatus, setActiveStatus] = useState(false);
@@ -218,7 +219,10 @@ const Chats = () => {
         handleInfoSetter(
           shortlistedInternships[0].companyName,
           shortlistedInternships[0].internshipName,
-          shortlistedInternships[0].isActive
+          shortlistedInternships[0].isActive,
+          shortlistedInternships[0].recruiterFirstName,
+          shortlistedInternships[0].recruiterLastName,
+
         );
       }
       setIsLoading(false);
@@ -317,10 +321,11 @@ const Chats = () => {
     });
   };
 
-  const handleInfoSetter = (companyName, internshipName, isActive) => {
+  const handleInfoSetter = (companyName, internshipName, isActive, recruiterFirstName,recruiterLastName) => {
     setCompanyName(companyName);
     setInternshipName(internshipName);
     setActiveStatus(isActive);
+    setRecruiterName(`${recruiterFirstName} ${recruiterLastName}`);
     console.log("running");
   };
 
@@ -771,6 +776,8 @@ const Chats = () => {
               statusUpdatedAt,
               isActive,
               studentStatus,
+              recruiterFirstName,
+              recruiterLastName
             } = intern;
 
             // Construct the chat key for retrieving messages from chatHistories
@@ -793,13 +800,13 @@ const Chats = () => {
                 }  w-full`}
                 onClick={() => {
                   handleInternClick(internshipId, recruiterId);
-                  handleInfoSetter(companyName, internshipName, isActive);
+                  handleInfoSetter(companyName, internshipName, isActive,recruiterFirstName,recruiterLastName);
                 }}
               >
                 <div className="flex-grow">
                   <h3 className="text-lg font-semibold text-black flex items-center relative">
                     <span className="flex items-center text-black text-xl capitalize">
-                      {companyName}
+                      {companyName?companyName:recruiterName}
                     </span>
                     {isActive && (
                       <div className="ml-2 bg-green-300 rounded-full w-2 h-2"></div>
@@ -900,7 +907,7 @@ const Chats = () => {
             <span>back</span>
           </button>
           <p className="font-semibold flex items-center space-x-4 capitalize text-2xl text-black">
-            <span>{companyName}</span>{" "}
+            <span>{companyName?companyName:recruiterName}</span>{" "}
             {activeStatus && (
               <span className="text-sm text-green-500 flex mt-2 items-center space-x-2">
                 <span>online</span>
