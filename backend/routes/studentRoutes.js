@@ -560,7 +560,7 @@ router.get('/resume/:id', async (req, res) => {
     }
     res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition, Resume-Created-At');
     res.setHeader('Content-Type', student.resume.contentType);
-    res.setHeader('Content-Disposition', `attachment; filename="${student.resume.filename}"`);
+    res.setHeader('Content-Disposition', `inline; filename="${student.resume.filename}"`);
     res.setHeader('Resume-Created-At', student.resume.createdAt.toISOString());
     res.send(student.resume.data);
     

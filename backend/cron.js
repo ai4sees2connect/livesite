@@ -4,7 +4,7 @@ const https=require('https');
 // import https from 'https';
 
 const backendURL="https://livesite-backend-74ut.onrender.com";
-const job=new cron.CronJob('*/14 * * * *',function(){
+const job=new cron.CronJob('*/29 * * * *',function(){
   console.log('Restarting server');
 
   https.get(backendURL,(res)=>{

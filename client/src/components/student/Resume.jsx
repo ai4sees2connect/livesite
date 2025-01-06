@@ -49,7 +49,7 @@ const Resume = () => {
         });
 
         const url = window.URL.createObjectURL(new Blob([response.data]));
-        setResumeUrl(url);
+        setResumeUrl(url); 
 
         const contentDisposition = response.headers["content-disposition"];
         const createdAt = response.headers["resume-created-at"];
@@ -123,6 +123,12 @@ const Resume = () => {
     }
   };
 
+  const handleViewResume = () => {
+    window.open(resumeUrl, "_blank");
+  };
+
+  console.log(resumeUrl);
+
   return (
     <div className="w-full mx-auto p-4">
       <h1 className="text-xl  ">Resume</h1>
@@ -130,7 +136,7 @@ const Resume = () => {
         Your resume is the first impression you make on potential employers.
         Craft it carefully to secure your desired job or internship.
       </h2>
-      <h2>{resumeFilename}</h2>
+      <h2 onClick={handleViewResume} className="text-green-500 hover:underline hover:cursor-pointer">{resumeFilename}</h2>
 
       <div className="flex justify-between items-center text-gray-600">
         <h2>{resumeCreatedAt ? formatDateWithOrdinal(resumeCreatedAt) : ""}</h2>

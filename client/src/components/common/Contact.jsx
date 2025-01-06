@@ -1,11 +1,53 @@
-import React, {useEffect} from 'react';
+import React, {useEffect,useState} from 'react';
 import contact_pic from '../../images/contact_pic.jpeg';
 import findUser from '../common/UserDetection.js'
 import { Link, useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
 import getUserIdFromToken from '../student/auth/authUtils.js';
+import api from './server_url.js';
+import Spinner from '../common/Spinner.jsx'
 
 const Contact = () => {
+
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    query: '',
+  });
+
+  const [formMessage, setFormMessage] = useState('');
+  const [loading,setLoading]=useState(false);
+
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    setLoading(true);
+    e.preventDefault();
+    try {
+      const response = await fetch(`${api}/send-query`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setFormMessage('Your query has been sent successfully.');
+        setFormData({ name: '', phone: '', email: '', query: '' });
+      } else {
+        setFormMessage('Failed to send your query. Please try again.');
+      }
+    } catch (error) {
+      setFormMessage('An error occurred. Please try again later.');
+    }
+    finally{
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -58,6 +100,62 @@ const Contact = () => {
           <span className="font-semibold">Address:</span> 9th Main Road, Vysya Bank Colony, New Gurappana Palya, 1st Stage, BTM 1st Stage, Bengaluru, Karnataka
         </p>
        
+      </div>
+
+      <div className="p-8 max-w-3xl w-full">
+        <h2 className="text-3xl font-bold text-blue-600 mb-4 text-center">Ask Your Queries</h2>
+        {loading?(<Spinner/>):(<form onSubmit={handleSubmit} className="space-y-4 ">
+          <div>
+            <label className="block text-lg font-semibold text-gray-700">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-lg font-semibold text-gray-700">Phone Number</label>
+            <input
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-lg font-semibold text-gray-700">Email ID</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-lg font-semibold text-gray-700">Query</label>
+            <textarea
+              name="query"
+              value={formData.query}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded h-32"
+              required
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            className="px-4 py-2  border border-black bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Submit
+          </button>
+        </form>)}
+        
       </div>
     </div>
   );
