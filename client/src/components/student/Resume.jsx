@@ -96,7 +96,7 @@ const Resume = () => {
     if (
       !["application/pdf", "application/msword"].includes(selectedFile.type)
     ) {
-      toast.error("Only PDF and DOC files are supported.");
+      toast.error("Only PDF files are supported.");
       return;
     }
 
@@ -136,7 +136,7 @@ const Resume = () => {
         Your resume is the first impression you make on potential employers.
         Craft it carefully to secure your desired job or internship.
       </h2>
-      <h2 onClick={handleViewResume} className="text-green-500 hover:underline hover:cursor-pointer">{resumeFilename}</h2>
+      <h2  className="text-green-500 ">{resumeFilename}</h2>
 
       <div className="flex justify-between items-center text-gray-600">
         <h2>{resumeCreatedAt ? formatDateWithOrdinal(resumeCreatedAt) : ""}</h2>
@@ -146,11 +146,11 @@ const Resume = () => {
             <a
               href={resumeUrl}
               download={resumeFilename}
-              className="text-blue-500 text-xl font-bold mt-4 hover:scale-105 duration-300 pb-4 text-center"
+              className="text-green-500 text-xl font-bold mt-4 hover:scale-105 duration-300 pb-4 text-center"
             >
               <FaDownload />
             </a>
-            <button onClick={handleResumeDelete} className="text-red-500">
+            <button onClick={handleResumeDelete} className="text-red-500 hover:scale-105 duration-300">
               <FaTrash />
             </button>
           </div>
@@ -163,7 +163,7 @@ const Resume = () => {
           type="file"
           onChange={handleSubmit}
           className="hidden my-4 hover:cursor-pointer"
-          accept=".pdf, .doc" // Only PDF and DOC files are allowed
+          accept=".pdf" // Only PDF and DOC files are allowed
         />
         <button
           onClick={handleFileClick}
@@ -171,7 +171,7 @@ const Resume = () => {
         >
           Upload Resume
         </button>
-        <div className="text-gray-600">Supported formats: PDF, DOC</div>
+        <div className="text-gray-600">Supported formats: PDF</div>
         {!resumeFilename && (
           <div className="text-red-400">No resume uploaded</div>
         )}

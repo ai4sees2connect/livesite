@@ -834,7 +834,8 @@ const Internships = () => {
                 {internships.map((internship) => (
                   <div
                     key={internship._id}
-                    className="bg-white shadow-md rounded-lg p-5 w-full lg:w-[90%] mx-auto relative space-y-1"
+                    className="bg-white shadow-md rounded-lg p-5 w-full lg:w-[90%] mx-auto relative space-y-1 hover:cursor-pointer hover:scale-105 duration-300"
+                    onClick={() => openModal(internship)}
                   >
                     <div className="flex justify-between items-center">
                       <div className="">
