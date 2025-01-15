@@ -59,7 +59,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (student) {
-      if (student.homeLocation === "")
+      if (!student.homeLocation.city)
         toast.info("Please add your current location");
       if (student.gender === "") toast.info("Please specify your gender");
       if (student.education.length === 0)
@@ -420,9 +420,10 @@ console.log('this is city',selectedCity);
         )}
         {!cityEdit && (
           <div className="flex space-x-3 justify-center items-center">
-            <h1 className="text-center text-gray-600">
+            {student?.homeLocation?.city ? (<h1 className="text-center text-gray-600">
               {student?.homeLocation?.country+ "," + student?.homeLocation?.state + "," + student?.homeLocation?.city}
-            </h1>
+            </h1>):(<h1 className="text-red-500">Location</h1>)}
+
             {student.homeLocation && (
               <FaPen
                 onClick={() => {setCityEdit(true);}}

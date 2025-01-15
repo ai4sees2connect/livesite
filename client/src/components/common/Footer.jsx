@@ -59,7 +59,7 @@ const Footer = () => {
             <FaLinkedin className="w-7 h-8 hover:text-blue-500 cursor-pointer" />
           </a>
           <a
-            href="https://twitter.com/uzzaman_al"
+            href=" https://x.com/Ai4See"
             target="_blank"
             rel="noopener noreferrer"
           >

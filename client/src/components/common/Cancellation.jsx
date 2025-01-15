@@ -39,7 +39,7 @@ const Cancellation = () => {
         </div>
       </nav>
 
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 max-w-6xl mx-auto h-screen">
       <h1 className="text-2xl font-bold mb-4">Refund & Cancellation Policy</h1>
 
       <h2 className="text-xl font-semibold mb-3">Jobs and Internships</h2>
