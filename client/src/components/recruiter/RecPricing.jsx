@@ -163,7 +163,7 @@ const RecPricing = () => {
             <hr />
             <p className="text-gray-600 my-4">Best for short-term hiring.</p>
 
-            <p className="text-blue-600  mb-4">Total Posting: 5 per month</p>
+            <p className="text-blue-600  mb-4">Total Posting: 3 per month</p>
             <p className="text-2xl font-bold">&#8377;99</p>
           </div>
 
@@ -183,7 +183,7 @@ const RecPricing = () => {
             <p className="text-gray-600 my-4">
               Popular choice for consistent hiring.
             </p>
-            <p className="text-blue-600  mb-4">Total Posting: 8 per month</p>
+            <p className="text-blue-600  mb-4">Total Posting: 4 per month</p>
             <p className="text-2xl font-bold">&#8377;199</p>
           </div>
           <button

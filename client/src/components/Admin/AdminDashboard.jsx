@@ -169,7 +169,7 @@ const AdminDashboard = () => {
               </td>
 
               <td className='px-4 py-2 border border-gray-200'>
-                <div>{status}</div>
+                <div className={`${status=='Verified'&&'text-green-500'}`}>{status}</div>
               </td>
             </tr>
           )})}

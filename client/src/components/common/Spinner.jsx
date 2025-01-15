@@ -3,7 +3,7 @@ import './Spinner.css';
 
 const Spinner = () => {
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
+    <div className="flex justify-center items-center h-screen bg-gray-50">
       {/* Rotating cube loader */}
       <div className="relative w-14 h-14">
         {/* Cube 1 */}
