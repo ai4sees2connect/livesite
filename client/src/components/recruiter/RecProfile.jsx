@@ -357,6 +357,8 @@ const RecProfile = () => {
       // Handle success response (e.g., show success message, update UI, etc.)
       // console.log("Details updated:", response.data);
       toast.success("Details updated successfully");
+      setActiveTab("Tab2")
+      
       // window.location.reload();
     } catch (error) {
       // Handle error (e.g., show error message)
@@ -406,6 +408,8 @@ const RecProfile = () => {
       // Handle success response (e.g., show success message, update UI, etc.)
       // console.log("Details updated:", response.data);
       toast.success("Details updated successfully");
+      navigate(`/recruiter/posting/${idFromToken}`);
+      
     } catch (error) {
       // Handle error (e.g., show error message)
       console.error("Error updating Details:", error);
@@ -1052,7 +1056,7 @@ const RecProfile = () => {
                 {/* Upload logo */}
                 <div>
                   <label> Organization Logo(Recommended)</label>
-                  <div className="h-auto flex mt-2 flex-row">
+                  <div className="h-auto flex mt-2 ">
                     {!logoUrl ? (
                       <FaBuilding className="text-gray-400 text-4xl" />
                     ) : (
@@ -1098,8 +1102,19 @@ const RecProfile = () => {
                         Delete Logo
                       </button>
                     )}
+
+                    
                   </div>
                 </div>
+
+                <div className="mt-5 text-left">
+                <button
+                  onClick={handleDetailsUpdate_2}
+                  className="px-5 py-1 bg-blue-500 text-white rounded-md"
+                >
+                  Save details
+                </button>
+              </div>
               </div>
               {/* File Upload */}
               <div className="p-5 border-2 mt-5 rounded-md">
@@ -1350,14 +1365,7 @@ const RecProfile = () => {
                   </div>
                 )}
               </div>
-              <div className="mt-5 text-right">
-                <button
-                  onClick={handleDetailsUpdate_2}
-                  className="px-5 py-1 bg-blue-500 text-white rounded-sm"
-                >
-                  Done
-                </button>
-              </div>
+              
             </div>
           )}
         </div>

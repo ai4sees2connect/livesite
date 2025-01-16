@@ -293,8 +293,8 @@ console.log('this is city',selectedCity);
             {picUrl ? (
               <img src={picUrl} className="w-fit h-fit" alt="" />
             ) : (
-              <div className="w-14 h-14 rounded-full border flex items-center justify-center border-black">
-                <FaUser className="w-9 h-9 " />
+              <div className="w-14 h-14 rounded-full border flex items-center justify-center border-gray-600 my-3">
+                <FaUser className="w-9 h-9 text-gray-600" />
               </div>
             )}
           </div>
@@ -326,7 +326,7 @@ console.log('this is city',selectedCity);
         <h1 className=" text-xl capitalize text-center ">
           {student.firstname} {student.lastname}
         </h1>
-        <h1 className=" text-gray-600 text-center">{student.email}</h1>
+        <h1 className=" text-gray-600 text-center my-1">{student.email}</h1>
         {!student.homeLocation && !cityEdit && (
           <h1
             onClick={() => setCityEdit(true)}

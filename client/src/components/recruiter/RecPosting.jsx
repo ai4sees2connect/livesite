@@ -127,8 +127,8 @@ const RecPosting = () => {
     const { name, value } = e.target;
 
     // Ensure the value is not negative
-    if (value < 0) {
-      toast.error("Please give positiive number!");
+    if (value < 0 || value ==='-') {
+      toast.error("Please give positive number!");
       return;
     }
 
@@ -738,6 +738,11 @@ const RecPosting = () => {
                     name="stipend"
                     value={formData.stipend}
                     onChange={handleChange}
+                    onKeyDown={(e) => {
+                      if (e.key === 'e' || e.key === 'E' || e.key === '-' || e.key === '+') {
+                        e.preventDefault();
+                      }
+                    }}
                     className="p-1 border w-28 border-gray-300 rounded-md shadow-md"
                     placeholder="e.g 4000"
                     required

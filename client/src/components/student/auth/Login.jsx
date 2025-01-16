@@ -62,8 +62,9 @@ function Login() {
       navigate(`/student/dashboard/${userId}`);
     } catch (error) {
       // Handle error
-      toast.error(error.response.data.message || "Login failed");
-      console.log(error.response.data.message);
+      // alert(error.response.data.message);
+      toast.info(error.response.data.message || "Login failed");
+      // console.log(error.response.data.message);
       // setError(error.response.data.message || 'Login failed');
     }
   };
