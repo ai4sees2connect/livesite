@@ -686,6 +686,99 @@ router.get('/internships', async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 });
+router.get('/:userId/internships', async (req, res) => {
+  try {
+    const { page = 1, workType, jobProfile, country, state, city, stipend } = req.query;
+    const userId = req.params.userId;
+    const limit = 9; // Number of internships per page
+    const skip = (parseInt(page) - 1) * limit; // Calculate skip value for pagination
+
+    const filters = { status: 'Active', recruiter: { $ne: null } };
+
+    // Apply filters based on query parameters
+    if (workType && workType !== 'All Internships') {
+      filters.internshipType = workType;
+    }
+
+    if (jobProfile) {
+      const jobProfileArray = jobProfile.split(',').map((job) => job.trim());
+      if (jobProfileArray.length > 0) {
+        filters.jobProfile = { $in: jobProfileArray };
+      }
+    }
+
+    if (country || state || city) {
+      if (country) filters['internLocation.country'] = country;
+      if (state) filters['internLocation.state'] = state;
+      if (city) filters['internLocation.city'] = city;
+    }
+
+    if (stipend && parseInt(stipend) > 0) {
+      filters.stipend = { $gte: parseInt(stipend) };
+    }
+
+    // Fetch the student and their applied internship IDs
+    const student = await Student.findById(userId).select('appliedInternships');
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    const appliedInternshipIds = student.appliedInternships.map((app) => app.internship);
+    filters._id = { $nin: appliedInternshipIds }; // Exclude applied internships
+
+    // Fetch internships with recruiters in one query
+    const internships = await Internship.find(filters)
+      .populate({
+        path: 'recruiter',
+        select: 'firstname lastname email phone companyName',
+      })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    // Get a list of internship IDs
+    const internshipIds = internships.map((internship) => internship._id);
+
+    // Fetch student counts for all internships in a single query
+    const studentCounts = await Student.aggregate([
+      { $unwind: '$appliedInternships' },
+      { $match: { 'appliedInternships.internship': { $in: internshipIds } } },
+      {
+        $group: {
+          _id: '$appliedInternships.internship',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Map student counts to internships
+    const studentCountMap = studentCounts.reduce((acc, { _id, count }) => {
+      acc[_id] = count;
+      return acc;
+    }, {});
+
+    // Add student counts to each internship
+    const internshipsWithCounts = internships.map((internship) => ({
+      ...internship.toObject(),
+      studentCount: studentCountMap[internship._id] || 0, // Default to 0 if no students
+    }));
+
+    // Total internships for pagination
+    const totalInternships = await Internship.countDocuments(filters);
+    const totalPages = Math.ceil(totalInternships / limit);
+
+    // Send response
+    res.status(200).json({
+      internships: internshipsWithCounts,
+      totalPages,
+      numOfInternships: totalInternships,
+    });
+  } catch (error) {
+    console.error('Error fetching internships:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 
 router.get('/internships/top-15', async (req, res) => {
   try {

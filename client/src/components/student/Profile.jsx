@@ -326,7 +326,7 @@ console.log('this is city',selectedCity);
         <h1 className=" text-xl capitalize text-center ">
           {student.firstname} {student.lastname}
         </h1>
-        <h1 className=" text-gray-600 text-center">{student.email}</h1>
+        <h1 className=" text-gray-600 text-center my-1">{student.email}</h1>
         {!student.homeLocation && !cityEdit && (
           <h1
             onClick={() => setCityEdit(true)}

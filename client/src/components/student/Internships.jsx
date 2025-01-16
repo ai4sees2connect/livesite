@@ -368,13 +368,14 @@ const Internships = () => {
       try {
         setLoading(true);
         const queryString = constructQueryStringReset();
-        const [response, appliedResponse] = await Promise.all([
-          axios.get(`${api}/student/internships?${queryString}`),
-          axios.get(`${api}/student/internship/${userId}/applied-internships`),
-        ]);
+        // const [response, appliedResponse] = await Promise.all([
+        //   axios.get(`${api}/student/${userId}/internships?${queryString}`),
+        //   axios.get(`${api}/student/internship/${userId}/applied-internships`),
+        // ]);
+        const response =await axios.get(`${api}/student/${userId}/internships?${queryString}`);
         setTotalPages(response.data.totalPages);
         setInternshipsCount(response.data.numOfInternships);
-        setAppliedInternships(appliedResponse.data);
+        // setAppliedInternships(appliedResponse.data);
         const internships = response.data.internships;
 
         const recruiterIds = [...new Set(internships.map(internship => internship.recruiter?._id).filter(Boolean))];
@@ -852,21 +853,14 @@ const Internships = () => {
                       </div>
 
                       <div className="flex items-center">
-                        {!isAlreadyApplied(internship._id) ? (
+                        
                           <button
                             onClick={() => openModal(internship)}
                             className=" md:w-auto hidden md:block underline   text-sm md:text-base rounded-md text-blue-500 "
                           >
                             View details
                           </button>
-                        ) : (
-                          <Link
-                            to={`/student/myApplications/${userId}`}
-                            className=" w-auto hidden md:block text-sm md:text-base  rounded-md text-blue-500  underline"
-                          >
-                            Check Status
-                          </Link>
-                        )}
+                         
                         {internship.logoUrl ? (
                           <img
                             src={internship.logoUrl}
@@ -1017,14 +1011,13 @@ const Internships = () => {
                 </div>
               )}
 
-              {selectedInternship &&
-                !isAlreadyApplied(selectedInternship._id) && (
+              {selectedInternship && (
                   <>
                     <div
                       className="fixed inset-0 bg-black bg-opacity-50 z-40 "
                       onClick={closeModal}
-                    ></div>
-                    <div className="fixed inset-0 flex items-center justify-center z-50 ">
+                    >
+                    <div className="fixed inset-0 flex items-center justify-center z-50 " >
                       <div className="bg-white border border-gray-600 rounded-lg shadow-3xl w-[90%] lg:w-[60%] h-[90%] p-6 relative overflow-auto">
                         <div className="border-b">
                           <h2 className=" text-lg lg:text-2xl font-semibold lg:mb-4">
@@ -1274,6 +1267,7 @@ const Internships = () => {
                           </button>
                         </div>
                       </div>
+                    </div>
                     </div>
                   </>
                 )}
