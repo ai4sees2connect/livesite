@@ -76,8 +76,8 @@ const RightSide = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const userId = getUserIdFromToken();
-  const [internshipFetched,setInternshipFetched]=useState(false);
-  console.log('this is id',userId)
+  const [internshipFetched, setInternshipFetched] = useState(false);
+  console.log('this is id', userId)
 
 
   const token = localStorage.getItem("token");
@@ -101,16 +101,16 @@ const RightSide = () => {
         console.log('hello')
 
         const response = await axios.get(`${api}/student/internships/top-15`);
-        console.log('internship fetched',response.data);
+        console.log('internship fetched', response.data);
 
-       
+
 
 
 
         setInternships(response.data);
-      
+
         setInternshipFetched(true);
-        
+
 
         setLoading(false);
       } catch (err) {
@@ -123,62 +123,62 @@ const RightSide = () => {
     fetchInternships();
   }, []);
 
-  useEffect(()=>{
-  if(internships.length>0){
-    const fetchLogos=async()=>{
-    const internshipsWithLogo = await Promise.all(
-      internships.map(async (internship) => {
-        if (internship.recruiter && internship.recruiter._id) {
-          try {
-            // Kick off the logo fetch but don't await it here
-            const logoPromise = axios.get(
-              `${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`,
-              { responseType: "blob" }
-            );
+  useEffect(() => {
+    if (internships.length > 0) {
+      const fetchLogos = async () => {
+        const internshipsWithLogo = await Promise.all(
+          internships.map(async (internship) => {
+            if (internship.recruiter && internship.recruiter._id) {
+              try {
+                // Kick off the logo fetch but don't await it here
+                const logoPromise = axios.get(
+                  `${api}/recruiter/internship/${internship._id}/${internship.recruiter._id}/get-logo`,
+                  { responseType: "blob" }
+                );
 
-            // Once the promise resolves, process the logo
-            const res = await logoPromise;
-            const logoBlob = new Blob([res.data], {
-              type: res.headers["content-type"],
-            });
-            const logoUrl = URL.createObjectURL(logoBlob);
+                // Once the promise resolves, process the logo
+                const res = await logoPromise;
+                const logoBlob = new Blob([res.data], {
+                  type: res.headers["content-type"],
+                });
+                const logoUrl = URL.createObjectURL(logoBlob);
 
-            // Return the internship with the logo URL
-            return {
-              ...internship,
-              logoUrl,
-            };
-          } catch (error) {
+                // Return the internship with the logo URL
+                return {
+                  ...internship,
+                  logoUrl,
+                };
+              } catch (error) {
 
-            if (error.response && error.response.status === 404) {
-              console.warn(`Logo not found for recruiter ${internship.recruiter._id}`);
-              return {
-                ...internship,
-                logoUrl: null, // No logo found, default to null or a placeholder URL
-              };
+                if (error.response && error.response.status === 404) {
+                  console.warn(`Logo not found for recruiter ${internship.recruiter._id}`);
+                  return {
+                    ...internship,
+                    logoUrl: null, // No logo found, default to null or a placeholder URL
+                  };
+                }
+
+                console.error("Error fetching logo:", error);
+
+                // Return internship with a default or null logo URL in case of an error
+                return {
+                  ...internship,
+                  logoUrl: null, // Or use a default image URL here
+                };
+              }
             }
-            
-            console.error("Error fetching logo:", error);
 
-            // Return internship with a default or null logo URL in case of an error
-            return {
-              ...internship,
-              logoUrl: null, // Or use a default image URL here
-            };
-          }
-        }
+            // If no recruiter, return the internship as is
+            return internship;
+          })
+        );
+        setInternships(internshipsWithLogo);
+      }
 
-        // If no recruiter, return the internship as is
-        return internship;
-      })
-    );
-    setInternships(internshipsWithLogo);
-  }
+      fetchLogos();
 
-  fetchLogos();
-
-  }
-  },[internshipFetched])
+    }
+  }, [internshipFetched])
 
   console.log(internships);
 
@@ -225,7 +225,7 @@ const RightSide = () => {
       <div className=" my-10 px-3 lg:px-0 rounded-md mx-auto lg:w-[90%]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 items-center gap-5 justify-center">
           <Link to={userId ? `/student/internships/${userId}/Work-from-Home` : `/internships/Work-from-Home`
-        } className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
+          } className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
             <span > Remote</span> <FaLongArrowAltRight />
           </Link>
           <Link to={userId ? `/student/internships/${userId}/Work-from-Office` : `/internships/Work-from-Office`} className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
@@ -280,8 +280,8 @@ const RightSide = () => {
                         {intern.recruiter.companyName !== ""
                           ? intern.recruiter.companyName
                           : intern.recruiter.firstname +
-                            " " +
-                            intern.recruiter.lastname}
+                          " " +
+                          intern.recruiter.lastname}
                       </p>
                     </div>
                     <div>
@@ -404,7 +404,7 @@ const RightSide = () => {
                 10,000 Job Openings all Over India
               </p>
               <button className="text-2xl font-bold px-10 py-4 rounded-md bg-blue-500 border-1 border-white hover:scale-105 hover:transition-0.5s hover:bg-blue-600">
-                <Link to="/student/signup"> Get Job!</Link>
+                <Link to="/student/signup"> Get Hired!</Link>
               </button>
             </div>
           </div>

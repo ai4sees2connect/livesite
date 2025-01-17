@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import {
   FaMapMarkerAlt,
@@ -56,6 +56,17 @@ const Internships = () => {
   const [internshipsCount, setInternshipsCount] = useState(null);
   const [resumeUrl, setResumeUrl] = useState(null)
   const [resumeName, setResumeName] = useState(null)
+  const location = useLocation(); // Access state
+  const internshipId = location.state?.internshipId;
+
+  console.log("Location state:", location.state); // Log the entire state
+  console.log("Internship ID:", internshipId);
+
+  if(internshipId){
+    openModal(internshipId);
+  }
+
+  console.log('this is selected internship', selectedInternship);
 
   const jobProfiles = [
     "3D Animation",
@@ -856,9 +867,9 @@ const Internships = () => {
                         
                           <button
                             onClick={() => openModal(internship)}
-                            className=" md:w-auto hidden md:block underline   text-sm md:text-base rounded-md text-blue-500 "
+                            className=" md:w-auto hidden md:block bg-blue-500  text-sm md:text-base rounded-md text-white px-2 py-1 hover:bg-green-500"
                           >
-                            View details
+                            Apply
                           </button>
                          
                         {internship.logoUrl ? (
