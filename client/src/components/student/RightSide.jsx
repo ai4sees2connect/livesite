@@ -223,7 +223,7 @@ const RightSide = () => {
 
       {/* Quick Links */}
       <div className=" my-10 px-3 lg:px-0 rounded-md mx-auto lg:w-[90%]">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 items-center gap-5 justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 items-center gap-5 justify-center">
           <Link to={userId ? `/student/internships/${userId}/Work-from-Home` : `/internships/Work-from-Home`
           } className="flex items-center px-5 py-2 rounded-md  border-2 border-blue-300 text-xl hover:scale-105 duration-300 hover:transition-0.5s  text-black font-semibold justify-between">
             <span > Remote</span> <FaLongArrowAltRight />
@@ -242,14 +242,14 @@ const RightSide = () => {
               <span> All Internships</span> <FaLongArrowAltRight />
             </Link>
           </button>
-          <button className=" px-5 py-2 rounded-md border-2 text-xl hover:transition-0.5s  font-semibold  bg-blue-500 border-1 border-white hover:scale-105 hover:transition-0.5s duration-300 hover:bg-blue-600 text-white">
+          {/* <button className=" px-5 py-2 rounded-md border-2 text-xl hover:transition-0.5s  font-semibold  bg-blue-500 border-1 border-white hover:scale-105 hover:transition-0.5s duration-300 hover:bg-blue-600 text-white">
             <Link
               className="flex items-center justify-between"
               to="/recruiter/signup"
             >
               <span>Want To Hire</span> <FaLongArrowAltRight />
             </Link>
-          </button>
+          </button> */}
         </div>
       </div>
       {/* Recommended jobs */}

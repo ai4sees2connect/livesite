@@ -735,12 +735,16 @@ router.post(
 
 router.post('/send-otp', async (req, res) => {
   const { email } = req.body;
-console.log('running')
+  
   if (!email) {
     return res.status(400).json({ message: 'Email is required' });
   }
 
   try {
+    const recruiter=await Recruiter.findOne({email:email});
+    if(recruiter){
+      return res.status(404).json({ message:"Recruiter already exists" });
+    }
     // Step 1: Generate a random OTP and set expiration time (10 minutes)
     const otp = generateOtp();
     const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes expiration

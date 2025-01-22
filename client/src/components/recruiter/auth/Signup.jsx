@@ -20,7 +20,7 @@ import ToggleButtonSecond from "../../common/ToogleButtonSecond";
 import api from "../../common/server_url";
 import { FaCheckCircle } from "react-icons/fa";
 import GoBackButton from "../../common/GoBackButton";
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 // import getUserIdFromToken from '../../student/auth/authUtils'
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +33,8 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [nameError, setNameError] = useState("");
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const navigate = useNavigate();
   const userId = getUserIdFromToken();
@@ -80,18 +81,38 @@ function Signup() {
 
     // Define the regex pattern
     const passwordPattern =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
-    if (newPassword.trim().length < 8) {
-      setPasswordError("Password must be at least 8 characters");
+    if (newPassword.trim().length > 20) {
+      setPasswordError("Password must not exceed 20 characters");
     } else if (!passwordPattern.test(newPassword)) {
       setPasswordError(
-        "Password must contain at least one uppercase , one lowercase , one number, and any one of special characters from @,$,!,%,*,?,&"
+        "Password must be 8-20 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character from @, $, !, %, *, ?, &"
       );
     } else {
       setPasswordError("");
     }
   };
+
+  const handlePhoneChange = (e) => {
+    let newPhone = e.target.value;
+  
+    // Prevent input longer than 10 digits
+    if (newPhone.length > 10) {
+      newPhone = newPhone.slice(0, 10);
+    }
+  
+    // Update state and error message
+    setPhone(newPhone);
+    if (newPhone.length !== 10) {
+      setPhoneError("Enter a valid phone number");
+    } else {
+      setPhoneError("");
+    }
+  };
+  
+  
+  
 
   const validateEmail = (email) => {
     // Basic email validation
@@ -148,6 +169,8 @@ function Signup() {
       setIsOtpInput(true); // Show OTP input field
     } catch (error) {
       toast.error(error.response?.data?.message || "Error sending OTP");
+      setSendingOtp(false);
+      setButtonDisabled(false);
     }
   };
   const handleResendOtp = async (e) => {
@@ -164,10 +187,10 @@ function Signup() {
     email.trim() === verifiedEmail &&
     password.trim() !== "" &&
     firstname.trim() !== "" &&
-    lastname.trim() !== "";
-  // &&
-  // otp.trim() !== "" &&
-  // otpVerified;
+    lastname.trim() !== "" &&
+    otp.trim() !== "" &&
+    passwordError === "" &&
+    otpVerified;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -300,15 +323,28 @@ function Signup() {
                   value={firstname}
                   placeholder="Enter Your First Name"
                   onChange={(e) => {
-                    setFirstName(e.target.value);
-                    if (e.target.value.trim() === "") {
-                      setNameError("Give complete name");
-                    } else setNameError("");
+                    const inputValue = e.target.value;
+                    const regex = /^[A-Za-z\s]*$/;
+
+                    if (inputValue === "") {
+                      // Allow empty input
+                      setFirstNameError("Field cannot be empty");
+                      setFirstName(inputValue); // Update state to empty string
+                    } else if (!regex.test(inputValue)) {
+                      setFirstNameError("Only alphabets are allowed");
+                    } else if (inputValue.length > 12) {
+                      setFirstNameError("Name should not exceed 12 characters");
+                    } else {
+                      setFirstNameError("");
+                      setFirstName(inputValue);
+                    }
                   }}
                   className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                 />
-                {nameError && (
-                  <p className="text-red-500 text-left w-full">{nameError}</p>
+
+
+                {firstNameError && (
+                  <p className="text-red-500 text-left w-full">{firstNameError}</p>
                 )}
               </div>
 
@@ -319,19 +355,31 @@ function Signup() {
                   value={lastname}
                   placeholder="Enter Your Last Name"
                   onChange={(e) => {
-                    setLastName(e.target.value);
-                    if (e.target.value.trim() === "") {
-                      setNameError("Give complete name");
-                    } else setNameError("");
+                    const inputValue = e.target.value;
+                    const regex = /^[A-Za-z\s]*$/;
+
+                    if (inputValue === "") {
+                      // Allow empty input
+                      setLastNameError("Field cannot be empty");
+                      setLastName(inputValue); // Update state to empty string
+                    } else if (!regex.test(inputValue)) {
+                      setLastNameError("Only alphabets are allowed");
+                    } else if (inputValue.length > 12) {
+                      setLastNameError("Name should not exceed 12 characters");
+                    } else {
+                      setLastNameError("");
+                      setLastName(inputValue);
+                    }
                   }}
                   className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                 />
-                {nameError && (
-                  <p className="text-red-500 text-left w-full">{nameError}</p>
+
+                {lastNameError && (
+                  <p className="text-red-500 text-left w-full">{lastNameError}</p>
                 )}
               </div>
 
-              <div className="flex flex-col items-center relative">
+              {firstname && lastname && <div className="flex flex-col items-center relative">
                 <input
                   type="email"
                   id="email"
@@ -349,7 +397,7 @@ function Signup() {
                   required
                 />
 
-                {/* {validateEmail(email) && !sendingOtp && !otpInput && (
+                {validateEmail(email) && !sendingOtp && !otpInput && (
                   <button
                     className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
                     type="button"
@@ -357,15 +405,14 @@ function Signup() {
                   >
                     Send OTP
                   </button>
-                )} */}
-                {/* {validateEmail(email) &&
+                )}
+                {validateEmail(email) &&
                   !sendingOtp &&
                   otpInput &&
                   !otpVerified && (
                     <button
-                      className={`absolute right-0 top-2.5 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2 ${
-                        buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
+                      className={`absolute right-0 top-2.5 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2 ${buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                       type="button"
                       onClick={handleResendOtp}
                       disabled={buttonDisabled}
@@ -374,8 +421,8 @@ function Signup() {
                         ? `Resend in ${countdown}s`
                         : "Resend OTP"}
                     </button>
-                  )} */}
-                {/* {otpVerified && (
+                  )}
+                {otpVerified && (
                   <button
                     className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
                     type="button"
@@ -385,17 +432,17 @@ function Signup() {
                       <span> Verified</span>
                     </div>
                   </button>
-                )} */}
+                )}
 
-                {/* {sendingOtp && (
+                {sendingOtp && (
                   <FontAwesomeIcon
                     icon={faSpinner}
                     spin
                     className="h-5 w-5 text-black absolute right-2 top-4"
                   />
-                )} */}
+                )}
 
-                {/* {otpInput && !otpVerified && (
+                {otpInput && !otpVerified && (
                   <div className="relative my-3 w-full">
                     <input
                       type="text"
@@ -416,13 +463,13 @@ function Signup() {
                       </button>
                     )}
                   </div>
-                )} */}
-              </div>
+                )}
+              </div>}
               {emailError && (
                 <p className="text-red-500 text-left w-full">{emailError}</p>
               )}
 
-              {!otpVerified && (
+              {otpVerified && (
                 <div className="flex flex-col items-start">
                   <div className="flex  justify-start md:flex-row gap-2 mt-[6.5px] w-full">
                     {/* Country Code Dropdown */}
@@ -442,15 +489,13 @@ function Signup() {
                     <div className="w-full">
                       <input
                         type="number"
+                        value={phone}
                         className="w-full p-2 border border-gray-300 rounded-lg outline-none"
                         placeholder="Phone number"
-                        onChange={(e) => {
-                          setPhone(e.target.value);
-                          if (e.target.value.trim().length < 10) {
-                            setPhoneError("Enter a valid phone number");
-                          } else setPhoneError("");
-                        }}
+                        onChange={handlePhoneChange}
+                        
                       />
+
                     </div>
                   </div>
                   {phoneError && (
@@ -461,7 +506,7 @@ function Signup() {
                 </div>
               )}
 
-              {!otpVerified && (
+              {otpVerified && phoneError==="" && (
                 <div className="flex flex-col items-center relative">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -500,10 +545,9 @@ function Signup() {
 
               <button
                 type="submit"
-                className={`w-full py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${
-                  !isFormValid ? `bg-[rgb(224,226,217)]` : ""
-                } `}
-                // disabled={!isFormValid}
+                className={`w-full py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${!isFormValid ? `bg-[rgb(225,228,211)]` : ""
+                  } `}
+                disabled={!isFormValid}
               >
                 Create Account
               </button>
