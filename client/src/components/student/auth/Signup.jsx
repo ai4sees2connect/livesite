@@ -30,7 +30,8 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [nameError, setNameError] = useState("");
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
   const navigate = useNavigate();
   const userId = getUserIdFromToken();
   const { login } = useStudent();
@@ -54,21 +55,22 @@ function Signup() {
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
-
+  
     // Define the regex pattern
     const passwordPattern =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-    if (newPassword.trim().length < 8) {
-      setPasswordError("Password must be at least 8 characters");
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+  
+    if (newPassword.trim().length > 20) {
+      setPasswordError("Password must not exceed 20 characters");
     } else if (!passwordPattern.test(newPassword)) {
       setPasswordError(
-        "Password must contain at least one uppercase , one lowercase , one number, and any one of special characters from @,$,!,%,*,?,&"
+        "Password must be 8-20 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character from @, $, !, %, *, ?, &"
       );
     } else {
       setPasswordError("");
     }
   };
+  
 
   const validateEmail = (email) => {
     // Basic email validation
@@ -156,6 +158,8 @@ function Signup() {
       setIsOtpInput(true); // Show OTP input field
     } catch (error) {
       toast.error(error.response?.data?.message || "Error sending OTP");
+      setSendingOtp(false);
+      setButtonDisabled(false);
     }
   };
   const handleResendOtp = async (e) => {
@@ -173,9 +177,9 @@ function Signup() {
     password.trim() !== "" &&
     firstname.trim() !== "" &&
     lastname.trim() !== "" &&
-    otp.trim() !== "";
-  //  &&
-  // otpVerified;
+    otp.trim() !== "" &&
+    passwordError ==="" &&
+    otpVerified;
 
   const handleGoogleClick = async (e) => {
     e.preventDefault();
@@ -259,16 +263,27 @@ function Signup() {
                   value={firstname}
                   placeholder="Enter Your First Name"
                   onChange={(e) => {
-                    setFirstName(e.target.value);
-                    if (e.target.value.trim() === "") {
-                      setNameError("Give complete name");
-                    } else setNameError("");
+                    const inputValue = e.target.value;
+                    const regex = /^[A-Za-z\s]*$/;
+
+                    if (inputValue === "") {
+                      // Allow empty input
+                      setFirstNameError("Field cannot be empty");
+                      setFirstName(inputValue); // Update state to empty string
+                    } else if (!regex.test(inputValue)) {
+                      setFirstNameError("Only alphabets are allowed");
+                    } else if (inputValue.length > 12) {
+                      setFirstNameError("Name should not exceed 12 characters");
+                    } else {
+                      setFirstNameError("");
+                      setFirstName(inputValue);
+                    }
                   }}
                   className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                 />
-                {nameError && (
+                {firstNameError && (
                   <p className="text-red-500 text-left w-full mb-0">
-                    {nameError}
+                    {firstNameError}
                   </p>
                 )}
               </div>
@@ -280,22 +295,33 @@ function Signup() {
                   value={lastname}
                   placeholder="Enter Your Last Name"
                   onChange={(e) => {
-                    setLastName(e.target.value);
-                    if (e.target.value.trim() === "") {
-                      setNameError("Give complete name");
-                    } else setNameError("");
+                    const inputValue = e.target.value;
+                    const regex = /^[A-Za-z\s]*$/;
+
+                    if (inputValue === "") {
+                      // Allow empty input
+                      setLastNameError("Field cannot be empty");
+                      setLastName(inputValue); // Update state to empty string
+                    } else if (!regex.test(inputValue)) {
+                      setLastNameError("Only alphabets are allowed");
+                    } else if (inputValue.length > 12) {
+                      setLastNameError("Name should not exceed 12 characters");
+                    } else {
+                      setLastNameError("");
+                      setLastName(inputValue);
+                    }
                   }}
                   className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                 />
-                {nameError && (
+                {lastNameError && (
                   <p className="text-red-500 text-left w-full mb-0">
-                    {nameError}
+                    {lastNameError}
                   </p>
                 )}
               </div>
 
               <div className="flex flex-col">
-                <div className="flex relative">
+                {firstname && lastname && <div className="flex relative">
                   <input
                     type="email"
                     id="email"
@@ -303,6 +329,8 @@ function Signup() {
                     placeholder="Email"
                     onChange={(e) => {
                       setEmail(e.target.value);
+                      setOtpVerified(false);
+                      setOtp("");
                       if (!validateEmail(e.target.value)) {
                         setEmailError(
                           "The email does not look right. Try again."
@@ -312,7 +340,7 @@ function Signup() {
                     className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full relative"
                     required
                   />
-                  {/* {validateEmail(email) && !sendingOtp && !otpInput && (
+                  {validateEmail(email) && !sendingOtp && !otpInput && (
                     <button
                       className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
                       type="button"
@@ -320,8 +348,8 @@ function Signup() {
                     >
                       Send OTP
                     </button>
-                  )} */}
-                  {/* {validateEmail(email) &&
+                  )}
+                  {validateEmail(email) &&
                     !sendingOtp &&
                     otpInput &&
                     !otpVerified && (
@@ -337,8 +365,8 @@ function Signup() {
                           ? `Resend in ${countdown}s`
                           : "Resend OTP"}
                       </button>
-                    )} */}
-                  {/* {otpVerified && (
+                    )}
+                  {otpVerified && (
                     <button
                       className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
                       type="button"
@@ -348,20 +376,20 @@ function Signup() {
                         <span> Verified</span>
                       </div>
                     </button>
-                  )} */}
+                  )}
 
-                  {/* {sendingOtp && (
+                  {sendingOtp && (
                     <FontAwesomeIcon
                       icon={faSpinner}
                       spin
                       className="h-5 w-5 text-black absolute right-2 top-4"
                     />
-                  )} */}
-                </div>
+                  )}
+                </div>}
                 {emailError && (
                   <p className="text-red-500 text-left w-full">{emailError}</p>
                 )}
-                {/* {otpInput && !otpVerified && (
+                {otpInput && !otpVerified && (
                   <div className="relative my-3 w-full">
                     <input
                       type="text"
@@ -381,10 +409,10 @@ function Signup() {
                       </button>
                     )}
                   </div>
-                )} */}
+                )}
               </div>
 
-              {!otpVerified && (
+              {otpVerified && (
                 <div className="flex flex-col items-center relative">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -424,9 +452,9 @@ function Signup() {
               <button
                 onClick={handleSubmit}
                 className={`w-full py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${
-                  !isFormValid ? `bg-[rgb(224,226,217)]` : ""
+                  !isFormValid ? `bg-[rgb(228,228,215)]` : ""
                 } `}
-                // disabled={!isFormValid}
+                disabled={!isFormValid}
               >
                 Create Account
               </button>
