@@ -55,6 +55,8 @@ const RecPosting = () => {
   const [selectedCity, setSelectedCity] = useState("");
   const navigate = useNavigate();
 
+  const [internshipNameError, setInternshipNameError] = useState("");
+
 
   const perks = [
     "Letter of recommendation",
@@ -136,6 +138,11 @@ const RecPosting = () => {
       ...formData,
       [name]: value,
     });
+
+    if(name==='internshipName'){
+    if(value.trim() === "") setInternshipNameError("Enter provide Internship Name");
+    else setInternshipNameError("");
+    }
   };
 
   const handleDescriptionChange = (value) => {
@@ -422,7 +429,7 @@ const RecPosting = () => {
       <h2 className="text-4xl font-semibold mb-6 text-center mt-24">
         Post Internship
       </h2>
-      <div className="px-5">
+      <form className="px-5">
         {/* <p className="text-center text-lg font-semibold my-5">
           Internship Details
         </p> */}
@@ -439,6 +446,7 @@ const RecPosting = () => {
               placeholder="e.g Angular Development"
               required
             />
+            {internshipNameError!=="" && <span className="text-red-500">{internshipNameError}</span>}
           </div>
 
           <div className="flex flex-col my-5">
@@ -876,7 +884,7 @@ const RecPosting = () => {
             Post Internship
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
