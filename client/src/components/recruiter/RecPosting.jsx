@@ -37,8 +37,8 @@ const RecPosting = () => {
   // const [mode, setMode]=useState('');
 
   const [skills, setSkills] = useState([]);
-  const [jobProfiles,setJobProfiles] = useState([]);
-  const [customProfile,setCustomProfile] = useState("");
+  const [jobProfiles, setJobProfiles] = useState([]);
+  const [customProfile, setCustomProfile] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [customSkill, setCustomSkill] = useState("");
   const userId = getUserIdFromToken();
@@ -54,6 +54,11 @@ const RecPosting = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const navigate = useNavigate();
+
+  // const [internshipNameError, setInternshipNameError] = useState("");
+  // const [stipendError, setStipendError] = useState("");
+  // const [skillsError, setSkillsError] = useState("");
+  const [errors, setErrors] = useState({});
 
 
   const perks = [
@@ -127,7 +132,7 @@ const RecPosting = () => {
     const { name, value } = e.target;
 
     // Ensure the value is not negative
-    if (value < 0 || value ==='-') {
+    if (value < 0 || value === '-') {
       toast.error("Please give positive number!");
       return;
     }
@@ -136,6 +141,27 @@ const RecPosting = () => {
       ...formData,
       [name]: value,
     });
+
+    if (errors[name]) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "",
+      }));
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+
+    // If the field is empty, set an error message
+    if (!value.trim()) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "This field is required",
+      }));
+    }
+
+
   };
 
   const handleDescriptionChange = (value) => {
@@ -143,14 +169,34 @@ const RecPosting = () => {
       ...formData,
       description: value, // This will capture the HTML content from React Quill
     });
+
+    if (errors.description) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        description: "",
+      }));
+    }
+
+  };
+
+  const handleDescriptionBlur = () => {
+    // Validate the description field when the user leaves the editor
+    if (!formData.description.trim() || formData.description === "<p><br></p>") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        description: "This field is required",
+      }));
+    }
   };
 
   const handleSkillsChange = (selectedOptions) => {
     setSelectedSkills(selectedOptions);
+    // if(selectedOptions.length === 0) setSkillsError("Please provide atleast one Skill");
+    // else setSkillsError("");
     console.log("This is a skill set", selectedOptions);
   };
 
-  console.log('this is selected skills',selectedSkills)
+  console.log('this is selected skills', selectedSkills)
 
   const capitalizeWords = (str) => {
     return str
@@ -158,26 +204,26 @@ const RecPosting = () => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
-  
+
 
   const addCustomProfile = () => {
     if (!customProfile.trim()) return; // Prevent empty or whitespace-only entries
-  
+
     const formattedProfile = capitalizeWords(customProfile); // Capitalize each word
     const newProfile = {
       label: formattedProfile,
       value: formattedProfile, // Make value and label the same
     };
-  
+
     // Check if the custom profile already exists
     if (!jobProfiles.some((profile) => profile.value === newProfile.value)) {
       setJobProfiles((prev) => [...prev, newProfile]); // Add to jobProfiles
-      setSelectedProfile(newProfile); 
+      setSelectedProfile(newProfile);
     }
-    else{
-        toast.error("Profile already avaialble");
+    else {
+      toast.error("Profile already avaialble");
     }
-  
+
     // Set the custom profile as the selected value
     setCustomProfile(""); // Clear the input field
   };
@@ -189,15 +235,15 @@ const RecPosting = () => {
           .split(" ")
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Only capitalize the first letter, leave the rest unchanged
           .join(" ");
-  
+
       const newSkillLabel = capitalizeWords(customSkill.trim());
       const newSkillValue = newSkillLabel;
-  
+
       // Check if the skill already exists
       const skillExists = skills.some(
         (skill) => skill.label.toLowerCase() === newSkillLabel.toLowerCase()
       );
-  
+
       if (skillExists) {
         toast.error("Skill is already available!");
         setCustomSkill("");
@@ -209,9 +255,9 @@ const RecPosting = () => {
       }
     }
   };
-  
-  
-  
+
+
+
 
   console.log("this is country", selectedCountry);
   console.log("this is state", selectedState);
@@ -219,27 +265,55 @@ const RecPosting = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const skillSet = selectedSkills.map((skill) => {
-      return skill.value;
-    });
-    const perksSet = selectedPerks.map((perk) => {
-      return perk.value;
-    });
 
-    if (
-      !formData.internshipName ||
-      !formData.internshipType ||
-      !formData.internshipStartQues ||
-      !formData.stipendType ||
-      !formData.ppoCheck ||
-      perksSet.length == 0 ||
-      !selectedProfile.value ||
-      !formData.duration ||
-      !formData.numberOfOpenings ||
-      !formData.description ||
-      skillSet.length == 0
-    ) {
-      toast.error("Please enter all fields");
+    const skillSet = selectedSkills.map((skill) => skill.value);
+    const perksSet = selectedPerks.map((perk) => perk.value);
+
+    // Initialize an empty errors object
+    const newErrors = {};
+
+    // Check all required fields and add corresponding errors if empty
+    if (!formData.internshipName) {
+      newErrors.internshipName = "Internship Name is required";
+    }
+    if (!formData.internshipType) {
+      newErrors.internshipType = "Internship Type is required";
+    }
+    if (!formData.internshipStartQues) {
+      newErrors.internshipStartQues = "Start Date is required";
+    }
+    if (!formData.stipendType) {
+      newErrors.stipendType = "Stipend Type is required";
+    }
+    if (!formData.ppoCheck) {
+      newErrors.ppoCheck = "PPO option is required";
+    }
+    if (selectedPerks.length === 0) {
+      newErrors.perksSet = "At least one perk must be selected";
+    }
+    if (!selectedProfile?.value) {
+      newErrors.selectedProfile = "Profile selection is required";
+    }
+    if (!formData.duration) {
+      newErrors.duration = "Duration is required";
+    }
+    if (!formData.numberOfOpenings) {
+      newErrors.numberOfOpenings = "Number of openings is required";
+    }
+    if (!formData.description) {
+      newErrors.description = "Description is required";
+    }
+    if (skillSet.length === 0) {
+      newErrors.skillSet = "At least one skill is required";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors); // Update the errors state
+      toast.error("Please fill in all required fields");
+      window.scrollTo({
+        behavior: "smooth",
+        top: 0
+      }); 
       return;
     }
 
@@ -324,8 +398,8 @@ const RecPosting = () => {
   console.log("this is my location", formData.internLocation);
   console.log("this is my currency", formData.currency);
 
-  console.log('this is custom profile',customProfile);
-  console.log('this is selected profile',selectedProfile);
+  console.log('this is custom profile', customProfile);
+  console.log('this is selected profile', selectedProfile);
 
   let status = null;
 
@@ -422,11 +496,13 @@ const RecPosting = () => {
       <h2 className="text-4xl font-semibold mb-6 text-center mt-24">
         Post Internship
       </h2>
-      <div className="px-5">
+      <form className="px-5">
         {/* <p className="text-center text-lg font-semibold my-5">
           Internship Details
         </p> */}
         <div className="border border-gray-300 mx-auto  p-6 rounded-lg shadow-lg mb-7 w-full lg:w-[70%]">
+
+          {/* Internship name row */}
           <div className="flex flex-col my-5">
             {/* <label className="mb-2 font-medium">Internship Name:</label> */}
             <label className="font-medium">Internship Title</label>
@@ -435,17 +511,23 @@ const RecPosting = () => {
               name="internshipName"
               value={formData.internshipName}
               onChange={handleChange}
+              onBlur={handleBlur}
               className="p-2 border text-gray-600 shadow-md border-gray-300 rounded-md"
               placeholder="e.g Angular Development"
               required
             />
+            {errors.internshipName && (
+              <span className="text-red-400">{errors.internshipName}</span>
+            )}
           </div>
 
+          {/* Skills row */}
           <div className="flex flex-col my-5">
             <label className="mb-2 font-medium">Skills:</label>
             <div className="flex flex-col space-y-4 md:flex-row md:items-center md:space-x-4 md:space-y-0">
               <Select
                 isMulti
+                name="skillSet"
                 value={selectedSkills}
                 onChange={handleSkillsChange}
                 options={skills}
@@ -453,11 +535,11 @@ const RecPosting = () => {
                 className="w-60 shadow-md"
                 required
               />
-              
+
               <input
                 type="text"
                 value={customSkill}
-                onChange={(e)=>setCustomSkill(e.target.value)}
+                onChange={(e) => setCustomSkill(e.target.value)}
                 placeholder="Add custom skill"
                 className="border rounded px-2 py-1 shadow-md w-60"
               />
@@ -468,45 +550,58 @@ const RecPosting = () => {
                 Add
               </button>
             </div>
+            {errors.skillSet && (
+              <span className="text-red-400">{errors.skillSet}</span>
+            )}
           </div>
 
-          <div className="p-2 my-5">
-            <p className="my-2 font-medium">Internship Type</p>
-            <label>
-              <input
-                type="radio"
-                name="internshipType"
-                value="Hybrid"
-                checked={formData.internshipType === "Hybrid"}
-                onChange={handleChange}
-                className="w-4 h-4 mr-1"
-              />
-              <span className="text-gray-600">Hybrid</span>
-            </label>
+          {/* Internship type row */}
+          <div className=" my-5">
+            <div className="">
+              <p className="my-2 font-medium">Internship Type</p>
+              <label>
+                <input
+                  type="radio"
+                  name="internshipType"
+                  value="Hybrid"
+                  checked={formData.internshipType === "Hybrid"}
+                  onChange={handleChange}
 
-            <label className="ml-4 text-gray-600">
-              <input
-                type="radio"
-                name="internshipType"
-                value="Remote"
-                checked={formData.internshipType === "Remote"}
-                onChange={handleChange}
-                className="w-4 h-4 mr-1 "
-              />
-              Remote
-            </label>
+                  className="w-4 h-4 mr-1" required
+                />
+                <span className="text-gray-600">Hybrid</span>
+              </label>
 
-            <label className="ml-4 text-gray-600">
-              <input
-                type="radio"
-                name="internshipType"
-                value="Office"
-                checked={formData.internshipType === "Office"}
-                onChange={handleChange}
-                className="w-4 h-4 mr-1"
-              />
-              Office
-            </label>
+              <label className="ml-4 text-gray-600">
+                <input
+                  type="radio"
+                  name="internshipType"
+                  value="Remote"
+                  checked={formData.internshipType === "Remote"}
+                  onChange={handleChange}
+
+                  className="w-4 h-4 mr-1 "
+                />
+                Remote
+              </label>
+
+              <label className="ml-4 text-gray-600">
+                <input
+                  type="radio"
+                  name="internshipType"
+                  value="Office"
+                  checked={formData.internshipType === "Office"}
+                  onChange={handleChange}
+
+                  className="w-4 h-4 mr-1"
+                />
+                Office
+              </label>
+            </div>
+
+            {errors.internshipType && (
+              <span className="text-red-400">{errors.internshipType}</span>
+            )}
           </div>
 
           {(formData.internshipType === "Office" ||
@@ -516,6 +611,7 @@ const RecPosting = () => {
                 <select
                   className="border-2 py-1 rounded-md px-2"
                   id="country"
+                  name="country"
                   value={selectedCountry}
                   onChange={(e) => {
                     setSelectedCountry(e.target.value);
@@ -569,10 +665,11 @@ const RecPosting = () => {
               </div>
             )}
 
-          <div className="flex flex-col my-5 space-y-3">
+          {/* Internship start ques */}
+          <div className="flex flex-col my-5 space-y-2">
             <p className="font-medium">Internship Start date</p>
             <div className="flex space-x-16 text-gray-600">
-              <label className="ml-4 flex items-center">
+              <label className=" flex items-center">
                 <input
                   type="radio"
                   name="internshipStartQues"
@@ -580,6 +677,7 @@ const RecPosting = () => {
                   checked={formData.internshipStartQues === "Immediately"}
                   onChange={handleChange}
                   className="w-4 h-4 mr-1"
+                  required
                 />
                 Immediately (within next 30 days)
               </label>
@@ -592,12 +690,18 @@ const RecPosting = () => {
                   checked={formData.internshipStartQues === "Later"}
                   onChange={handleChange}
                   className="w-4 h-4 mr-1"
+                  required
                 />
                 Later
               </label>
             </div>
+
+            {errors.internshipStartQues && (
+              <span className="text-red-400">{errors.internshipStartQues}</span>
+            )}
           </div>
 
+          {/* no of openings */}
           <div className="flex flex-col my-5">
             <label className="mb-2 font-medium">No of Openings</label>
             <input
@@ -605,11 +709,16 @@ const RecPosting = () => {
               name="numberOfOpenings"
               value={formData.numberOfOpenings}
               onChange={handleChange}
+              onBlur={handleBlur}
               className="p-2 border border-gray-300 rounded-md shadow-md"
               placeholder="e.g. 4"
+              required
             />
+            {errors.numberOfOpenings && (
+              <span className="text-red-400">{errors.numberOfOpenings}</span>
+            )}
           </div>
-
+          {/* Internship Duration */}
           <div className="flex flex-col my-5">
             <label className="mb-2 font-medium">
               Internship Duration (in months)
@@ -619,46 +728,61 @@ const RecPosting = () => {
               name="duration"
               value={formData.duration}
               onChange={handleChange}
+              onBlur={handleBlur}
               className="p-2 border border-gray-300 rounded-md shadow-md"
               placeholder="e.g. 5"
             />
+            {errors.duration && (
+              <span className="text-red-400">{errors.duration}</span>
+            )}
           </div>
 
           <div className="flex flex-col my-5">
             <p className="my-2 font-medium">Type of internship</p>
             <Select
               value={selectedProfile}
+              name="selectedProfile"
               onChange={(values) => setSelectedProfile(values)}
               options={jobProfiles}
               placeholder="e.g Web development"
               className="w-full mb-3 shadow-md"
             />
             <input
-                type="text"
-                value={customProfile}
-                onChange={(e)=>setCustomProfile(e.target.value)}
-                placeholder="Add custom profile"
-                className="border rounded px-2 py-1 shadow-md w-60"
-              />
-              <button
-                onClick={addCustomProfile}
-                className="bg-blue-500 w-fit text-white px-4 py-1 my-2 rounded shadow-md hover:bg-blue-600"
-              >
-                Add
-              </button>
+              type="text"
+              value={customProfile}
+              onChange={(e) => setCustomProfile(e.target.value)}
+              placeholder="Add custom profile"
+              className="border rounded px-2 py-1 shadow-md w-60"
+            />
+            {errors.selectedProfile && (
+            <span className="text-red-400">{errors.selectedProfile}</span>
+          )}
+            <button
+              onClick={addCustomProfile}
+              className="bg-blue-500 w-fit text-white px-4 py-1 my-2 rounded shadow-md hover:bg-blue-600"
+            >
+              Add
+            </button>
           </div>
 
-          <div className="flex flex-col my-5 h-[320px]">
+          {/* intern responsiblities */}
+          <div className="flex flex-col my-5 h-[320px] ">
             <label className="my-2 ml-2 font-medium">
               Intern's responsibilities
             </label>
             <ReactQuill
+
               value={formData.description}
               onChange={handleDescriptionChange}
-              className="p-2 rounded-md h-[200px]"
+              className="p-2 rounded-md h-[200px] "
+              onBlur={handleDescriptionBlur}
               theme="snow"
               placeholder="Enter the requirements...."
             />
+
+            {errors.description && (
+              <span className="text-red-400 mt-10 ml-2">{errors.description}</span>
+            )}
           </div>
         </div>
 
@@ -666,9 +790,12 @@ const RecPosting = () => {
           Stipend & Perks
         </p>
         <div className="border border-gray-300 mx-auto p-6 rounded-lg shadow-lg mb-7 w-full lg:w-[70%]">
+          {/* stipend */}
           <div className="flex flex-col my-4">
             <label className="mb-2 font-medium">Stipend</label>
             <div className="mb-4">
+            <div>
+            <label className="mr-4">
               <input
                 type="radio"
                 name="stipendType"
@@ -676,8 +803,9 @@ const RecPosting = () => {
                 checked={formData.stipendType === "unpaid"}
                 onChange={handleChange}
                 className="mr-1"
-              />
-              <label className="mr-4">Unpaid</label>
+              />Unpaid
+            </label>
+              
 
               <label className="mr-4">
                 <input
@@ -690,6 +818,7 @@ const RecPosting = () => {
                 />
                 Fixed
               </label>
+
               <label className="mr-4">
                 <input
                   type="radio"
@@ -701,6 +830,7 @@ const RecPosting = () => {
                 />
                 Negotiable
               </label>
+
               <label>
                 <input
                   type="radio"
@@ -712,6 +842,10 @@ const RecPosting = () => {
                 />
                 Performance Based
               </label>
+              </div>
+              {errors.stipendType && (
+            <span className="text-red-400">{errors.stipendType}</span>
+          )}
             </div>
 
             {/* Conditionally render Stipend Input based on selected type */}
@@ -769,13 +903,24 @@ const RecPosting = () => {
             )}
           </div>
 
+          {/* perks */}
           <div className="flex flex-col mt-4 mb-2">
             <label className="mb-2 font-medium">Perks and Benefits</label>
             <div className="flex items-center">
               <Select
                 isMulti
                 value={selectedPerks}
-                onChange={(values) => setSelectedPerks(values)}
+                onChange={(values) => {
+                  setSelectedPerks(values);
+          
+                  // Clear error if user selects a value
+                  if (errors.perksSet) {
+                    setErrors((prevErrors) => ({
+                      ...prevErrors,
+                      perksSet: "",
+                    }));
+                  }
+                }}
                 options={perks.map((perk) => ({
                   value: perk,
                   label: perk,
@@ -784,8 +929,12 @@ const RecPosting = () => {
                 className="w-60 shadow-md"
               />
             </div>
+            {errors.perksSet && (
+            <span className="text-red-400">{errors.perksSet}</span>
+          )}
           </div>
 
+          {/* ppo */}
           <div className="my-5">
             <p>Does this internship comes with pre-placement offer (PPO)</p>
             <input
@@ -807,6 +956,9 @@ const RecPosting = () => {
             />{" "}
             <label>No</label>
           </div>
+          {errors.ppoCheck && (
+            <span className="text-red-400">{errors.ppoCheck}</span>
+          )}
         </div>
 
         <p className="text-center text-lg font-semibold py-5">
@@ -876,7 +1028,7 @@ const RecPosting = () => {
             Post Internship
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import internsnestlogo2 from "../../images/internsnest_pic2.jpg";
 import internsnestLogo from "../../images/internnest_logo.png";
+import internsnestLogo3 from "../../images/INTERNSNEST LOGO.png";
 import getUserIdFromToken from "../student/auth/authUtils.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -43,9 +44,9 @@ const NavbarUniversal = () => {
         {/* Logo */}
         <Link to="/">
           <img
-            src={internsnestLogo}
+            src={internsnestLogo3}
             alt=""
-            className="h-16 lg:h-[70px] w-24 lg:w-28"
+            className="h-12 lg:h-[40px] w-24 lg:w-28"
           />
         </Link>
 
