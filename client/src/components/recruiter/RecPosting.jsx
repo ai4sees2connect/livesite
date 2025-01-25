@@ -54,13 +54,15 @@ const RecPosting = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const navigate = useNavigate();
+  let len;
+
 
   // const [internshipNameError, setInternshipNameError] = useState("");
   // const [stipendError, setStipendError] = useState("");
   // const [skillsError, setSkillsError] = useState("");
   const [errors, setErrors] = useState({});
 
-
+  console.log(formData);
   const perks = [
     "Letter of recommendation",
     "Flexible work hours",
@@ -313,7 +315,7 @@ const RecPosting = () => {
       window.scrollTo({
         behavior: "smooth",
         top: 0
-      }); 
+      });
       return;
     }
 
@@ -381,7 +383,7 @@ const RecPosting = () => {
       if (response.data.success) {
         toast.success("Internship posted successfully");
         console.log("Response:", response.data);
-        window.location.reload();
+        navigate(`/recruiter/dashboard/${userId}`);
         return;
       } else {
         toast.error("some error occured");
@@ -514,6 +516,7 @@ const RecPosting = () => {
               onBlur={handleBlur}
               className="p-2 border text-gray-600 shadow-md border-gray-300 rounded-md"
               placeholder="e.g Angular Development"
+              maxLength={30}
               required
             />
             {errors.internshipName && (
@@ -529,7 +532,24 @@ const RecPosting = () => {
                 isMulti
                 name="skillSet"
                 value={selectedSkills}
-                onChange={handleSkillsChange}
+                onChange={(selected) => {
+                  handleSkillsChange(selected);
+
+                  // Clear error if a skill is selected
+                  setErrors((prevErrors) => {
+                    const { skillSet, ...rest } = prevErrors;
+                    return rest;
+                  });
+                }}
+                onBlur={() => {
+                  // Check if no skills are selected
+                  if (!selectedSkills || selectedSkills.length === 0) {
+                    setErrors((prevErrors) => ({
+                      ...prevErrors,
+                      skillSet: "Please select at least one skill.",
+                    }));
+                  }
+                }}
                 options={skills}
                 placeholder="Select or type skills "
                 className="w-60 shadow-md"
@@ -542,9 +562,18 @@ const RecPosting = () => {
                 onChange={(e) => setCustomSkill(e.target.value)}
                 placeholder="Add custom skill"
                 className="border rounded px-2 py-1 shadow-md w-60"
+                maxLength={12}
               />
               <button
-                onClick={addCustomSkill}
+                onClick={() => {
+                  addCustomSkill();
+
+                  // Clear error if a custom skill is added
+                  setErrors((prevErrors) => {
+                    const { skillSet, ...rest } = prevErrors;
+                    return rest;
+                  });
+                }}
                 className="bg-blue-500 w-fit text-white px-4 py-1 rounded shadow-md hover:bg-blue-600"
               >
                 Add
@@ -708,12 +737,40 @@ const RecPosting = () => {
               type="number"
               name="numberOfOpenings"
               value={formData.numberOfOpenings}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              onChange={(e) => {
+                let value = e.target.value;
+
+                // Ensure the value is a positive integer between 1 and 99
+                if (value === "" || (/^[1-9][0-9]?$/.test(value) && parseInt(value) <= 99)) {
+                  handleChange(e); // Only update if valid
+                }
+              }}
+              onKeyDown={(e) => {
+                if (
+                  e.key === "-" || // Prevent hyphen
+                  e.key === "." || // Prevent dot
+                  e.key === "e" || // Prevent 'e'
+                  e.key === "E" || // Prevent 'E'
+                  e.key === "0" // Prevent '0' as the first character
+                ) {
+                  e.preventDefault();
+                }
+              }}
+              onBlur={(e) => {
+                // const value = parseInt(e.target.value, 10);
+
+                // // Clear the input field if value exceeds 99 or is invalid
+                // if (value > 99 || isNaN(value)) {
+                //   e.target.value = "";
+                //   handleChange({ target: { name: e.target.name, value: "" } });
+                // }
+                handleBlur(e);
+              }}
               className="p-2 border border-gray-300 rounded-md shadow-md"
-              placeholder="e.g. 4"
+              placeholder="max: 99 openings"
               required
             />
+
             {errors.numberOfOpenings && (
               <span className="text-red-400">{errors.numberOfOpenings}</span>
             )}
@@ -727,22 +784,58 @@ const RecPosting = () => {
               type="number"
               name="duration"
               value={formData.duration}
-              onChange={handleChange}
+              onChange={(e) => {
+                let value = e.target.value;
+
+                // Ensure the value is a positive integer between 1 and 99
+                if (value === "" || (/^[1-9][0-9]?$/.test(value) && parseInt(value) <= 24)) {
+                  handleChange(e); // Only update if valid
+                }
+              }}
+              onKeyDown={(e) => {
+                if (
+                  e.key === "-" || // Prevent hyphen
+                  e.key === "." || // Prevent dot
+                  e.key === "e" || // Prevent 'e'
+                  e.key === "E" || // Prevent 'E'
+                  e.key === "0" // Prevent '0' as the first character
+                ) {
+                  e.preventDefault();
+                }
+              }}
               onBlur={handleBlur}
               className="p-2 border border-gray-300 rounded-md shadow-md"
-              placeholder="e.g. 5"
+              placeholder="max:24 months"
             />
             {errors.duration && (
               <span className="text-red-400">{errors.duration}</span>
             )}
           </div>
 
+          {/* Profile */}
           <div className="flex flex-col my-5">
             <p className="my-2 font-medium">Type of internship</p>
             <Select
               value={selectedProfile}
               name="selectedProfile"
-              onChange={(values) => setSelectedProfile(values)}
+              onChange={(values) => {
+                setSelectedProfile(values);
+
+                // Clear error if a valid profile is selected
+                setErrors((prevErrors) => {
+                  const { selectedProfile, ...rest } = prevErrors;
+                  return rest;
+                });
+              }}
+              onBlur={() => {
+                // Check if no profile is selected
+                if (!selectedProfile || selectedProfile.length === 0) {
+                  setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    selectedProfile: "Please select a profile.",
+                  }));
+                }
+              }}
               options={jobProfiles}
               placeholder="e.g Web development"
               className="w-full mb-3 shadow-md"
@@ -753,12 +846,19 @@ const RecPosting = () => {
               onChange={(e) => setCustomProfile(e.target.value)}
               placeholder="Add custom profile"
               className="border rounded px-2 py-1 shadow-md w-60"
+              maxLength={30}
             />
             {errors.selectedProfile && (
-            <span className="text-red-400">{errors.selectedProfile}</span>
-          )}
+              <span className="text-red-400">{errors.selectedProfile}</span>
+            )}
             <button
-              onClick={addCustomProfile}
+              onClick={() => {
+                addCustomProfile();
+                setErrors((prevErrors) => {
+                  const { skillSet, ...rest } = prevErrors;
+                  return rest;
+                });
+              }}
               className="bg-blue-500 w-fit text-white px-4 py-1 my-2 rounded shadow-md hover:bg-blue-600"
             >
               Add
@@ -766,22 +866,39 @@ const RecPosting = () => {
           </div>
 
           {/* intern responsiblities */}
-          <div className="flex flex-col my-5 h-[320px] ">
-            <label className="my-2 ml-2 font-medium">
-              Intern's responsibilities
-            </label>
-            <ReactQuill
+          <div className="flex flex-col my-5   ">
+            <div className="">
+              <label className="my-2 ml-2 font-medium">
+                Intern's responsibilities
+              </label>
+              <ReactQuill
 
-              value={formData.description}
-              onChange={handleDescriptionChange}
-              className="p-2 rounded-md h-[200px] "
-              onBlur={handleDescriptionBlur}
-              theme="snow"
-              placeholder="Enter the requirements...."
-            />
+                value={formData.description}
+                onChange={(value) => {
+
+                  if (value.length <= 3011) {
+                    handleDescriptionChange(value); // Update state only if within the limit
+                  }
+                  else setErrors(prevErrors => {
+                    return { ...prevErrors, description: "Description should be less than 3000 characters" }
+                  })
+                }}
+                className="p-2 rounded-md  "
+                onBlur={() => {
+                  // Ensure the minimum character requirement is met
+                  if (formData.description.trim().length < 10) {
+                    alert("Description must be at least 10 characters long.");
+                  }
+                  handleDescriptionBlur(); // Call your onBlur handler
+                }}
+                theme="snow"
+                placeholder="Enter the requirements...."
+              />
+            </div>
+            <p className=" ml-3 mt-3 text-gray-700 text-sm">{3011 - formData.description.length} characters left</p>
 
             {errors.description && (
-              <span className="text-red-400 mt-10 ml-2">{errors.description}</span>
+              <span className="text-red-400 mt-1 ml-2">{errors.description}</span>
             )}
           </div>
         </div>
@@ -794,58 +911,58 @@ const RecPosting = () => {
           <div className="flex flex-col my-4">
             <label className="mb-2 font-medium">Stipend</label>
             <div className="mb-4">
-            <div>
-            <label className="mr-4">
-              <input
-                type="radio"
-                name="stipendType"
-                value="unpaid"
-                checked={formData.stipendType === "unpaid"}
-                onChange={handleChange}
-                className="mr-1"
-              />Unpaid
-            </label>
-              
+              <div>
+                <label className="mr-4">
+                  <input
+                    type="radio"
+                    name="stipendType"
+                    value="unpaid"
+                    checked={formData.stipendType === "unpaid"}
+                    onChange={handleChange}
+                    className="mr-1"
+                  />Unpaid
+                </label>
 
-              <label className="mr-4">
-                <input
-                  type="radio"
-                  name="stipendType"
-                  value="fixed"
-                  checked={formData.stipendType === "fixed"}
-                  onChange={handleChange}
-                  className="mr-1"
-                />
-                Fixed
-              </label>
 
-              <label className="mr-4">
-                <input
-                  type="radio"
-                  name="stipendType"
-                  value="negotiable"
-                  checked={formData.stipendType === "negotiable"}
-                  onChange={handleChange}
-                  className="mr-1"
-                />
-                Negotiable
-              </label>
+                <label className="mr-4">
+                  <input
+                    type="radio"
+                    name="stipendType"
+                    value="fixed"
+                    checked={formData.stipendType === "fixed"}
+                    onChange={handleChange}
+                    className="mr-1"
+                  />
+                  Fixed
+                </label>
 
-              <label>
-                <input
-                  type="radio"
-                  name="stipendType"
-                  value="performance-based"
-                  checked={formData.stipendType === "performance-based"}
-                  onChange={handleChange}
-                  className="mr-1"
-                />
-                Performance Based
-              </label>
+                <label className="mr-4">
+                  <input
+                    type="radio"
+                    name="stipendType"
+                    value="negotiable"
+                    checked={formData.stipendType === "negotiable"}
+                    onChange={handleChange}
+                    className="mr-1"
+                  />
+                  Negotiable
+                </label>
+
+                <label>
+                  <input
+                    type="radio"
+                    name="stipendType"
+                    value="performance-based"
+                    checked={formData.stipendType === "performance-based"}
+                    onChange={handleChange}
+                    className="mr-1"
+                  />
+                  Performance Based
+                </label>
               </div>
               {errors.stipendType && (
-            <span className="text-red-400">{errors.stipendType}</span>
-          )}
+                <span className="text-red-400">{errors.stipendType}</span>
+              )}
             </div>
 
             {/* Conditionally render Stipend Input based on selected type */}
@@ -873,14 +990,31 @@ const RecPosting = () => {
                     value={formData.stipend}
                     onChange={handleChange}
                     onKeyDown={(e) => {
-                      if (e.key === 'e' || e.key === 'E' || e.key === '-' || e.key === '+') {
+                      // Prevent 'e', 'E', '-', '+', and dot '.'
+                      if (
+                        e.key === 'e' ||
+                        e.key === 'E' ||
+                        e.key === '-' ||
+                        e.key === '+' ||
+                        e.key === '.'
+                      ) {
+                        e.preventDefault();
+                      }
+
+                      // Prevent '0' as the first character
+                      if (e.target.value === '' && e.key === '0') {
+                        e.preventDefault();
+                      }
+
+                      const currentValue = e.target.value + e.key; // Append the current key to the value
+                      if (parseInt(currentValue, 10) > 99999) {
                         e.preventDefault();
                       }
                     }}
                     className="p-1 border w-28 border-gray-300 rounded-md shadow-md"
                     placeholder="e.g 4000"
                     required
-                    min="0"
+                    min="1"
                   />
                   /month
                 </div>
@@ -895,10 +1029,12 @@ const RecPosting = () => {
                 <textarea
                   name="incentiveDescription"
                   value={formData.incentiveDescription}
+                  onBlur={handleBlur}
                   onChange={handleChange}
                   className="p-2 border border-gray-300 rounded-md shadow-md"
                   placeholder="Describe the performance-based incentive"
                 />
+                {errors.incentiveDescription && (<span className="text-red-400">{errors.incentiveDescription}</span>)}
               </div>
             )}
           </div>
@@ -912,12 +1048,21 @@ const RecPosting = () => {
                 value={selectedPerks}
                 onChange={(values) => {
                   setSelectedPerks(values);
-          
+
                   // Clear error if user selects a value
                   if (errors.perksSet) {
                     setErrors((prevErrors) => ({
                       ...prevErrors,
                       perksSet: "",
+                    }));
+                  }
+                }}
+                onBlur={() => {
+                  // Check if no perk is selected
+                  if (!selectedPerks || selectedPerks.length === 0) {
+                    setErrors((prevErrors) => ({
+                      ...prevErrors,
+                      perksSet: "Please select atleast one perk.",
                     }));
                   }
                 }}
@@ -930,35 +1075,37 @@ const RecPosting = () => {
               />
             </div>
             {errors.perksSet && (
-            <span className="text-red-400">{errors.perksSet}</span>
-          )}
+              <span className="text-red-400">{errors.perksSet}</span>
+            )}
           </div>
 
           {/* ppo */}
-          <div className="my-5">
-            <p>Does this internship comes with pre-placement offer (PPO)</p>
-            <input
-              type="radio"
-              name="ppoCheck"
-              value="yes"
-              checked={formData.ppoCheck === "yes"}
-              onChange={handleChange}
-              className=""
-            />{" "}
-            <label className="mr-5">Yes</label>
-            <input
-              type="radio"
-              name="ppoCheck"
-              value="no"
-              checked={formData.ppoCheck === "no"}
-              onChange={handleChange}
-              className=""
-            />{" "}
-            <label>No</label>
+          <div className="my-5 flex flex-col">
+            <div>
+              <p>Does this internship comes with pre-placement offer (PPO)</p>
+              <input
+                type="radio"
+                name="ppoCheck"
+                value="yes"
+                checked={formData.ppoCheck === "yes"}
+                onChange={handleChange}
+                className=""
+              />{" "}
+              <label className="mr-5">Yes</label>
+              <input
+                type="radio"
+                name="ppoCheck"
+                value="no"
+                checked={formData.ppoCheck === "no"}
+                onChange={handleChange}
+                className=""
+              />{" "}
+              <label>No</label>
+            </div>
+            {errors.ppoCheck && (
+              <span className="text-red-400 ">{errors.ppoCheck}</span>
+            )}
           </div>
-          {errors.ppoCheck && (
-            <span className="text-red-400">{errors.ppoCheck}</span>
-          )}
         </div>
 
         <p className="text-center text-lg font-semibold py-5">
@@ -1010,14 +1157,17 @@ const RecPosting = () => {
           {isAssessmentOpen && (
             <div className="flex flex-col h-[200px]">
               <label className="mb-2 font-medium">Assessment Question</label>
-              <input
+              <textarea
                 type="text"
                 name="assessment"
                 value={formData.assessment}
                 onChange={handleChange}
                 className="p-2 border border-gray-300 rounded-md shadow-md"
                 placeholder="Enter Question for applicant"
+                rows={3}
+                maxLength={200}
               />
+              <span className="text-sm text-gray-700">{200 - formData.assessment.length} characters left</span>
             </div>
           )}
 
