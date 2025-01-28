@@ -8,7 +8,7 @@ import axios from "axios";
 import api from "../common/server_url";
 import Select from "react-select";
 
-const Education = () => {
+const Education = ( {error, clearError,updateError }) => {
   const [clicked, setClicked] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [degree, setDegree] = useState("");
@@ -26,10 +26,7 @@ const Education = () => {
   const startYears = Array.from({ length: 50 }, (_, i) => currentYear - i);
   const [scoreError, setScoreError] = useState('');
 
-  // const endYears = Array.from(
-  //   { length: 50 },
-  //   (_, i) => currentYear - 40 + i
-  // ).reverse();
+
 
   const endYears = Array.from(
     { length: 11 },
@@ -333,6 +330,7 @@ const Education = () => {
         setEducationDetails(updatedDetails);
         setIsEditing(false);
         toast.success("Details updated");
+        clearError();
       } else {
         // Add new education entry
         const response = await axios.post(
@@ -341,6 +339,7 @@ const Education = () => {
         );
         setEducationDetails([...educationDetails, response.data]);
         toast.success("Details added");
+        clearError();
       }
 
       setClicked(true);
@@ -382,8 +381,13 @@ const Education = () => {
       console.log(educationDetails[index]);
       await axios.delete(`${api}/student/profile/${userId}/education/${index}`);
       setEducationDetails(educationDetails.filter((_, i) => i !== index));
+      const list=educationDetails.filter((_, i) => i !== index)
 
       toast.success("Education details deleted");
+      if(list.length ===0){
+      updateError("education", "* Please add your education");
+      console.log("triggered");
+      }
     } catch (error) {
       console.error("Error deleting education details:", error);
       toast.error("Failed to delete details");
@@ -415,9 +419,13 @@ const Education = () => {
     if (gradeType === "CGPA") {
       // Allow up to 10.00 with 2 decimal places
       if (/^\d{0,2}(\.\d{0,2})?$/.test(value)) {
-        if (parseFloat(value) <= 10) {
+        const numericValue = parseFloat(value);
+        if (numericValue > 0 && numericValue <= 10) { // Ensure value is greater than 0
           setScore(value);
           setScoreError(''); // Clear error if value is valid
+        } else if (numericValue === 0) {
+          setScore(''); // Reset the field
+          setScoreError('CGPA cannot be 0 or 00');
         } else {
           setScore(''); // Reset the field
           setScoreError('CGPA should not exceed 10.00');
@@ -426,12 +434,17 @@ const Education = () => {
         setScore(''); // Reset the field for invalid input
         setScoreError('Enter a valid CGPA up to 2 decimal places');
       }
+    
     } else if (gradeType === "Percentage") {
       // Allow up to 100.00 with 2 decimal places
       if (/^\d{0,3}(\.\d{0,2})?$/.test(value)) {
-        if (parseFloat(value) <= 100) {
+        const numericValue = parseFloat(value);
+        if (numericValue > 0 && numericValue <= 100) { // Ensure value is greater than 0
           setScore(value);
           setScoreError(''); // Clear error if value is valid
+        } else if (numericValue === 0) {
+          setScore(''); // Reset the field
+          setScoreError('Percentage cannot be 0 or 000');
         } else {
           setScore(''); // Reset the field
           setScoreError('Percentage should not exceed 100');
@@ -510,6 +523,7 @@ const Education = () => {
             onChange={(e) => setInstitution(e.target.value)}
             placeholder="Institution"
             className="border p-2 mb-2 w-full"
+            maxLength={70}
             required
           />
           <div className="flex space-x-3 px-2 items-center mb-2 w-[50%] md:w-[40%]">
@@ -620,8 +634,9 @@ const Education = () => {
               </div>
             ))
           ) : (
-            <p>No details added yet.</p>
+            <p className="text-red-500 font-semibold">{error}</p>
           )}
+          {/* {error && <p className="text-red-500">{error}</p>} */}
         </div>
       )}
     </div>

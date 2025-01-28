@@ -362,7 +362,7 @@ const Portfolio = () => {
         </form>
       ) : (
         <div className="flex flex-col items-center mt-10">
-          {portfolioLinks.length > 0 ? (
+          {portfolioLinks.length > 0 && (
             portfolioLinks.map((portfolioLink, index) => (
               <div
                 key={index}
@@ -398,9 +398,7 @@ const Portfolio = () => {
                 </div>
               </div>
             ))
-          ) : (
-            <p>No portfolio links added yet.</p>
-          )}
+          ) }
         </div>
       )}
     </div>

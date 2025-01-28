@@ -262,7 +262,7 @@ const Certificates = () => {
         </form>
       ) : (
         <div className="flex flex-col items-center mt-10">
-          {certificates.length > 0 ? (
+          {certificates.length > 0 && (
             certificates.map((cert, index) => (
               <div key={index} className="border p-5 mb-2 min-w-full">
                 <div>
@@ -297,9 +297,7 @@ const Certificates = () => {
                 </div>
               </div>
             ))
-          ) : (
-            <p>No certificates added yet.</p>
-          )}
+          ) }
         </div>
       )}
     </div>

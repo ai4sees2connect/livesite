@@ -228,7 +228,7 @@ const WorkExp = () => {
         </form>
       ) : (
         <div className="flex gap-5 flex-col items-center mt-10">
-          {workExperiences.length > 0 ? (
+          {workExperiences.length > 0 && (
             workExperiences.map((work, index) => (
               <div key={index} className="border p-5 mb-2 w-[90%]">
                 <div className="flex justify-between">
@@ -260,9 +260,7 @@ const WorkExp = () => {
                 </div>
               </div>
             ))
-          ) : (
-            <p>No work experience added yet.</p>
-          )}
+          ) }
         </div>
       )}
     </div>

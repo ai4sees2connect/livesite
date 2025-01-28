@@ -164,12 +164,12 @@ const RecPricing = () => {
             <p className="text-gray-600 my-4">Best for short-term hiring.</p>
 
             <p className="text-blue-600  mb-4">Total Posting: 3 per month</p>
-            <p className="text-2xl font-bold">&#8377;99</p>
+            <p className="text-2xl font-bold">&#8377;1</p>
           </div>
 
           <button
             className=" bg-orange-500 text-white py-2 px-4 rounded-lg"
-            onClick={() => handlePayment(9900, "1-month")}
+            onClick={() => handlePayment(100, "1-month")}
           >
             Buy Now
           </button>

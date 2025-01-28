@@ -7,7 +7,7 @@ import axios from "axios";
 import api from "../common/server_url";
 import Select from "react-select";
 
-const Skills = ({ skillSet }) => {
+const Skills = ({ skillSet, error, clearError,updateError  }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const [skillName, setSkillName] = useState("");
@@ -64,6 +64,7 @@ const Skills = ({ skillSet }) => {
         setSkills(updatedSkills);
         setIsEditing(false);
         toast.success("Skill updated");
+        clearError();
       } else {
         // Add new skill entry
         const response = await axios.post(
@@ -72,6 +73,7 @@ const Skills = ({ skillSet }) => {
         );
         setSkills([...skills, response.data.skills]);
         toast.success("Skill added");
+        clearError();
       }
 
       setSkillName("");
@@ -92,6 +94,11 @@ const Skills = ({ skillSet }) => {
     try {
       await axios.delete(`${api}/student/profile/${userId}/skills/${index}`);
       setSkills(skills.filter((_, i) => i !== index));
+      const list=skills.filter((_, i) => i !== index);
+      if(list.length ===0){
+        updateError("skills", "* Please add atleast one skill");
+        console.log("triggered");
+        }
       toast.success("Skill deleted");
     } catch (error) {
       console.error("Error deleting skill details:", error);
@@ -188,7 +195,7 @@ const Skills = ({ skillSet }) => {
               </div>
             ))
           ) : (
-            <p>No skills added yet.</p>
+            <p className="text-red-500 font-semibold">{error}</p>
           )}
         </div>
       )}

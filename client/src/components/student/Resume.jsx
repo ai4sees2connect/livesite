@@ -61,7 +61,7 @@ const Resume = () => {
         }
       } catch (error) {
         console.error("Error fetching resume:", error);
-        toast.info('Please upload your resume');
+        // toast.info('Please upload your resume');
       }
     };
 
@@ -173,7 +173,7 @@ const Resume = () => {
         </button>
         <div className="text-gray-600">Supported formats: PDF</div>
         {!resumeFilename && (
-          <div className="text-red-400">No resume uploaded</div>
+          <div className="text-red-400 font-semibold">No resume uploaded</div>
         )}
       </div>
       <ToastContainer />
