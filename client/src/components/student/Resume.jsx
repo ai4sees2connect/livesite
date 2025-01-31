@@ -136,7 +136,7 @@ const Resume = () => {
         Your resume is the first impression you make on potential employers.
         Craft it carefully to secure your desired job or internship.
       </h2>
-      <h2  className="text-green-500 ">{resumeFilename}</h2>
+      <h2  className="text-blue-500 font-semibold">{resumeFilename}</h2>
 
       <div className="flex justify-between items-center text-gray-600">
         <h2>{resumeCreatedAt ? formatDateWithOrdinal(resumeCreatedAt) : ""}</h2>
@@ -146,7 +146,7 @@ const Resume = () => {
             <a
               href={resumeUrl}
               download={resumeFilename}
-              className="text-green-500 text-xl font-bold mt-4 hover:scale-105 duration-300 pb-4 text-center"
+              className="text-blue-500 text-xl font-bold mt-4 hover:scale-105 duration-300 pb-4 text-center"
             >
               <FaDownload />
             </a>
@@ -169,7 +169,7 @@ const Resume = () => {
           onClick={handleFileClick}
           className="border-2 border-blue-500 text-blue-500 font-semibold rounded-full px-2 py-1 hover:bg-blue-500 hover:text-white"
         >
-          Upload Resume
+          {resumeUrl? (<span>Update</span>):(<span>Upload</span>)} Resume
         </button>
         <div className="text-gray-600">Supported formats: PDF</div>
         {!resumeFilename && (

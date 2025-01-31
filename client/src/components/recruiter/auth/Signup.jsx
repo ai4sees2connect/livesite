@@ -45,6 +45,7 @@ function Signup() {
   const [otpVerified, setOtpVerified] = useState(false);
   const idFromToken = getUserIdFromToken();
   const token = localStorage.getItem("token");
+  const [otpError, setOtpError] = useState("");
 
   useEffect(() => {
     if (!token) {
@@ -83,7 +84,7 @@ function Signup() {
     const passwordPattern =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
-    if (newPassword.trim().length > 20) {
+    if (newPassword.trim().length == 20) {
       setPasswordError("Password must not exceed 20 characters");
     } else if (!passwordPattern.test(newPassword)) {
       setPasswordError(
@@ -135,13 +136,13 @@ function Signup() {
         setVerifiedEmail(email);
       } else {
         // Something went wrong, show the error message
-        toast.error(response.data.message);
+        setOtpError(response.data.message);
         setOtpVerified(false);
       }
     } catch (error) {
       if (error.response) {
         // If the request was made and the server responded with a status code that falls out of the range of 2xx
-        toast.error(error.response.data.message);
+        setOtpError(error.response.data.message);
       } else {
         // Something else went wrong (e.g., network error)
         toast.error("An error occurred while verifying the OTP");
@@ -451,6 +452,7 @@ function Signup() {
                       onChange={(e) => setOtp(e.target.value)}
                       placeholder="Enter otp"
                       className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-20 w-full relative"
+                      
                     />
 
                     {!otpVerified && (
@@ -462,11 +464,13 @@ function Signup() {
                         Verify OTP
                       </button>
                     )}
+
+                  {otpError && <p className="text-red-500 text-left w-full px-2">{otpError}</p>}
                   </div>
                 )}
               </div>}
               {emailError && (
-                <p className="text-red-500 text-left w-full">{emailError}</p>
+                <p className="text-red-500 text-left w-full px-2">{emailError}</p>
               )}
 
               {otpVerified && (
@@ -516,6 +520,7 @@ function Signup() {
                     onChange={handlePasswordChange}
                     className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-10 w-full"
                     required
+                    maxLength={20}
                   />
                   {passwordError && (
                     <p className="text-red-500 text-left w-full mb-0">
@@ -543,10 +548,11 @@ function Signup() {
                 </div>
               )}
 
-              <button
-                type="submit"
-                className={`w-full py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${!isFormValid ? `bg-[rgb(225,228,211)]` : ""
-                  } `}
+<button
+                onClick={handleSubmit}
+                className={`w-full py-2 border-none h-[50px] text-gray-700 rounded-full 
+    ${isFormValid ? "bg-blue-500 text-white" : "bg-[rgb(228,228,215)] cursor-not-allowed"}
+  `}
                 disabled={!isFormValid}
               >
                 Create Account

@@ -52,8 +52,8 @@ router.post('/send-otp', async (req, res) => {
       },
     });
 
-    console.log('Email User:', process.env.EMAIL_USER);
-    console.log('Email Pass:', process.env.EMAIL_PASS);
+    // console.log('Email User:', process.env.EMAIL_USER);
+    // console.log('Email Pass:', process.env.EMAIL_PASS);
 
     transporter.verify((error, success) => {
       if (error) {
@@ -70,7 +70,7 @@ router.post('/send-otp', async (req, res) => {
       text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
     };
 
-    console.log(mailOptions);
+    // console.log(mailOptions);
     // Step 4: Send email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
@@ -170,8 +170,8 @@ router.post('/forget-pass/send-otp', async (req, res) => {
       },
     });
 
-    console.log('Email User:', process.env.EMAIL_USER);
-    console.log('Email Pass:', process.env.EMAIL_PASS);
+    // console.log('Email User:', process.env.EMAIL_USER);
+    // console.log('Email Pass:', process.env.EMAIL_PASS);
 
     transporter.verify((error, success) => {
       if (error) {
@@ -188,7 +188,7 @@ router.post('/forget-pass/send-otp', async (req, res) => {
       text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
     };
 
-    console.log(mailOptions);
+    // console.log(mailOptions);
     // Step 4: Send email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
@@ -414,7 +414,7 @@ router.get('/details', async (req, res) => {
     const student = await Student.findById(userId);
     
     if (!student) return res.status(200).json({success:false}); // Not found if user does not exist
-    console.log(student);
+    // console.log(student);
 
     // Send user data as response
     res.status(200).json({
@@ -636,7 +636,7 @@ router.get('/internships', async (req, res) => {
       filters.stipend = { $gte: parseInt(stipend) };
     }
 
-    console.log('Filters:', filters);
+    // console.log('Filters:', filters);
 
     // Fetch internships with recruiters in one query
     const internships = await Internship.find(filters)
@@ -867,7 +867,7 @@ router.get('/get-file/:id', async (req, res) => {
     if (!file) {
       return res.status(404).json({ message: 'File not found' });
     }
-    console.log('File data size:', file.data.length);
+    // console.log('File data size:', file.data.length);
 
     // Set the correct content type for the file
     res.set({

@@ -658,7 +658,7 @@ const Internships = () => {
     : [];
 
   return (
-    <div className="py-5 px-5 mt-16 min-h-screen bg-gray-100">
+    <div className="py-5 px-5 mt-16 lg:mt-2 min-h-screen bg-gray-100">
       <div className="flex flex-col lg:flex-row w-full lg:w-[90%] mx-auto  gap-10 ">
         {/* this below div is filter button */}
         <div
@@ -846,7 +846,7 @@ const Internships = () => {
                 {internships.map((internship) => (
                   <div
                     key={internship._id}
-                    className="bg-white shadow-md rounded-lg p-5 w-full lg:w-[90%] mx-auto relative space-y-1 hover:cursor-pointer hover:scale-105 duration-300"
+                    className="bg-white shadow-md rounded-lg p-5 w-full lg:w-[90%] mx-auto relative space-y-1 hover:cursor-pointer hover:scale-105 duration-300 border"
                     onClick={() => openModal(internship)}
                   >
                     <div className="flex justify-between items-center">

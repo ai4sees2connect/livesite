@@ -32,6 +32,7 @@ function Login() {
   const navigate = useNavigate();
   const userId = getUserIdFromToken();
   const { login } = useRecruiter();
+    const [error, setError] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -52,7 +53,7 @@ function Login() {
         email,
         password,
       });
-      toast.success("Login successful!");
+      // toast.success("Login successful!");
 
       // Handle success
       console.log(response.data.message);
@@ -61,10 +62,8 @@ function Login() {
       const userId = getUserIdFromToken();
       navigate(`/recruiter/dashboard/${userId}`);
     } catch (error) {
-      // Handle error
-      toast.error(error.response.data.message || "Login failed");
-      console.log(error.response.data.message);
-      // setError(error.response.data.message || 'Login failed');
+   
+      setError("Invalid credentials");
     }
   };
 
@@ -186,6 +185,10 @@ function Login() {
                   Forgot password?
                 </Link>
               </div>
+
+              {error && (
+                <p className="text-red-500 font-semibold mb-4 text-center">{error}</p>
+              )}
 
               <button
                 type="submit"

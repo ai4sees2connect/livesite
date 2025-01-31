@@ -32,6 +32,7 @@ function Signup() {
   const [passwordError, setPasswordError] = useState("");
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
+  const [otpError, setOtpError] = useState("");
   const navigate = useNavigate();
   const userId = getUserIdFromToken();
   const { login } = useStudent();
@@ -39,6 +40,7 @@ function Signup() {
   const [otp, setOtp] = useState("");
   const [sendingOtp, setSendingOtp] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
+  // const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -55,12 +57,12 @@ function Signup() {
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
-  
+
     // Define the regex pattern
     const passwordPattern =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
-  
-    if (newPassword.trim().length > 20) {
+
+    if (newPassword.trim().length == 20) {
       setPasswordError("Password must not exceed 20 characters");
     } else if (!passwordPattern.test(newPassword)) {
       setPasswordError(
@@ -70,7 +72,7 @@ function Signup() {
       setPasswordError("");
     }
   };
-  
+
 
   const validateEmail = (email) => {
     // Basic email validation
@@ -124,13 +126,15 @@ function Signup() {
         setVerifiedEmail(email);
       } else {
         // Something went wrong, show the error message
-        toast.error(response.data.message);
+        // toast.error(response.data.message);
+        setOtpError(response.data.message);
         setOtpVerified(false);
       }
     } catch (error) {
       if (error.response) {
         // If the request was made and the server responded with a status code that falls out of the range of 2xx
-        toast.error(error.response.data.message);
+        // toast.error(error.response.data.message);
+        setOtpError(error.response.data.message);
       } else {
         // Something else went wrong (e.g., network error)
         toast.error("An error occurred while verifying the OTP");
@@ -157,7 +161,8 @@ function Signup() {
       // Store email and other form data temporarily
       setIsOtpInput(true); // Show OTP input field
     } catch (error) {
-      toast.error(error.response?.data?.message || "Error sending OTP");
+      // toast.error(error.response?.data?.message || "Error sending OTP");
+      setEmailError(error.response?.data?.message || "Error sending OTP")
       setSendingOtp(false);
       setButtonDisabled(false);
     }
@@ -178,7 +183,7 @@ function Signup() {
     firstname.trim() !== "" &&
     lastname.trim() !== "" &&
     otp.trim() !== "" &&
-    passwordError ==="" &&
+    passwordError === "" &&
     otpVerified;
 
   const handleGoogleClick = async (e) => {
@@ -354,9 +359,8 @@ function Signup() {
                     otpInput &&
                     !otpVerified && (
                       <button
-                        className={`absolute right-0 top-2.5 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2 ${
-                          buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
+                        className={`absolute right-0 top-2.5 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2 ${buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
                         type="button"
                         onClick={handleResendOtp}
                         disabled={buttonDisabled}
@@ -387,8 +391,9 @@ function Signup() {
                   )}
                 </div>}
                 {emailError && (
-                  <p className="text-red-500 text-left w-full">{emailError}</p>
+                  <p className="text-red-500 text-left w-full px-2">{emailError}</p>
                 )}
+
                 {otpInput && !otpVerified && (
                   <div className="relative my-3 w-full">
                     <input
@@ -401,13 +406,14 @@ function Signup() {
                     />
                     {!otpVerified && (
                       <button
-                        className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
+                        className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-4"
                         type="button"
                         onClick={handleVerifyOtp}
                       >
                         Verify OTP
                       </button>
                     )}
+                    {otpError && <p className="text-red-500 text-left w-full px-2">{otpError}</p>}
                   </div>
                 )}
               </div>
@@ -422,6 +428,7 @@ function Signup() {
                     onChange={handlePasswordChange}
                     className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md pr-10 w-full"
                     required
+                    maxLength={20}
                   />
                   {passwordError && (
                     <p className="text-red-500 text-left w-full">
@@ -451,9 +458,9 @@ function Signup() {
 
               <button
                 onClick={handleSubmit}
-                className={`w-full py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${
-                  !isFormValid ? `bg-[rgb(228,228,215)]` : ""
-                } `}
+                className={`w-full py-2 border-none h-[50px] text-gray-700 rounded-full 
+    ${isFormValid ? "bg-blue-500 text-white" : "bg-[rgb(228,228,215)] cursor-not-allowed"}
+  `}
                 disabled={!isFormValid}
               >
                 Create Account

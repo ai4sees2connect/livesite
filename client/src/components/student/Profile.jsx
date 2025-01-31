@@ -13,7 +13,7 @@ import axios from "axios";
 import api from "../common/server_url";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import { FaBuilding, FaPen, FaUser, FaCamera } from "react-icons/fa";
+import { FaBuilding, FaPen, FaUser, FaCamera, FaTrash, FaEdit } from "react-icons/fa";
 import Resume from "./Resume";
 import statesAndCities from "../common/statesAndCities";
 import { FaArrowLeft } from "react-icons/fa";
@@ -42,6 +42,7 @@ const Profile = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [isHovered, setIsHovered] = useState(false);
 
   const [errors, setErrors] = useState({});
 
@@ -319,31 +320,60 @@ const Profile = () => {
 
       <div className="border-b  pb-3 mt-10 text-center border-2 p-5 rounded-lg h-full w-full lg:w-[380px]">
         <div className="flex justify-center ">
-          <div className="max-w-20 max-h-28  flex items-center justify-center ">
-            {picUrl ? (
-              <img src={picUrl} className="w-fit h-fit" alt="" />
-            ) : (
-              <div className="relative w-14 h-14 rounded-full border flex items-center justify-center border-gray-600 my-3 group hover:cursor-pointer " onClick={handleFileClick}>
-                <FaCamera className="w-9 h-9 text-gray-600" />
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black bg-opacity-75 rounded-full">
-                  <span className="text-white text-xs text-center px-2">Add Image</span>
-                </div>
-              </div>
-            )}
+        <div className="max-w-24 max-h-32 flex items-center justify-center">
+      {picUrl ? (
+        <div
+          className="relative w-fit h-fit"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <img
+            src={picUrl}
+            className={`w-full h-full ${isHovered ? 'brightness-50' : ''}`} // Darken image on hover
+            alt="Profile"
+          />
+          {isHovered && (
+            <div className="absolute inset-0 flex items-center justify-center gap-2">
+              <button
+                className="text-white p-1 hover:bg-opacity-75 rounded-sm"
+                onClick={handleFileClick}
+              >
+                <FaEdit size={20} className="text-blue-400 hover:scale-110 duration-300"/> {/* Icon for changing the picture */}
+              </button>
+              <button
+                className="text-white p-1 hover:bg-opacity-75 rounded-sm"
+                onClick={handleDelete}
+              >
+                <FaTrash size={20} className="text-red-400 hover:scale-110 duration-300"/> {/* Icon for deleting the picture */}
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div
+          className="relative w-14 h-14 border flex items-center justify-center border-gray-600 my-3 group hover:cursor-pointer"
+          onClick={handleFileClick}
+        >
+          <FaCamera className="w-9 h-9 text-gray-600" />
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black bg-opacity-75">
+            <span className="text-white text-xs text-center px-2">Add Image</span>
           </div>
         </div>
-        {!picUrl && (
+      )}
+    </div>
+        </div>
+        {/* {!picUrl && (
           <button className="text-blue-500" onClick={handleFileClick}>
             Upload profile picture
           </button>
-        )}
+        )} */}
         <input
           ref={fileInputRef}
           onChange={handlePictureUpload}
           type="file"
           className="my-2 hover:cursor-pointer w-full hidden"
         />
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
           {picUrl && (
             <button className="text-blue-500 " onClick={handleFileClick}>
               Change profile picture
@@ -354,7 +384,7 @@ const Profile = () => {
               Delete picture
             </button>
           )}
-        </div>
+        </div> */}
         {/* <h1 className="text-2xl font-bold mb-2 text-center">Your Profile</h1> */}
         <h1 className=" text-xl capitalize text-center ">
           {student.firstname} {student.lastname}
@@ -533,13 +563,13 @@ const Profile = () => {
           )}
           {!genderEdit && (
             <div className="flex space-x-3 justify-center items-center">
-              <h1 className="text-gray-600 text-center">{student.gender}</h1>
-              {student.gender && (
+              <h1 className="text-gray-600 text-center hover:cursor-pointer hover:scale-105 duration-300" onClick={() => setGenderEdit(true)}>{student.gender}</h1>
+              {/* {student.gender && (
                 <FaPen
                   onClick={() => setGenderEdit(true)}
                   className="w-3 h-3 hover:cursor-pointer hover:text-blue-400"
                 />
-              )}
+              )} */}
             </div>
           )}
           {genderEdit && (
