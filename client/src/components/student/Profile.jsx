@@ -13,7 +13,7 @@ import axios from "axios";
 import api from "../common/server_url";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import { FaBuilding, FaPen, FaUser } from "react-icons/fa";
+import { FaBuilding, FaPen, FaUser, FaCamera, FaTrash, FaEdit } from "react-icons/fa";
 import Resume from "./Resume";
 import statesAndCities from "../common/statesAndCities";
 import { FaArrowLeft } from "react-icons/fa";
@@ -42,6 +42,9 @@ const Profile = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [isHovered, setIsHovered] = useState(false);
+
+  const [errors, setErrors] = useState({});
 
   const nums = [
     { value: "no experience", label: "no experience" },
@@ -59,25 +62,53 @@ const Profile = () => {
 
   useEffect(() => {
     if (student) {
-      if (!student.homeLocation.city)
-        toast.info("Please add your current location");
-      if (student.gender === "") toast.info("Please specify your gender");
-      if (student.education.length === 0)
-        toast.info("Please add your education");
-      if (student.skills.length === 0)
-        toast.info("Please add some of your skills");
-      if (student.yearsOfExp === "")
-        toast.info("Please specify years of experience");
-      if (student.yearsOfExp === "")
-        toast.info("Please specify years of experience");
+      const newErrors = {};
+
+      if (!student.homeLocation.city) {
+        newErrors.homeLocation = "Please add your current location";
+      }
+
+      if (student.gender === "") {
+        newErrors.gender = "Please specify your gender";
+      }
+
+      if (student.education.length === 0) {
+        newErrors.education = "* Please add your education";
+      }
+
+      if (student.skills.length === 0) {
+        newErrors.skills = "* Please add some of your skills";
+      }
+
+      if (student.yearsOfExp === "") {
+        newErrors.yearsOfExp = "Please specify years of experience";
+      }
+
+      setErrors(newErrors);
     }
   }, [student]);
 
-  useEffect(()=>{
-  if(student?.homeLocation?.country) setSelectedCountry(student.homeLocation.country)
-  if(student?.homeLocation?.state) setSelectedCountry(student.homeLocation.state)
-  if(student?.homeLocation?.city) setSelectedCountry(student.homeLocation.city)
-  },[student])
+  const updateError = (field, message = null) => {
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors };
+
+      if (message) {
+        // Add or update the error for the specific field
+        updatedErrors[field] = message;
+      } else {
+        // Remove the error for the specific field
+        delete updatedErrors[field];
+      }
+
+      return updatedErrors;
+    });
+  };
+
+  useEffect(() => {
+    if (student?.homeLocation?.country) setSelectedCountry(student.homeLocation.country)
+    if (student?.homeLocation?.state) setSelectedCountry(student.homeLocation.state)
+    if (student?.homeLocation?.city) setSelectedCountry(student.homeLocation.city)
+  }, [student])
 
   useEffect(() => {
     if (!token) {
@@ -214,7 +245,7 @@ const Profile = () => {
     try {
       await axios.put(`${api}/student/api/${idFromToken}/save-location`, {
         homeLocation: {
-          country:selectedCountry,
+          country: selectedCountry,
           state: selectedState,
           city: selectedCity,
         }
@@ -260,9 +291,9 @@ const Profile = () => {
       console.error("Error gender experience:", error);
     }
   };
-console.log('this is country',selectedCountry);
-console.log('this is state',selectedState);
-console.log('this is city',selectedCity);
+  console.log('this is country', selectedCountry);
+  console.log('this is state', selectedState);
+  console.log('this is city', selectedCity);
   // country state city Api
 
   // Get available states and cities based on selections
@@ -289,28 +320,60 @@ console.log('this is city',selectedCity);
 
       <div className="border-b  pb-3 mt-10 text-center border-2 p-5 rounded-lg h-full w-full lg:w-[380px]">
         <div className="flex justify-center ">
-          <div className="max-w-20 max-h-28  flex items-center justify-center ">
-            {picUrl ? (
-              <img src={picUrl} className="w-fit h-fit" alt="" />
-            ) : (
-              <div className="w-14 h-14 rounded-full border flex items-center justify-center border-gray-600 my-3">
-                <FaUser className="w-9 h-9 text-gray-600" />
-              </div>
-            )}
+        <div className="max-w-24 max-h-32 flex items-center justify-center">
+      {picUrl ? (
+        <div
+          className="relative w-fit h-fit"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <img
+            src={picUrl}
+            className={`w-full h-full ${isHovered ? 'brightness-50' : ''}`} // Darken image on hover
+            alt="Profile"
+          />
+          {isHovered && (
+            <div className="absolute inset-0 flex items-center justify-center gap-2">
+              <button
+                className="text-white p-1 hover:bg-opacity-75 rounded-sm"
+                onClick={handleFileClick}
+              >
+                <FaEdit size={20} className="text-blue-400 hover:scale-110 duration-300"/> {/* Icon for changing the picture */}
+              </button>
+              <button
+                className="text-white p-1 hover:bg-opacity-75 rounded-sm"
+                onClick={handleDelete}
+              >
+                <FaTrash size={20} className="text-red-400 hover:scale-110 duration-300"/> {/* Icon for deleting the picture */}
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div
+          className="relative w-14 h-14 border flex items-center justify-center border-gray-600 my-3 group hover:cursor-pointer"
+          onClick={handleFileClick}
+        >
+          <FaCamera className="w-9 h-9 text-gray-600" />
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black bg-opacity-75">
+            <span className="text-white text-xs text-center px-2">Add Image</span>
           </div>
         </div>
-        {!picUrl && (
+      )}
+    </div>
+        </div>
+        {/* {!picUrl && (
           <button className="text-blue-500" onClick={handleFileClick}>
             Upload profile picture
           </button>
-        )}
+        )} */}
         <input
           ref={fileInputRef}
           onChange={handlePictureUpload}
           type="file"
           className="my-2 hover:cursor-pointer w-full hidden"
         />
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
           {picUrl && (
             <button className="text-blue-500 " onClick={handleFileClick}>
               Change profile picture
@@ -321,7 +384,7 @@ console.log('this is city',selectedCity);
               Delete picture
             </button>
           )}
-        </div>
+        </div> */}
         {/* <h1 className="text-2xl font-bold mb-2 text-center">Your Profile</h1> */}
         <h1 className=" text-xl capitalize text-center ">
           {student.firstname} {student.lastname}
@@ -370,7 +433,7 @@ console.log('this is city',selectedCity);
                 className="border-2 py-1 rounded-md px-2 w-full"
                 id="state"
                 value={selectedState}
-                onChange={(e) => {setSelectedState(e.target.value);setSelectedCity("")}}
+                onChange={(e) => { setSelectedState(e.target.value); setSelectedCity("") }}
                 disabled={!selectedCountry}
               >
                 <option value="">-- Select State --</option>
@@ -400,7 +463,7 @@ console.log('this is city',selectedCity);
             <div className="flex flex-col gap-3">
               {selectedCity && (
                 <button
-                  onClick={()=>{handleSave();setCityEdit(false)}}
+                  onClick={() => { handleSave(); setCityEdit(false) }}
                   className="bg-green-300 py-1 px-3 rounded-lg hover:bg-green-500 h-10 text-white"
                 >
                   Save
@@ -419,17 +482,17 @@ console.log('this is city',selectedCity);
           </div>
         )}
         {!cityEdit && (
-          <div className="flex space-x-3 justify-center items-center">
+          <div className="flex space-x-3 justify-center items-center hover:cursor-pointer hover:scale-105 duration-300" onClick={() => setCityEdit(true)}>
             {student?.homeLocation?.city ? (<h1 className="text-center text-gray-600">
-              {student?.homeLocation?.country+ "," + student?.homeLocation?.state + "," + student?.homeLocation?.city}
-            </h1>):(<h1 className="text-red-500">Location</h1>)}
+              {student?.homeLocation?.country + "," + student?.homeLocation?.state + "," + student?.homeLocation?.city}
+            </h1>) : (<h1 className="text-red-500 font-semibold">Add Location</h1>)}
 
-            {student.homeLocation && (
+            {/* {student.homeLocation && (
               <FaPen
                 onClick={() => {setCityEdit(true);}}
                 className="w-3 h-3 hover:cursor-pointer hover:text-blue-400"
               />
-            )}
+            )} */}
           </div>
         )}
 
@@ -444,17 +507,17 @@ console.log('this is city',selectedCity);
           )}
           {!expEdit && student.yearsOfExp && (
             <div className="flex space-x-3 justify-center items-center">
-              <h1 className="text-gray-600 text-center">
+              <h1 className="text-gray-600 text-center hover:cursor-pointer hover:scale-105 duration-300" onClick={() => setExpEdit(true)}>
                 {student.yearsOfExp === "no experience"
-                  ? "no experience"
+                  ? <span className="text-red-500 font-semibold">Add Experience</span>
                   : `${student.yearsOfExp} years of Experience`}
               </h1>
-              {student.yearsOfExp && (
+              {/* {student.yearsOfExp && (
                 <FaPen
                   onClick={() => setExpEdit(true)}
                   className="w-3 h-3 hover:cursor-pointer hover:text-blue-400"
                 />
-              )}
+              )} */}
             </div>
           )}
           {expEdit && (
@@ -493,20 +556,20 @@ console.log('this is city',selectedCity);
           {!genderEdit && !student.gender && (
             <h1
               onClick={() => setGenderEdit(true)}
-              className="text-blue-500 underline text-center hover:cursor-pointer"
+              className="text-red-500 font-semibold text-center hover:cursor-pointer hover:scale-105 duration-300"
             >
               Select Your gender
             </h1>
           )}
           {!genderEdit && (
             <div className="flex space-x-3 justify-center items-center">
-              <h1 className="text-gray-600 text-center">{student.gender}</h1>
-              {student.gender && (
+              <h1 className="text-gray-600 text-center hover:cursor-pointer hover:scale-105 duration-300" onClick={() => setGenderEdit(true)}>{student.gender}</h1>
+              {/* {student.gender && (
                 <FaPen
                   onClick={() => setGenderEdit(true)}
                   className="w-3 h-3 hover:cursor-pointer hover:text-blue-400"
                 />
-              )}
+              )} */}
             </div>
           )}
           {genderEdit && (
@@ -551,7 +614,11 @@ console.log('this is city',selectedCity);
 
       <div className="flex-1 lg:w-[30%]  overflow-y-auto scrollbar-thin h-screen relative">
         <section className="mb-8 ">
-          <Education />
+          <Education
+            error={errors.education}
+            clearError={() => updateError("education", null)}
+            updateError={updateError} />
+
         </section>
         <section className="mb-8">
           <WorkExp />
@@ -563,7 +630,11 @@ console.log('this is city',selectedCity);
           <PersonalProjects />
         </section>
         <section className="mb-8">
-          <Skills skillSet={skills} />
+          <Skills skillSet={skills}
+            error={errors.skills}
+            clearError={() => updateError("skills", null)}
+            updateError={updateError}
+          />
         </section>
         <section className="mb-8">
           <Portfolio />

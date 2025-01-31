@@ -38,12 +38,7 @@ const MyApplications = () => {
           (a, b) => new Date(b.appliedAt) - new Date(a.appliedAt)
         );
 
-        // const updatedAppliedInternships = response.data.map(application => ({
-        //   internship: application.internship,
-        //   recruiter: application.recruiter,
-        //   appliedAt: application.appliedAt,
-        // }));
-        // console.log('inside applicants',updatedAppliedInternships);
+
         setAppliedInternships(sortedInternships);
         console.log(response.data);
         setLoading(false);
@@ -237,9 +232,9 @@ const MyApplications = () => {
               <div className="flex items-center text-gray-700 mb-2">
                 <FaMapMarkerAlt className="mr-2" />
                 <span>
-                  {selectedInternship.internship.internLocation
-                    ? `${selectedInternship.internship.internLocation}`
-                    : "Remote"}
+                  {selectedInternship.internship.internshipType === "Work From Home"
+                    ? "Remote"
+                    : `${selectedInternship.internship.internLocation.city}, ${selectedInternship.internship.internLocation.state}, ${selectedInternship.internship.internLocation.country}`}
                 </span>
               </div>
 
@@ -299,6 +294,29 @@ const MyApplications = () => {
                   </span>
                 ))}
               </div>
+
+              {selectedInternship.internship.assessment !== "" && (
+                <>
+                  <h3 className="md:text-lg font-medium mb-2">Question from Recruiter</h3>
+                  <div className="flex items-start ">
+                    <span className="font-bold mr-2">Q:</span>
+                    <p className="text-gray-700">{selectedInternship.internship.assessment}</p>
+                  </div>
+                  <div className="flex items-start mb-4">
+                    <span className="font-bold mr-2">A:</span>
+                    <div className="text-gray-700">{selectedInternship.assessmentAns}</div>
+                  </div>
+                </>
+              )}
+
+              {selectedInternship.aboutText && (
+                <>
+                  <h3 className="md:text-lg font-medium mb-2">About yourself</h3>
+                  <div className="flex items-start">
+                    <p>{selectedInternship.aboutText}</p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </>

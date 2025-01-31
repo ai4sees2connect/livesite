@@ -78,6 +78,7 @@ router.get("/:studentId/applied-internships", async (req, res) => {
         select: "firstname lastname email companyName",
       },
     });
+    console.log('this is studentssssssssss',student);
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
@@ -88,6 +89,8 @@ router.get("/:studentId/applied-internships", async (req, res) => {
       recruiter: application.internship.recruiter,
       appliedAt: application.appliedAt,
       internshipStatus: application.internshipStatus,
+      assessmentAns: application.assessmentAns,
+      aboutText: application.aboutText,
     }));
 
     // Extract internship IDs

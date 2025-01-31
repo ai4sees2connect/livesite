@@ -31,6 +31,7 @@ function Login() {
   const navigate = useNavigate();
   const userId = getUserIdFromToken();
   const { login } = useStudent();
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -52,7 +53,7 @@ function Login() {
         email,
         password,
       });
-      toast.success("Login successful!");
+      // toast.success("Login successful!");
 
       // Handle success
       console.log(response.data.message);
@@ -61,11 +62,8 @@ function Login() {
       const userId = getUserIdFromToken();
       navigate(`/student/dashboard/${userId}`);
     } catch (error) {
-      // Handle error
-      // alert(error.response.data.message);
-      toast.info(error.response.data.message || "Login failed");
-      // console.log(error.response.data.message);
-      // setError(error.response.data.message || 'Login failed');
+
+      setError("Invalid credentials");
     }
   };
 
@@ -186,11 +184,14 @@ function Login() {
                 </Link>
               </div>
 
+              {error && (
+                <p className="text-red-500 font-semibold mb-4 text-center">{error}</p>
+              )}
+
               <button
                 type="submit"
-                className={`w-full  py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${
-                  !isFormValid ? `bg-blue-500` : ""
-                } `}
+                className={`w-full  py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${!isFormValid ? `bg-blue-500` : ""
+                  } `}
                 disabled={!isFormValid}
               >
                 Log in
