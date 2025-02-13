@@ -543,63 +543,60 @@ const Internships = () => {
 
   const applyToInternship = async (internshipId) => {
     try {
-      console.log("this is student", student);
-      if (
-        student.education.length == 0 ||
-        student.skills.length == 0 ||
-        !student.gender ||
-        !student.homeLocation.city ||
-        // !student.yearsOfExp ||
-        !student.resume
-      ) {
-        // toast.error("Please complete your profile");
-        navigate(`/student/profile/${userId}`);
-        return;
-      }
-
-      if (!availability || !aboutText) {
-        toast.error("Please Enter all fields");
-        return;
-      }
-
-      if(availability==='No! Cannot Join immediately' && !detailedAvailability){
-        toast.error("Please provide date of joining");
-        return;
-      }
-
-      const formData = {
-        availability:availability==='Yes! Will join Immediately'?availability:detailedAvailability,
-        aboutText,
-        assessmentAns,
-      };
-      const response = await axios.post(
-        `${api}/student/internship/${userId}/apply/${internshipId}`,
-        formData
-      );
-      if (response.status === 200) {
-        if (response.data.success) {
-          toast.success("You have already applied for this Internship");
-          setTimeout(() => {
-            // setIsInterestedModalOpen(false);
-            setSelectedInternship(null);
-            window.location.reload();
-          }, 1000);
-
-          return;
+        console.log("this is student", student);
+        if (
+            student.education.length == 0 ||
+            student.skills.length == 0 ||
+            !student.gender ||
+            !student.homeLocation.city ||
+            !student.resume
+        ) {
+            navigate(`/student/profile/${userId}`);
+            return;
         }
-        toast.success("Successfully applied to the internship");
-        setTimeout(() => {
-          // setIsInterestedModalOpen(false);
-          setSelectedInternship(null);
-          window.location.reload();
-        }, 1000);
-      } else {
-        toast.error("Failed to apply");
-      }
+
+        if (!availability || !aboutText) {
+            toast.error("Please Enter all fields");
+            return;
+        }
+
+        if (availability === 'No! Cannot Join immediately' && !detailedAvailability) {
+            toast.error("Please provide date of joining");
+            return;
+        }
+
+        const formData = {
+            availability: availability === 'Yes! Will join Immediately' ? availability : detailedAvailability,
+            aboutText,
+            assessmentAns,
+        };
+
+        const response = await axios.post(
+            `${api}/student/internship/${userId}/apply/${internshipId}`,
+            formData
+        );
+
+        if (response.status === 200) {
+            if (response.data.success) {
+                toast.success("You have already applied for this Internship");
+            } else {
+                toast.success("Successfully applied to the internship");
+            }
+
+            setTimeout(() => {
+                setSelectedInternship(null);
+                navigate(`/student/myApplications/${userId}`);
+            }, 1000);
+
+            return;
+        } else {
+            toast.error("Failed to apply");
+        }
     } catch (error) {
-      toast.error("Error applying to internship");
+        toast.error("Error applying to internship");
     }
-  };
+};
+
 
   const handleChange = (value) => {
     setSelectedLocation(value);
