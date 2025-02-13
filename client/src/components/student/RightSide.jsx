@@ -376,14 +376,13 @@ const RightSide = () => {
         </div>
       </div>
       <div className="flex justify-center my-4">
-        <Link
-          to={`/student/internships/${userId}/All-Internships`}
-          className="text-blue-600 text-xl bg-transparent border-none"
-        >
-          Explore All Internships
-        </Link>
+      <Link
+        to={userId ? `/student/internships/${userId}/All-Internships` : "/internships/all-internships"}
+        className="text-blue-600 text-xl bg-transparent border-none"
+      >
+        Explore All Internships
+      </Link>
       </div>
-
 
       {/* Big Buttons */}
       {!token && (

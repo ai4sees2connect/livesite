@@ -7,6 +7,7 @@ import {
   FaPaperclip,
   FaUpload,
 } from "react-icons/fa";
+import "react-toastify/dist/ReactToastify.css";
 import getUserIdFromToken from "./auth/authUtilsRecr";
 import {
   MdVerifiedUser,
@@ -61,6 +62,9 @@ const RecProfile = () => {
   const [companyCity,setCompanyCity] =useState("");
 
   console.log(recruiter);
+
+
+
 
   useEffect(() => {
     if (recruiter?.phone) {
@@ -407,8 +411,9 @@ const RecProfile = () => {
 
       // Handle success response (e.g., show success message, update UI, etc.)
       // console.log("Details updated:", response.data);
-      toast.success("Details updated successfully");
-      navigate(`/recruiter/posting/${idFromToken}`);
+      // toast.success("Details updated successfully");
+      setActiveTab("Tab3")
+      // navigate(`/recruiter/posting/${idFromToken}`);
       
     } catch (error) {
       // Handle error (e.g., show error message)
@@ -679,11 +684,111 @@ const RecProfile = () => {
       setCompanyDesc(e.target.value);
     }
   };
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    const filledFields = requiredFields.filter((field) => {
+      if (typeof field === "string") return field.trim() !== "";
+      if (typeof field === "number") return !isNaN(field) && field !== 0;
+      return field !== null && field !== undefined && field !== "";
+    }).length;
+
+    const percentage = Math.round((filledFields / requiredFields.length) * 100);
+    setProgress(percentage);
+
+    if (percentage === 100) {
+      toast.success("🎉 Profile Completed!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }, [
+    firstName,
+    lastName,
+    designation,
+    countryCode,
+    phoneNumber,
+    companyDesc,
+    selectedCountry,
+    companyDesc,
+    companyCountry,
+    companyState,
+    companyCity,
+    industry,
+    employeesCount,
+  ]);
+
+
+  const requiredFields = [
+    firstName,
+    lastName,
+    countryCode,
+    phoneNumber,
+    designation,
+    companyDesc,
+    selectedCountry,
+    company,
+    companyDesc,
+    companyCountry,
+    companyState,
+    companyCity,
+    industry,
+    employeesCount,
+  ];
+
+  useEffect(() => {
+    const filledFields = requiredFields.filter((field) => {
+      if (typeof field === "string") return field.trim() !== "";
+      if (typeof field === "number") return !isNaN(field) && field !== 0;
+      return field !== null && field !== undefined && field !== ""; // Catch all falsy values
+    }).length;
+
+    const percentage = Math.round((filledFields / requiredFields.length) * 100);
+    setProgress(percentage);
+
+    if (percentage === 100) {
+      toast.success("🎉 Profile Completed!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }, [
+    firstName,
+    lastName,
+    designation,
+    countryCode,
+    phoneNumber,
+    companyDesc,
+    selectedCountry,
+    companyDesc,
+    companyCountry,
+    companyState,
+    companyCity,
+    industry,
+    employeesCount,
+  ]);
   return !recruiter ? (
     <Spinner />
   ) : (
+    
     <div className="min-h-screen mt-20">
       <div className="w-full lg:w-[50%] mx-auto p-4">
+        {/* Progress Bar */}
+      <div className="relative w-full h-2 bg-gray-300 rounded-md overflow-hidden mb-4">
+        <div
+          className="h-full bg-blue-500 transition-all duration-300"
+          style={{ width: `${progress}%` }}
+        ></div>
+      </div>
         {/* Tab Buttons */}
         <div className="flex space-x-4 justify-center items-center">
           {/* tab 1 */}
@@ -708,6 +813,17 @@ const RecProfile = () => {
             <IoIosBriefcase className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
             Organisational Details
           </button>
+          {/* tab-3 */}
+          <button
+            className={`py-2 px-4 flex flex-col justify-center items-center  ${activeTab === "Tab3"
+              ? "text-blue-500 border-b-2 border-blue-500"
+              : "text-gray-500 border-b-2 border-white"
+              }`}
+            onClick={() => setActiveTab("Tab3")}
+          >
+            <IoIosBriefcase className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
+            Profile
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -722,13 +838,15 @@ const RecProfile = () => {
                   <div className="flex-1">
                     <div className="flex flex-col">
                       <label className="text-sm text-gray-600 mb-1 ml-1">
-                        First Name
+                        First Name <span className="text-red-500">*</span>
                       </label>
                       <input
+                        name="firstname"
                         className="border-2 rounded-md px-3 py-1"
                         defaultValue={firstName}
                         type="text"
-                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                        onChange={(e) => {setFirstName(e.target.value);}}
                       />
                     </div>
                   </div>
@@ -736,12 +854,14 @@ const RecProfile = () => {
                   <div className="flex-1">
                     <div className="flex flex-col">
                       <label className="text-sm text-gray-600 mb-1 ml-1">
-                        Last Name
+                        Last Name <span className="text-red-500">*</span>
                       </label>
                       <input
+                        name="lastname"
                         className="border-2 rounded-md px-3 py-1"
                         defaultValue={lastName}
                         type="text"
+                        required
                         onChange={(e) => setLastName(e.target.value)}
                       />
                     </div>
@@ -751,12 +871,13 @@ const RecProfile = () => {
                 <div>
                   <div className="flex flex-col">
                     <label className="text-sm text-gray-600 mb-1 ml-1">
-                      E-mail
+                      E-mail <span className="text-red-500">*</span>
                     </label>
                     <input
                       className="border-2 rounded-md px-3 py-1"
                       defaultValue={recruiter?.email}
                       type="text"
+                      name="email"
                       readOnly
                     />
                   </div>
@@ -765,7 +886,7 @@ const RecProfile = () => {
                 <div>
                   <div className="flex flex-col">
                     <label className="text-sm text-gray-600 mb-1 ml-1">
-                      Designation
+                      Designation <span className="text-red-500">*</span>
                     </label>
 
                     <div className="relative flex items-center">
@@ -774,12 +895,14 @@ const RecProfile = () => {
                           }`}
                         value={showManualInput ? "notAvailable" : designation}
                         onChange={handleDesignationChange}
+                        name="designation"
+                        required
                       >
-                        <option value="manager">Manager</option>
-                        <option value="ceo">CEO</option>
-                        <option value="cto">CTO</option>
-                        <option value="hr">HR</option>
-                        <option value="notAvailable">
+                        <option value="Manager">Manager</option>
+                        <option value="CEO">CEO</option>
+                        <option value="CTO">CTO</option>
+                        <option value="HR">HR</option>
+                        <option value="NotAvailable">
                           Designation Not Available?
                         </option>
                       </select>
@@ -812,7 +935,7 @@ const RecProfile = () => {
                 <div>
                   <div className="flex flex-col">
                     <label className="text-sm text-gray-600 mb-1 ml-1">
-                      Mobile
+                      Mobile <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-2 items-center relative">
                       <input
@@ -820,6 +943,8 @@ const RecProfile = () => {
                         defaultValue={countryCode}
                         onChange={(e) => setCountryCode(e.target.value)}
                         type="text"
+                        name="mobile"
+                        required
                       />
                       <input
                         className="border-2 rounded-md px-3 py-1 w-full lg:w-[50%]"
@@ -837,6 +962,7 @@ const RecProfile = () => {
                           }
                         }}
                         maxLength={10}
+                        required
                         type="number"
                       />
                       {phoneError !== "" && (
@@ -904,7 +1030,7 @@ const RecProfile = () => {
                 <div>
                   <div className="flex flex-col">
                     <label className="text-sm text-gray-600 mb-1 ml-1">
-                      Organization Name
+                      Organization Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       className="border-2 rounded-md px-3 py-1"
@@ -912,6 +1038,8 @@ const RecProfile = () => {
                       type="text"
                       onChange={handleCompanyNameChange}
                       disabled={independentCheck}
+                      name="orgname"
+                      required
                     />
                   </div>
                   {/* Checkbox below the input */}
@@ -934,7 +1062,7 @@ const RecProfile = () => {
                 {/* Organization description */}
                 <div className="flex flex-col">
                   <label className="text-sm text-gray-600 mb-1 ml-1">
-                    Organization Description
+                    Organization Description <span className="text-red-500">*</span>
                   </label>
                   <div className="">
                     <textarea
@@ -944,6 +1072,8 @@ const RecProfile = () => {
                       type="text"
                       rows={5}
                       placeholder="Enter company description..."
+                      name="orgdesc"
+                      required
                     />
 
                     {/* Character Count */}
@@ -960,7 +1090,7 @@ const RecProfile = () => {
                 {/* Organization city */}
                 <div className="flex flex-col">
                   <label className="text-sm text-gray-600 mb-1 ml-1">
-                    Organization Location
+                    Organization Location <span className="text-red-500">*</span>
                   </label>
               
                   <div className="flex flex-col md:flex-row gap-3 w-full">
@@ -973,6 +1103,8 @@ const RecProfile = () => {
                         setSelectedCountry(e.target.value);
                         setSelectedState(""); // Reset state and cities dropdowns
                       }}
+                      name="orgloc"
+                      required
                     >
                       <option value="">-- Select Country --</option>
                       {countryData.map((country) => (
@@ -989,6 +1121,7 @@ const RecProfile = () => {
                       value={selectedState}
                       onChange={(e) => setSelectedState(e.target.value)}
                       disabled={!selectedCountry}
+                      required
                     >
                       <option value="">-- Select State --</option>
                       {states?.map((state) => (
@@ -1005,6 +1138,7 @@ const RecProfile = () => {
                       className="border-2 py-1 rounded-md px-2 w-full"
                       value={selectedCity}
                       onChange={(e) => setSelectedCity(e.target.value)}
+                      required
                     >
                       <option value="">-- Select City --</option>
                       {cities?.map((city) => (
@@ -1018,7 +1152,7 @@ const RecProfile = () => {
                 {/* Industry */}
                 <div className="flex flex-col">
                   <label className="text-sm text-gray-600 mb-1 ml-1">
-                    Industry Type
+                    Industry Type <span className="text-red-500">*</span>
                   </label>
                   <Select
                     options={suggestions}
@@ -1031,18 +1165,20 @@ const RecProfile = () => {
                     searchable={true}
                     className="w-full shadow-md"
                     classNamePrefix="custom-select-dropdown"
+                    name="indType"
                   />
                 </div>
                 {/* number of employees */}
                 <div className="flex flex-col w-full lg:w-1/2">
                   <label className="text-sm text-gray-600 mb-1 ml-1">
-                    Number Of Employees
+                    Number Of Employees <span className="text-red-500">*</span>
                   </label>
                   <select
                     className="border-2 rounded-md px-3 py-1"
                     onChange={handleCompanySizeChange}
                     value={employeesCount}
-                    
+                    name="empcnt"
+                    required
                   >
                     <option value="">Select Number of Employees</option>
                     <option value="0-5">0-5</option>
@@ -1055,7 +1191,7 @@ const RecProfile = () => {
                 </div>
                 {/* Upload logo */}
                 <div>
-                  <label> Organization Logo(Recommended)</label>
+                  <label> Organization Logo(Recommended) <span className="text-red-500">*</span></label>
                   <div className="h-auto flex mt-2 ">
                     {!logoUrl ? (
                       <FaBuilding className="text-gray-400 text-4xl" />
@@ -1082,6 +1218,7 @@ const RecProfile = () => {
                           onChange={handleFileUpload}
                           type="file"
                           className="my-2 hover:cursor-pointer w-full hidden"
+                          required
                         />
                       </>
                     )}
@@ -1109,11 +1246,17 @@ const RecProfile = () => {
 
                 <div className="mt-5 text-left">
                 <button
-                  onClick={handleDetailsUpdate_2}
+                  onClick={() => {
+                    handleDetailsUpdate_2(); // Call the update function
+                    setProgress(100);
+                    toast.success("🎉 Profile completed!!")
+                  }}
                   className="px-5 py-1 bg-blue-500 text-white rounded-md"
                 >
                   Save details
                 </button>
+
+
               </div>
               </div>
               {/* File Upload */}
@@ -1135,7 +1278,7 @@ const RecProfile = () => {
                     {/* Modal Popup */}
                     {isModalOpen && (
                       <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-500 bg-opacity-50 z-50 mt-10 w-full]">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-[90%]  lg:w-[600px] flex flex-col space-y-4 justify-between relative mx-5">
+                        <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-[90%]  lg:w-[600px] flex flex-col space-y-4 justify-between relative mx-5">
                           {/* File Upload Section */}
                           <FaTimes
                             className="absolute right-3 top-3 text-red-500 hover:cursor-pointer"
@@ -1366,6 +1509,96 @@ const RecProfile = () => {
                 )}
               </div>
               
+            </div>
+          )}
+          {/* Tab 3 content */}
+          {activeTab === "Tab3" && (
+            <div>
+              <div className="p-5 border-2 rounded-md space-y-3">
+                {/* first and last name */}
+                <div className="flex flex-col md:flex-row gap-5 justify-center">
+                  {/* first name */}
+                  <div className="flex-1">
+                    <div className="flex flex-col">
+                      <label className="text-sm text-gray-600 mb-1 ml-1">
+                        First Name
+                      </label>
+                      <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{firstName}</p>
+                    </div>
+                  </div>
+                  {/* last name */}
+                  <div className="flex-1">
+                    <div className="flex flex-col">
+                      <label className="text-sm text-gray-600 mb-1 ml-1">
+                        Last Name
+                      </label>
+                      <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{lastName}</p>
+                    </div>
+                  </div>
+                </div>
+                {/* email */}
+                <div>
+                  <div className="flex flex-col">
+                    <label className="text-sm text-gray-600 mb-1 ml-1">
+                      E-mail
+                    </label>
+                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{recruiter?.email}</p>
+                  </div>
+                </div>
+                {/* Designation */}
+                <div>
+                  <div className="flex flex-col">
+                    <label className="text-sm text-gray-600 mb-1 ml-1">
+                      Designation
+                    </label>
+
+                    <div className="relative flex items-center">
+                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{designation}</p>
+                    </div>
+                  </div>
+                </div>
+                {/* Mobile and status */}
+                <div>
+                  <div className="flex flex-col">
+                    <label className="text-sm text-gray-600 mb-1 ml-1">
+                      Mobile
+                    </label>
+                    <div className="flex gap-2 items-center relative">
+                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{countryCode}</p>
+                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{phoneNumber}</p>
+                    </div>
+                    <div className="flex flex-col">
+                    <label className="text-sm text-gray-600 mb-1 ml-1">
+                      Organization Name
+                    </label>
+                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{company}</p>
+                  </div>
+                  <div className="flex flex-col">
+                  <label className="text-sm text-gray-600 mb-1 ml-1">
+                    Organization Location
+                  </label>
+              
+                  <div className="flex flex-col md:flex-row gap-3 w-full">
+                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{selectedCountry}</p>
+                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{selectedState}</p>
+                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{selectedCity}</p>
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-sm text-gray-600 mb-1 ml-1">
+                      Industry Type
+                    </label>
+                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{industry}</p>
+                  </div>
+                  <div className="flex flex-col w-full lg:w-1/2">
+                  <label className="text-sm text-gray-600 mb-1 ml-1">
+                    Number Of Employees
+                  </label>
+                  <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{employeesCount}</p>
+                </div>
+                </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
