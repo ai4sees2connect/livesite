@@ -11,7 +11,7 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import "../student/utilscss/swiper.css";
 import { FaLongArrowAltRight } from "react-icons/fa";
-
+import { NavLink } from "react-router-dom";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/free-mode";
@@ -52,6 +52,8 @@ import { jwtDecode } from "jwt-decode";
 
 
 const token = localStorage.getItem("token");
+
+
 
 const NextArrow = ({ onClick }) => (
   <div
@@ -102,11 +104,6 @@ const RightSide = () => {
 
         const response = await axios.get(`${api}/student/internships/top-15`);
         console.log('internship fetched', response.data);
-
-
-
-
-
         setInternships(response.data);
 
         setInternshipFetched(true);
@@ -183,15 +180,14 @@ const RightSide = () => {
   console.log(internships);
 
   const settings = {
-    dots: internships?.length > 1, // Show dots for navigation
-    infinite: false,
+    dots: false, // Disable dots
+    infinite: true, // Make it loop infinitely for a smooth effect
     speed: 500,
-    slidesToShow: Math.min(internships.length, 3), // Number of slides to show at once
+    slidesToShow: Math.min(internships.length, 3),
     slidesToScroll: 1,
-    arrows: true,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
-
+    arrows: false, // Disable arrows
+    autoplay: true, // Enable autoplay
+    autoplaySpeed: 3000, // Adjust speed in milliseconds
     responsive: [
       {
         breakpoint: 1100,
@@ -213,6 +209,7 @@ const RightSide = () => {
       },
     ],
   };
+  
 
   if (loading) {
     return <Spinner />;
@@ -363,14 +360,14 @@ const RightSide = () => {
                     <p className="text-xs text-blue-600 font-semibold bg-gray-300 rounded-md px-2 py-1 lg:px-3">
                       {intern?.internshipType}
                     </p>
-                    <Link
+                    {/* <Link
                       to={`/${token ? "student/" : ""}internships${
                         token ? `/${userId}` : ""
                       }`}
                       className="px-2 lg:px-4 py-1 border-2 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600 transition duration-500"
                     >
                       See Details
-                    </Link>
+                    </Link> */}
                   </div>
                 </div>
               </div>
@@ -378,6 +375,15 @@ const RightSide = () => {
           </Slider>
         </div>
       </div>
+      <div className="flex justify-center my-4">
+        <Link
+          to={`/student/internships/${userId}/All-Internships`}
+          className="text-blue-600 text-xl bg-transparent border-none"
+        >
+          Explore All Internships
+        </Link>
+      </div>
+
 
       {/* Big Buttons */}
       {!token && (
