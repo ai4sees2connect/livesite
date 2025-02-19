@@ -47,7 +47,7 @@ const Profile = () => {
   const [errors, setErrors] = useState({});
 
   const nums = [
-    { value: "no experience", label: "no experience" },
+    { value: "no experience", label: "0" },
     { value: "1", label: "1" },
     { value: "2", label: "2" },
     { value: "3", label: "3" },
@@ -509,7 +509,7 @@ const Profile = () => {
             <div className="flex space-x-3 justify-center items-center">
               <h1 className="text-gray-600 text-center hover:cursor-pointer hover:scale-105 duration-300" onClick={() => setExpEdit(true)}>
                 {student.yearsOfExp === "no experience"
-                  ? <span className="text-red-500 font-semibold">Add Experience</span>
+                  ? <span className="text-red-500 font-semibold"></span>
                   : `${student.yearsOfExp} years of Experience`}
               </h1>
               {/* {student.yearsOfExp && (
