@@ -379,22 +379,36 @@ const Internships = () => {
   const fetchInternships = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${api}/student/${userId}/internships?page=${page}`);
-      
+      const queryString = constructQueryStringPageUpdation(); // Include filters
+      const response = await axios.get(`${api}/student/${userId}/internships?${queryString}`);
+  
       setTotalPages(response.data.totalPages);
       setInternshipsCount(response.data.numOfInternships);
-      const internships = response.data.internships;
-
+      
+      let internships = response.data.internships;
+  
+      // 🔹 Filter out internships the user has already applied to
+      internships = internships.filter(internship => !internship.isApplied);
+  
       const recruiterIds = [...new Set(internships.map(internship => internship.recruiter?._id).filter(Boolean))];
-
-      const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
-      const logoMap = logosResponse.data.logos;
-
+  
+      // 🔹 Fetch recruiter logos
+      let logoMap = {};
+      if (recruiterIds.length > 0) {
+        try {
+          const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
+          logoMap = logosResponse.data.logos || {};
+        } catch (logoErr) {
+          console.error("Error fetching recruiter logos:", logoErr);
+        }
+      }
+  
+      // 🔹 Assign logos to internships
       const internshipsWithLogos = internships.map(internship => ({
         ...internship,
-        logoUrl: logoMap[internship.recruiter?._id] || null,
+        logoUrl: logoMap[internship.recruiter?._id] || null, // Default to null if logo not found
       }));
-
+  
       setInternships(internshipsWithLogos);
       setFilteredInternships(internshipsWithLogos); // Initialize filtered list
       setLoading(false);
@@ -404,10 +418,78 @@ const Internships = () => {
       setLoading(false);
     }
   };
+  
+  
+  const fetchAllInternships = async () => {
+    try {
+      setLoading(true);
+      let allInternships = new Map(); // Use a Map to store only unique internships
+      let currentPage = 1;
+      let totalPages = 1;
+  
+      const baseQuery = constructQueryStringReset(); // Reset filters for page 1
+  
+      while (currentPage <= totalPages) {
+        const queryString = baseQuery.replace(/page=\d+/, `page=${currentPage}`);
+        const response = await axios.get(`${api}/student/internships?${queryString}`);
+  
+        if (currentPage === 1) {
+          totalPages = response.data.totalPages; // Set total pages on the first request
+        }
+  
+        response.data.internships.forEach((internship) => {
+          if (!allInternships.has(internship._id)) {
+            allInternships.set(internship._id, internship); // Store unique internships only
+          }
+        });
+  
+        currentPage++;
+      }
+  
+      const uniqueInternships = Array.from(allInternships.values());
+  
+      // Fetch recruiter logos
+      const recruiterIds = [...new Set(uniqueInternships.map(internship => internship.recruiter?._id).filter(Boolean))];
+  
+      let logoMap = {};
+      if (recruiterIds.length > 0) {
+        try {
+          const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
+          logoMap = logosResponse.data.logos || {};
+        } catch (logoErr) {
+          console.error("Error fetching recruiter logos:", logoErr);
+        }
+      }
+  
+      // Assign logos to internships
+      const internshipsWithLogos = uniqueInternships.map(internship => ({
+        ...internship,
+        logoUrl: logoMap[internship.recruiter?._id] || null, // Default to null if logo not found
+      }));
+  
+      setInternships(internshipsWithLogos);
+      setFilteredInternships(internshipsWithLogos);
+      setTotalPages(totalPages);
+      setInternshipsCount(internshipsWithLogos.length);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching internships:", err);
+      setError("Failed to fetch internships. Please try again later.");
+      setLoading(false);
+    }
+  };
+  
+  
+  
+  
+  
 
   useEffect(() => {
     fetchInternships();
-  }, [page]);
+  }, [workType, selectedProfile, selectedStipend, selectedCountry, selectedState, selectedCity, page]);
+  
+  
+  
 
   // Filter internships based on search term
   useEffect(() => {
@@ -572,6 +654,7 @@ const Internships = () => {
     setWorkType("All Internships");
     setSelectedStipend(0);
     setSelectedProfile([]);
+    setSearchTerm("");
   };
 
   const isAlreadyApplied = (internshipId) => {
