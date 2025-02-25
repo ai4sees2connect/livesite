@@ -39,7 +39,24 @@ const InternshipsUniversal = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // const [selectedInternship, setSelectedInternship] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredInternships, setFilteredInternships] = useState(internships);
 
+  // Debounce search query filtering
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setFilteredInternships(
+        internships.filter((internship) =>
+          internship.internshipName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          internship.recruiter.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          internship.jobProfile.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          internship.description.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    }, 300); // 300ms delay to prevent unnecessary filtering
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, internships]);
  
   
   const { login } = useStudent();
@@ -463,6 +480,7 @@ console.log('woooooowwwwwwwwwwwwwwwwwwwwwwwwwww')
     setWorkType("All Internships");
     setSelectedStipend(0);
     setSelectedProfile([]);
+    setSearchQuery("");
   };
 
   console.log("this is location", selectedLocation);
@@ -525,53 +543,79 @@ console.log('woooooowwwwwwwwwwwwwwwwwwwwwwwwwww')
             Reset filters
           </button>
           <div className="flex flex-col space-y-4">
-            <label className="flex items-center space-x-2">
-              <input
-                type="radio"
-                name="work-type"
-                value="All Internships"
-                checked={workType === "All Internships"}
-                onChange={(e) => setWorkType(e.target.value)}
-                className="form-radio text-blue-600 h-6 w-6 "
-              />
-              <span className="text-[17px]">All Internships</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input
-                type="radio"
-                name="work-type"
-                value="Work From Home"
-                checked={workType == "Work From Home"}
-                onChange={(e) => setWorkType(e.target.value)}
-                className="form-radio text-green-600 h-6 w-6"
-              />
-              <span className="">Work from Home</span>
-            </label>
+            {/* Search Input */}
+      <input
+        type="text"
+        placeholder="Search internships..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="w-full p-2 mb-4 border border-gray-300 rounded-md"
+      />
+  <label className="flex items-center space-x-2">
+    <input
+      type="checkbox"
+      name="work-type"
+      value="All Internships"
+      checked={workType.includes("All Internships")}
+      onChange={(e) =>
+        setWorkType((prev) =>
+          e.target.checked ? [...prev, e.target.value] : prev.filter((type) => type !== e.target.value)
+        )
+      }
+      className="form-checkbox text-blue-600 h-6 w-6"
+    />
+    <span className="text-[17px]">All Internships</span>
+  </label>
 
-            <label className="flex items-center space-x-2">
-              <input
-                type="radio"
-                name="work-type"
-                value="Work From Office"
-                checked={workType === "Work From Office"}
-                onChange={(e) => setWorkType(e.target.value)}
-                className="form-radio text-blue-600 h-6 w-6"
-              />
-              <span className="">Work from Office</span>
-            </label>
+  <label className="flex items-center space-x-2">
+    <input
+      type="checkbox"
+      name="work-type"
+      value="Work From Home"
+      checked={workType.includes("Work From Home")}
+      onChange={(e) =>
+        setWorkType((prev) =>
+          e.target.checked ? [...prev, e.target.value] : prev.filter((type) => type !== e.target.value)
+        )
+      }
+      className="form-checkbox text-green-600 h-6 w-6"
+    />
+    <span>Work from Home</span>
+  </label>
 
-            <label className="flex items-center space-x-2">
-              <input
-                type="radio"
-                name="work-type"
-                value="Hybrid"
-                checked={workType === "Hybrid"}
-                onChange={(e) => setWorkType(e.target.value)}
-                className="form-radio text-blue-600 h-6 w-6"
-              />
-              <span className="">Hybrid</span>
-            </label>
-          </div>
+  <label className="flex items-center space-x-2">
+    <input
+      type="checkbox"
+      name="work-type"
+      value="Work From Office"
+      checked={workType.includes("Work From Office")}
+      onChange={(e) =>
+        setWorkType((prev) =>
+          e.target.checked ? [...prev, e.target.value] : prev.filter((type) => type !== e.target.value)
+        )
+      }
+      className="form-checkbox text-blue-600 h-6 w-6"
+    />
+    <span>Work from Office</span>
+  </label>
+
+  <label className="flex items-center space-x-2">
+    <input
+      type="checkbox"
+      name="work-type"
+      value="Hybrid"
+      checked={workType.includes("Hybrid")}
+      onChange={(e) =>
+        setWorkType((prev) =>
+          e.target.checked ? [...prev, e.target.value] : prev.filter((type) => type !== e.target.value)
+        )
+      }
+      className="form-checkbox text-blue-600 h-6 w-6"
+    />
+    <span>Hybrid</span>
+  </label>
+</div>
+
 
           <StipendSlider
             selectedStipend={selectedStipend}
@@ -680,133 +724,118 @@ console.log('woooooowwwwwwwwwwwwwwwwwwwwwwwwwww')
                 ref={scrollableRef}
                 className="overflow-scroll scrollbar-thin h-[90vh] overflow-x-hidden flex flex-col gap-5"
               >
-                {internships.map((internship) => (
-                  <div
-                    key={internship._id}
-                    className="bg-white shadow-md rounded-lg p-5 w-full  h-fit lg:w-[90%] mx-auto relative space-y-1"
-                  >
-                    <div className="flex justify-between items-center">
-                      <div className="mb-0">
-                        <h2 className="text-lg lg:text-xl font-bold">
-                          {internship.internshipName}
-                        </h2>
-                        <p className="text-gray-600 text-lg font-semibold mb-0">
-                          {internship.recruiter.companyName !== ""
-                            ? internship.recruiter.companyName
-                            : internship.recruiter.firstname +
-                              " " +
-                              internship.recruiter.lastname}
-                        </p>
-                      </div>
+                {filteredInternships.length > 0 ? (
+        filteredInternships.map((internship) => (
+          <div
+            key={internship._id}
+            className="bg-white shadow-md rounded-lg p-5 w-full h-fit lg:w-[90%] mx-auto relative space-y-1"
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-lg lg:text-xl font-bold">{internship.internshipName}</h2>
+                <p className="text-gray-600 text-lg font-semibold">
+                  {internship.recruiter.companyName || `${internship.recruiter.firstname} ${internship.recruiter.lastname}`}
+                </p>
+              </div>
+              <div className="flex space-x-3 items-center">
+                <button
+                  onClick={handleRedirect} // Replace with actual redirect logic
+                  className="hidden sm:flex justify-center text-white text-sm bg-blue-400 px-5 py-1 rounded-md hover:bg-emerald-500"
+                >
+                  Apply
+                </button>
+                {internship.logoUrl ? (
+                  <img src={internship.logoUrl} alt="Company Logo" className="w-16 h-16" />
+                ) : (
+                  <FaBuilding className="w-16 h-16 text-blue-600" />
+                )}
+              </div>
+            </div>
 
-                      <div className="flex space-x-3 items-start">
-                        <button
-                          onClick={handleRedirect}
-                          className="hidden sm:flex justify-center text-white ml-0 gap-2 items-center mx-auto  text-sm bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-5 py-1 overflow-hidden border-2 rounded-md group h-fit  "
-                        >
-                          Apply
-                        </button>
-                        {internship.logoUrl ? (
-                          <img
-                            src={internship.logoUrl}
-                            alt={internship.logoUrl}
-                            className=" w-16 h-16"
-                          />
-                        ) : (
-                          <FaBuilding className=" w-16 h-16 text-blue-600" />
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row ">
-                      <div className="flex items-center text-gray-700">
-                        <FaMapMarkerAlt className="mr-1 text-blue-500" />
-                        <span>
-                          {internship.internLocation.country ||
-                          internship.internLocation.state ||
-                          internship.internLocation.city
-                            ? `${internship.internLocation.country}, ${internship.internLocation.state}, ${internship.internLocation.city}`
-                            : "Remote"}
+            {/* Internship Details */}
+            <div className="flex flex-col md:flex-row text-sm md:text-base space-y-2 md:space-x-3">
+              <div className="flex items-center text-gray-700">
+                <FaMapMarkerAlt className="mr-1 text-blue-500" />
+                <span>
+                  {internship.internLocation.country ||
+                  internship.internLocation.state ||
+                  internship.internLocation.city
+                    ? `${internship.internLocation.country}, ${internship.internLocation.state}, ${internship.internLocation.city}`
+                    : "Remote"}
+                </span>
+              </div>
+              <div className="flex items-center text-gray-700">
+                <FaClock className="mr-2 text-blue-500" />
+                <span>{internship.duration} Months</span>
+              </div>
+              {internship.stipendType === "unpaid" ? (
+                <div className="flex items-center text-gray-700">
+                  <FaMoneyBillWave className="mr-1 text-blue-500" />
+                  <span>Unpaid</span>
+                </div>
+              ) : (
+                <div className="flex items-center text-gray-700">
+                  <FaMoneyBillWave className="mr-1 text-blue-500" />
+                  <span>
+                    {internship.currency} {internship.stipend} /month
+                  </span>
+                  {internship.stipendType === "performance-based" && (
+                    <div className="flex items-center text-gray-700 ml-2">
+                      <span>+ incentives</span>
+                      <div className="relative group">
+                        <FaQuestion className="border border-black p-1 mx-1 rounded-full cursor-pointer" />
+                        <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
+                          This is a Performance-Based internship. {internship.incentiveDescription}
                         </span>
                       </div>
-
-                      <div className="flex items-center text-gray-700">
-                        <FaClock className="mr-2 text-blue-500" />
-                        <span>{internship.duration} Months</span>
-                      </div>
-
-                      {internship.stipendType === "unpaid" && (
-                        <div className="flex items-center text-gray-700">
-                          <FaMoneyBillWave className="mr-1 text-blue-500" />
-                          <span>Unpaid</span>
-                        </div>
-                      )}
-
-                      {internship.stipendType !== "unpaid" && (
-                        <div className="flex items-center space-x-1">
-                          <div className="flex items-center text-gray-700">
-                            <FaMoneyBillWave className="mr-1 text-blue-500" />
-                            <span>
-                              {internship.currency} {internship.stipend} /month
-                            </span>
-                          </div>
-
-                          {internship.stipendType === "performance-based" && (
-                            <div className="flex items-center text-gray-700">
-                              <span>+ incentives</span>
-                              <div className="relative group ">
-                                <FaQuestion className="border border-black p-1 mx-1 rounded-full hover:cursor-pointer" />
-                                <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
-                                  This is a Performance Based internship.{" "}
-                                  {internship.incentiveDescription}
-                                </span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
                     </div>
+                  )}
+                </div>
+              )}
+            </div>
 
-                    <div className="flex text-sm md:text-base space-x-4 items-center">
-                      <div
-                        className={`${
-                          internship.studentCount < 20
-                            ? "text-green-500"
-                            : "text-gray-500"
-                        }  w-fit my-2 sm:my-0 md:w-auto`}
-                      >
-                        {internship.studentCount} Applicants
-                      </div>
+            {/* Additional Info */}
+            <div className="flex text-sm md:text-base space-x-4 items-center">
+              <div
+                className={`${
+                  internship.studentCount < 20 ? "text-green-500" : "text-gray-500"
+                } w-fit my-2 sm:my-0`}
+              >
+                {internship.studentCount} Applicants
+              </div>
+              {internship.studentCount < 20 && (
+                <div className="flex space-x-2 items-center">
+                  <FaRunning className="text-yellow-500 w-5 h-5" />
+                  <span className="text-gray-500">Early Applicant</span>
+                </div>
+              )}
+              {internship.ppoCheck === "yes" && (
+                <div className="text-gray-500 flex space-x-2 items-center">
+                  <FaStar /> <span>Job offer Available</span>
+                </div>
+              )}
+            </div>
 
-                      {internship.studentCount < 20 && (
-                        <div className="flex  space-x-2 items-center">
-                          <FaRunning className="text-yellow-500  w-5 h-5" />
-                          <span className="text-gray-500">Early Applicant</span>
-                        </div>
-                      )}
+            {/* Posted Time */}
+            <p className="text-gray-500 mb-2 md:mb-4 text-sm md:text-base font-semibold">
+              Posted:
+              <span className="text-gray-700 text-sm font-semibold ml-1">
+                {new Date(internship.createdAt).toDateString()}
+              </span>
+            </p>
 
-                      {internship.ppoCheck === "yes" && (
-                        <div className="text-gray-500 flex space-x-2 items-center">
-                          <FaStar /> <span>Job offer Available</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <p className="text-gray-500 mb-2 md:mb-4 text-sm md:text-base font-semibold">
-                      Posted:
-                      <span className="text-gray-700 text-sm font-semibold ml-1">
-                        {TimeAgo(internship.createdAt)}
-                      </span>
-                    </p>
-
-                    <button
-                      onClick={handleRedirect}
-                      className="flex sm:hidden justify-center text-white ml-0 gap-2 items-center mx-auto  text-md bg-blue-400 backdrop-blur-md lg:font-semibold isolation-auto border-gray-50 before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-emerald-500 hover:text-gray-50 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 relative z-10 px-6 py-1 overflow-hidden border-2 rounded-md group h-fit"
-                    >
-                      Apply
-                    </button>
-                  </div>
-                ))}
+            {/* Apply Button (Visible on Small Screens) */}
+            <button
+              onClick={handleRedirect} // Replace with actual redirect logic
+              className="flex sm:hidden justify-center text-white text-md bg-blue-400 px-6 py-1 rounded-md hover:bg-emerald-500"
+            >
+              Apply
+            </button>
+          </div>
+        ))
+      ) : (
+        <p className="text-gray-500">No internships found.</p>
+      )}
               </div>
 
               {internships.length > 0 && (
