@@ -49,7 +49,7 @@ const RecProfile = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [company, setCompany] = useState("");
-  const [independentCheck, setIndependentCheck] = useState(null);
+  const [independentCheck, setIndependentCheck] = useState(false);
   const [companyDesc, setCompanyDesc] = useState("");
   const [companyLocation, setCompanyLocation] = useState("");
   const [industry, setIndustry] = useState("");
@@ -60,7 +60,29 @@ const RecProfile = () => {
   const [companyCountry,setCompanyCountry] =useState("");
   const [companyState,setCompanyState] =useState("");
   const [companyCity,setCompanyCity] =useState("");
-
+  
+const countryCodes = [
+  { value: "+1", label: "🇺🇸 +1 (USA)" },
+  { value: "+44", label: "🇬🇧 +44 (UK)" },
+  { value: "+91", label: "🇮🇳 +91 (India)" },
+  { value: "+61", label: "🇦🇺 +61 (Australia)" },
+  { value: "+81", label: "🇯🇵 +81 (Japan)" },
+  { value: "+49", label: "🇩🇪 +49 (Germany)" },
+  { value: "+33", label: "🇫🇷 +33 (France)" },
+  { value: "+39", label: "🇮🇹 +39 (Italy)" },
+  { value: "+86", label: "🇨🇳 +86 (China)" },
+  { value: "+55", label: "🇧🇷 +55 (Brazil)" },
+  { value: "+7", label: "🇷🇺 +7 (Russia)" },
+  { value: "+27", label: "🇿🇦 +27 (South Africa)" },
+  { value: "+34", label: "🇪🇸 +34 (Spain)" },
+  { value: "+971", label: "🇦🇪 +971 (UAE)" },
+  { value: "+62", label: "🇮🇩 +62 (Indonesia)" },
+  { value: "+90", label: "🇹🇷 +90 (Turkey)" },
+  { value: "+82", label: "🇰🇷 +82 (South Korea)" },
+  { value: "+234", label: "🇳🇬 +234 (Nigeria)" },
+  { value: "+92", label: "🇵🇰 +92 (Pakistan)" },
+  { value: "+52", label: "🇲🇽 +52 (Mexico)" },
+];
   console.log(recruiter);
 
 
@@ -370,57 +392,76 @@ const RecProfile = () => {
       toast.error("Failed to update Details. Please try again.");
     }
   };
+  
   const handleDetailsUpdate_2 = async () => {
     try {
       if (company === "" && independentCheck === false) {
-        toast.error("Please enter your name of company");
+        toast.error("Please enter your company name");
         return;
       }
-
+  
       if (companyDesc === "") {
         toast.error("Please enter your company description");
         return;
       }
-
-      if (selectedCountry === "" || selectedState==="" || selectedCity==="") {
+  
+      if (selectedCountry === "" || selectedState === "" || selectedCity === "") {
         toast.error("Please enter your company location");
         return;
       }
-
+  
       if (industry === "") {
         toast.error("Please enter industry type");
         return;
       }
-
+  
       if (employeesCount === "") {
-        toast.error("Please enter number of employees ");
+        toast.error("Please enter number of employees");
         return;
       }
+  
+      if (logoUrl === null) {
+        toast.error("Please upload the logo of your organization");
+        return; // Ensure execution stops here if logo is missing
+      }
 
-      const response = await axios.put(
-        `${api}/recruiter/update-details-2/${idFromToken}`,
-        {
-          companyName: company,
-          independentRec: independentCheck,
-          orgDescription: companyDesc,
-          companyLocation: {country:selectedCountry,state: selectedState,city: selectedCity},
-          industryType: industry,
-          numOfEmployees: employeesCount,
-        }
-      );
-
-      // Handle success response (e.g., show success message, update UI, etc.)
-      // console.log("Details updated:", response.data);
-      // toast.success("Details updated successfully");
-      setActiveTab("Tab3")
+      if(companyUrl === null){
+        toast.error("Please enter official website of the organization");
+        return;
+      }
+  
+      setProgress(100);
+      toast.success("🎉 Profile completed!!");
+      setActiveTab("Tab3");
+  
+      console.log("Updating details for recruiter ID:", idFromToken);
+      console.log("API Request URL:", `${api}/recruiter/update-details-2/${idFromToken}`);
+  
+      const response = await axios.put(`${api}/recruiter/update-details-2/${idFromToken}`, {
+        companyName: company,
+        independentRec: independentCheck,
+        orgDescription: companyDesc,
+        companyLocation: {
+          country: selectedCountry,
+          state: selectedState,
+          city: selectedCity
+        },
+        industryType: industry,
+        numOfEmployees: employeesCount
+      });
+  
+      console.log("Response from API:", response.data);
+      toast.success("Details updated successfully");
+  
+      // Uncomment if navigation is needed
       // navigate(`/recruiter/posting/${idFromToken}`);
-      
+  
     } catch (error) {
-      // Handle error (e.g., show error message)
-      console.error("Error updating Details:", error);
-      toast.error("Failed to update Details. Please try again.");
+      console.error("Error updating details:", error);
+      toast.error("Failed to update details. Please try again.");
     }
   };
+  
 
   // console.log(recruiter);
   // console.log(firstName);
@@ -685,52 +726,14 @@ const RecProfile = () => {
     }
   };
   const [progress, setProgress] = useState(0);
-  useEffect(() => {
-    const filledFields = requiredFields.filter((field) => {
-      if (typeof field === "string") return field.trim() !== "";
-      if (typeof field === "number") return !isNaN(field) && field !== 0;
-      return field !== null && field !== undefined && field !== "";
-    }).length;
 
-    const percentage = Math.round((filledFields / requiredFields.length) * 100);
-    setProgress(percentage);
-
-    if (percentage === 100) {
-      toast.success("🎉 Profile Completed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  }, [
-    firstName,
-    lastName,
-    designation,
-    countryCode,
-    phoneNumber,
-    companyDesc,
-    selectedCountry,
-    companyDesc,
-    companyCountry,
-    companyState,
-    companyCity,
-    industry,
-    employeesCount,
-  ]);
-
-
+useEffect(() => {
   const requiredFields = [
     firstName,
     lastName,
     countryCode,
     phoneNumber,
     designation,
-    companyDesc,
-    selectedCountry,
     company,
     companyDesc,
     companyCountry,
@@ -738,44 +741,54 @@ const RecProfile = () => {
     companyCity,
     industry,
     employeesCount,
+    logoUrl,
+    companyUrl
   ];
 
-  useEffect(() => {
-    const filledFields = requiredFields.filter((field) => {
-      if (typeof field === "string") return field.trim() !== "";
-      if (typeof field === "number") return !isNaN(field) && field !== 0;
-      return field !== null && field !== undefined && field !== ""; // Catch all falsy values
-    }).length;
+  const filledFields = requiredFields.filter((field, index) => {
+    const isFilled =
+      (typeof field === "string" && field.trim() !== "") ||
+      (typeof field === "number" && !isNaN(field) && field !== 0) ||
+      (field !== null && field !== undefined);
+    
+    // Debugging Log
+    console.log(`Field ${index + 1}:`, field, " -> Filled:", isFilled);
+    return isFilled;
+  }).length;
 
-    const percentage = Math.round((filledFields / requiredFields.length) * 100);
-    setProgress(percentage);
+  const percentage = Math.round((filledFields / requiredFields.length) * 100);
+  console.log("Filled Fields:", filledFields, "/", requiredFields.length);
+  console.log("Progress:", percentage, "%");
 
-    if (percentage === 100) {
-      toast.success("🎉 Profile Completed!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  }, [
-    firstName,
-    lastName,
-    designation,
-    countryCode,
-    phoneNumber,
-    companyDesc,
-    selectedCountry,
-    companyDesc,
-    companyCountry,
-    companyState,
-    companyCity,
-    industry,
-    employeesCount,
-  ]);
+  setProgress(percentage);
+
+  if (percentage === 100) {
+    toast.success("🎉 Profile Completed!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  }
+}, [
+  firstName,
+  lastName,
+  countryCode,
+  phoneNumber,
+  designation,
+  company,
+  companyDesc,
+  companyCountry,
+  companyState,
+  companyCity,
+  industry,
+  employeesCount,
+  logoUrl,
+  companyUrl
+]);
+
   return !recruiter ? (
     <Spinner />
   ) : (
@@ -783,12 +796,12 @@ const RecProfile = () => {
     <div className="min-h-screen mt-20">
       <div className="w-full lg:w-[50%] mx-auto p-4">
         {/* Progress Bar */}
-      <div className="relative w-full h-2 bg-gray-300 rounded-md overflow-hidden mb-4">
-        <div
-          className="h-full bg-blue-500 transition-all duration-300"
-          style={{ width: `${progress}%` }}
-        ></div>
-      </div>
+        <div className="relative w-full h-2 bg-gray-300 rounded-md overflow-hidden mb-4">
+          <div
+            className="h-full bg-blue-500 transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
         {/* Tab Buttons */}
         <div className="flex space-x-4 justify-center items-center">
           {/* tab 1 */}
@@ -938,14 +951,14 @@ const RecProfile = () => {
                       Mobile <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-2 items-center relative">
-                      <input
-                        className="border-2 rounded-md px-3 py-1 w-[60px] md:w-[100px]"
-                        defaultValue={countryCode}
-                        onChange={(e) => setCountryCode(e.target.value)}
-                        type="text"
-                        name="mobile"
-                        required
-                      />
+                    <Select
+                      options={countryCodes}
+                      value={countryCodes.find((option) => option.value === countryCode)}
+                      onChange={(selectedOption) => setCountryCode(selectedOption.value)}
+                      placeholder="Select Country Code"
+                      isSearchable
+                      className="w-[150px] md:w-[200px]"
+                    />
                       <input
                         className="border-2 rounded-md px-3 py-1 w-full lg:w-[50%]"
                         // defaultValue={recruiter?.phone}
@@ -1044,19 +1057,17 @@ const RecProfile = () => {
                   </div>
                   {/* Checkbox below the input */}
                   <div className="flex items-start mt-3">
-                    <input
-                      id="checkbox"
-                      type="checkbox"
-                      className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded mt-[3px]"
-                      checked={independentCheck}
-                      onChange={handleCheckboxChange}
-                      disabled={company !== ""}
-                    />
-                    <label htmlFor="checkbox" className="text-sm text-gray-600">
-                      I am an Independent Practitionar(Freelancer, Architect,
-                      Lawyer etc.)Hiring for myself and not hiring on behalf of
-                      any company.
-                    </label>
+                  <input
+                    id="checkbox"
+                    type="checkbox"
+                    className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded mt-[3px]"
+                    checked={independentCheck}
+                    onChange={handleCheckboxChange}
+                    disabled={company !== ""}
+                  />
+                  <label htmlFor="checkbox" className="text-sm text-gray-600">
+                    I am an Independent Practitioner (Freelancer, Architect, Lawyer, etc.), hiring for myself and not on behalf of any company.
+                  </label>
                   </div>
                 </div>
                 {/* Organization description */}
@@ -1075,7 +1086,6 @@ const RecProfile = () => {
                       name="orgdesc"
                       required
                     />
-
                     {/* Character Count */}
                     <div
                       className={`mt-1 text-sm ${companyDesc.length === maxChars
@@ -1248,15 +1258,11 @@ const RecProfile = () => {
                 <button
                   onClick={() => {
                     handleDetailsUpdate_2(); // Call the update function
-                    setProgress(100);
-                    toast.success("🎉 Profile completed!!")
                   }}
                   className="px-5 py-1 bg-blue-500 text-white rounded-md"
                 >
                   Save details
                 </button>
-
-
               </div>
               </div>
               {/* File Upload */}
