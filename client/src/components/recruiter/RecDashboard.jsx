@@ -230,7 +230,7 @@ const RecDashboard = () => {
   //   )
   //   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  if (internships.length === 0) {
+  if (internships.length === 0 && !searchName) {
     return (
       <div className="flex flex-col justify-center items-center h-screen space-y-4">
         <p className="text-xl font-semibold text-gray-500">
@@ -245,26 +245,74 @@ const RecDashboard = () => {
       </div>
     );
   }
+  
+  if (internships.length === 0 && searchName) {
+    return (
+      <div className="py-10 px-3 lg:px-5 mt-10 bg-gray-100 min-h-screen">
+        <h1 className="text-xl lg:text-3xl font-bold text-center mb-8">
+  My Posted Internships
+</h1>
+<div className="relative">
+  <FaSearch className="absolute left-4 top-[13px]" />
+  <div className="mb-4 lg:w-[30%] flex space-x-4">
+    <input
+      type="text"
+      placeholder="Search by internship name"
+      value={searchName}
+      onChange={(e) => setSearchName(e.target.value)}
+      className="w-full p-2 border pl-10 border-gray-300 rounded-lg text-sm lg:text-base"
+    />
+    <button
+      onClick={handleSearchName}
+      className="text-white bg-blue-400 rounded-md px-3"
+    >
+      Search
+    </button>
+    <button
+      onClick={handleClearSearch}
+      className="text-white bg-red-400 rounded-md px-3"
+    >
+      Clear
+    </button>
+  </div>
+</div>
+        <p className="text-xl font-semibold text-gray-500">
+          No results found for "{searchName}".
+        </p>
+      </div>
+    );
+  }
+  
 
   return (
     <div className="py-10 px-3 lg:px-5 mt-10 bg-gray-100 min-h-screen">
       <h1 className="text-xl lg:text-3xl font-bold text-center mb-8">
-        My Posted Internships
-      </h1>
-      <div className="relative">
-        <FaSearch className="absolute left-4 top-[13px]" />
-        <div className="mb-4 lg:w-[30%] flex space-x-4">
-          <input
-            type="text"
-            placeholder="Search by internship name"
-            value={searchName}
-            onChange={(e) => setSearchName(e.target.value)}
-            className="w-full p-2 border pl-10 border-gray-300 rounded-lg text-sm lg:text-base"
-          />
-          <button onClick={handleSearchName} className="text-white bg-blue-400 rounded-md px-3 ">Search</button>
-          <button onClick={handleClearSearch} className="text-white bg-red-400 rounded-md px-3">Clear</button>
-        </div>
-      </div>
+  My Posted Internships
+</h1>
+<div className="relative">
+  <FaSearch className="absolute left-4 top-[13px]" />
+  <div className="mb-4 lg:w-[30%] flex space-x-4">
+    <input
+      type="text"
+      placeholder="Search by internship name"
+      value={searchName}
+      onChange={(e) => setSearchName(e.target.value)}
+      className="w-full p-2 border pl-10 border-gray-300 rounded-lg text-sm lg:text-base"
+    />
+    <button
+      onClick={handleSearchName}
+      className="text-white bg-blue-400 rounded-md px-3"
+    >
+      Search
+    </button>
+    <button
+      onClick={handleClearSearch}
+      className="text-white bg-red-400 rounded-md px-3"
+    >
+      Clear
+    </button>
+  </div>
+</div>
       <div className="bg-white w-full shadow-md rounded-lg p-2 lg:p-6 my-3 sm:mx-auto">
         <div className="grid grid-cols-4 font-semibold mb-2 border-b-2 pb-2 text-center">
           <div className="text-xs -ml-3 lg:text-base lg:w-[190px] lg:ml-10">
