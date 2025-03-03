@@ -5,6 +5,7 @@ import logo from "../../images/logo.png";
 import internsnestlogo1 from '../../images/internsnest_pic1.jpg'
 import internsnestlogo2 from '../../images/internsnest_pic2.jpg'
 import internsnestLogo from '../../images/internnest_logo.png'
+import internsnestLogo3 from "../../images/INTERNSNEST LOGO.png";
 import getUserIdFromToken from "./auth/authUtilsRecr.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -86,7 +87,7 @@ const RecNavbar = () => {
         {/* Logo */}
         <Link to={`/recruiter/dashboard/${userId}`}>
           <div className="inline-flex items-center ">
-            <img src={internsnestLogo} alt="" className="h-16  w-24 lg:w-20 lg:h-[60px]" />
+            <img src={internsnestLogo3} alt="" className="h-16  w-24 lg:w-20 lg:h-[60px]" />
           </div>
         </Link>
 
