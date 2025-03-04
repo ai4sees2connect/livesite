@@ -89,9 +89,10 @@ const RecPosting = () => {
         return;
       }
     };
-    setTimeout(() => {
-      getData();
-    }, 1000);
+    // setTimeout(() => {
+    //   getData();
+    // }, 1000);
+    getData();
   }, [recruiter]);
 
   useEffect(() => {
