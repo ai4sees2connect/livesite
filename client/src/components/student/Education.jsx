@@ -462,7 +462,7 @@ const Education = ( {error, clearError,updateError }) => {
   return (
     <div className="container mx-auto p-4 border shadow-md mt-[68px] w-full lg:w-[80%]">
       <h2 className="text-xl font-outfit font-semibold flex justify-between">
-        Education
+        <span className="text-red-700"><span className="text-black">Education</span> *</span>
         <button
           onClick={() => setIsEditing(true)}
           className="text-blue-500  flex items-center space-x-1"

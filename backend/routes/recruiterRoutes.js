@@ -408,6 +408,7 @@ router.put('/update-details-2/:recruiterId', async (req, res) => {
   }
 });
 
+
 router.post(
   "/upload-logo/:recruiterId",
   upload.single("logo"),

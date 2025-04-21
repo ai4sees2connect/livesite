@@ -12,7 +12,6 @@ import { useStudent } from "../student/context/studentContext";
 import Sidebar from "../student/Sidebar";
 // import jwt from 'jsonwebtoken';
 import { jwtDecode } from 'jwt-decode';
-
 const HomeUniversal = () => {
   const navigate = useNavigate();
   const { userId } = useParams();

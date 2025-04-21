@@ -62,7 +62,6 @@ router.get('/fetch-recruiters', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
 router.get('/recruiters/download-certificate/:id', async (req, res) => {
   try {
     const recruiter = await Recruiter.findById(req.params.id);

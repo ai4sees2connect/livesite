@@ -20,8 +20,8 @@ const connectDB = async () => {
 
 // Function to insert admin credentials
 const insertAdmin = async () => {
-  const adminEmail = 'jaichawla074@gmail.com'; // Replace with actual admin email
-  const adminPassword = '$*9999*$'; // Replace with actual admin password
+  const adminEmail = 'jaichawla074@gmail.com'; // Replace with actual admin email 
+  const adminPassword = '$*9999*$'; // Replace with actual admin password 
   const adminName = 'Admin'; // Replace with actual admin name
 
   try {

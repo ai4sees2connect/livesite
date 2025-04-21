@@ -12,9 +12,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <RecruiterProvider>
     <StudentProvider>
-      
           <App />
-         
     </StudentProvider>
     </RecruiterProvider>
     

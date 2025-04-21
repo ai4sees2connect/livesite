@@ -103,7 +103,7 @@ function App() {
           path="/internshipDetails/:internshipId"
           element={<InternDetails />}
         />
-
+    
         <Route path="/recruiter/signup" element={<SignupRecruit />} />
         <Route path="/recruiter/login" element={<LoginRecruit />} />
         <Route path="/recruiter/home/:userId" element={<RecruiterHome />} />

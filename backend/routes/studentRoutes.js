@@ -24,24 +24,28 @@ const generateOtp = () => {
   return crypto.randomInt(100000, 999999).toString();
 };
 
+// filepath: f:\livesite\livesite\backend\routes\studentRoutes.js
 router.post('/send-otp', async (req, res) => {
   const { email } = req.body;
+  console.log("Received email:", email); // Add this line
 
   if (!email) {
     return res.status(400).json({ message: 'Email is required' });
   }
 
   try {
-    const student=await Student.findOne({email:email});
-    if(student){
-      return res.status(404).json({ message:"student already exists" });
+    const student = await Student.findOne({ email: email });
+    if (student) {
+      return res.status(404).json({ message: "student already exists" });
     }
     // Step 1: Generate a random OTP and set expiration time (10 minutes)
     const otp = generateOtp();
     const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes expiration
 
     // Step 2: Save OTP to the database
+    console.log("Creating OTP entry..."); // Add this line
     await Otp.create({ email, otp, expiresAt: new Date(expiresAt) });
+    console.log("OTP entry created successfully."); // Add this line
 
     // Step 3: Configure nodemailer to send the OTP email
     const transporter = nodemailer.createTransport({
@@ -52,8 +56,8 @@ router.post('/send-otp', async (req, res) => {
       },
     });
 
-    // console.log('Email User:', process.env.EMAIL_USER);
-    // console.log('Email Pass:', process.env.EMAIL_PASS);
+    //console.log('Email User:', process.env.EMAIL_USER);
+    //console.log('Email Pass:', process.env.EMAIL_PASS);
 
     transporter.verify((error, success) => {
       if (error) {
@@ -72,18 +76,22 @@ router.post('/send-otp', async (req, res) => {
 
     // console.log(mailOptions);
     // Step 4: Send email
+    console.log("Sending email..."); // Add this line
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
+        console.error("Error sending email:", error); // Add this line
         return res.status(500).json({ message: 'Error sending OTP email' });
       }
+      console.log("Email sent successfully:", info); // Add this line
       return res.status(200).json({ message: 'OTP sent successfully' });
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("General error in /send-otp:", error); // Add this line
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 router.post('/verify-otp', async (req, res) => {
   const { email, otp } = req.body;
 

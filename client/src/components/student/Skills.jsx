@@ -117,7 +117,7 @@ const Skills = ({ skillSet, error, clearError,updateError  }) => {
   return (
     <div className="container mx-auto p-4 border shadow-lg  mt-[68px] w-full lg:w-[80%]">
       <h2 className="text-xl font-semibold flex justify-between font-outfit">
-        Skills
+      <span className="text-red-700"><span className="text-black">Skills</span> *</span>
         <button
           onClick={() => setIsEditing(true)}
           className="text-blue-500 hover:text-green-600 flex items-center space-x-1"

@@ -903,7 +903,71 @@ const RecPosting = () => {
             )}
           </div>
         </div>
+        
+        <p className="text-center text-lg font-semibold py-5">
+          Cover letter, Availability & Assessment Question
+        </p>
+        <div className="border relative border-gray-300  mx-auto p-6 rounded-lg shadow-lg mb-7 w-full lg:w-[70%]">
+          <p className="text-gray-500 my-2">
+            Cover letter and availability Question will be asked to every
+            Applicant by default. If you wish you may ask a customized question
+            as an assessment
+          </p>
+          <div className="my-2">
+            <p>Cover Letter</p>
+            <p className="text-gray-500 ">
+              Tell us something about yourself and why should you be hired for
+              this role.
+            </p>
+          </div>
 
+          <div className="my-2">
+            <p>Availability</p>
+            <p className="text-gray-500 ">Can you join Immediately?</p>
+          </div>
+
+          <div className="my-5">
+            {!isAssessmentOpen ? (
+              <button
+                className="text-blue-500 font-semibold"
+                onClick={() => setIsAssessmentOpen(true)}
+              >
+                + Add Assessment question
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsAssessmentOpen(false);
+                  setFormData({
+                    ...formData,
+                    assessment: "",
+                  });
+                }}
+                className="text-red-500 font-semibold"
+              >
+                - Remove Assessment
+              </button>
+            )}
+          </div>
+
+          {isAssessmentOpen && (
+            <div className="flex flex-col h-[200px]">
+              <label className="mb-2 font-medium">Assessment Question</label>
+              <textarea
+                type="text"
+                name="assessment"
+                value={formData.assessment}
+                onChange={handleChange}
+                className="p-2 border border-gray-300 rounded-md shadow-md"
+                placeholder="Enter Question for applicant"
+                rows={3}
+                maxLength={200}
+              />
+              <span className="text-sm text-gray-700">{200 - formData.assessment.length} characters left</span>
+            </div>
+          )}
+        </div>
+        
         <p className="text-center text-lg font-semibold py-5">
           Stipend & Perks
         </p>
@@ -1108,77 +1172,12 @@ const RecPosting = () => {
             )}
           </div>
         </div>
-
-        <p className="text-center text-lg font-semibold py-5">
-          Cover letter, Availability & Assessment Question
-        </p>
-        <div className="border relative border-gray-300  mx-auto p-6 rounded-lg shadow-lg mb-7 w-full lg:w-[70%]">
-          <p className="text-gray-500 my-2">
-            Cover letter and availability Question will be asked to every
-            Applicant by default. If you wish you may ask a customized question
-            as an assessment
-          </p>
-          <div className="my-2">
-            <p>Cover Letter</p>
-            <p className="text-gray-500 ">
-              Tell us something about yourself and why should you be hired for
-              this role.
-            </p>
-          </div>
-
-          <div className="my-2">
-            <p>Availability</p>
-            <p className="text-gray-500 ">Can you join Immediately?</p>
-          </div>
-
-          <div className="my-5">
-            {!isAssessmentOpen ? (
-              <button
-                className="text-blue-500 font-semibold"
-                onClick={() => setIsAssessmentOpen(true)}
-              >
-                + Add Assessment question
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  setIsAssessmentOpen(false);
-                  setFormData({
-                    ...formData,
-                    assessment: "",
-                  });
-                }}
-                className="text-red-500 font-semibold"
-              >
-                - Remove Assessment
-              </button>
-            )}
-          </div>
-
-          {isAssessmentOpen && (
-            <div className="flex flex-col h-[200px]">
-              <label className="mb-2 font-medium">Assessment Question</label>
-              <textarea
-                type="text"
-                name="assessment"
-                value={formData.assessment}
-                onChange={handleChange}
-                className="p-2 border border-gray-300 rounded-md shadow-md"
-                placeholder="Enter Question for applicant"
-                rows={3}
-                maxLength={200}
-              />
-              <span className="text-sm text-gray-700">{200 - formData.assessment.length} characters left</span>
-            </div>
-          )}
-
-          <button
+        <button
             onClick={handleSubmit}
             className="w-full md:w-[20%] static md:absolute bottom-4 right-4 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
           >
             Post Internship
           </button>
-        </div>
       </form>
     </div>
   );

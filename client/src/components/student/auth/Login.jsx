@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
-
 import { Link } from "react-router-dom";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye as EyeIcon,
   faEyeSlash as EyeSlashIcon,
-  faEye,
-  faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import google_pic from "../../../images/google_pic.png";
 import login_bg from "../../../images/login_bg.jpeg";
@@ -31,7 +27,20 @@ function Login() {
   const navigate = useNavigate();
   const userId = getUserIdFromToken();
   const { login } = useStudent();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+
+  // Use useParams to utilize the imported variable
+  const params = useParams();
+  useEffect(() => {
+    if (params && Object.keys(params).length > 0) {
+      console.log("URL parameters:", params);
+    }
+  }, [params]);
+
+  const validatePassword = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return regex.test(password);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -40,7 +49,7 @@ function Login() {
       navigate(`/student/dashboard/${userId}`);
       return;
     }
-  }, [navigate, userId]);
+  }, [navigate, userId, login]);
 
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
@@ -48,21 +57,25 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validatePassword(password)) {
+      setError(
+        "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character."
+      );
+      return;
+    }
+
     try {
       const response = await axios.post(`${api}/student/login`, {
         email,
         password,
       });
-      // toast.success("Login successful!");
 
-      // Handle success
-      console.log(response.data.message);
       localStorage.setItem("token", response.data.token);
       login();
       const userId = getUserIdFromToken();
       navigate(`/student/dashboard/${userId}`);
     } catch (error) {
-
       setError("Invalid credentials");
     }
   };
@@ -98,20 +111,17 @@ function Login() {
       toast.error("Error signing in with Google");
     }
   };
-  // const handleBack = () => {
-  //   navigate("");
-  // };
 
   return (
     <div className="flex mt-10 md:mt-0 min-h-screen">
+      {/* ToastContainer now used for toast notifications */}
+      <ToastContainer autoClose={3000} />
       <div className="flex-1 relative hidden lg:block">
         <img src={login_bg} alt="" className="w-full h-full" />
-        {/* <p className='absolute flex inset-0 justify-center items-center text-white text-6xl font-bold '>Welcome back !</p> */}
       </div>
       <div className="mb-20 lg:w-[90%] flex-1 min-h-[635px]">
-        {/* back button */}
-        <div className="absolute left-0 top-5  rounded-full">
-          <Link to="/" className="px-5 py-1 text-blue-400  font-semibold">
+        <div className="absolute left-0 top-5 rounded-full">
+          <Link to="/" className="px-5 py-1 text-blue-400 font-semibold">
             <GoBackButton />
           </Link>
         </div>
@@ -121,13 +131,11 @@ function Login() {
           </p>
           <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-5 md:items-center mt-8 md:mt-0">
             <ToggleButton type="student" auth="login" />
-
             <ToggleButtonSecond type="student" auth="login" />
           </div>
         </div>
         <div>
-          {/* form starts from here */}
-          <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full mx-auto ">
+          <div className="flex justify-center items-center mt-[40px] md:mt-[36px] w-full mx-auto">
             <form
               onSubmit={handleSubmit}
               className="space-y-4 w-full lg:w-[60%] md:max-w-xl px-5 lg:px-0"
@@ -138,15 +146,13 @@ function Login() {
                   id="email"
                   value={email}
                   placeholder="Email"
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full "
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full"
                   required
                 />
               </div>
 
-              <div className="relative flex flex-col items-center ">
+              <div className="relative flex flex-col items-center">
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
@@ -164,12 +170,12 @@ function Login() {
                 >
                   {showPassword ? (
                     <FontAwesomeIcon
-                      icon={faEye}
+                      icon={EyeIcon}
                       className="w-5 h-5 text-gray-500"
                     />
                   ) : (
                     <FontAwesomeIcon
-                      icon={faEyeSlash}
+                      icon={EyeSlashIcon}
                       className="w-5 h-5 text-gray-500"
                     />
                   )}
@@ -185,13 +191,16 @@ function Login() {
               </div>
 
               {error && (
-                <p className="text-red-500 font-semibold mb-4 text-center">{error}</p>
+                <p className="text-red-500 font-semibold mb-4 text-center">
+                  {error}
+                </p>
               )}
 
               <button
                 type="submit"
-                className={`w-full  py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${!isFormValid ? `bg-blue-500` : ""
-                  } `}
+                className={`w-full py-2 bg-blue-500 border-none h-[50px] text-white rounded-full ${
+                  !isFormValid ? `bg-blue-500` : ""
+                }`}
                 disabled={!isFormValid}
               >
                 Log in
@@ -201,7 +210,9 @@ function Login() {
 
           <p className="mt-7 text-center">OR</p>
 
-          <div className="w-full md:w-[70%] lg:w-[60%] mt-8 mb-10 md:mb-0 space-y-3 px-5 md:px-0 mx-auto">
+          <div
+            className="w-full md:w-[70%] lg:w-[60%] mt-8 mb-10 md:mb-0 space-y-3 px-5 md:px-0 mx-auto"
+          >
             <button
               className="w-full py-2 border border-gray-300 md:h-[50px] text-black text-[18px] rounded-full font-semibold"
               onClick={handleGoogleClick}
@@ -213,7 +224,7 @@ function Login() {
                   className="w-5 h-5 py-0 px-0 ml-5 mt-2"
                 />
                 <span className="mt-1 text-sm md:text-base text-center pr-2">
-                  Continue up with Google
+                  Continue with Google
                 </span>
               </div>
             </button>

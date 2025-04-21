@@ -478,11 +478,15 @@ const Internships = () => {
       setLoading(false);
     }
   };
+<<<<<<< HEAD
   
   
   
   
   
+=======
+
+>>>>>>> 9118fbb (Changes in Loginsignup studentpage)
 
   useEffect(() => {
     fetchInternships();
@@ -504,6 +508,10 @@ const Internships = () => {
         internship.description.toLowerCase().includes(lowerCaseSearchTerm)
       );
       setFilteredInternships(filtered);
+<<<<<<< HEAD
+=======
+      setInternshipsCount(filtered.length);
+>>>>>>> 9118fbb (Changes in Loginsignup studentpage)
     }
   }, [searchTerm, internships]);
 

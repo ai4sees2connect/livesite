@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import google_pic from "../../../images/google_pic.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -16,13 +16,11 @@ import ToggleButton from "../../common/ToggleButton";
 import ToggleButtonSecond from "../../common/ToogleButtonSecond";
 import api from "../../common/server_url";
 import Spinner from "../../common/Spinner";
-
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import GoBackButton from "../../common/GoBackButton";
 import { FaCheckCircle } from "react-icons/fa";
+
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
-
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -40,15 +38,24 @@ function Signup() {
   const [otp, setOtp] = useState("");
   const [sendingOtp, setSendingOtp] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
-  // const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [countdown, setCountdown] = useState(60);
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      login();
-      navigate(`/student/dashboard/${userId}`);
+    //const userIdFromToken = getUserIdFromToken();
+      if (userId){
+        login();
+        navigate(`/student/dashboard/${userId}`);
+      } else {
+        // Optionally clear an invalid token and notify the user
+        localStorage.removeItem("token");
+        toast.error("Token not found or invalid. Please log in again.");
+      }
     }
-  }, [userId]);
+  }, [login, navigate, userId]);
 
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
@@ -62,7 +69,7 @@ function Signup() {
     const passwordPattern =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
-    if (newPassword.trim().length == 20) {
+    if (newPassword.trim().length === 20) {
       setPasswordError("Password must not exceed 20 characters");
     } else if (!passwordPattern.test(newPassword)) {
       setPasswordError(
@@ -73,7 +80,6 @@ function Signup() {
     }
   };
 
-
   const validateEmail = (email) => {
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -82,32 +88,36 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission
-
+  
     if (!validateEmail(email)) {
       setEmailError("The email does not look right. Try again.");
       return;
     }
     setEmailError("");
+    setIsSubmitting(true);
     try {
-      // Send a POST request to the backend
-      const response = await axios.post(`${api}/student/signup`, {
+      const { data } = await axios.post(`${api}/student/signup`, {
         firstname,
         lastname,
         email,
         password,
       });
-
-      // Handle success
+  
+      if (!data.token) {
+        toast.error("Signup failed: Token not received from server.");
+        return;
+      }
+  
       toast.success("You are Signed in");
-      localStorage.setItem("token", response.data.token); // Store token if needed
+      localStorage.setItem("token", data.token); // Store token if needed
       login();
       const userId = getUserIdFromToken();
-      console.log(response.data.token);
+      console.log(data.token);
       navigate(`/student/dashboard/${userId}`);
     } catch (error) {
-      // Handle error
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "An error occurred during signup.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -118,25 +128,18 @@ function Signup() {
         email: email,
         otp: otp,
       });
-
       if (response.status === 200) {
-        // OTP verified successfully
         toast.success("OTP verified successfully!");
         setOtpVerified(true);
         setVerifiedEmail(email);
       } else {
-        // Something went wrong, show the error message
-        // toast.error(response.data.message);
         setOtpError(response.data.message);
         setOtpVerified(false);
       }
     } catch (error) {
       if (error.response) {
-        // If the request was made and the server responded with a status code that falls out of the range of 2xx
-        // toast.error(error.response.data.message);
         setOtpError(error.response.data.message);
       } else {
-        // Something else went wrong (e.g., network error)
         toast.error("An error occurred while verifying the OTP");
       }
       console.error("Error verifying OTP:", error);
@@ -152,21 +155,17 @@ function Signup() {
       }
       setEmailError("");
       setSendingOtp(true);
-      const response = await axios.post(`${api}/student/send-otp`, { email });
-
-      // Prompt user to enter the OTP
+      await axios.post(`${api}/student/send-otp`, { email });
       toast.success("OTP sent to your email.");
       setSendingOtp(false);
-
-      // Store email and other form data temporarily
-      setIsOtpInput(true); // Show OTP input field
+      setIsOtpInput(true);
     } catch (error) {
-      // toast.error(error.response?.data?.message || "Error sending OTP");
-      setEmailError(error.response?.data?.message || "Error sending OTP")
+      setEmailError(error.response?.data?.message || "Error sending OTP");
       setSendingOtp(false);
       setButtonDisabled(false);
     }
   };
+
   const handleResendOtp = async (e) => {
     try {
       await handleSendOtp(e);
@@ -194,20 +193,16 @@ function Signup() {
       const email = user.email;
       const firstname = user.displayName.split(" ")[0];
       const lastname = user.displayName.split(" ")[1] || "";
-
-      const response = await axios.post(`${api}/student/signup/googleauth`, {
+      const { data } = await axios.post(`${api}/student/signup/googleauth`, {
         email,
         firstname,
         lastname,
       });
-
-      if (response.data.success) {
+      if (data.success) {
         toast.success("You are Signed in");
-        const token = response.data.token;
-        localStorage.setItem("token", token);
+        localStorage.setItem("token", data.token);
         login();
-        const userId = getUserIdFromToken();
-        navigate(`/student/dashboard/${userId}`);
+        navigate(`/student/dashboard/${getUserIdFromToken()}`);
       } else {
         toast.error("Something went wrong");
       }
@@ -215,9 +210,6 @@ function Signup() {
       console.error("Error signing in with Google", error);
     }
   };
-  // resend button
-  const [countdown, setCountdown] = useState(60);
-  const [buttonDisabled, setButtonDisabled] = useState(true);
 
   useEffect(() => {
     let timer;
@@ -231,8 +223,7 @@ function Signup() {
         });
       }, 1000);
     }
-
-    return () => clearInterval(timer); // Cleanup timer on unmount
+    return () => clearInterval(timer);
   }, [buttonDisabled]);
 
   return (
@@ -241,7 +232,6 @@ function Signup() {
         <img src={login_bg} alt="" className=" w-full h-full" />
       </div>
       <div className="flex-1 mx-auto w-[90%] mb-20 min-h-[635px]">
-        {/* back button */}
         <div className="absolute left-0 top-5  rounded-full">
           <Link to="/" className="px-5 py-1 text-blue-400  font-semibold">
             <GoBackButton />
@@ -257,8 +247,6 @@ function Signup() {
           </div>
         </div>
         <div>
-          {/* form starts from here */}
-
           <div className="flex flex-col justify-center items-center mt-[40px] md:mt-[36px] w-full ">
             <form className="space-y-4 w-full lg:w-[60%]  md:max-w-xl px-5 lg:px-0">
               <div className="mx-auto md:max-w-xl">
@@ -270,11 +258,9 @@ function Signup() {
                   onChange={(e) => {
                     const inputValue = e.target.value;
                     const regex = /^[A-Za-z\s]*$/;
-
                     if (inputValue === "") {
-                      // Allow empty input
                       setFirstNameError("Field cannot be empty");
-                      setFirstName(inputValue); // Update state to empty string
+                      setFirstName(inputValue);
                     } else if (!regex.test(inputValue)) {
                       setFirstNameError("Only alphabets are allowed");
                     } else if (inputValue.length > 12) {
@@ -302,11 +288,9 @@ function Signup() {
                   onChange={(e) => {
                     const inputValue = e.target.value;
                     const regex = /^[A-Za-z\s]*$/;
-
                     if (inputValue === "") {
-                      // Allow empty input
                       setLastNameError("Field cannot be empty");
-                      setLastName(inputValue); // Update state to empty string
+                      setLastName(inputValue);
                     } else if (!regex.test(inputValue)) {
                       setLastNameError("Only alphabets are allowed");
                     } else if (inputValue.length > 12) {
@@ -326,74 +310,73 @@ function Signup() {
               </div>
 
               <div className="flex flex-col">
-                {firstname && lastname && <div className="flex relative">
-                  <input
-                    type="email"
-                    id="email"
-                    value={email}
-                    placeholder="Email"
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setOtpVerified(false);
-                      setOtp("");
-                      if (!validateEmail(e.target.value)) {
-                        setEmailError(
-                          "The email does not look right. Try again."
-                        );
-                      } else setEmailError("");
-                    }}
-                    className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full relative"
-                    required
-                  />
-                  {validateEmail(email) && !sendingOtp && !otpInput && (
-                    <button
-                      className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
-                      type="button"
-                      onClick={handleSendOtp}
-                    >
-                      Send OTP
-                    </button>
-                  )}
-                  {validateEmail(email) &&
-                    !sendingOtp &&
-                    otpInput &&
-                    !otpVerified && (
+                {firstname && lastname && (
+                  <div className="flex relative">
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      placeholder="Email"
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        setOtpVerified(false);
+                        setOtp("");
+                        if (!validateEmail(e.target.value)) {
+                          setEmailError("The email does not look right. Try again.");
+                        } else setEmailError("");
+                      }}
+                      className="h-12 border-none bg-[rgb(246,247,245)] p-2 rounded-md w-full relative"
+                      required
+                    />
+                    {validateEmail(email) && !sendingOtp && !otpInput && (
                       <button
-                        className={`absolute right-0 top-2.5 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2 ${buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
+                        className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
                         type="button"
-                        onClick={handleResendOtp}
-                        disabled={buttonDisabled}
+                        onClick={handleSendOtp}
                       >
-                        {buttonDisabled
-                          ? `Resend in ${countdown}s`
-                          : "Resend OTP"}
+                        Send OTP
                       </button>
                     )}
-                  {otpVerified && (
-                    <button
-                      className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
-                      type="button"
-                    >
-                      <div className="flex gap-2 items-center">
-                        <FaCheckCircle />
-                        <span> Verified</span>
-                      </div>
-                    </button>
-                  )}
-
-                  {sendingOtp && (
-                    <FontAwesomeIcon
-                      icon={faSpinner}
-                      spin
-                      className="h-5 w-5 text-black absolute right-2 top-4"
-                    />
-                  )}
-                </div>}
+                    {validateEmail(email) &&
+                      !sendingOtp &&
+                      otpInput &&
+                      !otpVerified && (
+                        <button
+                          className={`absolute right-0 top-2.5 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2 ${
+                            buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                          type="button"
+                          onClick={handleResendOtp}
+                          disabled={buttonDisabled}
+                        >
+                          {buttonDisabled
+                            ? `Resend in ${countdown}s`
+                            : "Resend OTP"}
+                        </button>
+                      )}
+                    {otpVerified && (
+                      <button
+                        className="absolute right-0 top-[50%] -translate-y-[50%] text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1 text-center mr-2 mb-2"
+                        type="button"
+                      >
+                        <div className="flex gap-2 items-center">
+                          <FaCheckCircle />
+                          <span> Verified</span>
+                        </div>
+                      </button>
+                    )}
+                    {sendingOtp && (
+                      <FontAwesomeIcon
+                        icon={faSpinner}
+                        spin
+                        className="h-5 w-5 text-black absolute right-2 top-4"
+                      />
+                    )}
+                  </div>
+                )}
                 {emailError && (
                   <p className="text-red-500 text-left w-full px-2">{emailError}</p>
                 )}
-
                 {otpInput && !otpVerified && (
                   <div className="relative my-3 w-full">
                     <input
@@ -413,7 +396,9 @@ function Signup() {
                         Verify OTP
                       </button>
                     )}
-                    {otpError && <p className="text-red-500 text-left w-full px-2">{otpError}</p>}
+                    {otpError && (
+                      <p className="text-red-500 text-left w-full px-2">{otpError}</p>
+                    )}
                   </div>
                 )}
               </div>
@@ -431,26 +416,17 @@ function Signup() {
                     maxLength={20}
                   />
                   {passwordError && (
-                    <p className="text-red-500 text-left w-full">
-                      {passwordError}
-                    </p>
+                    <p className="text-red-500 text-left w-full">{passwordError}</p>
                   )}
-
                   <button
                     type="button"
                     onClick={handlePasswordToggle}
                     className="absolute right-2 top-[24px] transform -translate-y-1/2"
                   >
                     {showPassword ? (
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className="w-5 h-5 text-gray-500"
-                      />
+                      <FontAwesomeIcon icon={faEye} className="w-5 h-5 text-gray-500" />
                     ) : (
-                      <FontAwesomeIcon
-                        icon={faEyeSlash}
-                        className="w-5 h-5 text-gray-500"
-                      />
+                      <FontAwesomeIcon icon={faEyeSlash} className="w-5 h-5 text-gray-500" />
                     )}
                   </button>
                 </div>
@@ -459,11 +435,10 @@ function Signup() {
               <button
                 onClick={handleSubmit}
                 className={`w-full py-2 border-none h-[50px] text-gray-700 rounded-full 
-    ${isFormValid ? "bg-blue-500 text-white" : "bg-[rgb(228,228,215)] cursor-not-allowed"}
-  `}
-                disabled={!isFormValid}
+                  ${isFormValid ? "bg-blue-500 text-white" : "bg-[rgb(228,228,215)] cursor-not-allowed"}`}
+                disabled={!isFormValid || isSubmitting}
               >
-                Create Account
+                {isSubmitting ? <Spinner /> : "Create Account"}
               </button>
             </form>
 
@@ -474,38 +449,14 @@ function Signup() {
                 className="w-full mx-auto py-2 border border-gray-300 md:h-[50px] text-black text-[18px] rounded-full font-semibold"
               >
                 <div className="flex items-center justify-center space-x-4">
-                  <img
-                    src={google_pic}
-                    alt=""
-                    className="w-5 h-5 py-0 px-0 ml-5 mt-2"
-                  />
+                  <img src={google_pic} alt="" className="w-5 h-5 py-0 px-0 ml-5 mt-2" />
                   <span className="mt-1 text-sm md:text-base text-center pr-2">
                     Sign up with Google
                   </span>
                 </div>
               </button>
-              {/* <button
-  className='w-full py-2 border border-gray-300 h-[50px] text-black text-[18px] rounded-full font-semibold'
->
-  <div className='inline-flex space-x-1 ml-0'>
-  <img src={apple_pic} alt="" className='w-10 h-10 py-0 px-0 ml-5 mt-[-4px]'/>
-  <span className='mt-1'>Sign up with Apple</span>
-  </div>
-</button> */}
             </div>
           </div>
-
-          {/* <div className='flex justify-center items-center space-x-7 mt-3'>
-          <div className='  flex '>
-            <span className='text-gray-500 '>Already have an account?</span>
-            <Link to='/student/login'><span className='text-purple-500 underline'>Log in</span></Link>
-          </div>
-
-          <div className=' flex items-center'>
-            <span className='text-gray-500 '>Sign up as recruiter?</span>
-            <Link to='/recruiter/signup'><span className='text-purple-500 underline'>&nbsp;Sign up</span></Link>
-          </div>
-          </div> */}
         </div>
       </div>
     </div>

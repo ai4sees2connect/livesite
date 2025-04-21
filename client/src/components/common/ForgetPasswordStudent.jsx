@@ -12,7 +12,6 @@ import Spinner from "./Spinner";
 import { useNavigate } from "react-router-dom";
 import { FaCheckCircle } from "react-icons/fa";
 // import { toast } from 'react-toastify';
-
 const ForgetPasswordStudent = () => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");

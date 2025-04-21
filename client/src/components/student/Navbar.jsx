@@ -3,6 +3,7 @@ import { useNavigate, NavLink } from "react-router-dom";
 import { Link } from "react-router-dom";
 import internsnestlogo2 from "../../images/internsnest_pic2.jpg";
 import internsnestLogo from "../../images/internnest_logo.png";
+import internsnestLogo3 from "../../images/INTERNSNEST LOGO.png";
 import getUserIdFromToken from "./auth/authUtils.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -89,9 +90,9 @@ const Navbar = () => {
           onClick={() => setNavbarState(null)}
         >
           <img
-            src={internsnestLogo}
+            src={internsnestLogo3}
             alt=""
-            className="h-16 lg:h-[60px] w-24 lg:w-20"
+            className="h-12 lg:h-[40px] w-24 lg:w-28"
           />
         </Link>
 
