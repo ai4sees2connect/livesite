@@ -1,25 +1,17 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React, { useEffect, useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { Link } from 'react-router-dom';
-import logo from "../../images/logo.png";
-import internsnestLogo3 from "../../images/INTERNSNEST LOGO.png";
-import internsnestlogo1 from '../../images/internsnest_pic1.jpg'
-import internsnestlogo2 from '../../images/internsnest_pic2.jpg'
-import internsnestLogo from '../../images/internnest_logo.png'
 import internsnestLogo3 from "../../images/INTERNSNEST LOGO.png";
 import getUserIdFromToken from "./auth/authUtilsRecr.js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCaretUp,
-  faCaretDown,
-  faUser,
   faBars,
   faTimes
 } from "@fortawesome/free-solid-svg-icons";
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRecruiter } from "./context/recruiterContext.js";
-import { FaRegCommentDots, FaUser } from 'react-icons/fa';
+import { FaUser } from 'react-icons/fa';
 import api from "../common/server_url.js";
 import axios from "axios";
 
@@ -88,15 +80,11 @@ const RecNavbar = () => {
         {/* Logo */}
         <Link to={`/recruiter/dashboard/${userId}`}>
           <div className="inline-flex items-center ">
-<<<<<<< HEAD
-            <img src={internsnestLogo3} alt="" className="h-16  w-24 lg:w-20 lg:h-[60px]" />
-=======
             <img
               src={internsnestLogo3}
               alt=""
               className="h-12 lg:h-[40px] w-24 lg:w-28"
             />
->>>>>>> 9118fbb (Changes in Loginsignup studentpage)
           </div>
         </Link>
 

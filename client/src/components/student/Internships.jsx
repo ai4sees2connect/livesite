@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -344,7 +345,7 @@ const Internships = () => {
       workType.replace(/\s+/g, "-").toLowerCase();
 
     navigate(`/student/internships/${userId}/${formattedType}`, { replace: true });
-  }, [workType, navigate]);
+  }, [workType, navigate, userId]);
 
 
 
@@ -478,19 +479,10 @@ const Internships = () => {
       setLoading(false);
     }
   };
-<<<<<<< HEAD
-  
-  
-  
-  
-  
-=======
-
->>>>>>> 9118fbb (Changes in Loginsignup studentpage)
 
   useEffect(() => {
     fetchInternships();
-  }, [workType, selectedProfile, selectedStipend, selectedCountry, selectedState, selectedCity, page]);
+  }, [workType, selectedProfile, selectedStipend, selectedCountry, selectedState, selectedCity, page, fetchInternships]);
   
   
   
@@ -508,10 +500,6 @@ const Internships = () => {
         internship.description.toLowerCase().includes(lowerCaseSearchTerm)
       );
       setFilteredInternships(filtered);
-<<<<<<< HEAD
-=======
-      setInternshipsCount(filtered.length);
->>>>>>> 9118fbb (Changes in Loginsignup studentpage)
     }
   }, [searchTerm, internships]);
 
@@ -548,7 +536,7 @@ const Internships = () => {
     if (student?.resume) {
       fetchResume();
     }
-  }, [userId]);
+  }, [resumeUrl, student?.resume, userId]);
   console.log("this is resume", resumeUrl);
 
   const handleNextPage = () => {
@@ -579,7 +567,7 @@ const Internships = () => {
     setSelectedInternship(internship);
     console.log("selected internship", internship);
     try {
-      const response = await axios.put(
+      await axios.put(
         `${api}/student/internship/${internship._id}/view`
       );
       // console.log(response.data);
@@ -598,8 +586,8 @@ const Internships = () => {
     try {
         console.log("this is student", student);
         if (
-            student.education.length == 0 ||
-            student.skills.length == 0 ||
+            student.education.length === 0 ||
+            student.skills.length === 0 ||
             !student.gender ||
             !student.homeLocation.city ||
             !student.resume
@@ -650,10 +638,6 @@ const Internships = () => {
     }
 };
 
-
-  const handleChange = (value) => {
-    setSelectedLocation(value);
-  };
 
   const handleReset = () => {
     setSelectedCountry("");

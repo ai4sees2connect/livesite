@@ -2,14 +2,15 @@
 import { initializeApp } from "firebase/app";
 import {getAuth,GoogleAuthProvider} from "firebase/auth";
 
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDMA4TK8FVIsvhWUWVHi2CSBKowzO2T6Xw",
-  authDomain: "internshub-bf22c.firebaseapp.com",
-  projectId: "internshub-bf22c",
-  storageBucket: "internshub-bf22c.appspot.com",
-  messagingSenderId: "945657529507",
-  appId: "1:945657529507:web:055b90da95e91a60ae6b16",
-  measurementId: "G-3K8B9VQFQV"
+  apiKey: "AIzaSyAOgWRmkIT3yeEtvgsG7BCExbnXkiI0jZs",
+  authDomain: "internsnest.firebaseapp.com",
+  projectId: "internsnest",
+  storageBucket: "internsnest.firebasestorage.app",
+  messagingSenderId: "352983470378",
+  appId: "1:352983470378:web:5abc7d84c4db8713f24e53",
+  measurementId: "G-W34WD2SW8Q"
 };
 
 // Initialize Firebase
@@ -17,4 +18,3 @@ const app = initializeApp(firebaseConfig);
 const auth =getAuth(app);
 const provider=new GoogleAuthProvider();
 export {auth,provider};
-//
