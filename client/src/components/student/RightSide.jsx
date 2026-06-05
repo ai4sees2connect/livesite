@@ -1,37 +1,8 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// Import Swiper React components
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css/navigation";
-import { Navigation } from "swiper/modules";
-import api from "../common/server_url";
-import vids from "../../videos/vids.mp4";
-import vids2 from "../../videos/vids2.mp4";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick";
-import "../student/utilscss/swiper.css";
-import { FaLongArrowAltRight } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/pagination";
-import {
-  FaRocket,
-  FaBullseye,
-  FaShieldAlt,
-  FaChartLine,
-  FaLaptopCode,
-  FaServer,
-  FaPalette,
-  FaBullhorn,
-  FaDatabase
-} from "react-icons/fa";
-import { SiReact, SiTensorflow } from "react-icons/si";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
-// import required modules
-import { FreeMode, Pagination } from "swiper/modules";
-// fontawesome
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronRight,
   faFire,
@@ -42,25 +13,71 @@ import {
   faBriefcase,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
-// TEST Json
-import jobs from "../TESTJSONS/jobs.json";
-import courses from "../TESTJSONS/course.json";
-import certificates from "../TESTJSONS/certificates.json";
-//image
-import google_pic from "../../images/google_pic.png";
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, FreeMode, Pagination } from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/free-mode";
+import "swiper/css/pagination";
+
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import {
+
+} from "react-icons/fa";
+
+import {
+  FaLongArrowAltRight,
+  FaRocket,
+  FaBullseye,
+  FaShieldAlt,
+  FaChartLine,
+  FaLaptopCode,
+  FaServer,
+  FaPalette,
+  FaBullhorn,
+  FaDatabase,
   FaBuilding,
   FaClock,
   FaMoneyBillWave,
   FaQuestion,
+  FaChevronLeft,
+  FaChevronRight,
+  FaGraduationCap,
+  FaGlobe,
+  FaChevronDown,
 } from "react-icons/fa";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
+import { SiReact, SiTensorflow } from "react-icons/si";
+
+import api from "../common/server_url";
 import Spinner from "../common/Spinner";
 import getUserIdFromToken from "./auth/authUtils";
 import { jwtDecode } from "jwt-decode";
+
+import "../student/utilscss/swiper.css";
+
+import vids from "../../videos/vids.mp4";
+import vids2 from "../../videos/vids2.mp4";
+
+import google_pic from "../../images/google_pic.png";
+
+import jobs from "../TESTJSONS/jobs.json";
+import courses from "../TESTJSONS/course.json";
+import certificates from "../TESTJSONS/certificates.json";
+import google from "../../images/google.png";
+import microsoft from "../../images/microsoft.png";
+import amazon from "../../images/amazon.png";
+import adobe from "../../images/adobe.png";
+import deloitte from "../../images/deloitte.png";
+import infosys from "../../images/infosys.png";
+import tcs from "../../images/tcs.png";
+import wipro from "../../images/wipro.png";
+import accenture from "../../images/accenture.png";
+import capgemini from "../../images/capgemini.png";
 
 
 const token = localStorage.getItem("token");
@@ -230,6 +247,106 @@ const RightSide = () => {
   return (
       <>
     
+     <section className="py-16 overflow-hidden bg-white"> 
+  <h2 className="text-center text-3xl lg:text-4xl font-bold mb-3">
+    Trusted By Top Companies
+  </h2>
+
+  <p className="text-center text-gray-500 mb-10">
+    Opportunities from leading companies across India
+  </p>
+
+  <div className="relative overflow-hidden">
+
+    <div className="flex animate-marquee whitespace-nowrap">
+
+      {/* First Set */}
+     <div className="flex items-center gap-16 mx-8">
+        {/* <img src={google} alt="Google" className="h-16 object-contain" /> */}
+        <img
+  src={google}
+  alt="Google"
+  className="max-h-[100px] max-w-[200px] object-contain"
+/>
+        <img
+  src={microsoft}
+  alt="Microsoft"
+  className="max-h-[100px] max-w-[200px] object-contain"
+/>
+        <img
+  src={amazon}
+  alt="Amazon"
+  className="max-h-[75px] max-w-[150px] object-contain"
+/>
+        <img
+  src={adobe}
+  alt="Adobe"
+  className="max-h-[85px] max-w-[160px] object-contain"
+/>
+        <img
+  src={deloitte}
+  alt="Deloitte"
+  className="max-h-[85px] max-w-[160px] object-contain"
+/>
+        <img src={infosys} alt="Infosys" className="h-10 object-contain" />
+        <img src={tcs} alt="TCS" className="h-20 object-contain" />
+        <img
+  src={wipro}
+  alt="Wipro"
+  className="max-h-[95px] max-w-[160px] object-contain"
+/>
+        <img src={accenture} alt="Accenture" className="h-20 object-contain" />
+        <img
+  src={capgemini}
+  alt="Capgemini"
+  className="max-h-[110px] max-w-[220px] object-contain"
+/>
+      </div>
+
+      {/* Duplicate Set for Infinite Scroll */}
+      <div className="flex items-center gap-16 mx-8">
+        <img
+  src={google}
+  alt="Google"
+  className="max-h-[100px] max-w-[200px] object-contain"
+/>
+        <img
+  src={microsoft}
+  alt="Microsoft"
+  className="max-h-[100px] max-w-[200px] object-contain"
+/>
+        <img
+  src={amazon}
+  alt="Amazon"
+  className="max-h-[75px] max-w-[150px] object-contain"
+/>
+    <img
+  src={adobe}
+  alt="Adobe"
+  className="max-h-[85px] max-w-[160px] object-contain"
+/>
+        <img
+  src={deloitte}
+  alt="Deloitte"
+  className="max-h-[85px] max-w-[160px] object-contain"
+/>
+        <img src={infosys} alt="Infosys" className="h-10 object-contain" />
+        <img src={tcs} alt="TCS" className="h-20 object-contain" />
+        <img
+  src={wipro}
+  alt="Wipro"
+  className="max-h-[95px] max-w-[160px] object-contain"
+/>
+        <img src={accenture} alt="Accenture" className="h-20 object-contain" />
+        <img
+  src={capgemini}
+  alt="Capgemini"
+  className="max-h-[110px] max-w-[220px] object-contain"
+/>
+      </div>
+       </div>
+  </div>
+</section> 
 
 <section className="py-20 bg-gradient-to-r from-blue-400 to-sky-400 text-white mb-10">
   <div className="max-w-6xl mx-auto px-6 text-center">
@@ -392,10 +509,10 @@ const RightSide = () => {
         to={userId ? `/student/internships/${userId}/All-Internships` : "/internships/all-internships"}
         className="text-blue-600 text-xl bg-transparent border-none"
       >
-        Explore All Internships
+        {/* Explore All Internships */}
       </Link>
       </div>
-      <section className="py-20">
+      <section className="py-2">
 
   {/* <h2 className="text-center text-4xl font-bold mb-12">
     Why Choose InternsNest?
@@ -436,7 +553,7 @@ const RightSide = () => {
     </div>
 
   </div> */} 
-  <div className="py-20 bg-gradient-to-b from-white via-blue-50 to-white">
+  <div className="py-2 bg-gradient-to-b from-white via-blue-50 to-white">
 
   <div className="text-center mb-14">
     <h2 className="text-4xl lg:text-5xl font-bold">
@@ -733,6 +850,96 @@ const RightSide = () => {
 
 </section>
 
+{!token && (
+  <section className="relative py-2 overflow-hidden bg-white">
+
+    {/* Background Glow */}
+    <div className="absolute inset-0">
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-40"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-green-100 rounded-full blur-3xl opacity-40"></div>
+    </div>
+
+    <div className="relative max-w-7xl mx-auto px-6">
+
+      <div className="grid lg:grid-cols-2 gap-8">
+
+        {/* Recruiter Card */}
+        <div className="group bg-gradient-to-br from-blue-50 via-white to-blue-100 border border-blue-100 rounded-[32px] p-10 text-center hover:-translate-y-2 hover:shadow-2xl transition-all duration-500">
+
+          <div className="w-20 h-20 mx-auto rounded-3xl bg-blue-100 flex items-center justify-center text-4xl">
+            🚀
+          </div>
+
+          <span className="inline-block mt-5 px-4 py-2 bg-blue-100 text-blue-700 rounded-full font-medium">
+            For Recruiters
+          </span>
+
+          <h2 className="mt-8 text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+            Want To Hire
+            <br />
+            Interns?
+          </h2>
+
+          <p className="mt-5 text-lg text-gray-600 max-w-md mx-auto leading-relaxed">
+            Post internships, connect with talented students and hire the
+            best candidates faster.
+          </p>
+
+          <div className="mt-6 text-blue-600 font-semibold">
+            500+ Companies Hiring
+          </div>
+
+          <Link
+            to="/recruiter/signup"
+            className="inline-flex mt-8 px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg hover:scale-105 transition-all duration-300"
+          >
+            Hire Now →
+          </Link>
+
+        </div>
+
+        {/* Student Card */}
+        <div className="group bg-gradient-to-br from-green-50 via-white to-emerald-100 border border-green-100 rounded-[32px] p-10 text-center hover:-translate-y-2 hover:shadow-2xl transition-all duration-500">
+
+          <div className="w-20 h-20 mx-auto rounded-3xl bg-green-100 flex items-center justify-center text-4xl">
+            🎓
+          </div>
+
+          <span className="inline-block mt-5 px-4 py-2 bg-green-100 text-green-700 rounded-full font-medium">
+            For Students
+          </span>
+
+          <h2 className="mt-8 text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+            Want To Be
+            <br />
+            Hired?
+          </h2>
+
+          <p className="mt-5 text-lg text-gray-600 max-w-md mx-auto leading-relaxed">
+            Explore verified internships, apply easily and start your
+            professional journey.
+          </p>
+
+          <div className="mt-6 text-green-600 font-semibold">
+            10,000+ Opportunities Available
+          </div>
+
+          <Link
+            to="/student/signup"
+            className="inline-flex mt-8 px-8 py-4 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-lg hover:scale-105 transition-all duration-300"
+          >
+            Get Hired →
+          </Link>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+)}
+
   <section className="py-20">
 
   <h2 className="text-center text-4xl font-bold mb-12">
@@ -742,8 +949,8 @@ const RightSide = () => {
  <div className="grid md:grid-cols-3 gap-8">
 
   {/* Create Profile */}
-  <div className="bg-white shadow-xl p-8 rounded-3xl text-center hover:-translate-y-2 transition-all duration-300">
-
+  <div className="relative bg-white border border-gray-100 shadow-lg hover:shadow-2xl p-8 rounded-3xl text-center hover:-translate-y-3 transition-all duration-300 w-full max-w-sm mx-auto">
+  
     <div className="w-20 h-20 mx-auto mb-5 bg-blue-100 rounded-full flex items-center justify-center">
       <div className="text-4xl">📝</div>
     </div>
@@ -759,7 +966,8 @@ const RightSide = () => {
   </div>
 
   {/* Discover Opportunities */}
-  <div className="bg-white shadow-xl p-8 rounded-3xl text-center hover:-translate-y-2 transition-all duration-300">
+  <div className="relative bg-white border border-gray-100 shadow-lg hover:shadow-2xl p-8 rounded-3xl text-center hover:-translate-y-3 transition-all duration-300 w-full max-w-sm mx-auto">
+  
 
     <div className="w-20 h-20 mx-auto mb-5 bg-blue-100 rounded-full flex items-center justify-center">
       <div className="text-4xl">🔍</div>
@@ -776,7 +984,8 @@ const RightSide = () => {
   </div>
 
   {/* Get Hired */}
-  <div className="bg-white shadow-xl p-8 rounded-3xl text-center hover:-translate-y-2 transition-all duration-300">
+  <div className="relative bg-white border border-gray-100 shadow-lg hover:shadow-2xl p-8 rounded-3xl text-center hover:-translate-y-3 transition-all duration-300 w-full max-w-sm mx-auto">
+  
 
     <div className="w-20 h-20 mx-auto mb-5 bg-blue-100 rounded-full flex items-center justify-center">
       <div className="text-4xl">🚀</div>
@@ -797,124 +1006,447 @@ const RightSide = () => {
 </section>
 
 
-      {/* Big Buttons */}
-      {!token && (
-        <div className="flex flex-col md:flex-row justify-center items-center py-0 md:py-10 px-3 lg:px-0 ">
-          <div className="min-h-[350px] p-5 lg:p-10 bg-blue-500 text-white flex justify-center items-center w-full lg:w-[35%]">
-            <div className="">
-              <h2 className="text-2xl lg:text-4xl md:text-5xl font-bold mb-5">
-                WANT TO HIRE INTERN?
-              </h2>
-              <p className="text-xl mb-10">
-                Hire Interns with ease - Get Job Easy
-              </p>
-              <button className="text-2xl font-bold  px-10 py-4 rounded-md bg-gray-800 hover:bg-[#475865] border-1 border-white hover:scale-105 transition-0.5s">
-                <Link to="/recruiter/signup ">Hire Now!</Link>
-              </button>
+      <section className="py-2 bg-white overflow-hidden">
+
+  {/* Heading */}
+  <div className="text-center mb-14">
+
+    <h2 className="mt-5 text-4xl md:text-5xl font-bold text-gray-900">
+      Success Stories
+    </h2>
+
+    <p className="mt-4 text-gray-500 text-lg">
+      Hear from students who launched their careers through InternsNest
+    </p>
+  </div>
+
+  <div className="testimonial-slider relative w-full py-10">
+
+    {/* Left Fade */}
+    <div className="absolute left-0 h-full w-24 bg-gradient-to-r from-white to-transparent z-10"></div>
+
+    {/* Right Fade */}
+    <div className="absolute right-0 h-full w-24 bg-gradient-to-l from-white to-transparent z-10"></div>
+
+    <div className="testimonial-track gap-6">
+
+      {/* ===== FIRST SET ===== */}
+
+      {[
+        {
+          name: "Rahul Sharma",
+          role: "React Developer Intern",
+          letter: "R",
+          color: "bg-blue-600",
+          text: "Got my first React Internship through InternsNest within 10 days."
+        },
+        {
+          name: "Priya Verma",
+          role: "Frontend Intern",
+          letter: "P",
+          color: "bg-pink-600",
+          text: "Found a remote internship that perfectly matched my skills."
+        },
+        {
+          name: "Ankit Patel",
+          role: "Software Engineer Intern",
+          letter: "A",
+          color: "bg-green-600",
+          text: "Verified companies and smooth application process."
+        },
+        {
+          name: "Neha Gupta",
+          role: "UI/UX Design Intern",
+          letter: "N",
+          color: "bg-purple-600",
+          text: "Much better opportunities than many other platforms."
+        },
+        {
+          name: "Rohit Kumar",
+          role: "Backend Developer Intern",
+          letter: "R",
+          color: "bg-orange-600",
+          text: "Received interview calls within the first week."
+        },
+        {
+          name: "Sneha Joshi",
+          role: "Data Analyst Intern",
+          letter: "S",
+          color: "bg-red-600",
+          text: "Simple, fast and completely hassle-free experience."
+        },
+      ]
+        .concat([
+          {
+            name: "Rahul Sharma",
+            role: "React Developer Intern",
+            letter: "R",
+            color: "bg-blue-600",
+            text: "Got my first React Internship through InternsNest within 10 days."
+          },
+          {
+            name: "Priya Verma",
+            role: "Frontend Intern",
+            letter: "P",
+            color: "bg-pink-600",
+            text: "Found a remote internship that perfectly matched my skills."
+          },
+          {
+            name: "Ankit Patel",
+            role: "Software Engineer Intern",
+            letter: "A",
+            color: "bg-green-600",
+            text: "Verified companies and smooth application process."
+          },
+          {
+            name: "Neha Gupta",
+            role: "UI/UX Design Intern",
+            letter: "N",
+            color: "bg-purple-600",
+            text: "Much better opportunities than many other platforms."
+          },
+          {
+            name: "Rohit Kumar",
+            role: "Backend Developer Intern",
+            letter: "R",
+            color: "bg-orange-600",
+            text: "Received interview calls within the first week."
+          },
+          {
+            name: "Sneha Joshi",
+            role: "Data Analyst Intern",
+            letter: "S",
+            color: "bg-red-600",
+            text: "Simple, fast and completely hassle-free experience."
+          },
+        ])
+        .map((item, index) => (
+          <div
+            key={index}
+            className="w-[340px] flex-shrink-0 bg-white rounded-3xl p-7 border border-gray-200 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+          >
+            <div className="text-yellow-400 text-lg mb-4">
+              ⭐⭐⭐⭐⭐
+            </div>
+
+            <p className="text-gray-600 leading-relaxed min-h-[90px]">
+              {item.text}
+            </p>
+
+            <div className="flex items-center gap-4 mt-6">
+              <div
+                className={`w-12 h-12 rounded-full ${item.color} text-white flex items-center justify-center font-bold`}
+              >
+                {item.letter}
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-gray-900">
+                  {item.name}
+                </h4>
+
+                <p className="text-sm text-gray-500">
+                  {item.role}
+                </p>
+              </div>
             </div>
           </div>
-          <div className="min-h-[350px] p-5 lg:p-10 bg-[#252d40] text-white flex justify-center items-center w-full lg:w-[35%]">
-            <div className="">
-              <h2 className="text-2xl lg:text-4xl md:text-5xl font-bold mb-5">
-                WANT TO BE HIRED?
-              </h2>
-              <p className="text-xl mb-10">
-                10,000 Job Openings all Over India
-              </p>
-              <button className="text-2xl font-bold px-10 py-4 rounded-md bg-blue-500 border-1 border-white hover:scale-105 hover:transition-0.5s hover:bg-blue-600">
-                <Link to="/student/signup"> Get Hired!</Link>
-              </button>
-            </div>
+        ))}
+
+    </div>
+
+  </div>
+
+</section>
+<section className="relative py-10 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-blue-50">
+
+{/* Background Effects */}
+
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.15),transparent_50%)]"></div>
+
+  <div className="absolute top-0 left-0 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl"></div>
+  <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl"></div>
+
+  <div className="relative max-w-7xl mx-auto px-6">
+
+{/* Header */}
+<div className="text-center mb-20">
+
+  <h2 className="mt-6 text-5xl md:text-6xl font-black tracking-tight text-slate-900">
+    Questions?
+    <br />
+    <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+      We've Got Answers.
+    </span>
+  </h2>
+
+  <p className="mt-6 text-lg text-slate-500 max-w-2xl mx-auto">
+    Everything you need to know about InternsNest, internships,
+    recruiters and launching your career successfully.
+  </p>
+
+</div>
+
+<div className="grid lg:grid-cols-2 gap-16 items-center">
+
+  {/* FAQ Left */}
+  <div className="space-y-6">
+
+    <div className="
+      group
+      bg-white/70
+      backdrop-blur-xl
+      border border-white
+      rounded-3xl
+      p-7
+      shadow-lg
+      hover:shadow-2xl
+      hover:-translate-y-1
+      transition-all
+      duration-500
+    ">
+
+      <div className="flex items-center justify-between">
+
+        <div className="flex items-center gap-4">
+
+          <div className="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center">
+            <FaGraduationCap className="text-blue-600 text-xl" />
           </div>
+
+          <h3 className="font-bold text-lg text-slate-900">
+            Is InternsNest free for students?
+          </h3>
+
         </div>
-      )}
 
-      <section className="py-20">
+        <FaChevronDown
+          className="
+          text-slate-400
+          group-hover:text-blue-600
+          group-hover:rotate-180
+          transition-all
+          duration-500
+        "
+        />
 
-  <h2 className="text-center text-4xl font-bold mb-12">
-    Success Stories
-  </h2>
+      </div>
 
-  <div className="grid lg:grid-cols-3 gap-6">
-
-    <div className="bg-white shadow-lg p-8 rounded-2xl">
-      ⭐⭐⭐⭐⭐
-
-      <p className="mt-4">
-        Got my first React Internship through InternsNest.
+      <p className="mt-5 text-slate-600 leading-relaxed">
+        Yes. Students can create an account, build a profile,
+        explore internships and apply to opportunities completely free.
       </p>
 
-      <h3 className="font-bold mt-4">
-        Rahul Sharma
-      </h3>
     </div>
 
-    <div className="bg-white shadow-lg p-8 rounded-2xl">
-      ⭐⭐⭐⭐⭐
+    <div className="
+      group
+      bg-white/70
+      backdrop-blur-xl
+      border border-white
+      rounded-3xl
+      p-7
+      shadow-lg
+      hover:shadow-2xl
+      hover:-translate-y-1
+      transition-all
+      duration-500
+    ">
 
-      <p className="mt-4">
-        Amazing platform to find remote internships.
+      <div className="flex items-center justify-between">
+
+        <div className="flex items-center gap-4">
+
+          <div className="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center">
+            <FaShieldAlt className="text-green-600 text-xl" />
+          </div>
+
+          <h3 className="font-bold text-lg text-slate-900">
+            Are recruiters verified?
+          </h3>
+
+        </div>
+
+        <FaChevronDown
+          className="
+          text-slate-400
+          group-hover:text-green-600
+          group-hover:rotate-180
+          transition-all
+          duration-500
+        "
+        />
+
+      </div>
+
+      <p className="mt-5 text-slate-600 leading-relaxed">
+        We review recruiter accounts and company information before
+        publishing opportunities to maintain trust and quality.
       </p>
 
-      <h3 className="font-bold mt-4">
-        Priya Verma
-      </h3>
     </div>
 
-    <div className="bg-white shadow-lg p-8 rounded-2xl">
-      ⭐⭐⭐⭐⭐
+    <div className="
+      group
+      bg-white/70
+      backdrop-blur-xl
+      border border-white
+      rounded-3xl
+      p-7
+      shadow-lg
+      hover:shadow-2xl
+      hover:-translate-y-1
+      transition-all
+      duration-500
+    ">
 
-      <p className="mt-4">
-        Easy application process and verified companies.
+      <div className="flex items-center justify-between">
+
+        <div className="flex items-center gap-4">
+
+          <div className="w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center">
+            <FaGlobe className="text-purple-600 text-xl" />
+          </div>
+
+          <h3 className="font-bold text-lg text-slate-900">
+            Can I apply for remote internships?
+          </h3>
+
+        </div>
+
+        <FaChevronDown
+          className="
+          text-slate-400
+          group-hover:text-purple-600
+          group-hover:rotate-180
+          transition-all
+          duration-500
+        "
+        />
+
+      </div>
+
+      <p className="mt-5 text-slate-600 leading-relaxed">
+        Absolutely. InternsNest features work-from-home and remote
+        opportunities across multiple domains and industries.
       </p>
 
-      <h3 className="font-bold mt-4">
-        Ankit Patel
-      </h3>
     </div>
 
   </div>
 
-  <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50 rounded-3xl">
+  {/* Right Premium Card */}
+  <div className="relative">
 
-  <h2 className="text-center text-4xl font-bold mb-12">
-    Frequently Asked Questions
-  </h2>
+    <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-200/40 rounded-full blur-3xl"></div>
+    <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-cyan-200/40 rounded-full blur-3xl"></div>
 
-  <div className="max-w-4xl mx-auto space-y-5">
+    <div className="
+      relative
+      overflow-hidden
+      rounded-[36px]
+      bg-white/70
+      backdrop-blur-xl
+      border border-white
+      p-10
+      shadow-[0_20px_60px_rgba(59,130,246,0.15)]
+    ">
 
-    <div className="bg-white p-6 rounded-2xl shadow">
-      <h3 className="font-bold text-lg">
-        Is InternsNest free?
-      </h3>
-      <p className="text-gray-600 mt-2">
-        Yes, students can create accounts and apply for internships free of cost.
-      </p>
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-cyan-500/5"></div>
+
+      <div className="relative text-center">
+
+        <div className="
+          w-28
+          h-28
+          mx-auto
+          rounded-full
+          bg-gradient-to-r
+          from-blue-600
+          to-cyan-500
+          flex
+          items-center
+          justify-center
+          text-white
+          shadow-xl
+        ">
+          <FaGraduationCap className="text-5xl" />
+        </div>
+
+        <h3 className="mt-8 text-3xl font-bold text-slate-900">
+          Still Have Questions?
+        </h3>
+
+        <p className="mt-4 text-slate-600 max-w-md mx-auto">
+          Explore opportunities, connect with recruiters and start
+          building your future with confidence.
+        </p>
+
+        <div className="grid grid-cols-3 gap-4 mt-10">
+
+          <div className="bg-white rounded-2xl p-4 shadow-md">
+            <h4 className="text-2xl font-bold text-blue-600">
+              21K+
+            </h4>
+            <p className="text-xs text-slate-500">
+              Students
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-4 shadow-md">
+            <h4 className="text-2xl font-bold text-blue-600">
+              1K+
+            </h4>
+            <p className="text-xs text-slate-500">
+              Companies
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-4 shadow-md">
+            <h4 className="text-2xl font-bold text-blue-600">
+              25K+
+            </h4>
+            <p className="text-xs text-slate-500">
+              Applications
+            </p>
+          </div>
+
+        </div>
+
+        <button
+          className="
+          mt-10
+          px-8
+          py-4
+          rounded-2xl
+          bg-gradient-to-r
+          from-blue-600
+          to-cyan-500
+          text-white
+          font-semibold
+          shadow-lg
+          hover:scale-105
+          transition-all
+          duration-300
+        "
+        >
+          Explore Opportunities →
+        </button>
+
+      </div>
+
     </div>
 
-    <div className="bg-white p-6 rounded-2xl shadow">
-      <h3 className="font-bold text-lg">
-        Are companies verified?
-      </h3>
-      <p className="text-gray-600 mt-2">
-        We verify recruiters before listing opportunities.
-      </p>
-    </div>
+  </div>
 
-    <div className="bg-white p-6 rounded-2xl shadow">
-      <h3 className="font-bold text-lg">
-        Can I apply for remote internships?
-      </h3>
-      <p className="text-gray-600 mt-2">
-        Yes, many remote opportunities are available.
-      </p>
-    </div>
+</div>
 
   </div>
 
 </section>
 
-</section>
+
+<section>
 
       {/* customers */}
       <div className="px-3 lg:px-5 py-10 lg:py-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-t-2 bg-[#f0fbff]">
@@ -925,7 +1457,7 @@ const RightSide = () => {
           </p>
         </div>
         <div className="border-r-2 flex flex-col  lg:gap-3 justify-center items-center mb-10 lg:mb-0">
-          <h2 className="text-3xl lg:text-5xl font-bold text-blue-600">10K+</h2>
+          <h2 className="text-3xl lg:text-5xl font-bold text-blue-600">21K+</h2>
           <p className="text-xl text-gray-600 font-semibold">New Openings</p>
         </div>
         <div className="border-r-2 flex flex-col  lg:gap-3 justify-center items-center mb-10 lg:mb-0">
@@ -962,6 +1494,7 @@ const RightSide = () => {
           </div>
         </div>
       )}
+      </section>
     </>
     
   );

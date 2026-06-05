@@ -19,117 +19,78 @@ const Sidebar = ({ student }) => {
   }, []);
 
     return (
-<section className="min-h-[650px] py-20 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 mb-10">
-  <div className="max-w-7xl mx-auto px-6 lg:px-8">
+<section className="relative bg-gradient-to-br from-blue-50 via-white to-cyan-50 py-20 overflow-hidden">
 
-    <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
+  {/* Background blobs */}
+  <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-blue-200 rounded-full blur-3xl opacity-40"></div>
+  <div className="absolute bottom-[-120px] right-[-120px] w-[350px] h-[350px] bg-cyan-200 rounded-full blur-3xl opacity-40"></div>
 
-      {/* LEFT CONTENT */}
-      <div className="lg:pr-10">
+  <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
 
-        <h1 className="text-5xl md:text-6xl lg:text-6xl font-bold text-black leading-tight">
-          Find. Apply. Get Hired.
-        </h1>
+    {/* LEFT CONTENT */}
+    <div>
+      <h1 className="text-4xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
+        Find Internships that
+        <span className="text-blue-600"> actually match you</span>
+      </h1>
 
-        <h2 className="text-3xl md:text-4xl font-bold text-blue-600 mt-2">
-          All in One Place
-        </h2>
+      <p className="mt-6 text-lg text-gray-600">
+        Discover verified internships, connect with recruiters, and start building your career in minutes.
+      </p>
 
-        <p className="text-lg md:text-xl text-gray-600 mt-6 max-w-2xl leading-relaxed">
-          Discover internships, connect with recruiters, and kickstart your
-          career with InternsNest.
-        </p>
+      {/* Search Card */}
+      <div className="mt-8 bg-white shadow-xl rounded-2xl p-4 border border-gray-100">
 
-        {/* Search Box */}
-        <div className="mt-10 bg-white rounded-2xl shadow-xl border overflow-hidden max-w-4xl">
+        <input
+          type="text"
+          placeholder="Search internships, roles, skills..."
+          className="w-full outline-none text-gray-700"
+        />
 
-          <div className="flex flex-col md:flex-row">
-
-            <input
-              type="text"
-              placeholder="Search internships, roles or skills"
-              className="flex-1 px-6 py-5 outline-none"
-            />
-
-            <input
-              type="text"
-              placeholder="Location"
-              className="flex-1 px-6 py-5 outline-none md:border-l"
-            />
-
-            <button className="bg-blue-600 text-white px-10 py-5 font-semibold hover:bg-blue-700 transition">
-              Search
-            </button>
-
-          </div>
-
+        <div className="flex flex-wrap gap-3 mt-4 text-sm">
+          <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full">🌍 Remote</span>
+          <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full">🏢 Office</span>
+          <span className="px-3 py-1 bg-cyan-50 text-cyan-600 rounded-full">⚡ Hybrid</span>
         </div>
 
-        {/* Category Buttons */}
-        <div className="flex flex-wrap gap-4 mt-8">
-
-          <button className="bg-blue-100 text-blue-700 border border-blue-200 px-6 py-3 rounded-xl font-medium hover:bg-blue-200 transition duration-300">
-            🌍 Remote
-          </button>
-
-          <button className="bg-orange-100 text-orange-700 border border-orange-200 px-6 py-3 rounded-xl font-medium hover:bg-orange-200 transition duration-300">
-            🏢 Work From Office
-          </button>
-
-          <button className="bg-purple-100 text-purple-700 border border-purple-200 px-6 py-3 rounded-xl font-medium hover:bg-purple-200 transition duration-300">
-            ⚡ Hybrid
-          </button>
-
-        </div>
-
-        {/* CTA Buttons */}
-        <div className="flex flex-wrap gap-4 mt-10">
-
-          <Link
-            to="/internships/all-internships"
-            className="bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:bg-blue-700 transition duration-300"
-          >
-            Explore Internships
-          </Link>
-
-          <Link
-            to="/recruiter/signup"
-            className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition duration-300"
-          >
-            Post Internship
-          </Link>
-
-        </div>
+        <button className="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700">
+          Search Internships
+        </button>
 
       </div>
 
-      {/* RIGHT IMAGE */}
-      <div className="relative flex justify-center">
+      {/* CTA Buttons */}
+      <div className="flex gap-4 mt-6">
+        <button className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold">
+          Explore Internships
+        </button>
 
-        <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-300 rounded-full blur-3xl opacity-20"></div>
-
-        <div className="absolute -bottom-10 -right-10 w-52 h-52 bg-indigo-300 rounded-full blur-3xl opacity-20"></div>
-
-        <img
-          src={bannerImg}
-          alt="hero"
-          className="w-full max-w-[520px] rounded-[30px] shadow-2xl relative z-10"
-        />
-
-        <div className="absolute bottom-6 left-6 bg-white shadow-xl rounded-2xl p-4 z-20">
-          <h3 className="font-bold text-lg text-gray-800">
-            🔥 500+ New Internships
-          </h3>
-          <p className="text-gray-500 text-sm">
-            Added this week
-          </p>
-        </div>
-
+        <button className="px-6 py-3 border border-blue-600 text-blue-600 rounded-xl font-semibold">
+          Post Internship
+        </button>
       </div>
 
     </div>
 
-  </div>
+    {/* RIGHT VISUAL */}
+    {/* RIGHT VISUAL */}
+<div className="relative flex justify-center items-center">
+
+  {/* background glow */}
+  <div className="absolute -top-10 -left-10 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-40"></div>
+  <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-cyan-200 rounded-full blur-3xl opacity-40"></div>
+
+  {/* IMAGE */}
+  <img
+    src={bannerImg}
+    alt="hero"
+    className="w-[420px] lg:w-[520px] object-contain rounded-3xl shadow-2xl relative z-10"
+  />
+
+</div>
+
+      </div>
+
 </section>
 );
 };
