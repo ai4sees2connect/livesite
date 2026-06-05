@@ -1,0 +1,15 @@
+.mySwiper {
+  display: flex;
+  
+  justify-content: center; /* Center the dots */
+  margin-top: 20px; /* Adjust the distance from the swiper */
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  margin-top: 60px; /* Adjust this value as needed */
+
+}
+.swiper-button-next{
+  margin-right: 45%;
+}
