@@ -1,0 +1,72 @@
+[
+  {
+    "time": "6 months",
+    "courseName": "Web Development Bootcamp",
+    "star": 4.8,
+    "totalLearners": 1500,
+    "image": "https://i.ibb.co/0ZDD93w/to.png"
+  },
+  {
+    "time": "3 months",
+    "courseName": "React Mastery",
+    "star": 4.7,
+    "totalLearners": 1200,
+    "image": "https://i.ibb.co/0ZDD93w/to.png"
+  },
+  {
+    "time": "4 months",
+    "courseName": "Backend Development with Node.js",
+    "star": 4.9,
+    "totalLearners": 1000,
+    "image": "https://i.ibb.co/0ZDD93w/to.png"
+  },
+  {
+    "time": "5 months",
+    "courseName": "Full Stack Web Development",
+    "star": 4.6,
+    "totalLearners": 1700,
+    "image": "https://i.ibb.co/0ZDD93w/to.png"
+  },
+  {
+    "time": "2 months",
+    "courseName": "JavaScript Essentials",
+    "star": 4.5,
+    "totalLearners": 900,
+    "image": "https://i.ibb.co/0ZDD93w/to.png"
+  },
+  {
+    "time": "6 months",
+    "courseName": "Python for Web Development",
+    "star": 4.8,
+    "totalLearners": 1100,
+    "image": "https://i.ibb.co/0ZDD93w/to.png"
+  },
+  {
+    "time": "7 months",
+    "courseName": "Advanced CSS and Sass",
+    "star": 4.7,
+    "totalLearners": 800,
+    "image": "https://i.ibb.co/0ZDD93w/to.png"
+  },
+  {
+    "time": "8 months",
+    "courseName": "Data Structures and Algorithms",
+    "star": 4.9,
+    "totalLearners": 950,
+    "image": "https://i.ibb.co/0ZDD93w/to.png"
+  },
+  {
+    "time": "3 months",
+    "courseName": "Responsive Web Design",
+    "star": 4.6,
+    "totalLearners": 1300,
+    "image": "https://i.ibb.co/0ZDD93w/to.png"
+  },
+  {
+    "time": "6 months",
+    "courseName": "DevOps with AWS",
+    "star": 4.8,
+    "totalLearners": 750,
+    "image": "https://i.ibb.co/0ZDD93w/to.png"
+  }
+]

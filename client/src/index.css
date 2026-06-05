@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes grow-md {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 140px;
+  }
+}
+
+@keyframes grow-lg {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 230px;
+  }
+}
+
+/* Animation Classes */
+.animate-grow-md {
+  animation: grow-md 1s ease-in-out forwards;
+}
+
+.animate-grow-lg {
+  animation: grow-lg 1s ease-in-out forwards;
+}
+
+/* footer bg */
+.bg-footer {
+  background-image: url("../src/images/footer_bg.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 7px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #1ac2f0;
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+
+.custom-select-dropdown__menu-list::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-select-dropdown__menu-list::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Track color */
+}
+.custom-select-dropdown__menu-list::-webkit-scrollbar-thumb {
+  background-color: #1ac2f0;
+  border-radius: 4px;
+}
+.custom-select-dropdown__menu-list::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Thumb hover color */
+}
+
+/* For Firefox */
+.custom-select-dropdown__menu-list {
+  scrollbar-width: thin;
+  scrollbar-color: #1ac2f0 #f1f1f1;
+}
