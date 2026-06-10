@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import api from '../../common/server_url'
+import api from '../../common/server_url';
 
 // Create the context
 const StudentContext = createContext();
@@ -13,32 +13,23 @@ export const StudentProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
 
   const fetchUserData = async () => {
-    const token = localStorage.getItem('token');
-    console.log('Inside useEffect of studentContext');
-    if (token) {
+    const currentToken = localStorage.getItem('token');
+    
+    if (currentToken) {
       try {
         const response = await axios.get(`${api}/student/details`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${currentToken}`,
           },
         });
         
-        if(!response.data.success){
-          console.log('Student is not associated with this token');
-          return;
-        } 
-
-        if(response.data.success){
-          console.log('Student Found');
+        if (response.data.success) {
           setStudent(response.data.student);
         }
-        
       } catch (error) {
-        console.error('Error fetching student data:', error);
-        // Optionally handle errors (e.g., logout user)
+        // Error handling can be added here if needed
       }
-    }
-    else {
+    } else {
       setStudent(null);
     }
   };
@@ -48,7 +39,6 @@ export const StudentProvider = ({ children }) => {
   };
 
   useEffect(() => {
-  
     fetchUserData();
   }, [token]);
 
@@ -57,13 +47,13 @@ export const StudentProvider = ({ children }) => {
     setToken(null); // Clear token to trigger refetch
   };
 
-  const login=()=>{
-    const token=localStorage.getItem('token');
-    setToken(token);
-  }
+  const login = () => {
+    const currentToken = localStorage.getItem('token');
+    setToken(currentToken);
+  };
 
   return (
-    <StudentContext.Provider value={{student, logout,login,refreshData}}>
+    <StudentContext.Provider value={{ student, logout, login, refreshData }}>
       {children}
     </StudentContext.Provider>
   );

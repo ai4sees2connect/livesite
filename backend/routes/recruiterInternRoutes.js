@@ -6,6 +6,7 @@ const Student = require("../schema/studentSchema");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const mime = require("mime-types");
 
 const { jwtDecode } = require("jwt-decode");
 const Skill = require("../schema/skillsSchema");
@@ -48,14 +49,14 @@ router.post("/post/:userId", async (req, res) => {
     }
 
     // Decrement postsRemaining
-    recruiter.subscription.postsRemaining = 
+    recruiter.subscription.postsRemaining =
       parseInt(recruiter.subscription.postsRemaining) - 1;
 
     // Check if the subscription should be set to inactive
     const currentDate = new Date();
     const expirationDate = new Date(recruiter.subscription.expirationDate);
     if (
-      recruiter.subscription.postsRemaining <= 0 || 
+      recruiter.subscription.postsRemaining <= 0 ||
       currentDate > expirationDate
     ) {
       recruiter.subscription.status = "inactive"; // Set subscription to inactive
@@ -114,7 +115,6 @@ router.post("/post/:userId", async (req, res) => {
   }
 });
 
-
 router.get("/:recruiterId/getInternships", async (req, res) => {
   const { recruiterId } = req.params;
   const { page = 1, searchName } = req.query; // Default to page 1 if no query is provided
@@ -155,8 +155,6 @@ router.get("/:recruiterId/getInternships", async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
-
-
 
 router.get("/:recruiterId/applicants-count/:internshipId", async (req, res) => {
   const { recruiterId, internshipId } = req.params;
@@ -481,7 +479,8 @@ router.get("/:internshipId/:recruiterId/get-logo", async (req, res) => {
     }
 
     // Set the Content-Type header based on the logo's MIME type
-    res.setHeader("Content-Type", recruiter.companyLogo.contentType);
+    const mimeType = mime.lookup(fileExtension) || "application/octet-stream";
+    res.setHeader("Content-Type", mimeType);
 
     // Send the logo data
     res.status(200).send(recruiter.companyLogo.data);
@@ -498,7 +497,7 @@ router.put("/:internshipId/change-status", async (req, res) => {
     const internship = await Internship.findByIdAndUpdate(
       internshipId,
       { status },
-      { new: true }
+      { new: true },
     );
     if (!internship)
       return res.status(404).json({ message: "Internship not found" });
@@ -544,7 +543,7 @@ router.get(
           resume: 0,
 
           appliedInternships: { $elemMatch: { internship: internshipId } },
-        }
+        },
       );
 
       if (!student) {
@@ -579,7 +578,7 @@ router.get(
         .status(500)
         .json({ message: "Server error, please try again later." });
     }
-  }
+  },
 );
 
 module.exports = router;

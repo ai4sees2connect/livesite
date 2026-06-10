@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import {
@@ -55,19 +56,38 @@ const Internships = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(null);
   const [internshipsCount, setInternshipsCount] = useState(null);
-  const [resumeUrl, setResumeUrl] = useState(null)
-  const [resumeName, setResumeName] = useState(null)
+  const [resumeUrl, setResumeUrl] = useState(null);
+  const [resumeName, setResumeName] = useState(null);
   const location = useLocation(); // Access state
   const internshipId = location.state?.internshipId;
 
   console.log("Location state:", location.state); // Log the entire state
   console.log("Internship ID:", internshipId);
 
-  if(internshipId){
-    openModal(internshipId);
-  }
-
-  console.log('this is selected internship', selectedInternship);
+  useEffect(() => {
+    if (internshipId) {
+      // Pehle se load internships mein se dhundho
+      const existingInternship = internships.find(
+        (i) => i._id === internshipId,
+      );
+      if (existingInternship) {
+        openModal(existingInternship);
+      } else {
+        // Agar nahi mila toh fetch karo
+        const fetchAndOpenModal = async () => {
+          try {
+            const response = await axios.get(
+              `${api}/student/internship/${internshipId}`,
+            );
+            openModal(response.data);
+          } catch (error) {
+            console.error("Error fetching internship:", error);
+          }
+        };
+        fetchAndOpenModal();
+      }
+    }
+  }, [internshipId, internships]);
 
   const jobProfiles = [
     "3D Animation",
@@ -284,28 +304,25 @@ const Internships = () => {
     const fetchResume = async () => {
       try {
         const response = await axios.get(`${api}/student/resume/${userId}`, {
-          responseType: 'blob', // Set to 'blob' to handle file downloads
+          responseType: "blob",
         });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        setResumeUrl(url);
 
-        const filename = response.headers['content-disposition']
-          .split('filename=')[1]
-          .replace(/"/g, ''); // Clean up any surrounding quotes
-
-        // If you need to create a URL for the resume file (for example, to display it in a link or a button)
-        const fileURL = URL.createObjectURL(response.data);
-
-        // Set the URL to the state
-        setResumeUrl(fileURL);
-        setResumeName(filename);
-        // setResumeLoading(false);
+        const contentDisposition = response.headers["content-disposition"];
+        if (contentDisposition) {
+          const matches = /filename="([^"]*)"/.exec(contentDisposition);
+          if (matches) setResumeName(matches[1]);
+        }
       } catch (error) {
-        console.log('Error fetching student resume:', error);
-        // setResumeLoading(false);
+        console.error("Error fetching resume:", error);
       }
     };
 
-    fetchResume();
-  }, [userId]);
+    if (student?.resume && !resumeUrl) {
+      fetchResume();
+    }
+  }, [student?.resume, userId]);
 
   const { type } = useParams();
   const [selectedLocation, setSelectedLocation] = useState([]);
@@ -313,14 +330,14 @@ const Internships = () => {
   const [workType, setWorkType] = useState(() => {
     return type
       ? type
-        .replace(/-/g, " ") // Replace dashes with spaces
-        .replace(/\b\w/g, (char) => char.toUpperCase()) // Capitalize each word
+          .replace(/-/g, " ") // Replace dashes with spaces
+          .replace(/\b\w/g, (char) => char.toUpperCase()) // Capitalize each word
       : "All Internships";
   });
   const [selectedStipend, setSelectedStipend] = useState(0);
   // const [isInterestedModalOpen, setIsInterestedModalOpen] = useState(false);
   const [availability, setAvailability] = useState(
-    "Yes! Will join Immediately"
+    "Yes! Will join Immediately",
   );
   // const [resumeUrl, setResumeUrl] = useState(null);
   // const [resumeFilename, setResumeFilename] = useState(null);
@@ -331,23 +348,18 @@ const Internships = () => {
   console.log(workType);
   console.log("this student is from context", student);
 
-
-
-
   useEffect(() => {
     refreshData();
     window.scrollTo(0, 0);
   }, []);
 
-
   useEffect(() => {
-    const formattedType =
-      workType.replace(/\s+/g, "-").toLowerCase();
+    const formattedType = workType.replace(/\s+/g, "-").toLowerCase();
 
-    navigate(`/student/internships/${userId}/${formattedType}`, { replace: true });
+    navigate(`/student/internships/${userId}/${formattedType}`, {
+      replace: true,
+    });
   }, [workType, navigate, userId]);
-
-
 
   const constructQueryStringReset = () => {
     let query = `page=${1}`;
@@ -377,97 +389,131 @@ const Internships = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredInternships, setFilteredInternships] = useState([]);
-  const fetchInternships = async () => {
+  // fetchInternships ko useCallback mein wrap karo
+  const fetchInternships = useCallback(async () => {
     try {
       setLoading(true);
-      const queryString = constructQueryStringPageUpdation(); // Include filters
-      const response = await axios.get(`${api}/student/${userId}/internships?${queryString}`);
-  
+      const queryString = constructQueryStringPageUpdation();
+      const response = await axios.get(
+        `${api}/student/${userId}/internships?${queryString}`,
+      );
+
       setTotalPages(response.data.totalPages);
       setInternshipsCount(response.data.numOfInternships);
-      
+
       let internships = response.data.internships;
-  
-      // 🔹 Filter out internships the user has already applied to
-      internships = internships.filter(internship => !internship.isApplied);
-  
-      const recruiterIds = [...new Set(internships.map(internship => internship.recruiter?._id).filter(Boolean))];
-  
-      // 🔹 Fetch recruiter logos
+      internships = internships.filter((internship) => !internship.isApplied);
+
+      const recruiterIds = [
+        ...new Set(
+          internships
+            .map((internship) => internship.recruiter?._id)
+            .filter(Boolean),
+        ),
+      ];
+
       let logoMap = {};
       if (recruiterIds.length > 0) {
         try {
-          const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
+          const logosResponse = await axios.post(
+            `${api}/student/batch-get-logos`,
+            { recruiterIds },
+          );
           logoMap = logosResponse.data.logos || {};
         } catch (logoErr) {
           console.error("Error fetching recruiter logos:", logoErr);
         }
       }
-  
-      // 🔹 Assign logos to internships
-      const internshipsWithLogos = internships.map(internship => ({
+
+      const internshipsWithLogos = internships.map((internship) => ({
         ...internship,
-        logoUrl: logoMap[internship.recruiter?._id] || null, // Default to null if logo not found
+        logoUrl: logoMap[internship.recruiter?._id] || null,
       }));
-  
+
       setInternships(internshipsWithLogos);
-      setFilteredInternships(internshipsWithLogos); // Initialize filtered list
+      setFilteredInternships(internshipsWithLogos);
       setLoading(false);
     } catch (err) {
       console.error("Error fetching internships:", err);
       setError("Failed to fetch internships. Please try again later.");
       setLoading(false);
     }
-  };
-  
-  
+  }, [
+    workType,
+    selectedProfile,
+    selectedStipend,
+    selectedCountry,
+    selectedState,
+    selectedCity,
+    page,
+    userId,
+  ]);
+
+  useEffect(() => {
+    fetchInternships();
+  }, [fetchInternships]);
+
   const fetchAllInternships = async () => {
     try {
       setLoading(true);
       let allInternships = new Map(); // Use a Map to store only unique internships
       let currentPage = 1;
       let totalPages = 1;
-  
+
       const baseQuery = constructQueryStringReset(); // Reset filters for page 1
-  
+
       while (currentPage <= totalPages) {
-        const queryString = baseQuery.replace(/page=\d+/, `page=${currentPage}`);
-        const response = await axios.get(`${api}/student/internships?${queryString}`);
-  
+        const queryString = baseQuery.replace(
+          /page=\d+/,
+          `page=${currentPage}`,
+        );
+        const response = await axios.get(
+          `${api}/student/internships?${queryString}`,
+        );
+
         if (currentPage === 1) {
           totalPages = response.data.totalPages; // Set total pages on the first request
         }
-  
+
         response.data.internships.forEach((internship) => {
           if (!allInternships.has(internship._id)) {
             allInternships.set(internship._id, internship); // Store unique internships only
           }
         });
-  
+
         currentPage++;
       }
-  
+
       const uniqueInternships = Array.from(allInternships.values());
-  
+
       // Fetch recruiter logos
-      const recruiterIds = [...new Set(uniqueInternships.map(internship => internship.recruiter?._id).filter(Boolean))];
-  
+      const recruiterIds = [
+        ...new Set(
+          uniqueInternships
+            .map((internship) => internship.recruiter?._id)
+            .filter(Boolean),
+        ),
+      ];
+
       let logoMap = {};
       if (recruiterIds.length > 0) {
         try {
-          const logosResponse = await axios.post(`${api}/student/batch-get-logos`, { recruiterIds });
+          const logosResponse = await axios.post(
+            `${api}/student/batch-get-logos`,
+            { recruiterIds },
+          );
           logoMap = logosResponse.data.logos || {};
         } catch (logoErr) {
           console.error("Error fetching recruiter logos:", logoErr);
         }
       }
-  
+
       // Assign logos to internships
-      const internshipsWithLogos = uniqueInternships.map(internship => ({
+      const internshipsWithLogos = uniqueInternships.map((internship) => ({
         ...internship,
         logoUrl: logoMap[internship.recruiter?._id] || null, // Default to null if logo not found
       }));
-  
+
       setInternships(internshipsWithLogos);
       setFilteredInternships(internshipsWithLogos);
       setTotalPages(totalPages);
@@ -480,24 +526,22 @@ const Internships = () => {
     }
   };
 
-  useEffect(() => {
-    fetchInternships();
-  }, [workType, selectedProfile, selectedStipend, selectedCountry, selectedState, selectedCity, page, fetchInternships]);
-  
-  
-  
-
   // Filter internships based on search term
   useEffect(() => {
     if (searchTerm.trim() === "") {
       setFilteredInternships(internships);
     } else {
       const lowerCaseSearchTerm = searchTerm.toLowerCase();
-      const filtered = internships.filter(internship =>
-        internship.internshipName.toLowerCase().includes(lowerCaseSearchTerm) ||
-        internship.recruiter.companyName?.toLowerCase().includes(lowerCaseSearchTerm) ||
-        internship.jobProfile.toLowerCase().includes(lowerCaseSearchTerm) ||
-        internship.description.toLowerCase().includes(lowerCaseSearchTerm)
+      const filtered = internships.filter(
+        (internship) =>
+          internship.internshipName
+            .toLowerCase()
+            .includes(lowerCaseSearchTerm) ||
+          internship.recruiter.companyName
+            ?.toLowerCase()
+            .includes(lowerCaseSearchTerm) ||
+          internship.jobProfile.toLowerCase().includes(lowerCaseSearchTerm) ||
+          internship.description.toLowerCase().includes(lowerCaseSearchTerm),
       );
       setFilteredInternships(filtered);
     }
@@ -526,18 +570,15 @@ const Internships = () => {
           const matches = /filename="([^"]*)"/.exec(contentDisposition);
           if (matches) setResumeName(matches[1]);
         }
-
-        // setResumeCreatedAt(createdAt);
       } catch (error) {
         console.error("Error fetching resume:", error);
       }
     };
 
-    if (student?.resume) {
+    if (student?.resume && !resumeUrl) {
       fetchResume();
     }
-  }, [resumeUrl, student?.resume, userId]);
-  console.log("this is resume", resumeUrl);
+  }, [student?.resume, userId]);
 
   const handleNextPage = () => {
     setPage(page + 1);
@@ -549,16 +590,8 @@ const Internships = () => {
     }
   };
 
-  const scrollToTop = () => {
-    scrollableRef.current.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
   useEffect(() => {
     if (internships?.length > 0) {
-      scrollToTop();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [internships]);
@@ -567,9 +600,7 @@ const Internships = () => {
     setSelectedInternship(internship);
     console.log("selected internship", internship);
     try {
-      await axios.put(
-        `${api}/student/internship/${internship._id}/view`
-      );
+      await axios.put(`${api}/student/internship/${internship._id}/view`);
       // console.log(response.data);
     } catch (error) {
       console.error("Error updating views:", error);
@@ -584,60 +615,65 @@ const Internships = () => {
 
   const applyToInternship = async (internshipId) => {
     try {
-        console.log("this is student", student);
-        if (
-            student.education.length === 0 ||
-            student.skills.length === 0 ||
-            !student.gender ||
-            !student.homeLocation.city ||
-            !student.resume
-        ) {
-            navigate(`/student/profile/${userId}`);
-            return;
-        }
+      console.log("this is student", student);
+      if (
+        student.education.length === 0 ||
+        student.skills.length === 0 ||
+        !student.gender ||
+        !student.homeLocation.city ||
+        !student.resume
+      ) {
+        navigate(`/student/profile/${userId}`);
+        return;
+      }
 
-        if (!availability || !aboutText) {
-            toast.error("Please Enter all fields");
-            return;
-        }
+      if (!availability || !aboutText) {
+        toast.error("Please Enter all fields");
+        return;
+      }
 
-        if (availability === 'No! Cannot Join immediately' && !detailedAvailability) {
-            toast.error("Please provide date of joining");
-            return;
-        }
+      if (
+        availability === "No! Cannot Join immediately" &&
+        !detailedAvailability
+      ) {
+        toast.error("Please provide date of joining");
+        return;
+      }
 
-        const formData = {
-            availability: availability === 'Yes! Will join Immediately' ? availability : detailedAvailability,
-            aboutText,
-            assessmentAns,
-        };
+      const formData = {
+        availability:
+          availability === "Yes! Will join Immediately"
+            ? availability
+            : detailedAvailability,
+        aboutText,
+        assessmentAns,
+      };
 
-        const response = await axios.post(
-            `${api}/student/internship/${userId}/apply/${internshipId}`,
-            formData
-        );
+      const response = await axios.post(
+        `${api}/student/internship/${userId}/apply/${internshipId}`,
+        formData,
+      );
 
-        if (response.status === 200) {
-            if (response.data.success) {
-                toast.success("You have already applied for this Internship");
-            } else {
-                toast.success("Successfully applied to the internship");
-            }
-
-            setTimeout(() => {
-                setSelectedInternship(null);
-                navigate(`/student/myApplications/${userId}`);
-            }, 1000);
-
-            return;
+      if (response.status === 200) {
+        if (response.data.success) {
+          toast.success("You have already applied for this Internship");
         } else {
-            toast.error("Failed to apply");
+          toast.success("Successfully applied to the internship");
         }
-    } catch (error) {
-        toast.error("Error applying to internship");
-    }
-};
 
+        setTimeout(() => {
+          setSelectedInternship(null);
+          navigate(`/student/myApplications/${userId}`);
+        }, 1000);
+
+        return;
+      } else {
+        toast.error("Failed to apply");
+      }
+    } catch (error) {
+      toast.error("Error applying to internship");
+    }
+  };
 
   const handleReset = () => {
     setSelectedCountry("");
@@ -651,16 +687,15 @@ const Internships = () => {
 
   const isAlreadyApplied = (internshipId) => {
     return appliedInternships.some(
-      (applied) => applied.internship._id === internshipId
+      (applied) => applied.internship._id === internshipId,
     );
   };
 
   const handleRadioChange = (e) => {
-    if (e.target.value === "Yes"){
+    if (e.target.value === "Yes") {
       setAvailability("Yes! Will join Immediately");
       setDetailedAvailability("");
-    }
-    else if (e.target.value === "No")
+    } else if (e.target.value === "No")
       setAvailability("No! Cannot Join immediately");
   };
 
@@ -668,8 +703,8 @@ const Internships = () => {
   // console.log(aboutText);
   console.log(assessmentAns);
   console.log(userId);
-  console.log('this is availability',availability);
-  console.log('this is detailed availability',detailedAvailability);
+  console.log("this is availability", availability);
+  console.log("this is detailed availability", detailedAvailability);
 
   if (loading) {
     return <Spinner />;
@@ -697,8 +732,9 @@ const Internships = () => {
       <div className="flex flex-col lg:flex-row w-full lg:w-[90%] mx-auto  gap-10 ">
         {/* this below div is filter button */}
         <div
-          className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${filterOpen && "border-blue-400"
-            }`}
+          className={`lg:hidden flex space-x-1 border-2 px-3 py-1 rounded-lg w-fit items-center bg-white hover:cursor-pointer hover:border-blue-400  ${
+            filterOpen && "border-blue-400"
+          }`}
           onClick={() => setFilterOpen(!filterOpen)}
         >
           <span>Filters</span>
@@ -707,19 +743,20 @@ const Internships = () => {
 
         {/* this below div is filter div */}
         <div
-          className={` ${filterOpen ? "block" : "hidden"
-            } w-[84%] md:w-[90%]  lg:ml-10 mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl rounded-md border-t py-6 overflow-y-auto scrollbar-thin bg-white  relative`}
+          className={` ${
+            filterOpen ? "block" : "hidden"
+          } w-[84%] md:w-[90%]  lg:ml-10 mx-auto lg:w-[40%] xl:w-[30%] h-full lg:max-h-screen lg:mt-24 px-6 shadow-xl rounded-md border-t py-6 overflow-y-auto scrollbar-thin bg-white  relative`}
         >
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
           </h1>
           <input
-        type="text"
-        placeholder="Search internships..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full p-2 border rounded-md mb-4"
-      />
+            type="text"
+            placeholder="Search internships..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 border rounded-md mb-4"
+          />
           <FaTimes
             onClick={() => setFilterOpen(false)}
             className="absolute right-3 top-5 lg:hidden text-blue-500 hover:cursor-pointer"
@@ -886,131 +923,138 @@ const Internships = () => {
                 className="overflow-scroll scrollbar-thin h-[90vh] overflow-x-hidden flex flex-col gap-5"
               >
                 {loading && <p>Loading internships...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+                {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {filteredInternships.length === 0 ? (
-        <p>No internships found</p>
-      ) : (
-        <div className="space-y-4">
-          {filteredInternships.map((internship) => (
-            <div
-              key={internship._id}
-              className="bg-white shadow-md rounded-lg p-5 w-full lg:w-[90%] mx-auto relative space-y-1 hover:cursor-pointer hover:scale-105 duration-300 border"
-              onClick={() => openModal(internship)}
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-lg lg:text-xl font-bold">
-                    {internship.internshipName}
-                  </h2>
-                  <p className="text-gray-600 text-lg font-semibold">
-                    {internship.recruiter.companyName !== ""
-                      ? internship.recruiter.companyName
-                      : internship.recruiter.firstname + " " + internship.recruiter.lastname}
-                  </p>
-                </div>
+                {filteredInternships.length === 0 ? (
+                  <p>No internships found</p>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredInternships.map((internship) => (
+                      <div
+                        key={internship._id}
+                        className="bg-white shadow-md rounded-lg p-5 w-full lg:w-[90%] mx-auto relative space-y-1 hover:cursor-pointer hover:scale-105 duration-300 border"
+                        onClick={() => openModal(internship)}
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h2 className="text-lg lg:text-xl font-bold">
+                              {internship.internshipName}
+                            </h2>
+                            <p className="text-gray-600 text-lg font-semibold">
+                              {internship.recruiter.companyName !== ""
+                                ? internship.recruiter.companyName
+                                : internship.recruiter.firstname +
+                                  " " +
+                                  internship.recruiter.lastname}
+                            </p>
+                          </div>
 
-                <div className="flex items-center">
-                  <button
-                    onClick={() => openModal(internship)}
-                    className="md:w-auto hidden md:block bg-blue-500 text-sm md:text-base rounded-md text-white px-2 py-1 hover:bg-green-500"
-                  >
-                    Apply
-                  </button>
-                  {internship.logoUrl ? (
-                    <img
-                      src={internship.logoUrl}
-                      alt="Company Logo"
-                      className="w-16 h-16 ml-3"
-                    />
-                  ) : (
-                    <FaBuilding className="w-16 h-16 text-gray-600" />
-                  )}
-                </div>
-              </div>
+                          <div className="flex items-center">
+                            <button
+                              onClick={() => openModal(internship)}
+                              className="md:w-auto hidden md:block bg-blue-500 text-sm md:text-base rounded-md text-white px-2 py-1 hover:bg-green-500"
+                            >
+                              Apply
+                            </button>
+                            {internship.logoUrl ? (
+                              <img
+                                src={internship.logoUrl}
+                                alt="Company Logo"
+                                className="w-16 h-16 ml-3"
+                              />
+                            ) : (
+                              <FaBuilding className="w-16 h-16 text-gray-600" />
+                            )}
+                          </div>
+                        </div>
 
-              <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row">
-                <div className="flex items-center text-gray-700">
-                  <FaMapMarkerAlt className="mr-1" />
-                  <span>
-                    {internship.internLocation.country ||
-                    internship.internLocation.state ||
-                    internship.internLocation.city
-                      ? `${internship.internLocation.country}, ${internship.internLocation.state}, ${internship.internLocation.city}`
-                      : "Remote"}
-                  </span>
-                </div>
+                        <div className="flex flex-col text-sm md:text-base md:space-x-3 md:flex-row">
+                          <div className="flex items-center text-gray-700">
+                            <FaMapMarkerAlt className="mr-1" />
+                            <span>
+                              {internship.internLocation.country ||
+                              internship.internLocation.state ||
+                              internship.internLocation.city
+                                ? `${internship.internLocation.country}, ${internship.internLocation.state}, ${internship.internLocation.city}`
+                                : "Remote"}
+                            </span>
+                          </div>
 
-                <div className="flex items-center text-gray-700">
-                  <FaClock className="mr-2" />
-                  <span>{internship.duration} Months</span>
-                </div>
+                          <div className="flex items-center text-gray-700">
+                            <FaClock className="mr-2" />
+                            <span>{internship.duration} Months</span>
+                          </div>
 
-                {internship.stipendType === "unpaid" && (
-                  <div className="flex items-center text-gray-700">
-                    <FaMoneyBillWave className="mr-1" />
-                    <span>Unpaid</span>
-                  </div>
-                )}
+                          {internship.stipendType === "unpaid" && (
+                            <div className="flex items-center text-gray-700">
+                              <FaMoneyBillWave className="mr-1" />
+                              <span>Unpaid</span>
+                            </div>
+                          )}
 
-                {internship.stipendType !== "unpaid" && (
-                  <div className="flex items-center space-x-1">
-                    <div className="flex items-center text-gray-700">
-                      <FaMoneyBillWave className="mr-1" />
-                      <span>
-                        {internship.currency} {internship.stipend} /month
-                      </span>
-                    </div>
+                          {internship.stipendType !== "unpaid" && (
+                            <div className="flex items-center space-x-1">
+                              <div className="flex items-center text-gray-700">
+                                <FaMoneyBillWave className="mr-1" />
+                                <span>
+                                  {internship.currency} {internship.stipend}{" "}
+                                  /month
+                                </span>
+                              </div>
 
-                    {internship.stipendType === "performance-based" && (
-                      <div className="flex items-center mb-2 text-gray-700">
-                        <span>+ incentives</span>
-                        <div className="relative group">
-                          <FaQuestion className="border border-black p-1 mx-1 rounded-full hover:cursor-pointer" />
-                          <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
-                            This is a Performance Based internship.
-                            {internship.incentiveDescription}
-                          </span>
+                              {internship.stipendType ===
+                                "performance-based" && (
+                                <div className="flex items-center mb-2 text-gray-700">
+                                  <span>+ incentives</span>
+                                  <div className="relative group">
+                                    <FaQuestion className="border border-black p-1 mx-1 rounded-full hover:cursor-pointer" />
+                                    <span className="absolute hidden group-hover:block bg-gray-700 text-white text-base rounded p-1 w-[250px]">
+                                      This is a Performance Based internship.
+                                      {internship.incentiveDescription}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {isAlreadyApplied(internship._id) && (
+                          <p className="text-green-500 text-sm md:text-base inline-flex rounded-xl border-green-500">
+                            <span className="text-gray-700 mr-1">Status:</span>{" "}
+                            Applied
+                            <FaCheck className="ml-2 mt-1" />
+                          </p>
+                        )}
+
+                        <div className="flex justify-between items-center">
+                          <p className="text-gray-500 text-sm md:text-base">
+                            Posted:
+                            <span className="text-sm font-bold">
+                              {TimeAgo(internship.createdAt)}
+                            </span>
+                          </p>
+
+                          {!isAlreadyApplied(internship._id) ? (
+                            <button
+                              onClick={() => openModal(internship)}
+                              className="underline block md:hidden w-auto mb-1 text-sm md:text-base rounded-md text-blue-500"
+                            >
+                              View details
+                            </button>
+                          ) : (
+                            <Link
+                              to={`/student/myApplications/${userId}`}
+                              className="underline block md:hidden mb-1 text-sm md:text-base rounded-md text-blue-500"
+                            >
+                              Check Status
+                            </Link>
+                          )}
                         </div>
                       </div>
-                    )}
+                    ))}
                   </div>
                 )}
-              </div>
-
-              {isAlreadyApplied(internship._id) && (
-                <p className="text-green-500 text-sm md:text-base inline-flex rounded-xl border-green-500">
-                  <span className="text-gray-700 mr-1">Status:</span> Applied
-                  <FaCheck className="ml-2 mt-1" />
-                </p>
-              )}
-
-              <div className="flex justify-between items-center">
-                <p className="text-gray-500 text-sm md:text-base">
-                  Posted:
-                  <span className="text-sm font-bold">{TimeAgo(internship.createdAt)}</span>
-                </p>
-
-                {!isAlreadyApplied(internship._id) ? (
-                  <button
-                    onClick={() => openModal(internship)}
-                    className="underline block md:hidden w-auto mb-1 text-sm md:text-base rounded-md text-blue-500"
-                  >
-                    View details
-                  </button>
-                ) : (
-                  <Link
-                    to={`/student/myApplications/${userId}`}
-                    className="underline block md:hidden mb-1 text-sm md:text-base rounded-md text-blue-500"
-                  >
-                    Check Status
-                  </Link>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
               </div>
 
               {/* pagination */}
@@ -1019,8 +1063,9 @@ const Internships = () => {
                   <button
                     onClick={handlePreviousPage}
                     disabled={page === 1}
-                    className={`px-4 py-2 rounded-md ${page === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
-                      }`}
+                    className={`px-4 py-2 rounded-md ${
+                      page === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
+                    }`}
                   >
                     <FaAngleLeft />
                   </button>
@@ -1031,10 +1076,11 @@ const Internships = () => {
                   <button
                     onClick={handleNextPage}
                     disabled={page === totalPages}
-                    className={`px-4 py-2 rounded-md ${page === totalPages
+                    className={`px-4 py-2 rounded-md ${
+                      page === totalPages
                         ? "bg-gray-300"
                         : "bg-blue-500 text-white"
-                      }`}
+                    }`}
                   >
                     <FaAngleRight />
                   </button>
@@ -1042,12 +1088,9 @@ const Internships = () => {
               )}
 
               {selectedInternship && (
-                  <>
-                    <div
-                      className="fixed inset-0 bg-black bg-opacity-50 z-40 "
-                      
-                    >
-                    <div className="fixed inset-0 flex items-center justify-center z-50 " >
+                <>
+                  <div className="fixed inset-0 bg-black bg-opacity-50 z-40 ">
+                    <div className="fixed inset-0 flex items-center justify-center z-50 ">
                       <div className="bg-white border border-gray-600 rounded-lg shadow-3xl w-[90%] lg:w-[60%] h-[90%] p-6 relative overflow-auto">
                         <div className="border-b">
                           <h2 className=" text-lg lg:text-2xl font-semibold lg:mb-4">
@@ -1076,12 +1119,13 @@ const Internships = () => {
                           <FaMapMarkerAlt className="mr-2" />
                           <span>
                             {selectedInternship.internLocation.country
-                              ? `${selectedInternship.internLocation.country +
-                              "," +
-                              selectedInternship.internLocation.state +
-                              "," +
-                              selectedInternship.internLocation.city
-                              }`
+                              ? `${
+                                  selectedInternship.internLocation.country +
+                                  "," +
+                                  selectedInternship.internLocation.state +
+                                  "," +
+                                  selectedInternship.internLocation.city
+                                }`
                               : "Remote"}
                           </span>
                         </div>
@@ -1228,7 +1272,6 @@ const Internships = () => {
                                 />
                                 <span className="mx-1">No</span>
                               </label>
-
                             </div>
 
                             {availability === "No! Cannot Join immediately" && (
@@ -1238,8 +1281,12 @@ const Internships = () => {
                                   <input
                                     type="radio"
                                     value="Within a week"
-                                    checked={detailedAvailability === "Within a week"}
-                                    onChange={(e)=>setDetailedAvailability(e.target.value)}
+                                    checked={
+                                      detailedAvailability === "Within a week"
+                                    }
+                                    onChange={(e) =>
+                                      setDetailedAvailability(e.target.value)
+                                    }
                                   />
                                   <span className="mx-1">Within a week</span>
                                 </label>
@@ -1247,8 +1294,13 @@ const Internships = () => {
                                   <input
                                     type="radio"
                                     value="Within 1-3 weeks"
-                                    checked={detailedAvailability === "Within 1-3 weeks"}
-                                    onChange={(e)=>setDetailedAvailability(e.target.value)}
+                                    checked={
+                                      detailedAvailability ===
+                                      "Within 1-3 weeks"
+                                    }
+                                    onChange={(e) =>
+                                      setDetailedAvailability(e.target.value)
+                                    }
                                   />
                                   <span className="mx-1">Within 1-3 weeks</span>
                                 </label>
@@ -1256,10 +1308,17 @@ const Internships = () => {
                                   <input
                                     type="radio"
                                     value="More than a month"
-                                    checked={detailedAvailability === "More than a month"}
-                                    onChange={(e)=>setDetailedAvailability(e.target.value)}
+                                    checked={
+                                      detailedAvailability ===
+                                      "More than a month"
+                                    }
+                                    onChange={(e) =>
+                                      setDetailedAvailability(e.target.value)
+                                    }
                                   />
-                                  <span className="mx-1">More than a month</span>
+                                  <span className="mx-1">
+                                    More than a month
+                                  </span>
                                 </label>
                               </div>
                             )}
@@ -1298,11 +1357,9 @@ const Internships = () => {
                         </div>
                       </div>
                     </div>
-                    </div>
-                  </>
-                )}
-
-             
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
