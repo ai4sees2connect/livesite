@@ -9,8 +9,8 @@ import "react-quill/dist/quill.snow.css";
 import api from "../common/server_url";
 import Select from "react-select";
 import { useRecruiter } from "./context/recruiterContext";
+import { FaMoneyBillWave, FaGift, FaBriefcase } from "react-icons/fa"
 import Spinner from "../common/Spinner";
-
 import { Link, useNavigate } from "react-router-dom";
 import statesAndCities from "../common/statesAndCities";
 
@@ -495,151 +495,285 @@ const RecPosting = () => {
     : [];
 
   return (
-    <div>
-      <h2 className="text-4xl font-semibold mb-6 text-center mt-24">
-        Post Internship
-      </h2>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 py-10">
+      <div className="max-w-5xl mx-auto mb-8">
+  <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-8 shadow-xl text-white">
+
+    <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm mb-4">
+      🚀 Internship Portal
+    </div>
+
+    <h2 className="text-4xl md:text-5xl font-bold">
+      Create Internship
+    </h2>
+
+    <p className="text-white/90 mt-3 text-lg">
+      Reach talented students and build your future workforce.
+    </p>
+
+  </div>
+</div>
+
       <form className="px-5">
         {/* <p className="text-center text-lg font-semibold my-5">
           Internship Details
         </p> */}
-        <div className="border border-gray-300 mx-auto  p-6 rounded-lg shadow-lg mb-7 w-full lg:w-[70%]">
+        <div
+  className="
+  mx-auto
+  w-full
+  lg:w-[75%]
+  bg-white
+  rounded-[28px]
+  border
+  border-slate-200
+  p-8
+  md:p-10
+  shadow-[0_15px_60px_rgba(0,0,0,0.08)]
+  backdrop-blur-sm
+"
+>
 
           {/* Internship name row */}
-          <div className="flex flex-col my-5">
+          <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-6">
+
             {/* <label className="mb-2 font-medium">Internship Name:</label> */}
-            <label className="font-medium">Internship Title</label>
+            <label className="text-xl font-bold text-slate-800 mb-3 block">
+  Internship Title
+</label>
             <input
               type="text"
               name="internshipName"
               value={formData.internshipName}
               onChange={handleChange}
               onBlur={handleBlur}
-              className="p-2 border text-gray-600 shadow-md border-gray-300 rounded-md"
+              className="
+h-12
+w-full
+px-4
+border
+border-slate-200
+rounded-xl
+bg-white
+shadow-sm
+text-slate-700
+focus:outline-none
+focus:ring-4
+focus:ring-indigo-100
+focus:border-indigo-500
+transition-all
+"
               placeholder="e.g Angular Development"
               maxLength={30}
               required
             />
             {errors.internshipName && (
-              <span className="text-red-400">{errors.internshipName}</span>
+              <span className="text-red-500 text-sm mt-2 block">{errors.internshipName}</span>
             )}
           </div>
 
-          {/* Skills row */}
-          <div className="flex flex-col my-5">
-            <label className="mb-2 font-medium">Skills:</label>
-            <div className="flex flex-col space-y-4 md:flex-row md:items-center md:space-x-4 md:space-y-0">
-              <Select
-                isMulti
-                name="skillSet"
-                value={selectedSkills}
-                onChange={(selected) => {
-                  handleSkillsChange(selected);
+          {/* Skills Section */}
+<div className="my-8 bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
 
-                  // Clear error if a skill is selected
-                  setErrors((prevErrors) => {
-                    const { skillSet, ...rest } = prevErrors;
-                    return rest;
-                  });
-                }}
-                onBlur={() => {
-                  // Check if no skills are selected
-                  if (!selectedSkills || selectedSkills.length === 0) {
-                    setErrors((prevErrors) => ({
-                      ...prevErrors,
-                      skillSet: "Please select at least one skill.",
-                    }));
-                  }
-                }}
-                options={skills}
-                placeholder="Select or type skills "
-                className="w-60 shadow-md"
-                required
-              />
+  {/* Heading */}
+  <div className="flex items-center gap-3 mb-3">
+    <div
+  className="
+  w-6
+  h-6
+  rounded-lg
+  bg-violet-100
+  flex
+  items-center
+  justify-center
+  flex-shrink-0
+  "
+>
+  <span className="text-lg">🖥️</span>
+</div>
 
-              <input
-                type="text"
-                value={customSkill}
-                onChange={(e) => setCustomSkill(e.target.value)}
-                placeholder="Add custom skill"
-                className="border rounded px-2 py-1 shadow-md w-60"
-                maxLength={12}
-              />
-              <button
-                onClick={() => {
-                  addCustomSkill();
+    <h3 className="text-xl font-semibold text-slate-800">
+      Skills Required
+      <span className="text-red-500 ml-1">*</span>
+    </h3>
+  </div>
 
-                  // Clear error if a custom skill is added
-                  setErrors((prevErrors) => {
-                    const { skillSet, ...rest } = prevErrors;
-                    return rest;
-                  });
-                }}
-                className="bg-blue-500 w-fit text-white px-4 py-1 rounded shadow-md hover:bg-blue-600"
-              >
-                Add
-              </button>
-            </div>
-            {errors.skillSet && (
-              <span className="text-red-400">{errors.skillSet}</span>
-            )}
-          </div>
+  {/* Inputs Row */}
+  <div className="grid lg:grid-cols-[1fr_1fr_140px] gap-5">
+
+    <Select
+      isMulti
+      name="skillSet"
+      value={selectedSkills}
+      onChange={(selected) => {
+        handleSkillsChange(selected);
+
+        setErrors((prevErrors) => {
+          const { skillSet, ...rest } = prevErrors;
+          return rest;
+        });
+      }}
+      onBlur={() => {
+        if (!selectedSkills || selectedSkills.length === 0) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            skillSet: "Please select at least one skill.",
+          }));
+        }
+      }}
+      options={skills}
+      placeholder="Select or type skills"
+      className="w-full"
+      required
+      styles={{
+  control: (base) => ({
+    ...base,
+    minHeight: "52px",
+    height: "52px",
+    borderRadius: "12px",
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+    paddingLeft: "8px",
+  }),
+
+  valueContainer: (base) => ({
+    ...base,
+    height: "52px",
+    padding: "0 12px",
+  }),
+
+  placeholder: (base) => ({
+    ...base,
+    color: "#64748b",
+    fontSize: "16px",
+  }),
+}}
+    />
+
+    <input
+      type="text"
+      value={customSkill}
+      onChange={(e) => setCustomSkill(e.target.value)}
+      placeholder="Add custom skill"
+      maxLength={12}
+      className="
+      h-[52px]
+      w-full
+      px-4
+      border
+      border-slate-200
+      rounded-xl
+      shadow-sm
+      focus:outline-none
+      focus:ring-4
+      focus:ring-violet-100
+      focus:border-violet-500
+      "
+    />
+
+    <button
+      onClick={() => {
+        addCustomSkill();
+
+        setErrors((prevErrors) => {
+          const { skillSet, ...rest } = prevErrors;
+          return rest;
+        });
+      }}
+      className="
+      h-[52px]
+      rounded-xl
+      bg-gradient-to-r
+      from-violet-600
+      to-indigo-600
+      text-white
+      font-semibold
+      shadow-md
+      hover:shadow-lg
+      transition-all
+      "
+    >
+      Add
+    </button>
+  </div>
+
+  {/* Error */}
+  {errors.skillSet && (
+    <p className="text-red-500 mt-4 text-sm font-medium">
+      {errors.skillSet}
+    </p>
+  )}
+</div>
 
           {/* Internship type row */}
-          <div className=" my-5">
-            <div className="">
-              <p className="my-2 font-medium">Internship Type</p>
-              <label>
-                <input
-                  type="radio"
-                  name="internshipType"
-                  value="Hybrid"
-                  checked={formData.internshipType === "Hybrid"}
-                  onChange={handleChange}
+          <div className="my-8">
+  <p className="font-semibold text-lg mb-4 text-slate-800">
+    💼 Internship Type
+  </p>
 
-                  className="w-4 h-4 mr-1" required
-                />
-                <span className="text-gray-600">Hybrid</span>
-              </label>
+  <div className="grid md:grid-cols-3 gap-4">
 
-              <label className="ml-4 text-gray-600">
-                <input
-                  type="radio"
-                  name="internshipType"
-                  value="Remote"
-                  checked={formData.internshipType === "Remote"}
-                  onChange={handleChange}
+    {["Remote", "Office", "Hybrid"].map((type) => (
+      <label
+        key={type}
+        className={`
+        cursor-pointer
+        rounded-2xl
+        border-2
+        p-5
+        transition-all
+        ${
+          formData.internshipType === type
+            ? "border-indigo-500 bg-indigo-50"
+            : "border-slate-200 bg-white"
+        }
+        `}
+      >
+        <input
+          type="radio"
+          name="internshipType"
+          value={type}
+          checked={formData.internshipType === type}
+          onChange={handleChange}
+          className="hidden"
+        />
 
-                  className="w-4 h-4 mr-1 "
-                />
-                Remote
-              </label>
+        <div className="text-3xl mb-2">
+          {type === "Remote"
+            ? "🏠"
+            : type === "Office"
+            ? "🏢"
+            : "🔄"}
+        </div>
 
-              <label className="ml-4 text-gray-600">
-                <input
-                  type="radio"
-                  name="internshipType"
-                  value="Office"
-                  checked={formData.internshipType === "Office"}
-                  onChange={handleChange}
+        <div className="font-semibold">{type}</div>
 
-                  className="w-4 h-4 mr-1"
-                />
-                Office
-              </label>
-            </div>
+        <div className="text-sm text-slate-500 mt-1">
+          {type === "Remote"
+            ? "Work from anywhere"
+            : type === "Office"
+            ? "On-site internship"
+            : "Mix of remote & office"}
+        </div>
+      </label>
+    ))}
+  </div>
 
-            {errors.internshipType && (
-              <span className="text-red-400">{errors.internshipType}</span>
-            )}
-          </div>
 
-          {(formData.internshipType === "Office" ||
-            formData.internshipType === "Hybrid") && (
-              <div className="flex flex-col gap-3">
                 {/* Country Dropdown */}
+                <div className="grid md:grid-cols-3 gap-4 mt-6">
                 <select
-                  className="border-2 py-1 rounded-md px-2"
+                  className="
+h-12
+rounded-xl
+border
+border-slate-200
+px-4
+shadow-sm
+focus:ring-4
+focus:ring-indigo-100
+focus:border-indigo-500
+"
                   id="country"
                   name="country"
                   value={selectedCountry}
@@ -660,7 +794,17 @@ const RecPosting = () => {
 
                 {/* State Dropdown */}
                 <select
-                  className="border-2 py-1 rounded-md px-2"
+                  className="
+h-12
+rounded-xl
+border
+border-slate-200
+px-4
+shadow-sm
+focus:ring-4
+focus:ring-indigo-100
+focus:border-indigo-500
+"
                   id="state"
                   value={selectedState}
                   onChange={(e) => {
@@ -683,7 +827,17 @@ const RecPosting = () => {
                   value={selectedCity}
                   disabled={!selectedState}
                   onChange={(e) => setSelectedCity(e.target.value)}
-                  className="border-2 py-1 rounded-md px-2"
+                  className="
+h-12
+rounded-xl
+border
+border-slate-200
+px-4
+shadow-sm
+focus:ring-4
+focus:ring-indigo-100
+focus:border-indigo-500
+"
                 >
                   <option value="">-- Select City --</option>
                   {cities?.map((city) => (
@@ -692,12 +846,15 @@ const RecPosting = () => {
                     </option>
                   ))}
                 </select>
+                </div>
               </div>
-            )}
+          
 
           {/* Internship start ques */}
-          <div className="flex flex-col my-5 space-y-2">
-            <p className="font-medium">Internship Start date</p>
+          <div className="my-8 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+            <p className="font-semibold text-lg mb-4">
+  📅 Internship Start Date
+</p>
             <div className="flex space-x-16 text-gray-600">
               <label className=" flex items-center">
                 <input
@@ -732,8 +889,11 @@ const RecPosting = () => {
           </div>
 
           {/* no of openings */}
+          <div className="grid md:grid-cols-2 gap-6 my-6">
           <div className="flex flex-col my-5">
-            <label className="mb-2 font-medium">No of Openings</label>
+            <label className="mb-3 text-lg font-semibold text-slate-800">
+  No of Openings
+</label>
             <input
               type="number"
               name="numberOfOpenings"
@@ -767,20 +927,30 @@ const RecPosting = () => {
                 // }
                 handleBlur(e);
               }}
-              className="p-2 border border-gray-300 rounded-md shadow-md"
+              className="
+h-12
+px-4
+border
+border-slate-200
+rounded-xl
+shadow-sm
+focus:ring-4
+focus:ring-indigo-100
+focus:border-indigo-500
+"
               placeholder="max: 99 openings"
               required
             />
 
             {errors.numberOfOpenings && (
-              <span className="text-red-400">{errors.numberOfOpenings}</span>
+              <span className="text-red-500 text-sm mt-2 block">{errors.numberOfOpenings}</span>
             )}
           </div>
           {/* Internship Duration */}
           <div className="flex flex-col my-5">
-            <label className="mb-2 font-medium">
-              Internship Duration (in months)
-            </label>
+            <label className="mb-3 text-lg font-semibold text-slate-800">
+  Internship Duration (in months)
+</label>
             <input
               type="number"
               name="duration"
@@ -805,381 +975,687 @@ const RecPosting = () => {
                 }
               }}
               onBlur={handleBlur}
-              className="p-2 border border-gray-300 rounded-md shadow-md"
+              className="
+h-12
+px-4
+border
+border-slate-200
+rounded-xl
+shadow-sm
+focus:ring-4
+focus:ring-indigo-100
+focus:border-indigo-500
+"
               placeholder="max:24 months"
             />
             {errors.duration && (
-              <span className="text-red-400">{errors.duration}</span>
+              <span className="text-red-500 text-sm mt-2 block">{errors.duration}</span>
             )}
-          </div>
-
-          {/* Profile */}
-          <div className="flex flex-col my-5">
-            <p className="my-2 font-medium">Type of internship</p>
-            <Select
-              value={selectedProfile}
-              name="selectedProfile"
-              onChange={(values) => {
-                setSelectedProfile(values);
-
-                // Clear error if a valid profile is selected
-                setErrors((prevErrors) => {
-                  const { selectedProfile, ...rest } = prevErrors;
-                  return rest;
-                });
-              }}
-              onBlur={() => {
-                // Check if no profile is selected
-                if (!selectedProfile || selectedProfile.length === 0) {
-                  setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    selectedProfile: "Please select a profile.",
-                  }));
-                }
-              }}
-              options={jobProfiles}
-              placeholder="e.g Web development"
-              className="w-full mb-3 shadow-md"
-            />
-            <input
-              type="text"
-              value={customProfile}
-              onChange={(e) => setCustomProfile(e.target.value)}
-              placeholder="Add custom profile"
-              className="border rounded px-2 py-1 shadow-md w-60"
-              maxLength={30}
-            />
-            {errors.selectedProfile && (
-              <span className="text-red-400">{errors.selectedProfile}</span>
-            )}
-            <button
-              onClick={() => {
-                addCustomProfile();
-                setErrors((prevErrors) => {
-                  const { skillSet, ...rest } = prevErrors;
-                  return rest;
-                });
-              }}
-              className="bg-blue-500 w-fit text-white px-4 py-1 my-2 rounded shadow-md hover:bg-blue-600"
-            >
-              Add
-            </button>
-          </div>
-
-          {/* intern responsiblities */}
-          <div className="flex flex-col my-5   ">
-            <div className="">
-              <label className="my-2 ml-2 font-medium">
-                Intern's responsibilities
-              </label>
-              <ReactQuill
-
-                value={formData.description}
-                onChange={(value) => {
-
-                  if (value.length <= 3011) {
-                    handleDescriptionChange(value); // Update state only if within the limit
-                  }
-                  else setErrors(prevErrors => {
-                    return { ...prevErrors, description: "Description should be less than 3000 characters" }
-                  })
-                }}
-                className="p-2 rounded-md  "
-                onBlur={() => {
-                  // Ensure the minimum character requirement is met
-                  if (formData.description.trim().length < 10) {
-                    alert("Description must be at least 10 characters long.");
-                  }
-                  handleDescriptionBlur(); // Call your onBlur handler
-                }}
-                theme="snow"
-                placeholder="Enter the requirements...."
-              />
             </div>
-            <p className=" ml-3 mt-3 text-gray-700 text-sm">{3011 - formData.description.length} characters left</p>
-
-            {errors.description && (
-              <span className="text-red-400 mt-1 ml-2">{errors.description}</span>
-            )}
           </div>
-        </div>
+
+          {/* Profile Section */}
+<div className="my-8 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+
+  {/* Heading */}
+  <div className="flex items-center gap-3 mb-3">
+    <div
+      className="
+      w-10
+      h-10
+      rounded-lg
+      bg-amber-100
+      flex
+      items-center
+      justify-center
+      flex-shrink-0
+      "
+    >
+      <span className="text-lg">🎯</span>
+    </div>
+
+    <h3 className="text-xl font-semibold text-slate-800">
+      Internship Profile
+      <span className="text-red-500 ml-1">*</span>
+    </h3>
+  </div>
+
+  {/* Inputs */}
+  <div className="grid lg:grid-cols-[1fr_1fr_140px] gap-5">
+
+    <Select
+      value={selectedProfile}
+      name="selectedProfile"
+      onChange={(values) => {
+        setSelectedProfile(values);
+
+        setErrors((prevErrors) => {
+          const { selectedProfile, ...rest } = prevErrors;
+          return rest;
+        });
+      }}
+      onBlur={() => {
+        if (!selectedProfile) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            selectedProfile: "Please select a profile.",
+          }));
+        }
+      }}
+      options={jobProfiles}
+      placeholder="e.g Web development"
+      className="w-full"
+      styles={{
+  control: (base) => ({
+    ...base,
+    minHeight: "52px",
+    height: "52px",
+    borderRadius: "12px",
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+    paddingLeft: "8px",
+  }),
+}}
+    />
+
+    <input
+      type="text"
+      value={customProfile}
+      onChange={(e) => setCustomProfile(e.target.value)}
+      placeholder="Add custom profile"
+      maxLength={30}
+      className="
+      h-[52px]
+      w-full
+      px-4
+      border
+      border-slate-200
+      rounded-xl
+      shadow-sm
+      focus:outline-none
+      focus:ring-4
+      focus:ring-amber-100
+      focus:border-amber-500
+      "
+    />
+
+    <button
+      onClick={() => {
+        addCustomProfile();
+
+        setErrors((prevErrors) => {
+          const { selectedProfile, ...rest } = prevErrors;
+          return rest;
+        });
+      }}
+      className="
+      h-[52px]
+rounded-xl
+bg-gradient-to-r
+from-indigo-600
+to-purple-600
+text-white
+font-semibold
+shadow-md
+hover:shadow-lg
+hover:scale-[1.02]
+transition-all
+duration-300
+"
+    >
+      Add
+    </button>
+
+  </div>
+
+  {/* Error */}
+  {errors.selectedProfile && (
+    <p className="text-red-500 text-sm mt-2 font-medium">
+      {errors.selectedProfile}
+    </p>
+  )}
+
+</div>
+
+          {/* Intern Responsibilities */}
+<div className="my-8 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+
+  {/* Heading */}
+  <div className="flex items-center gap-3 mb-3">
+    <div
+      className="
+      w-10
+      h-10
+      rounded-lg
+      bg-indigo-100
+      flex
+      items-center
+      justify-center
+      flex-shrink-0
+      "
+    >
+      <span className="text-lg">📝</span>
+    </div>
+
+    <h3 className="text-xl font-semibold text-slate-800">
+      Intern Responsibilities
+      <span className="text-red-500 ml-1">*</span>
+    </h3>
+  </div>
+
+  {/* Editor */}
+  <div
+    className="
+    bg-white
+    rounded-2xl
+    overflow-hidden
+    border
+    border-slate-200
+    shadow-sm
+    "
+  >
+    <ReactQuill
+      value={formData.description}
+      onChange={(value) => {
+        if (value.length <= 3011) {
+          handleDescriptionChange(value);
+        } else {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            description:
+              "Description should be less than 3000 characters",
+          }));
+        }
+      }}
+      onBlur={() => {
+        if (formData.description.trim().length < 10) {
+          alert("Description must be at least 10 characters long.");
+        }
+        handleDescriptionBlur();
+      }}
+      theme="snow"
+      placeholder="Enter the requirements...."
+      className="responsibility-editor"
+    />
+  </div>
+
+  {/* Character Count */}
+  <div className="mt-2 flex justify-end">
+    <p className="text-sm text-slate-500">
+      {3011 - formData.description.length} characters left
+    </p>
+  </div>
+
+  {/* Error */}
+  {errors.description && (
+    <p className="text-red-500 text-sm mt-2 font-medium">
+      {errors.description}
+    </p>
+  )}
+  </div>
+</div>
         
-        <p className="text-center text-lg font-semibold py-5">
-          Cover letter, Availability & Assessment Question
+        {/* Cover Letter, Availability & Assessment */}
+       <div className="
+  my-10
+  mx-auto
+  w-full
+  lg:w-[75%]
+  bg-white
+  rounded-3xl
+  border
+  border-slate-200
+  shadow-sm
+  overflow-hidden
+">
+
+  {/* Header */}
+  <div className="px-5 py-4 border-b border-slate-200 bg-slate-50">
+    <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+      📋 Cover Letter, Availability & Assessment Question
+    </h3>
+
+    <p className="text-slate-500 text-sm mt-2">
+      Cover letter and availability questions will be asked to every applicant by default.
+      You may also add a customized assessment question.
+    </p>
+  </div>
+
+  {/* Body */}
+  <div className="p-5">
+
+    {/* Cover Letter */}
+    <div className="flex items-start gap-3 pb-4 border-b border-slate-200">
+
+      <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+        ✉️
+      </div>
+
+      <div>
+        <h4 className="font-semibold text-base text-slate-800">
+          Cover Letter
+        </h4>
+
+        <p className="text-slate-500 text-sm mt-1">
+          Tell us something about yourself and why should you be hired for this role.
         </p>
-        <div className="border relative border-gray-300  mx-auto p-6 rounded-lg shadow-lg mb-7 w-full lg:w-[70%]">
-          <p className="text-gray-500 my-2">
-            Cover letter and availability Question will be asked to every
-            Applicant by default. If you wish you may ask a customized question
-            as an assessment
+      </div>
+
+    </div>
+
+    {/* Availability */}
+    <div className="flex items-start gap-3 py-4 border-b border-slate-200">
+
+      <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+        📅
+      </div>
+
+      <div>
+        <h4 className="font-semibold text-base text-slate-800">
+          Availability
+        </h4>
+
+        <p className="text-slate-500 text-sm mt-1">
+          Can you join Immediately?
+        </p>
+      </div>
+
+    </div>
+
+    {/* Assessment */}
+    <div className="pt-4">
+
+      {!isAssessmentOpen ? (
+        <button
+          type="button"
+          onClick={() => setIsAssessmentOpen(true)}
+          className="
+            bg-blue-600
+            hover:bg-blue-700
+            text-white
+            px-5
+            py-2.5
+            rounded-xl
+            font-semibold
+            transition-all
+            shadow-sm
+          "
+        >
+          + Add Assessment Question
+        </button>
+      ) : (
+        <div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setIsAssessmentOpen(false);
+              setFormData({
+                ...formData,
+                assessment: "",
+              });
+            }}
+            className="text-red-500 font-semibold mb-3"
+          >
+            Remove Assessment
+          </button>
+
+          <textarea
+            name="assessment"
+            value={formData.assessment}
+            onChange={handleChange}
+            rows={4}
+            maxLength={200}
+            placeholder="Enter Question for applicant"
+            className="
+              w-full
+              p-3
+              border
+              border-slate-200
+              rounded-xl
+              focus:ring-4
+              focus:ring-blue-100
+              focus:border-blue-500
+              outline-none
+            "
+          />
+
+          <p className="text-sm text-slate-500 mt-2">
+            {200 - formData.assessment.length} characters left
           </p>
-          <div className="my-2">
-            <p>Cover Letter</p>
-            <p className="text-gray-500 ">
-              Tell us something about yourself and why should you be hired for
-              this role.
+
+        </div>
+      )}
+
+    </div>
+
+  </div>
+
+</div>
+        
+
+    {/* ===================== STIPEND ===================== */}
+  
+    <div
+  className="
+  my-10
+  mx-auto
+  w-full
+  lg:w-[75%]
+  bg-white
+  rounded-3xl
+  border
+  border-slate-200
+  shadow-sm
+  overflow-hidden
+"
+>
+  <div className="p-8">
+    <div className="mb-10">
+      <label className="block text-xl font-bold text-slate-800 mb-5">
+        💰 Stipend
+      </label>
+
+      <div className="flex flex-wrap gap-8 text-[17px]">
+
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name="stipendType"
+            value="unpaid"
+            checked={formData.stipendType === "unpaid"}
+            onChange={handleChange}
+          />
+          Unpaid
+        </label>
+
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name="stipendType"
+            value="fixed"
+            checked={formData.stipendType === "fixed"}
+            onChange={handleChange}
+          />
+          Fixed
+        </label>
+
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name="stipendType"
+            value="negotiable"
+            checked={formData.stipendType === "negotiable"}
+            onChange={handleChange}
+          />
+          Negotiable
+        </label>
+
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name="stipendType"
+            value="performance-based"
+            checked={formData.stipendType === "performance-based"}
+            onChange={handleChange}
+          />
+          Performance Based
+        </label>
+      </div>
+
+      {errors.stipendType && (
+        <p className="text-red-500 mt-3">
+          {errors.stipendType}
+        </p>
+      )}
+
+      {(formData.stipendType === "fixed" ||
+        formData.stipendType === "negotiable" ||
+        formData.stipendType === "performance-based") && (
+        <div className="flex items-center gap-3 mt-6">
+
+          <select
+            name="currency"
+            value={formData.currency}
+            onChange={handleChange}
+            className="
+            h-12
+            px-4
+            border
+            border-slate-200
+            rounded-xl
+            shadow-sm
+            "
+          >
+            <option value="₹">₹ INR</option>
+            <option value="$">$ USD</option>
+            <option value="€">€ EUR</option>
+            <option value="£">£ GBP</option>
+            <option value="¥">¥ JPY</option>
+          </select>
+
+          <input
+            type="number"
+            name="stipend"
+            value={formData.stipend}
+            onChange={handleChange}
+            onKeyDown={(e) => {
+              if (
+                e.key === "e" ||
+                e.key === "E" ||
+                e.key === "-" ||
+                e.key === "+" ||
+                e.key === "."
+              ) {
+                e.preventDefault();
+              }
+
+              if (e.target.value === "" && e.key === "0") {
+                e.preventDefault();
+              }
+
+              const currentValue = e.target.value + e.key;
+
+              if (parseInt(currentValue, 10) > 99999) {
+                e.preventDefault();
+              }
+            }}
+            placeholder="e.g. 15000"
+            min="1"
+            className="
+            h-12
+            w-44
+            px-4
+            border
+            border-slate-200
+            rounded-xl
+            shadow-sm
+            focus:ring-4
+            focus:ring-blue-100
+            focus:border-blue-500
+            "
+          />
+
+          <span className="font-medium text-slate-600">
+            /month
+          </span>
+        </div>
+      )}
+
+      {formData.stipendType === "performance-based" && (
+        <div className="mt-6">
+          <label className="block font-semibold mb-2">
+            Incentive Criteria
+          </label>
+
+          <textarea
+            name="incentiveDescription"
+            value={formData.incentiveDescription}
+            onBlur={handleBlur}
+            onChange={handleChange}
+            placeholder="Describe the performance-based incentive"
+            className="
+            w-full
+            p-4
+            border
+            border-slate-200
+            rounded-xl
+            shadow-sm
+            "
+          />
+
+          {errors.incentiveDescription && (
+            <p className="text-red-500 mt-2">
+              {errors.incentiveDescription}
             </p>
-          </div>
-
-          <div className="my-2">
-            <p>Availability</p>
-            <p className="text-gray-500 ">Can you join Immediately?</p>
-          </div>
-
-          <div className="my-5">
-            {!isAssessmentOpen ? (
-              <button
-                className="text-blue-500 font-semibold"
-                onClick={() => setIsAssessmentOpen(true)}
-              >
-                + Add Assessment question
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  setIsAssessmentOpen(false);
-                  setFormData({
-                    ...formData,
-                    assessment: "",
-                  });
-                }}
-                className="text-red-500 font-semibold"
-              >
-                - Remove Assessment
-              </button>
-            )}
-          </div>
-
-          {isAssessmentOpen && (
-            <div className="flex flex-col h-[200px]">
-              <label className="mb-2 font-medium">Assessment Question</label>
-              <textarea
-                type="text"
-                name="assessment"
-                value={formData.assessment}
-                onChange={handleChange}
-                className="p-2 border border-gray-300 rounded-md shadow-md"
-                placeholder="Enter Question for applicant"
-                rows={3}
-                maxLength={200}
-              />
-              <span className="text-sm text-gray-700">{200 - formData.assessment.length} characters left</span>
-            </div>
           )}
         </div>
-        
-        <p className="text-center text-lg font-semibold py-5">
-          Stipend & Perks
-        </p>
-        <div className="border border-gray-300 mx-auto p-6 rounded-lg shadow-lg mb-7 w-full lg:w-[70%]">
-          {/* stipend */}
-          <div className="flex flex-col my-4">
-            <label className="mb-2 font-medium">Stipend</label>
-            <div className="mb-4">
-              <div>
-                <label className="mr-4">
-                  <input
-                    type="radio"
-                    name="stipendType"
-                    value="unpaid"
-                    checked={formData.stipendType === "unpaid"}
-                    onChange={handleChange}
-                    className="mr-1"
-                  />Unpaid
-                </label>
-
-
-                <label className="mr-4">
-                  <input
-                    type="radio"
-                    name="stipendType"
-                    value="fixed"
-                    checked={formData.stipendType === "fixed"}
-                    onChange={handleChange}
-                    className="mr-1"
-                  />
-                  Fixed
-                </label>
-
-                <label className="mr-4">
-                  <input
-                    type="radio"
-                    name="stipendType"
-                    value="negotiable"
-                    checked={formData.stipendType === "negotiable"}
-                    onChange={handleChange}
-                    className="mr-1"
-                  />
-                  Negotiable
-                </label>
-
-                <label>
-                  <input
-                    type="radio"
-                    name="stipendType"
-                    value="performance-based"
-                    checked={formData.stipendType === "performance-based"}
-                    onChange={handleChange}
-                    className="mr-1"
-                  />
-                  Performance Based
-                </label>
-              </div>
-              {errors.stipendType && (
-                <span className="text-red-400">{errors.stipendType}</span>
-              )}
-            </div>
-
-            {/* Conditionally render Stipend Input based on selected type */}
-            {(formData.stipendType === "fixed" ||
-              formData.stipendType === "negotiable" ||
-              formData.stipendType === "performance-based") && (
-                <div className="flex items-center mb-4">
-                  {/* Currency Selector */}
-                  <select
-                    name="currency"
-                    value={formData.currency}
-                    onChange={handleChange}
-                    className="p-1 border border-gray-300 rounded-md shadow-md mr-2"
-                  >
-                    <option value="₹">₹ (INR)</option>
-                    <option value="$">$ (USD)</option>
-                    <option value="€">€ (EUR)</option>
-                    <option value="£">£ (GBP)</option>
-                    <option value="¥">¥ (JPY)</option>
-                  </select>
-                  {/* Stipend Amount Input */}
-                  <input
-                    type="number"
-                    name="stipend"
-                    value={formData.stipend}
-                    onChange={handleChange}
-                    onKeyDown={(e) => {
-                      // Prevent 'e', 'E', '-', '+', and dot '.'
-                      if (
-                        e.key === 'e' ||
-                        e.key === 'E' ||
-                        e.key === '-' ||
-                        e.key === '+' ||
-                        e.key === '.'
-                      ) {
-                        e.preventDefault();
-                      }
-
-                      // Prevent '0' as the first character
-                      if (e.target.value === '' && e.key === '0') {
-                        e.preventDefault();
-                      }
-
-                      const currentValue = e.target.value + e.key; // Append the current key to the value
-                      if (parseInt(currentValue, 10) > 99999) {
-                        e.preventDefault();
-                      }
-                    }}
-                    className="p-1 border w-28 border-gray-300 rounded-md shadow-md"
-                    placeholder="e.g 4000"
-                    required
-                    min="1"
-                  />
-                  /month
-                </div>
-              )}
-
-            {/* Conditionally render Incentive Description for Performance Based */}
-            {formData.stipendType === "performance-based" && (
-              <div className="flex flex-col my-4">
-                <label className="font-medium">
-                  Describe your incentive criteria
-                </label>
-                <textarea
-                  name="incentiveDescription"
-                  value={formData.incentiveDescription}
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  className="p-2 border border-gray-300 rounded-md shadow-md"
-                  placeholder="Describe the performance-based incentive"
-                />
-                {errors.incentiveDescription && (<span className="text-red-400">{errors.incentiveDescription}</span>)}
-              </div>
-            )}
-          </div>
-
-          {/* perks */}
-          <div className="flex flex-col mt-4 mb-2">
-            <label className="mb-2 font-medium">Perks and Benefits</label>
-            <div className="flex items-center">
-              <Select
-                isMulti
-                value={selectedPerks}
-                onChange={(values) => {
-                  setSelectedPerks(values);
-
-                  // Clear error if user selects a value
-                  if (errors.perksSet) {
-                    setErrors((prevErrors) => ({
-                      ...prevErrors,
-                      perksSet: "",
-                    }));
-                  }
-                }}
-                onBlur={() => {
-                  // Check if no perk is selected
-                  if (!selectedPerks || selectedPerks.length === 0) {
-                    setErrors((prevErrors) => ({
-                      ...prevErrors,
-                      perksSet: "Please select atleast one perk.",
-                    }));
-                  }
-                }}
-                options={perks.map((perk) => ({
-                  value: perk,
-                  label: perk,
-                }))}
-                placeholder="Select perk"
-                className="w-60 shadow-md"
-              />
-            </div>
-            {errors.perksSet && (
-              <span className="text-red-400">{errors.perksSet}</span>
-            )}
-          </div>
-
-          {/* ppo */}
-          <div className="my-5 flex flex-col">
-            <div>
-              <p>Does this internship comes with pre-placement offer (PPO)</p>
-              <input
-                type="radio"
-                name="ppoCheck"
-                value="yes"
-                checked={formData.ppoCheck === "yes"}
-                onChange={handleChange}
-                className=""
-              />{" "}
-              <label className="mr-5">Yes</label>
-              <input
-                type="radio"
-                name="ppoCheck"
-                value="no"
-                checked={formData.ppoCheck === "no"}
-                onChange={handleChange}
-                className=""
-              />{" "}
-              <label>No</label>
-            </div>
-            {errors.ppoCheck && (
-              <span className="text-red-400 ">{errors.ppoCheck}</span>
-            )}
-          </div>
-        </div>
-        <button
-            onClick={handleSubmit}
-            className="w-full md:w-[20%] static md:absolute bottom-4 right-4 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
-          >
-            Post Internship
-          </button>
-      </form>
+      )}
     </div>
+
+    {/* Divider */}
+
+    <div className="border-t border-slate-200 my-8"></div>
+
+    {/* ===================== PERKS ===================== */}
+
+    <div className="mb-10">
+
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
+          <FaGift className="text-green-600" />
+        </div>
+
+        <label className="text-xl font-bold text-slate-800">
+          Perks & Benefits
+        </label>
+      </div>
+
+      <Select
+        isMulti
+        value={selectedPerks}
+        onChange={(values) => {
+          setSelectedPerks(values);
+
+          if (errors.perksSet) {
+            setErrors((prevErrors) => ({
+              ...prevErrors,
+              perksSet: "",
+            }));
+          }
+        }}
+        onBlur={() => {
+          if (!selectedPerks || selectedPerks.length === 0) {
+            setErrors((prevErrors) => ({
+              ...prevErrors,
+              perksSet: "Please select atleast one perk.",
+            }));
+          }
+        }}
+        options={perks.map((perk) => ({
+          value: perk,
+          label: perk,
+        }))}
+        placeholder="Select perks"
+      />
+
+      {errors.perksSet && (
+        <p className="text-red-500 mt-2">
+          {errors.perksSet}
+        </p>
+      )}
+    </div>
+
+    {/* Divider */}
+
+    <div className="border-t border-slate-200 my-8"></div>
+
+    {/* ===================== PPO ===================== */}
+
+    <div>
+
+      <div className="flex items-center gap-3 mb-5">
+
+        <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
+          <FaBriefcase className="text-indigo-600" />
+        </div>
+
+        <h3 className="text-xl font-bold text-slate-800">
+          Pre-Placement Offer (PPO)
+        </h3>
+      </div>
+
+      <p className="text-slate-600 mb-4">
+        Does this internship come with a PPO opportunity?
+      </p>
+
+      <div className="flex gap-8 text-[17px]">
+
+        <label className="flex items-center gap-2">
+          <input
+            type="radio"
+            name="ppoCheck"
+            value="yes"
+            checked={formData.ppoCheck === "yes"}
+            onChange={handleChange}
+          />
+          Yes
+        </label>
+
+        <label className="flex items-center gap-2">
+          <input
+            type="radio"
+            name="ppoCheck"
+            value="no"
+            checked={formData.ppoCheck === "no"}
+            onChange={handleChange}
+          />
+          No
+        </label>
+
+      </div>
+
+      {errors.ppoCheck && (
+        <p className="text-red-500 mt-3">
+          {errors.ppoCheck}
+        </p>
+      )}
+    </div>
+
+  </div>
+</div>
+          
+      </form>
+      {/* Post Button */}
+
+{/* Post Button */}
+
+<div className="w-full lg:w-[75%] mx-auto mt-10 mb-16 flex justify-center">
+
+  <button
+    type="button"
+    onClick={handleSubmit}
+    className="
+      px-12
+      py-3
+      rounded-xl
+      bg-blue-600
+      text-white
+      font-semibold
+      shadow-md
+      hover:bg-blue-700
+      hover:shadow-lg
+      transition-all
+    "
+  >
+    Post Internship
+  </button>
+
+</div>
+
+  
+    </div>
+    
   );
 };
 

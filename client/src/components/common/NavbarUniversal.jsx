@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useNavigate, NavLink, Link } from "react-router-dom";
-import internsnestLogo3 from "../../images/INTERNSNEST LOGO.png";
+
 import getUserIdFromTokenStudent from "../student/auth/authUtils.js";
 import getUserIdFromTokenRecr from "../recruiter/auth/authUtilsRecr.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,6 +12,7 @@ import { FaUser, FaAngleUp, FaAngleDown } from "react-icons/fa";
 import api from "../common/server_url.js";
 import axios from "axios";
 
+const internsnestLogo3 = "/logos/INTERNSNEST LOGO.png";
 const NavbarUniversal = () => {
   const navigate = useNavigate();
   

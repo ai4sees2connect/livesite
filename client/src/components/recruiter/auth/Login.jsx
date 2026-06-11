@@ -9,8 +9,7 @@ import {
   faEye,
   faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
-import google_pic from "../../../images/google_pic.png";
-import recruiter_bg from "../../../images/intern_pic.jpeg";
+
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import getUserIdFromToken from "../auth/authUtilsRecr";
@@ -25,6 +24,8 @@ import ToggleButtonSecond from "../../common/ToogleButtonSecond";
 import api from "../../common/server_url";
 import GoBackButton from "../../common/GoBackButton";
 
+const google_pic = "/misc/google_pic.png";
+const recruiter_bg = "/people/intern_pic.jpeg";
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");

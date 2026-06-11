@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretRight, faFile } from "@fortawesome/free-solid-svg-icons";
-import bannerImg from "../../images/about_image.jpeg";
+
 import { Link } from "react-router-dom";
 
+const bannerImg = "/backgrounds/about_image.jpeg";
 const Sidebar = ({ student }) => {
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 770);
   console.log("this student is inside sidebarrrr", student);

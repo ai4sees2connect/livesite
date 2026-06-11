@@ -20,21 +20,23 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Spinner from "../common/Spinner";
 import api from "../common/server_url";
-import bannerImg from "../../images/about_image.jpeg";
+import bannerImg from "../../images/footer_bg.png";
 
-// Logos
-import google from "../../images/google.png";
-import microsoft from "../../images/microsoft.png";
-import amazon from "../../images/amazon.png";
-import adobe from "../../images/adobe.png";
-import deloitte from "../../images/deloitte.png";
-import infosys from "../../images/infosys.png";
-import tcs from "../../images/tcs.png";
-import wipro from "../../images/wipro.png";
-import accenture from "../../images/accenture.png";
-import capgemini from "../../images/capgemini.png";
-import google_pic from "../../images/google_pic.png";
 
+const aboutImage = "/backgrounds/about_image.jpeg";
+
+const google = "/company-logos/google.png";
+const microsoft = "/company-logos/microsoft.png";
+const amazon = "/company-logos/amazon.png";
+const adobe = "/company-logos/adobe.png";
+const deloitte = "/company-logos/deloitte.png";
+const infosys = "/company-logos/infosys.png";
+const tcs = "/company-logos/tcs.png";
+const wipro = "/company-logos/wipro.png";
+const accenture = "/company-logos/accenture.png";
+const capgemini = "/company-logos/capgemini.png";
+
+const google_pic = "/misc/google_pic.png";
 const HomeUniversal = () => {
   const navigate = useNavigate();
   const { userId } = useParams();
@@ -89,7 +91,7 @@ const HomeUniversal = () => {
             if (!intern.recruiter?._id) return intern;
             try {
               const res = await axios.get(
-                `${api}/recruiter/internship/${intern._id}/${intern.recruiter._id}/get-logo`,
+                `${api}/recruiter/get-logo/${intern.recruiter._id}`,
                 { responseType: "blob" }
               );
               const logoUrl = URL.createObjectURL(new Blob([res.data], { type: res.headers["content-type"] }));

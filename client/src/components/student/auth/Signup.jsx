@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import google_pic from "../../../images/google_pic.png";
+
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import getUserIdFromToken from "./authUtils";
@@ -11,7 +11,7 @@ import { signInWithPopup } from "firebase/auth";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useStudent } from "../context/studentContext";
-import login_bg from "../../../images/login_bg.jpeg";
+
 import ToggleButton from "../../common/ToggleButton";
 import ToggleButtonSecond from "../../common/ToogleButtonSecond";
 import api from "../../common/server_url";
@@ -19,6 +19,8 @@ import Spinner from "../../common/Spinner";
 import GoBackButton from "../../common/GoBackButton";
 import { FaCheckCircle } from "react-icons/fa";
 
+const google_pic = "/misc/google_pic.png";
+const login_bg = "/backgrounds/login_bg.jpeg";
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [firstname, setFirstName] = useState("");

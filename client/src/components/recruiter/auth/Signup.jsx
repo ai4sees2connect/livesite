@@ -6,8 +6,7 @@ import {
   faEyeSlash,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
-import google_pic from "../../../images/google_pic.png";
-import recruiter_bg from "../../../images/intern_pic.jpeg";
+
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import getUserIdFromToken from "../auth/authUtilsRecr";
@@ -22,6 +21,9 @@ import { FaCheckCircle } from "react-icons/fa";
 import GoBackButton from "../../common/GoBackButton";
 import { jwtDecode } from 'jwt-decode';
 // import getUserIdFromToken from '../../student/auth/authUtils'
+
+const google_pic = "/misc/google_pic.png";
+const recruiter_bg = "/people/intern_pic.jpeg";
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
 

@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from 'react';
-import contact_pic from '../../../images/contact_pic.jpeg';
+
 import findUser from '../UserDetection.js'
 import { Link, useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
@@ -7,6 +7,7 @@ import getUserIdFromToken from '../../student/auth/authUtils.js';
 import api from '../server_url.js';
 import Spinner from '../Spinner.jsx'
 
+const contact_pic = "/people/contact_pic.jpeg";
 const Contact = () => {
 
   const [formData, setFormData] = useState({

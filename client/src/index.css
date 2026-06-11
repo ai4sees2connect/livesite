@@ -37,10 +37,11 @@
 ========================= */
 
 .bg-footer {
-  background-image: url("../src/images/footer_bg.png");
+  background-image: url("./images/footer_bg.png");
   background-size: cover;
   background-position: center;
 }
+
 
 /* =========================
    SCROLLBAR
@@ -235,6 +236,28 @@
 body {
   font-family: var(--font-family);
   color: var(--text-color);
+}
+
+.responsibility-editor .ql-toolbar {
+  border: none !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  background: #f8fafc;
+}
+
+.responsibility-editor .ql-container {
+  border: none !important;
+  min-height: 220px;
+}
+
+.responsibility-editor .ql-editor {
+  min-height: 220px;
+  font-size: 15px;
+  padding: 16px;
+}
+
+.responsibility-editor .ql-editor.ql-blank::before {
+  color: #94a3b8;
+  font-style: normal;
 }
 
 /* 

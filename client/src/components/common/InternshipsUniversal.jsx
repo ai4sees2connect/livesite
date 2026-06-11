@@ -244,7 +244,7 @@ const InternshipsUniversal = () => {
         {/* Filter Sidebar */}
         <div className={`
           ${filterOpen ? 'translate-x-0' : '-translate-x-full'} 
-          lg:translate-x-0 fixed lg:static top-0 left-0 h-full lg:h-auto w-80 lg:w-1/4 bg-white shadow-xl lg:shadow-md p-6 z-50 lg:z-0 transition-transform duration-300 ease-in-out overflow-y-auto
+          lg:translate-x-0 fixed lg:sticky lg:top-20 lg:h-[calc(100vh-120px)]  top-0 left-0 h-full lg:h-auto w-80 lg:w-1/4 bg-white shadow-xl lg:shadow-md p-6 z-50 lg:z-0 transition-transform duration-300 ease-in-out overflow-y-auto
           rounded-none lg:rounded-xl border-r lg:border border-gray-100
         `}>
           <div className="flex justify-between items-center mb-6">

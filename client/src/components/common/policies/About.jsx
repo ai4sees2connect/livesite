@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
-import about_img from '../../../images/about_image.jpeg';
+
 import findUser from '../UserDetection.js'
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import getUserIdFromToken from '../../student/auth/authUtils.js';
 
+const aboutImage = "/backgrounds/about_image.jpeg";
 const About = () => {
 
   useEffect(() => {
@@ -46,7 +47,7 @@ const About = () => {
       <div className="flex flex-col items-center justify-center mt-2">
         {/* Image Section */}
         <div className='w-full'>
-          <img src={about_img} alt="About" className='w-full max-h-[460px] object-cover' />
+          <img src={aboutImage} alt="About" className='w-full max-h-[460px] object-cover' />
         </div>
 
         {/* Vision Section */}

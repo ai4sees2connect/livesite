@@ -63,26 +63,24 @@ import "../student/utilscss/swiper.css";
 import vids from "../../videos/vids.mp4";
 import vids2 from "../../videos/vids2.mp4";
 
-import google_pic from "../../images/google_pic.png";
-
 import jobs from "../TESTJSONS/jobs.json";
 import courses from "../TESTJSONS/course.json";
 import certificates from "../TESTJSONS/certificates.json";
-import google from "../../images/google.png";
-import microsoft from "../../images/microsoft.png";
-import amazon from "../../images/amazon.png";
-import adobe from "../../images/adobe.png";
-import deloitte from "../../images/deloitte.png";
-import infosys from "../../images/infosys.png";
-import tcs from "../../images/tcs.png";
-import wipro from "../../images/wipro.png";
-import accenture from "../../images/accenture.png";
-import capgemini from "../../images/capgemini.png";
-
 
 const token = localStorage.getItem("token");
 
+const google_pic = "/misc/google_pic.png";
 
+const google = "/company-logos/google.png";
+const microsoft = "/company-logos/microsoft.png";
+const amazon = "/company-logos/amazon.png";
+const adobe = "/company-logos/adobe.png";
+const deloitte = "/company-logos/deloitte.png";
+const infosys = "/company-logos/infosys.png";
+const tcs = "/company-logos/tcs.png";
+const wipro = "/company-logos/wipro.png";
+const accenture = "/company-logos/accenture.png";
+const capgemini = "/company-logos/capgemini.png";
 
 const NextArrow = ({ onClick }) => (
   <div
