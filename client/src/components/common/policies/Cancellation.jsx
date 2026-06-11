@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
-import findUser from '../common/UserDetection.js'
+import findUser from '../UserDetection.js'
 import { Link, useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
-import getUserIdFromToken from '../student/auth/authUtils.js';
+import getUserIdFromToken from '../../student/auth/authUtils.js';
 
 const Cancellation = () => {
 

@@ -1,7 +1,8 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const express = require('express');
 const cors = require('cors');
 const connection=require('./mongoose/connect');
-const dotenv = require('dotenv');
 const Student=require('./schema/studentSchema');
 const Recruiter=require('./schema/recruiterSchema');
 const jwt = require('jsonwebtoken');

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import about_img from '../../images/about_image.jpeg';
-import findUser from '../common/UserDetection.js'
+import about_img from '../../../images/about_image.jpeg';
+import findUser from '../UserDetection.js'
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import getUserIdFromToken from '../student/auth/authUtils.js';
+import getUserIdFromToken from '../../student/auth/authUtils.js';
 
 const About = () => {
 

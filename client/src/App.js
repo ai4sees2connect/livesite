@@ -34,12 +34,12 @@ import ApplicationDetails from "./components/recruiter/ApplicationDetails";
 import AdminLogin from "./components/Admin/AdminLogin";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import RecPricing from "./components/recruiter/RecPricing";
-import Footer from "./components/common/Footer";
-import About from "./components/common/About";
-import Contact from "./components/common/Contact";
-import Privacy from "./components/common/Privacy";
-import Terms from "./components/common/Terms";
-import Cancellation from "./components/common/Cancellation";
+import Footer from "./components/common/company/Footer";
+import About from "./components/common/policies/About";
+import Contact from "./components/common/policies/Contact";
+import Privacy from "./components/common/policies/Privacy";
+import Terms from "./components/common/policies/Terms";
+import Cancellation from "./components/common/policies/Cancellation";
 import NavbarUniversal from "./components/common/NavbarUniversal";
 import InternDetails from "./components/student/InternDetails";
 import InternshipsUniversal from "./components/common/InternshipsUniversal";
@@ -101,7 +101,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy-policy" element={<Privacy />} />
         <Route path="/terms-conditions" element={<Terms />} />
-        <Route path="/Cancellation" element={<Cancellation />} />
+        <Route path="/Cancellation-policy" element={<Cancellation />} />
         <Route path="/recruiter/forget-pass" element={<ForgetPasswordRecruiter />} />
         <Route path="/student/forget-pass" element={<ForgetPasswordStudent />} />
       </Routes>

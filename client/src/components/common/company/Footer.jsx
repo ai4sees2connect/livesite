@@ -3,7 +3,7 @@ import { FaInstagram, FaFacebookF, FaLinkedinIn, FaMapMarkerAlt } from "react-ic
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXTwitter } from "@fortawesome/free-brands-svg-icons";
 import { Link } from "react-router-dom";
-import internsnestLogo3 from "../../images/INTERNSNEST LOGO.png";
+import internsnestLogo3 from "../../../images/INTERNSNEST LOGO.png";
 
 const Footer = () => {
   const [hoveredIcon, setHoveredIcon] = useState(null);
