@@ -11,6 +11,7 @@ import {
   FaAudible,
   FaAngleLeft,
   FaAngleRight,
+  FaCheck,
 } from "react-icons/fa";
 import Select from "react-select";
 import ExperienceSlider from "./common/ExperienceSlider";
@@ -61,7 +62,6 @@ const Applicants = () => {
     return { value: year.toString(), label: year.toString() };
   }).reverse();
 
-
   const cgpaToPercentage = (cgpa) => {
     const cgpaValue = parseFloat(cgpa);
     return (cgpaValue * 9.5).toFixed(2); // Convert CGPA to percentage
@@ -97,25 +97,24 @@ const Applicants = () => {
     setFilterOpen(isLargeScreen);
   }, []);
 
-
   // console.log(skillsArray);
-
-
-
 
   const constructQueryStringApplicantFilters = (pageSent, status) => {
     let query = `page=${pageSent}`;
 
     if (searchName) query += `&searchName=${encodeURIComponent(searchName)}`;
-    if (selectedCountry) query += `&country=${encodeURIComponent(selectedCountry)}`;
+    if (selectedCountry)
+      query += `&country=${encodeURIComponent(selectedCountry)}`;
     if (selectedState) query += `&state=${encodeURIComponent(selectedState)}`;
     if (selectedCity) query += `&city=${encodeURIComponent(selectedCity)}`;
     if (expFilter) query += `&workExperience=${expFilter}`;
     if (skillsFilter.length > 0) query += `&skills=${skillsFilter.join(",")}`;
     if (eduFilter.length > 0) query += `&education=${eduFilter.join(",")}`;
     if (selectedMatch) query += `&match=${selectedMatch}`;
-    if (selectedGenders.length > 0) query += `&genders=${selectedGenders.join(",")}`;
-    if (selectedStatus) query += `&selectedStatus=${encodeURIComponent(status)}`
+    if (selectedGenders.length > 0)
+      query += `&genders=${selectedGenders.join(",")}`;
+    if (selectedStatus)
+      query += `&selectedStatus=${encodeURIComponent(status)}`;
     return query;
   };
 
@@ -124,13 +123,15 @@ const Applicants = () => {
       // Fetch the internship details
       setLoading(true);
 
-
       // Fetch the applicants
-      const queryString = constructQueryStringApplicantFilters(pageSent, status);
+      const queryString = constructQueryStringApplicantFilters(
+        pageSent,
+        status,
+      );
       // console.log(queryString);
       // console.log(internshipResponse.data.skills);
       const applicantsResponse = await axios.get(
-        `${api}/recruiter/internship/${recruiterId}/applicants/${internshipId}?${queryString}`
+        `${api}/recruiter/internship/${recruiterId}/applicants/${internshipId}?${queryString}`,
       );
       setApplicants(applicantsResponse.data.applicants);
       setTotalPages(applicantsResponse.data.totalPages);
@@ -138,7 +139,7 @@ const Applicants = () => {
       setRejectedCount(applicantsResponse.data.rejectedCount);
       setHiredCount(applicantsResponse.data.hiredCount);
       setShortlistedCount(applicantsResponse.data.shortlistedCount);
-      console.log('this is student list', applicantsResponse.data.applicants);
+      console.log("this is student list", applicantsResponse.data.applicants);
 
       setLoading(false);
       // console.log("this is list of applicants", applicantsResponse.data);
@@ -151,20 +152,19 @@ const Applicants = () => {
 
   const fetchInternships = async () => {
     const internshipResponse = await axios.get(
-      `${api}/recruiter/internship/${recruiterId}/getDetails/${internshipId}`
+      `${api}/recruiter/internship/${recruiterId}/getDetails/${internshipId}`,
     );
     setInternship(internshipResponse.data);
 
     return internshipResponse.data;
-  }
+  };
 
   useEffect(() => {
     const internResponse = fetchInternships();
     const skillsArray = internResponse?.skills || [];
 
     setIsSkillsReady(true); // Mark as ready once skillsArray is populated
-  }, [internshipId, recruiterId])
-
+  }, [internshipId, recruiterId]);
 
   useEffect(() => {
     if (isSkillsReady) {
@@ -176,15 +176,14 @@ const Applicants = () => {
     setPage(1);
     fetchApplicantsAndInternship(1, selectedStatus);
     // console.log('this is query',query);
-  }
+  };
 
   const handleStatusChange = (statusValue) => {
-    console.log('status changed', statusValue);
+    console.log("status changed", statusValue);
     setSelectedStatus(statusValue);
     setPage(1);
-    fetchApplicantsAndInternship(1, statusValue)
-  }
-
+    fetchApplicantsAndInternship(1, statusValue);
+  };
 
   const handleReset = () => {
     setSearchName("");
@@ -200,8 +199,7 @@ const Applicants = () => {
     setSelectedPer(0);
     setPage(1);
     setIsReset(true);
-
-  }
+  };
 
   useEffect(() => {
     if (isReset) {
@@ -210,15 +208,12 @@ const Applicants = () => {
     }
   }, [isReset]);
 
-
   const scrollToTop = () => {
     scrollRef.current.scrollTo({
       top: 0,
       behavior: "smooth",
     });
   };
-
-
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -254,7 +249,7 @@ const Applicants = () => {
 
         // Check if all words in requiredSkill match any word in studentSkill
         return requiredSkillWords.every((word) =>
-          studentSkillWords.includes(word)
+          studentSkillWords.includes(word),
         );
       });
     });
@@ -264,21 +259,19 @@ const Applicants = () => {
     return Math.round(matchPercentage);
   };
 
-
-
   const handleCheckboxChange = (event) => {
     const value = event.target.value;
     setSelectedGenders((prev) =>
       prev.includes(value)
         ? prev.filter((gender) => gender !== value)
-        : [...prev, value]
+        : [...prev, value],
     );
   };
 
   const handleViewProfile = async (studentId) => {
     try {
       await axios.put(
-        `${api}/student/internship/${studentId}/${internshipId}/viewed`
+        `${api}/student/internship/${studentId}/${internshipId}/viewed`,
       );
       // Optionally handle success (e.g., show a message or update state)
       // console.log("worked");
@@ -291,7 +284,7 @@ const Applicants = () => {
   const handleShortlistProfile = async (studentId) => {
     try {
       await axios.put(
-        `${api}/student/internship/${studentId}/${internshipId}/${recruiterId}/shortlist`
+        `${api}/student/internship/${studentId}/${internshipId}/${recruiterId}/shortlist`,
       );
       // Optionally handle success (e.g., show a message or update state)
       // console.log("worked shortlisting");
@@ -311,7 +304,7 @@ const Applicants = () => {
             };
           }
           return applicant;
-        })
+        }),
       );
     } catch (error) {
       console.error("Error updating status:", error);
@@ -322,7 +315,7 @@ const Applicants = () => {
   const handleRejectProfile = async (studentId) => {
     try {
       await axios.put(
-        `${api}/student/internship/${studentId}/${internshipId}/reject`
+        `${api}/student/internship/${studentId}/${internshipId}/reject`,
       );
       setApplicants((prevApplicants) =>
         prevApplicants.map((applicant) => {
@@ -339,10 +332,9 @@ const Applicants = () => {
             };
           }
           return applicant;
-        })
+        }),
       );
       toast.success("Applicant Rejected");
-
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Some error occured");
@@ -380,7 +372,6 @@ const Applicants = () => {
   // console.log('this is list of graduation years', selectedGradYears);
   // console.log('this is percentage', selectedPer);
 
-
   if (loading) {
     return <Spinner />;
   }
@@ -401,6 +392,18 @@ const Applicants = () => {
   const cities = selectedState
     ? states.find((s) => s.name === selectedState)?.cities
     : [];
+
+  const getApplicationStatus = (student) => {
+    // Agar array hai
+    if (Array.isArray(student.appliedInternships)) {
+      const application = student.appliedInternships.find(
+        (app) => app.internship === internshipId,
+      );
+      return application?.internshipStatus?.status;
+    }
+    // Agar object hai
+    return student.appliedInternships?.internshipStatus?.status;
+  };
 
   return (
     <div className="py-10 px-5 mt-10 bg-gray-100 min-h-screen ">
@@ -444,10 +447,11 @@ const Applicants = () => {
             </button>
 
             <div
-              className={`absolute z-10 mb-2 left-0 h-full w-full  bg-white border rounded shadow-lg transition-all duration-300 ease-in-out ${showOptions
-                ? "bottom-[138px] opacity-100"
-                : "-bottom-12 opacity-0"
-                } `}
+              className={`absolute z-10 mb-2 left-0 h-full w-full  bg-white border rounded shadow-lg transition-all duration-300 ease-in-out ${
+                showOptions
+                  ? "bottom-[138px] opacity-100"
+                  : "-bottom-12 opacity-0"
+              } `}
             >
               <ul className="text-left bg-white">
                 <li
@@ -455,10 +459,11 @@ const Applicants = () => {
                     handleStatusChange("Applications Received");
                     setShowOptions(false);
                   }}
-                  className={`py-3 px-2 hover:text-blue-300 cursor-pointer  ${selectedStatus === "Applications Received"
-                    ? "text-blue-500 font-semibold"
-                    : "text-gray-800"
-                    }`}
+                  className={`py-3 px-2 hover:text-blue-300 cursor-pointer  ${
+                    selectedStatus === "Applications Received"
+                      ? "text-blue-500 font-semibold"
+                      : "text-gray-800"
+                  }`}
                 >
                   Applications Received ({totalStudents})
                 </li>
@@ -467,10 +472,11 @@ const Applicants = () => {
                     handleStatusChange("Shortlisted");
                     setShowOptions(false);
                   }}
-                  className={`py-3 px-2 hover:text-blue-300 cursor-pointer  ${selectedStatus === "Shortlisted"
-                    ? "text-blue-500 font-semibold"
-                    : "text-gray-800"
-                    }`}
+                  className={`py-3 px-2 hover:text-blue-300 cursor-pointer  ${
+                    selectedStatus === "Shortlisted"
+                      ? "text-blue-500 font-semibold"
+                      : "text-gray-800"
+                  }`}
                 >
                   Shortlisted ({shortlistedCount})
                 </li>
@@ -479,10 +485,11 @@ const Applicants = () => {
                     handleStatusChange("Not Interested");
                     setShowOptions(false);
                   }}
-                  className={`py-3 px-2 hover:text-blue-300 cursor-pointer ${selectedStatus === "Not Interested"
-                    ? "text-blue-500 font-semibold"
-                    : "text-gray-800"
-                    }`}
+                  className={`py-3 px-2 hover:text-blue-300 cursor-pointer ${
+                    selectedStatus === "Not Interested"
+                      ? "text-blue-500 font-semibold"
+                      : "text-gray-800"
+                  }`}
                 >
                   Not selected ({rejectedCount})
                 </li>
@@ -491,10 +498,11 @@ const Applicants = () => {
                     handleStatusChange("Hired");
                     setShowOptions(false);
                   }}
-                  className={`py-3 px-2 hover:text-blue-300 cursor-pointer ${selectedStatus === "Hired"
-                    ? "text-blue-500 font-semibold"
-                    : "text-gray-800"
-                    }`}
+                  className={`py-3 px-2 hover:text-blue-300 cursor-pointer ${
+                    selectedStatus === "Hired"
+                      ? "text-blue-500 font-semibold"
+                      : "text-gray-800"
+                  }`}
                 >
                   Hired ({hiredCount})
                 </li>
@@ -517,14 +525,23 @@ const Applicants = () => {
       <div className="flex flex-col lg:flex-row items-start gap-5  relative">
         {/*filter  */}
         <div
-          className={`${filterOpen ? "block opacity-100" : "hidden opacity-0"
-            } lg:block w-full mt-0 px-6 transition-all duration-300 ease-in-out rounded-md border right-2 shadow-xl border-t py-6 overflow-y-scroll scrollbar-thin h-[80vh] bg-white lg:max-w-[300px] `}
+          className={`${
+            filterOpen ? "block opacity-100" : "hidden opacity-0"
+          } lg:block w-full mt-0 px-6 transition-all duration-300 ease-in-out rounded-md border right-2 shadow-xl border-t py-6 overflow-y-scroll scrollbar-thin h-[80vh] bg-white lg:max-w-[300px] `}
         >
-          <button onClick={handleReset} className="absolute -top-9 left-30 px-2 py-1 bg-blue-500 text-white rounded-md">
+          <button
+            onClick={handleReset}
+            className="absolute -top-9 left-30 px-2 py-1 bg-blue-500 text-white rounded-md"
+          >
             Reset filters
           </button>
 
-          <button onClick={handleApplyFilters} className="absolute -top-9 right-5 lg:right-auto lg:left-40 px-2 py-1 bg-blue-500 text-white rounded-md">Apply Filters</button>
+          <button
+            onClick={handleApplyFilters}
+            className="absolute -top-9 right-5 lg:right-auto lg:left-40 px-2 py-1 bg-blue-500 text-white rounded-md"
+          >
+            Apply Filters
+          </button>
           <input
             type="text"
             placeholder="Search by name..."
@@ -535,7 +552,6 @@ const Applicants = () => {
           <h1 className="text-center font-extrabold text-xl tracking-widest">
             Filters
           </h1>
-
 
           <div className="flex flex-col space-y-4">
             <label>Location:</label>
@@ -602,8 +618,13 @@ const Applicants = () => {
               <Select
                 isMulti
                 options={skills}
-                value={skillsFilter.map((skill) => ({ value: skill, label: skill }))}
-                onChange={(values) => setSkillsFilter(values.map((v) => v.value))}
+                value={skillsFilter.map((skill) => ({
+                  value: skill,
+                  label: skill,
+                }))}
+                onChange={(values) =>
+                  setSkillsFilter(values.map((v) => v.value))
+                }
                 placeholder="Select the skills"
                 searchable={true}
                 className="w-full shadow-md mb-3"
@@ -615,8 +636,11 @@ const Applicants = () => {
               <Select
                 isMulti
                 options={degreeOptions}
-                value={eduFilter.map((education) => ({ value: education, label: education }))}
-                onChange={(values) => setEduFilter(values.map(v => v.value))}
+                value={eduFilter.map((education) => ({
+                  value: education,
+                  label: education,
+                }))}
+                onChange={(values) => setEduFilter(values.map((v) => v.value))}
                 placeholder="e.g MBA"
                 searchable={true}
                 className="w-full shadow-md"
@@ -689,14 +713,16 @@ const Applicants = () => {
           {/* applicants */}
           <div className="flex flex-col w-full">
             <div className="  ">
-
               <div className="bg-white shadow-md rounded-lg p-6 w-full">
                 {applicants.length === 0 ? (
                   <p className="text-center text-gray-500">
                     No applicants for this internship yet.
                   </p>
                 ) : (
-                  <div ref={scrollRef} className="space-y-4 overflow-y-auto h-screen scrollbar-thin">
+                  <div
+                    ref={scrollRef}
+                    className="space-y-4 overflow-y-auto h-screen scrollbar-thin"
+                  >
                     {applicants.map((student) => (
                       <div
                         key={student._id}
@@ -706,12 +732,18 @@ const Applicants = () => {
                           {student.firstname} {student.lastname}
                         </h2>
                         <div className="flex justify-between">
-                          <h2 className="mb-2">{student.homeLocation.country + "," + student.homeLocation.state + "," + student.homeLocation.city}</h2>
+                          <h2 className="mb-2">
+                            {student.homeLocation.country +
+                              "," +
+                              student.homeLocation.state +
+                              "," +
+                              student.homeLocation.city}
+                          </h2>
                         </div>
 
                         <p key={student.appliedInternships.internship}>
                           {student.appliedInternships.availability ===
-                            "Yes! Will join Immediately" ? (
+                          "Yes! Will join Immediately" ? (
                             <span className="text-green-600">
                               Immediate Joiner
                             </span>
@@ -739,40 +771,70 @@ const Applicants = () => {
                             </button>
                           )}
 
-                        {student.appliedInternships.internshipStatus
-                          .status === "Shortlisted" && (
-                            <h2 className="text-sm md:text-base font-semibold absolute right-3 top-4 lg:top-6  text-green-500">
-                              Shortlisted
-                            </h2>
-                          )}
-                        {student.appliedInternships.internshipStatus
-                          .status === "Rejected" && (
-                            <h2 className="text-sm md:text-base absolute right-3 top-4 lg:top-6 font-semibold text-red-500">
-                              Rejected
-                            </h2>
-                          )}
-                        {student.appliedInternships.internshipStatus
-                          .status === "Hired" && (
-                            <h2 className="text-sm md:text-base absolute right-3 top-4 lg:top-6 font-semibold text-green-500">
-                              Hired
-                            </h2>
+                        {!isOpen &&
+                          (getApplicationStatus(student) === "Applied" ||
+                            getApplicationStatus(student) === "Viewed") && (
+                            <div className="absolute bottom-5 right-5 flex gap-3">
+                              {/* Shortlist Button */}
+                              <button
+                                onClick={() =>
+                                  handleShortlistProfile(student._id)
+                                }
+                                className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-300"
+                              >
+                                <FaCheck className="w-4 h-4" />
+                                Shortlist
+                              </button>
+
+                              {/* Reject Button */}
+                              <button
+                                onClick={() => handleRejectProfile(student._id)}
+                                className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                              >
+                                <FaTimes className="w-4 h-4" />
+                                Reject
+                              </button>
+                            </div>
                           )}
 
-                        {(student.appliedInternships.internshipStatus
-                          .status === "Shortlisted" || student.appliedInternships.internshipStatus
-                            .status === "Hired") && (
-                            <Link
-                              to={`/recruiter/${recruiterId}/chatroom`}
-                              className="text-sm md:text-base text-blue-400 font-semibold  absolute right-3 bottom-6  lg:top-14"
-                            >
-                              View messages
-                            </Link>
-                          )}
+                        {student.appliedInternships.internshipStatus.status ===
+                          "Shortlisted" && (
+                          <h2 className="text-sm md:text-base font-semibold absolute right-3 top-4 lg:top-6  text-green-500">
+                            Shortlisted
+                          </h2>
+                        )}
+                        {student.appliedInternships.internshipStatus.status ===
+                          "Rejected" && (
+                          <h2 className="text-sm md:text-base absolute right-3 top-4 lg:top-6 font-semibold text-red-500">
+                            Rejected
+                          </h2>
+                        )}
+                        {student.appliedInternships.internshipStatus.status ===
+                          "Hired" && (
+                          <h2 className="text-sm md:text-base absolute right-3 top-4 lg:top-6 font-semibold text-green-500">
+                            Hired
+                          </h2>
+                        )}
+
+                        {(student.appliedInternships.internshipStatus.status ===
+                          "Shortlisted" ||
+                          student.appliedInternships.internshipStatus.status ===
+                            "Hired") && (
+                          <Link
+                            to={`/recruiter/${recruiterId}/chatroom`}
+                            className="text-sm md:text-base text-blue-400 font-semibold  absolute right-3 bottom-6  lg:top-14"
+                          >
+                            View messages
+                          </Link>
+                        )}
 
                         {isOpen === student._id && (
                           <div className="flex absolute right-3 top-2 space-x-4">
                             <button
-                              onClick={() => { setIsOpen(false); setSelectedStudent(null) }}
+                              onClick={() => {
+                                setIsOpen(false);
+                                setSelectedStudent(null);
+                              }}
                               className=" right-3 top-2 underline text-blue-400"
                             >
                               Hide Profile
@@ -785,35 +847,36 @@ const Applicants = () => {
                         {/* Match Percentage */}
                         <div className="mb-2">
                           <p
-                            className={`font-semibold ${calculateMatchPercentage(
-                              student.skills,
-                              internship?.skills
-                            ) < 20
-                              ? "text-red-500"
-                              : calculateMatchPercentage(
+                            className={`font-semibold ${
+                              calculateMatchPercentage(
                                 student.skills,
-                                internship?.skills
-                              ) >= 20 &&
-                                calculateMatchPercentage(
-                                  student.skills,
-                                  internship?.skills
-                                ) <= 60
-                                ? "text-orange-300"
+                                internship?.skills,
+                              ) < 20
+                                ? "text-red-500"
                                 : calculateMatchPercentage(
-                                  student.skills,
-                                  internship?.skills
-                                ) > 60 &&
-                                  calculateMatchPercentage(
-                                    student.skills,
-                                    internship?.skills
-                                  ) <= 90
-                                  ? "text-yellow-500"
-                                  : "text-green-500"
-                              }`}
+                                      student.skills,
+                                      internship?.skills,
+                                    ) >= 20 &&
+                                    calculateMatchPercentage(
+                                      student.skills,
+                                      internship?.skills,
+                                    ) <= 60
+                                  ? "text-orange-300"
+                                  : calculateMatchPercentage(
+                                        student.skills,
+                                        internship?.skills,
+                                      ) > 60 &&
+                                      calculateMatchPercentage(
+                                        student.skills,
+                                        internship?.skills,
+                                      ) <= 90
+                                    ? "text-yellow-500"
+                                    : "text-green-500"
+                            }`}
                           >
                             {calculateMatchPercentage(
                               student.skills,
-                              internship?.skills
+                              internship?.skills,
                             )}
                             % Matched
                           </p>
@@ -855,15 +918,11 @@ const Applicants = () => {
                                   Assessment Question
                                 </h3>
                                 <p>Ques: {internship.assessment}</p>
-                                
-                                      <p
-                                        
-                                        className="text-gray-600"
-                                      >
-                                        Ans: {student.appliedInternships.assessmentAns}
-                                      </p>
-                                    
-                                
+
+                                <p className="text-gray-600">
+                                  Ans:{" "}
+                                  {student.appliedInternships.assessmentAns}
+                                </p>
                               </div>
                             )}
 
@@ -877,8 +936,6 @@ const Applicants = () => {
                                 {" "}
                                 {student.appliedInternships.aboutText}
                               </p>
-
-
                             </div>
 
                             {/* Education */}
@@ -888,7 +945,8 @@ const Applicants = () => {
                                 <p key={index} className="text-gray-600">
                                   {edu.degree} in {edu.fieldOfStudy} from{" "}
                                   {edu.institution} ({edu.startYear} -{" "}
-                                  {edu.endYear}) ({edu.score + " " + edu.gradeType})
+                                  {edu.endYear}) (
+                                  {edu.score + " " + edu.gradeType})
                                 </p>
                               ))}
                             </div>
@@ -927,7 +985,7 @@ const Applicants = () => {
                                   <p key={index} className="text-gray-600">
                                     {project.title} - {project.description}
                                   </p>
-                                )
+                                ),
                               )}
                             </div>
 
@@ -972,25 +1030,25 @@ const Applicants = () => {
                               .status === "Applied" ||
                               student.appliedInternships.internshipStatus
                                 .status === "Viewed") && (
-                                <div className="absolute bottom-5 right-5 space-x-4">
-                                  <button
-                                    onClick={() =>
-                                      handleShortlistProfile(student._id)
-                                    }
-                                    className=" rounded-lg font-semibold text-green-600 shadow-md hover:scale-105 duration-300 px-2 py-1"
-                                  >
-                                    Shortlist
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      handleRejectProfile(student._id)
-                                    }
-                                    className=" rounded-lg font-semibold text-red-600 shadow-md hover:scale-105 duration-300 px-2 py-1"
-                                  >
-                                    Reject
-                                  </button>
-                                </div>
-                              )}
+                              <div className="absolute bottom-5 right-5 space-x-4">
+                                <button
+                                  onClick={() =>
+                                    handleShortlistProfile(student._id)
+                                  }
+                                  className=" rounded-lg font-semibold text-green-600 shadow-md hover:scale-105 duration-300 px-2 py-1"
+                                >
+                                  Shortlist
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleRejectProfile(student._id)
+                                  }
+                                  className=" rounded-lg font-semibold text-red-600 shadow-md hover:scale-105 duration-300 px-2 py-1"
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -1006,8 +1064,9 @@ const Applicants = () => {
                 <button
                   onClick={handlePreviousPage}
                   disabled={page === 1}
-                  className={`px-4 py-2 rounded-md ${page === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
-                    }`}
+                  className={`px-4 py-2 rounded-md ${
+                    page === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
+                  }`}
                 >
                   <FaAngleLeft />
                 </button>
@@ -1018,37 +1077,38 @@ const Applicants = () => {
                 <button
                   onClick={handleNextPage}
                   disabled={page === totalPages}
-                  className={`px-4 py-2 rounded-md ${page === totalPages
-                    ? "bg-gray-300"
-                    : "bg-blue-500 text-white"
-                    }`}
+                  className={`px-4 py-2 rounded-md ${
+                    page === totalPages
+                      ? "bg-gray-300"
+                      : "bg-blue-500 text-white"
+                  }`}
                 >
                   <FaAngleRight />
                 </button>
               </div>
             )}
-
           </div>
 
           {/* board */}
           <div className="mb-5 hidden lg:flex lg:flex-col bg-white shadow-md rounded-lg p-6 left-2  space-y-7 w-full lg:w-[300px] lg:ml-5">
             <div
               onClick={() => handleStatusChange("Applications Received")} // Click handler
-              className={`flex cursor-pointer justify-between ${selectedStatus === "Applications Received"
-                ? "text-blue-500 font-semibold"
-                : "text-gray-800"
-                }`}
+              className={`flex cursor-pointer justify-between ${
+                selectedStatus === "Applications Received"
+                  ? "text-blue-500 font-semibold"
+                  : "text-gray-800"
+              }`}
             >
-              <p>Applications Received</p>{" "}
-              <span>{totalStudents}</span>
+              <p>Applications Received</p> <span>{totalStudents}</span>
             </div>
 
             <div
               onClick={() => handleStatusChange("Shortlisted")} // Click handler
-              className={`flex cursor-pointer justify-between ${selectedStatus === "Shortlisted"
-                ? "text-blue-500 font-semibold"
-                : "text-gray-800"
-                }`}
+              className={`flex cursor-pointer justify-between ${
+                selectedStatus === "Shortlisted"
+                  ? "text-blue-500 font-semibold"
+                  : "text-gray-800"
+              }`}
             >
               <p>Shortlisted</p>
               <span>{shortlistedCount}</span>
@@ -1056,10 +1116,11 @@ const Applicants = () => {
 
             <div
               onClick={() => handleStatusChange("Not Interested")} // Click handler
-              className={`flex cursor-pointer justify-between ${selectedStatus === "Not Interested"
-                ? "text-blue-500 font-semibold"
-                : "text-gray-800"
-                }`}
+              className={`flex cursor-pointer justify-between ${
+                selectedStatus === "Not Interested"
+                  ? "text-blue-500 font-semibold"
+                  : "text-gray-800"
+              }`}
             >
               <p>Not Interested</p>
               <span>{rejectedCount}</span>
@@ -1067,16 +1128,16 @@ const Applicants = () => {
 
             <div
               onClick={() => handleStatusChange("Hired")} // Click handler
-              className={`flex cursor-pointer justify-between ${selectedStatus === "Hired"
-                ? "text-blue-500 font-semibold"
-                : "text-gray-800"
-                }`}
+              className={`flex cursor-pointer justify-between ${
+                selectedStatus === "Hired"
+                  ? "text-blue-500 font-semibold"
+                  : "text-gray-800"
+              }`}
             >
               <p>Hired</p>
               <span>{hiredCount}</span>
             </div>
           </div>
-
         </div>
       </div>
     </div>

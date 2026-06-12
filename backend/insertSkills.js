@@ -368,7 +368,6 @@ const insertSkills = async () => {
     await Skill.insertMany(
       skills.map(skill => ({ name: skill })) // Mapping the skill names to the schema
     );
-    console.log('Skills inserted successfully');
     mongoose.disconnect(); // Close the connection after insertion
   } catch (error) {
     console.error('Error inserting skills:', error);

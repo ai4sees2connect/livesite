@@ -581,4 +581,28 @@ router.get(
   },
 );
 
+// Individual logo serve karne wala endpoint
+router.get("/recruiter/logo/:recruiterId", async (req, res) => {
+  try {
+    const recruiter = await Recruiter.findById(
+      req.params.recruiterId,
+      "companyLogo.data companyLogo.contentType"
+    );
+    
+    if (!recruiter?.companyLogo?.data) {
+      return res.status(404).json({ error: "Logo not found" });
+    }
+    
+    // Cache headers - browser cache karega logo ko
+    res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
+    res.setHeader('Content-Type', recruiter.companyLogo.contentType);
+    
+    // Direct binary send - NO Base64 conversion!
+    res.send(recruiter.companyLogo.data);
+  } catch (error) {
+    console.error("Error serving logo:", error);
+    res.status(500).json({ error: "Failed to serve logo" });
+  }
+});
+
 module.exports = router;

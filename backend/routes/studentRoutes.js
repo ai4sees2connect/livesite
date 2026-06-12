@@ -584,6 +584,37 @@ router.get('/resume/:id', async (req, res) => {
   }
 });
 
+// router.post("/batch-get-logos", async (req, res) => {
+//   try {
+//     const { recruiterIds } = req.body;
+
+//     if (!recruiterIds || !Array.isArray(recruiterIds)) {
+//       return res.status(400).json({ error: "Invalid recruiter IDs format" });
+//     }
+
+//     const recruiters = await Recruiter.find(
+//       { _id: { $in: recruiterIds } },
+//       "_id companyLogo"
+//     );
+
+//     const logos = recruiters.reduce((acc, recruiter) => {
+//       const logoData = recruiter.companyLogo?.data;
+//       const contentType = recruiter.companyLogo?.contentType;
+
+//       acc[recruiter._id] = logoData
+//         ? `data:${contentType};base64,${logoData.toString("base64")}`
+//         : null; // Convert binary to Base64 for direct frontend use
+//       return acc;
+//     }, {});
+
+//     res.status(200).json({ logos });
+//   } catch (error) {
+//     console.error("Error fetching logos:", error);
+//     res.status(500).json({ error: "Failed to fetch recruiter logos" });
+//   }
+// });
+
+
 router.post("/batch-get-logos", async (req, res) => {
   try {
     const { recruiterIds } = req.body;
@@ -592,20 +623,17 @@ router.post("/batch-get-logos", async (req, res) => {
       return res.status(400).json({ error: "Invalid recruiter IDs format" });
     }
 
+    // Sirf check karo logo exist karta hai ya nahi - DATA MAT LOAD KARO
     const recruiters = await Recruiter.find(
-      { _id: { $in: recruiterIds } },
-      "_id companyLogo"
+      { _id: { $in: recruiterIds }, "companyLogo.data": { $exists: true } },
+      "_id" // Sirf ID chahiye
     );
 
-    const logos = recruiters.reduce((acc, recruiter) => {
-      const logoData = recruiter.companyLogo?.data;
-      const contentType = recruiter.companyLogo?.contentType;
-
-      acc[recruiter._id] = logoData
-        ? `data:${contentType};base64,${logoData.toString("base64")}`
-        : null; // Convert binary to Base64 for direct frontend use
-      return acc;
-    }, {});
+    const logos = {};
+    recruiters.forEach(recruiter => {
+      // URL return karo, Base64 nahi
+      logos[recruiter._id] = `/recruiter/internship/recruiter/logo/${recruiter._id}`;
+    });
 
     res.status(200).json({ logos });
   } catch (error) {

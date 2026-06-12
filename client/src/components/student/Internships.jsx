@@ -427,7 +427,9 @@ const Internships = () => {
 
       const internshipsWithLogos = internships.map((internship) => ({
         ...internship,
-        logoUrl: logoMap[internship.recruiter?._id] || null,
+        logoUrl: logoMap[internship.recruiter?._id]
+          ? `${api}${logoMap[internship.recruiter?._id]}`
+          : null,
       }));
 
       setInternships(internshipsWithLogos);

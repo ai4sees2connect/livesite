@@ -81,9 +81,6 @@ router.post('/forget-pass/send-otp', async (req, res) => {
       },
     });
 
-    console.log('Email User:', process.env.EMAIL_USER);
-    console.log('Email Pass:', process.env.EMAIL_PASS);
-
     transporter.verify((error, success) => {
       if (error) {
         console.error('Transporter verification failed:', error);
@@ -99,7 +96,6 @@ router.post('/forget-pass/send-otp', async (req, res) => {
       text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
     };
 
-    console.log(mailOptions);
     // Step 4: Send email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
