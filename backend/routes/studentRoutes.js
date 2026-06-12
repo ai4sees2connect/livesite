@@ -857,7 +857,7 @@ router.post('/file-to-url', upload.single('file'),async(req,res)=>{
     await newFile.save();
 
     // Send back the URL (you can generate a URL based on your application's routing)
-    const fileUrl = `http://localhost:4000/files/${newFile._id}`;
+    const fileUrl = `/files/${newFile._id}`;
     res.json({ fileUrl, fileId:newFile._id });
   } catch (error) {
     console.error(error);

@@ -20,8 +20,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Spinner from "../common/Spinner";
 import api from "../common/server_url";
-import bannerImg from "../../images/footer_bg.png";
-
 
 const aboutImage = "/backgrounds/about_image.jpeg";
 
@@ -133,7 +131,7 @@ const HomeUniversal = () => {
         <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-blue-200 rounded-full blur-3xl opacity-40"></div>
         <div className="absolute bottom-[-120px] right-[-120px] w-[350px] h-[350px] bg-cyan-200 rounded-full blur-3xl opacity-40"></div>
 
-        <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-[90vw] mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h1 className="text-4xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
               Find Internships that
@@ -173,7 +171,7 @@ const HomeUniversal = () => {
             <div className="absolute -top-10 -left-10 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-40"></div>
             <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-cyan-200 rounded-full blur-3xl opacity-40"></div>
             <img
-              src={bannerImg}
+              src={aboutImage}
               alt="hero"
               className="w-[420px] lg:w-[520px] object-contain rounded-3xl shadow-2xl relative z-10"
             />

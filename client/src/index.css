@@ -37,7 +37,7 @@
 ========================= */
 
 .bg-footer {
-  background-image: url("./images/footer_bg.png");
+  background-image: url("../public/footer/footer_bg.png");
   background-size: cover;
   background-position: center;
 }
