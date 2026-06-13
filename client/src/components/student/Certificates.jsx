@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FaPlus, FaPen, FaTrash, FaAward, FaCheckCircle, FaFilePdf } from "react-icons/fa";
 import getUserIdFromToken from "./auth/authUtils";
 import { toast } from "react-toastify";
 import axios from "axios";
 import api from "../common/server_url";
-import { FaCheckCircle, FaTrash } from "react-icons/fa";
 
 const Certificates = () => {
   const [clicked, setClicked] = useState(false);
@@ -39,76 +37,42 @@ const Certificates = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validations
-    if (issueDate === '') {
-      toast.error("Please enter a valid date");
-      return;
-    }
+    if (issueDate === '') { toast.error("Please enter a valid date"); return; }
+    if (description === '') { toast.error("Please enter a description"); return; }
+    if (!file) { toast.error("Please upload your certificate"); return; }
 
-    if (description === '') {
-      toast.error("Please enter a description");
-      return;
-    }
-
-    if (!file) {
-      toast.error("Please upload your certificate");
-      return;
-    }
-    console.log('this is being sent',file);
-
-    // Create FormData and append each field
     const formData = new FormData();
     formData.append('title', title);
     formData.append('issuingOrganization', issuingOrganization);
     formData.append('issueDate', issueDate);
     formData.append('description', description);
-    formData.append('certificateFile', file); // "certificateFile" is the field name expected by the backend
-     console.log('this is being sent to the backend',formData);
+    formData.append('certificateFile', file);
+
     try {
       let response;
       if (editIndex !== null) {
-        // Update existing certificate
         response = await axios.put(
           `${api}/student/profile/${userId}/certificates/${editIndex}`,
           formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
+          { headers: { 'Content-Type': 'multipart/form-data' } }
         );
-
-        console.log('this is being sent to the backend',formData);
-
         const updatedCertificates = [...certificates];
         updatedCertificates[editIndex] = response.data;
         setCertificates(updatedCertificates);
         toast.success("Details updated");
       } else {
-        // Add new certificate
         response = await axios.post(
           `${api}/student/profile/${userId}/certificates`,
           formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
+          { headers: { 'Content-Type': 'multipart/form-data' } }
         );
-
         setCertificates([...certificates, response.data]);
         toast.success("Details added");
       }
 
-      // Reset form
       setClicked(true);
-      setTitle("");
-      setIssuingOrganization("");
-      setIssueDate("");
-      setDescription("");
-      setFile(null);
-      setEditIndex(null);
-      setIsEditing(false);
+      setTitle(""); setIssuingOrganization(""); setIssueDate("");
+      setDescription(""); setFile(null); setEditIndex(null); setIsEditing(false);
     } catch (error) {
       console.error("Error saving the certificate details:", error);
       toast.error("Failed to update details");
@@ -118,21 +82,16 @@ const Certificates = () => {
   const handleDownload = (file) => {
     const blob = new Blob([new Uint8Array(file.data.data)], { type: file.contentType });
     const url = URL.createObjectURL(blob);
-    
     const link = document.createElement('a');
     link.href = url;
     link.download = file.filename;
     link.click();
-    
-    // Clean up the URL object after download
     URL.revokeObjectURL(url);
   };
 
   const handleDelete = async (index) => {
     try {
-      await axios.delete(
-        `${api}/student/profile/${userId}/certificates/${index}`
-      );
+      await axios.delete(`${api}/student/profile/${userId}/certificates/${index}`);
       setCertificates(certificates.filter((_, i) => i !== index));
       toast.success("Certificate details deleted");
     } catch (error) {
@@ -143,10 +102,6 @@ const Certificates = () => {
 
   const handleEdit = (index) => {
     const cert = certificates[index];
-    console.log('this is certificate',cert);
-    console.log('this is file of this certificate',cert.fileUpload);
-    console.log('this is edit index',index);
-
     setIsEditing(true);
     setTitle(cert.title);
     setIssuingOrganization(cert.issuingOrganization);
@@ -156,148 +111,182 @@ const Certificates = () => {
     setEditIndex(index);
   };
 
-  const handleCancel=()=>{
+  const handleCancel = () => {
     setIsEditing(false);
-    setTitle('');
-    setIssuingOrganization('');
-    setIssueDate('');
-    setDescription('');
-    setFile(null);
-    setEditIndex(null);
-
-  }
+    setTitle(''); setIssuingOrganization(''); setIssueDate('');
+    setDescription(''); setFile(null); setEditIndex(null);
+  };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);  // Store selected file in state
+    setFile(e.target.files[0]);
   };
 
   const handleInputClick = () => {
-
-
-
     fileInputRef.current.click();
-  }
-
+  };
 
   return (
-    <div className="container mx-auto p-4 border shadow-lg mt-[68px] w-full lg:w-[80%]">
-      <h2 className="text-xl font-semibold flex justify-between font-outfit">
-        Certificates (Optional)
-        <button
-          onClick={() => setIsEditing(true)}
-          className="text-blue-500 flex items-center space-x-1"
-        >
-          <span>Add </span>
-          <FontAwesomeIcon icon={faPlus} />
-        </button>
-      </h2>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 w-full">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-5">
+        <h2 className="text-lg font-bold text-[var(--text-color)] flex items-center gap-2">
+          <FaAward className="text-[var(--primary-color)] text-xl" />
+          Certificates <span className="text-xs font-normal text-[var(--text-light)]">(Optional)</span>
+        </h2>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-1.5 text-sm font-semibold text-[var(--primary-color)] hover:text-[var(--button-hover-color)] transition-colors bg-[var(--icon-bg-color)] px-3 py-1.5 rounded-lg"
+          >
+            <FaPlus className="text-xs" /> Add
+          </button>
+        )}
+      </div>
 
+      {/* Form Section */}
       {isEditing ? (
-        <form className="mt-4 flex flex-col" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Certificate Title"
-            className="border p-2 mb-2 w-full"
-            required
-          />
-          <input
-            type="text"
-            value={issuingOrganization}
-            onChange={(e) => setIssuingOrganization(e.target.value)}
-            placeholder="Issuing Organization"
-            className="border p-2 mb-2 w-full"
-            required
-          />
-          <div className="flex  items-center">
-            <span className="px-2 w-[14%]">Issuing date:</span>
+        <form className="space-y-4 mt-4 bg-[var(--bg-light-color)] p-5 rounded-xl border border-gray-100" onSubmit={handleSubmit}>
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Certificate Title</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. React Developer Certification"
+              className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Issuing Organization</label>
+            <input
+              type="text"
+              value={issuingOrganization}
+              onChange={(e) => setIssuingOrganization(e.target.value)}
+              placeholder="e.g. Coursera, Udemy"
+              className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Issue Date</label>
             <input
               type="date"
               value={issueDate}
               onChange={(e) => setIssueDate(e.target.value)}
-              placeholder="Issue Date (e.g., 2024)"
-              className="border p-2 mb-2 w-fit"
+              className="w-full sm:w-auto p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white"
               required
             />
           </div>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description (up to 300 characters)"
-            className="border p-2 mb-2 w-full"
-            rows="4"
-            maxLength={300}
-            required
-          />
-          <div className="text-right text-sm text-gray-500">
-            {description.length}/300 characters
+
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Brief description of the certificate..."
+              className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white resize-none"
+              rows="4"
+              maxLength={300}
+              required
+            />
+            <div className="text-right text-xs text-[var(--text-light)] mt-1.5 font-medium">
+              {description.length}/300 characters
+            </div>
           </div>
 
-          {/* File upload input */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf"
-            onChange={handleFileChange}
-            className="border p-2 mb-2 w-full hidden"
-          />
-          {!file ? (<button onClick={handleInputClick} className="bg-blue-500 px-2 py-1 text-white w-fit rounded-md">Upload Certificate</button>) : (<><div className="flex  items-center"><FaCheckCircle className="text-green-500" /><div className="text-green-500 px-2 py-1 w-fit rounded-md">Certificate added</div><span className="text-sm text-gray-700">{file.name?file.name:file.filename}</span></div><span onClick={()=>setFile(null)} className="flex items-center space-x-2 text-red-500 hover:cursor-pointer"><FaTrash className="w-4 h-4"/><span>Delete certificate</span></span></>)}
+          {/* File Upload Section */}
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Certificate File (PDF)</label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            
+            {!file ? (
+              <button
+                type="button"
+                onClick={handleInputClick}
+                className="flex items-center gap-2 bg-white border-2 border-dashed border-gray-300 text-[var(--text-light)] hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] px-4 py-3 rounded-lg w-full justify-center transition-colors text-sm font-medium"
+              >
+                <FaFilePdf className="text-lg" /> Click to Upload PDF
+              </button>
+            ) : (
+              <div className="flex items-center justify-between bg-green-50 p-3 rounded-lg border border-green-100">
+                <div className="flex items-center gap-2 text-green-700 overflow-hidden">
+                  <FaCheckCircle className="flex-shrink-0" />
+                  <span className="font-medium text-sm truncate">{file.name ? file.name : file.filename}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFile(null)}
+                  className="text-red-500 hover:text-red-700 p-1 flex-shrink-0"
+                >
+                  <FaTrash className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </div>
 
-          <div className="flex space-x-3 my-2">
+          <div className="flex gap-3 pt-2">
             <button
               type="submit"
-              className="bg-blue-500 text-white px-3 py-1 rounded-md w-fit"
+              className="bg-[var(--button-color)] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[var(--button-hover-color)] transition-colors shadow-sm text-sm"
             >
               Save
             </button>
             <button
+              type="button"
               onClick={handleCancel}
-              className="border px-2 py-1 text-gray-500 hover:bg-red-500 rounded-md hover:text-white w-fit"
+              className="bg-gray-100 text-[var(--text-color)] px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-sm"
             >
               Cancel
             </button>
           </div>
-
         </form>
       ) : (
-        <div className="flex flex-col items-center mt-10">
-          {certificates.length > 0 && (
+        /* List Section */
+        <div className="space-y-4 mt-2">
+          {certificates.length > 0 ? (
             certificates.map((cert, index) => (
-              <div key={index} className="border p-5 mb-2 min-w-full">
-                <div>
-                  <div className="flex justify-between">
-                    <h3 className="text-lg font-semibold">{cert.title}</h3>
-                    <div className="flex space-x-5">
-                      <FontAwesomeIcon
-                        icon={faPen}
-                        onClick={() => handleEdit(index)}
-                        className="hover:scale-125 duration-300 text-blue-500 hover:cursor-pointer"
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        onClick={() => handleDelete(index)}
-                        className="hover:scale-125 duration-300 text-red-600 hover:cursor-pointer"
-                      />
-                    </div>
+              <div key={index} className="bg-[var(--bg-light-color)] border border-gray-100 rounded-xl p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-base font-bold text-[var(--text-color)]">{cert.title}</h3>
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => handleEdit(index)} className="text-[var(--icon-color)] hover:text-[var(--primary-color)] transition-colors p-1">
+                      <FaPen className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete(index)} className="text-red-400 hover:text-red-600 transition-colors p-1">
+                      <FaTrash className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  <div className="text-gray-600">
-                    <p>Issued by: {cert.issuingOrganization}</p>
-                    <p>Issue Date: {cert.issueDate}</p>
-                    <p>Description: {cert.description}</p>
-                    {cert.fileUpload && (
-                      <button
-                        onClick={() => handleDownload(cert.fileUpload)}
-                        className="text-blue-500 underline"
-                      >
-                        Download Certificate
-                      </button>
-                    )}
-                  </div>
+                </div>
+                <div className="text-sm text-[var(--text-light)] space-y-1">
+                  <p className="font-medium text-[var(--text-color)]">{cert.issuingOrganization}</p>
+                  <p className="text-xs">Issued: {cert.issueDate}</p>
+                  <p className="pt-1">{cert.description}</p>
+                  
+                  {cert.fileUpload && (
+                    <button
+                      onClick={() => handleDownload(cert.fileUpload)}
+                      className="mt-3 flex items-center gap-2 text-[var(--primary-color)] hover:text-[var(--button-hover-color)] font-semibold text-xs bg-white px-3 py-1.5 rounded-lg border border-gray-200 hover:border-[var(--primary-color)] transition-colors"
+                    >
+                      <FaFilePdf /> Download Certificate
+                    </button>
+                  )}
                 </div>
               </div>
             ))
-          ) }
+          ) : (
+            <div className="text-center py-8 bg-[var(--bg-light-color)] rounded-xl border border-dashed border-gray-200">
+              <p className="text-[var(--text-light)] font-medium text-sm">No certificates added yet.</p>
+            </div>
+          )}
         </div>
       )}
     </div>

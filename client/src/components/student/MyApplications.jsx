@@ -28,7 +28,6 @@ const MyApplications = () => {
   const [selectedInternship, setSelectedInternship] = useState(null);
 
   useEffect(() => {
-    // console.log('insideeeeeeeeeeeee')
     const fetchAppliedInternships = async () => {
       try {
         const response = await axios.get(
@@ -38,9 +37,7 @@ const MyApplications = () => {
           (a, b) => new Date(b.appliedAt) - new Date(a.appliedAt)
         );
 
-
         setAppliedInternships(sortedInternships);
-        console.log(response.data);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching applied internships:", err);
@@ -56,22 +53,21 @@ const MyApplications = () => {
 
   const closeModal = () => {
     setSelectedInternship(null);
-    // setIsInterestedModalOpen(false);
   };
 
   if (loading) {
     return <Spinner />;
   }
 
-  if (appliedInternships.length == 0) {
+  if (appliedInternships.length === 0) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center space-y-4">
-        <h1 className="text-lg text-gray-600 tracking-wider">
+      <div className="h-screen flex flex-col items-center justify-center space-y-4 bg-[var(--bg-light-color)]">
+        <h1 className="text-lg text-[var(--text-light)] tracking-wider text-center px-4">
           You have not applied to any internship..
         </h1>
         <Link
           to={`/student/internships/${userId}`}
-          className="border-2 border-blue-500 rounded-lg px-3 py-1 text-blue-500 font-semibold "
+          className="border-2 border-[var(--primary-color)] rounded-lg px-4 py-2 text-[var(--primary-color)] font-semibold hover:bg-[var(--primary-color)] hover:text-white transition-colors"
         >
           Browse Internships
         </Link>
@@ -80,63 +76,71 @@ const MyApplications = () => {
   }
 
   if (error) {
-    return <p className="text-xl font-semibold text-red-500">{error}</p>;
+    return (
+      <p className="text-xl font-semibold text-red-500 text-center mt-20">
+        {error}
+      </p>
+    );
   }
 
   return (
-    <div className="py-10 px-5 mt-10 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-center mb-8">My Applications</h1>
+    <div className="py-10 px-5 mt-10 bg-[var(--bg-light-color)] min-h-screen">
+      <h1 className="text-3xl font-bold text-left my-8 text-[var(--text-color)]">
+        My Applications
+      </h1>
 
-      {/* Bapi Used Table */}
-      <div className=" hidden lg:block">
-        <table className="min-w-full table-auto border-collapse border-spacing-2">
+      {/* Desktop Table View */}
+      <div className="hidden lg:block bg-white rounded-xl shadow-sm overflow-hidden">
+        <table className="min-w-full table-auto border-collapse">
           <thead>
-            <tr className="bg-gray-200 text-center font-semibold border-b">
-              <th className="px-4 py-2 w-[170px]">COMPANY</th>
-              <th className="px-4 py-2 w-[200px]">PROFILE</th>
-              <th className="px-4 py-2 w-[100px]">APPLIED</th>
-              <th className="px-4 py-2 w-[130px]">NUMBER OF APPLICANTS</th>
-              <th className="px-4 py-2 w-[100px]">STATUS</th>
-              <th className="px-4 py-2 w-[100px]">VIEW DETAILS</th>
+            <tr className="bg-white text-left font-semibold border-b border-gray-200">
+              <th className="px-4 py-3 w-[170px] text-[var(--text-color)] text-bold">COMPANY</th>
+              <th className="px-4 py-3 w-[200px] text-[var(--text-color)] text-bold">PROFILE</th>
+              <th className="px-4 py-3 w-[100px] text-[var(--text-color)] text-bold">APPLIED</th>
+              <th className="px-4 py-3 w-[130px] text-[var(--text-color)] text-bold">APPLICANTS</th>
+              <th className="px-4 py-3 w-[100px] text-[var(--text-color)] text-bold">STATUS</th>
+              <th className="px-4 py-3 w-[100px] text-[var(--text-color)] text-bold">VIEW DETAILS</th>
             </tr>
           </thead>
           <tbody>
             {appliedInternships.map((applied) => (
               <tr
                 key={applied._id}
-                className="text-center text-gray-600 lg:border-b-2"
+                className="text-left text-[var(--text-light)] border-b border-gray-100 hover:bg-[var(--icon-bg-color)] transition-colors"
               >
-                <td className="px-4 py-2 w-[170px]">
+                <td className="px-4 py-3 w-[170px] font-medium text-[var(--text-color)]">
                   {applied.recruiter.companyName !== ""
                     ? applied.recruiter.companyName
-                    : applied.recruiter.firstname +
-                    " " +
-                    applied.recruiter.lastname}
+                    : applied.recruiter.firstname + " " + applied.recruiter.lastname}
                 </td>
-                <td className="px-4 py-2 w-[200px]">
+                <td className="px-4 py-3 w-[200px]">
                   {applied.internship.internshipName}
                 </td>
-                <td className="px-4 py-2 w-[100px]">
+                <td className="px-4 py-3 w-[100px]">
                   {TimeAgo(applied.appliedAt)}
                 </td>
-                <td className="px-4 py-2 w-[130px]">{applied.studentCount}</td>
-                <td className="px-4 py-2 w-[100px]">
+                <td className="px-4 py-3 w-[130px]">{applied.studentCount}</td>
+                <td className="px-4 py-3 w-[100px]">
                   <span
-                    className={`rounded-xl py-1 px-2 ${applied.internshipStatus.status === "Viewed" &&
-                      "text-yellow-400"
-                      } 
-            ${applied.internshipStatus.status === "Rejected" && "text-red-500"} 
-            ${applied.internshipStatus.status === "Shortlisted" &&
-                      "text-green-600"
-                      }`}
+                    className={`inline-block rounded-xl py-1 px-3 font-semibold text-sm ${
+                      applied.internshipStatus.status === "Applied"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : applied.internshipStatus.status === "Rejected"
+                        ? "bg-red-100 text-red-700"
+                        : applied.internshipStatus.status === "Hired"
+                        ? "bg-green-100 text-green-700"
+                        : applied.internshipStatus.status === "Shortlisted"
+                        ? "bg-orange-100 text-orange-700"
+                        : "bg-gray-100 text-gray-700"
+                    }`}
                   >
                     {applied.internshipStatus.status}
                   </span>
                 </td>
-                <td className="px-4 py-2 w-[100px]">
+                <td className="px-4 py-3 w-[100px]">
                   <button
                     onClick={() => setSelectedInternship(applied)}
-                    className="text-blue-500 hover:underline"
+                    className="text-[var(--primary-color)] hover:text-[var(--button-hover-color)] font-semibold hover:underline transition-colors"
                   >
                     View
                   </button>
@@ -147,173 +151,184 @@ const MyApplications = () => {
         </table>
       </div>
 
-      <div className="lg:hidden">
+      {/* Mobile Cards View */}
+      <div className="lg:hidden space-y-4">
         {appliedInternships.map((applied) => (
           <div
             key={applied._id}
-            className="border-2 shadow-lg py-4 px-4 space-y-1 md:space-y-2 w-full md:w-[83%] mx-auto "
+            className="bg-white border border-gray-200 shadow-sm rounded-xl py-4 px-4 space-y-2 w-full mx-auto hover:shadow-md transition-shadow"
           >
-            <div>
-              <div className="md:flex md:justify-between md:items-center">
-                <div className="font-bold text-xl capitalize">
-                  {applied.recruiter.companyName}
-                </div>
-                <div className="">
-                  <button
-                    onClick={() => setSelectedInternship(applied)}
-                    className="text-blue-400 hover:underline"
-                  >
-                    View details
-                  </button>
-                </div>
+            <div className="md:flex md:justify-between md:items-center">
+              <div className="font-bold text-lg capitalize text-[var(--text-color)]">
+                {applied.recruiter.companyName || `${applied.recruiter.firstname} ${applied.recruiter.lastname}`}
               </div>
-              <div className="text-gray-600">
-                {applied.internship.internshipName}
-              </div>
-              <div className="text-gray-600">
-                Applied: {TimeAgo(applied.appliedAt)}
-              </div>
-              <div className="flex  items-center text-gray-600">
-                <span className="font-semibold">
-                  <FaUserFriends className="mr-2" />
-                </span>{" "}
-                {applied.studentCount} Applicants
-              </div>
-              <div>
-                <span
-                  className={` py-1 flex items-center ${applied.internshipStatus.status === "Viewed" &&
-                    "text-yellow-500"
-                    } ${applied.internshipStatus.status === "Rejected" &&
-                    "text-red-500"
-                    } ${applied.internshipStatus.status === "Shortlisted" &&
-                    "text-green-600"
-                    }`}
+              <div className="mt-2 md:mt-0">
+                <button
+                  onClick={() => setSelectedInternship(applied)}
+                  className="text-[var(--primary-color)] hover:text-[var(--button-hover-color)] font-semibold hover:underline"
                 >
-                  {applied.internshipStatus.status === "Viewed" && (
-                    <FaEye className=" mr-2" />
-                  )}{" "}
-                  {applied.internshipStatus.status === "Shortlisted" && (
-                    <FaCheckCircle className="mr-2" />
-                  )}{" "}
-                  {applied.internshipStatus.status === "Rejected" && (
-                    <FaTimes className="mr-2" />
-                  )}
-                  {applied.internshipStatus.status}
-                </span>
+                  View details
+                </button>
               </div>
+            </div>
+            <div className="text-[var(--text-light)] font-medium">
+              {applied.internship.internshipName}
+            </div>
+            <div className="text-[var(--text-light)] text-sm">
+              Applied: {TimeAgo(applied.appliedAt)}
+            </div>
+            <div className="flex items-center text-[var(--text-light)] text-sm">
+              <FaUserFriends className="mr-2 text-[var(--icon-color)]" />
+              {applied.studentCount} Applicants
+            </div>
+            <div>
+              <span
+                className={`inline-flex items-center py-1 px-2 rounded-lg text-sm font-semibold ${
+                  applied.internshipStatus.status === "Viewed"
+                    ? "text-yellow-600 bg-yellow-50"
+                    : applied.internshipStatus.status === "Rejected"
+                    ? "text-red-600 bg-red-50"
+                    : applied.internshipStatus.status === "Shortlisted"
+                    ? "text-green-600 bg-green-50"
+                    : "text-gray-600 bg-gray-50"
+                }`}
+              >
+                {applied.internshipStatus.status === "Viewed" && (
+                  <FaEye className="mr-2" />
+                )}
+                {applied.internshipStatus.status === "Shortlisted" && (
+                  <FaCheckCircle className="mr-2" />
+                )}
+                {applied.internshipStatus.status === "Rejected" && (
+                  <FaTimes className="mr-2" />
+                )}
+                {applied.internshipStatus.status}
+              </span>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Modal View Details */}
       {selectedInternship && (
         <>
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40  "
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
             onClick={closeModal}
           ></div>
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-[90%] lg:w-[60%] h-[90%] p-6 relative overflow-auto">
-              <div className="border-b">
-                <h2 className=" text-lg md:text-2xl font-semibold md:mb-4">
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] p-6 relative overflow-y-auto scrollbar-thin">
+              <div className="border-b border-gray-200 pb-4 mb-4">
+                <h2 className="text-xl md:text-2xl font-bold text-[var(--text-color)] mb-2 pr-8">
                   {selectedInternship.internship.internshipName}
                 </h2>
                 <button
                   onClick={closeModal}
-                  className="absolute top-7 right-4 text-blue-500 hover:text-blue-700 focus:outline-none"
+                  className="absolute top-6 right-6 text-[var(--text-light)] hover:text-[var(--primary-color)] focus:outline-none transition-colors text-xl"
                 >
                   <FaTimes />
                 </button>
-                <p className="text-gray-600 mb-4">
-                  {selectedInternship.recruiter.companyName}
+                <p className="text-[var(--text-light)] font-medium">
+                  {selectedInternship.recruiter.companyName || `${selectedInternship.recruiter.firstname} ${selectedInternship.recruiter.lastname}`}
                 </p>
               </div>
 
-              <div className="flex items-center text-gray-700 mb-2">
-                <FaMapMarkerAlt className="mr-2" />
-                <span>
-                  {selectedInternship.internship.internshipType === "Work From Home"
-                    ? "Remote"
-                    : `${selectedInternship.internship.internLocation.city}, ${selectedInternship.internship.internLocation.state}, ${selectedInternship.internship.internLocation.country}`}
-                </span>
-              </div>
-
-              <div className="flex items-center text-gray-700 mb-2">
-                <FaMoneyBillWave className="mr-2" />
-                <span>₹ {selectedInternship.internship.stipend}</span>
-              </div>
-              <div className="flex items-center text-gray-700 mb-2">
-                <FaClock className="mr-2" />
-                <span>{selectedInternship.internship.duration} Months</span>
-              </div>
-
-              <div className="flex items-center text-gray-700 mb-2">
-                <FaUsers className="mr-2" />
-                <span>
-                  {selectedInternship.internship.numberOfOpenings} Openings
-                </span>
-              </div>
-
-              {selectedInternship.internship.internLocation && (
-                <div className="flex items-center text-gray-700 mb-4">
-                  <FaClipboardList className="mr-2" />
-                  <span>{selectedInternship.internship.internshipType}</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="flex items-center text-[var(--text-color)]">
+                  <FaMapMarkerAlt className="mr-2 text-[var(--icon-color)]" />
+                  <span>
+                    {selectedInternship.internship.internshipType === "Work From Home"
+                      ? "Remote"
+                      : `${selectedInternship.internship.internLocation.city}, ${selectedInternship.internship.internLocation.state}, ${selectedInternship.internship.internLocation.country}`}
+                  </span>
                 </div>
+
+                <div className="flex items-center text-[var(--text-color)]">
+                  <FaMoneyBillWave className="mr-2 text-[var(--icon-color)]" />
+                  <span>
+                    {selectedInternship.internship.currency} {selectedInternship.internship.stipend}
+                  </span>
+                </div>
+
+                <div className="flex items-center text-[var(--text-color)]">
+                  <FaClock className="mr-2 text-[var(--icon-color)]" />
+                  <span>{selectedInternship.internship.duration} Months</span>
+                </div>
+
+                <div className="flex items-center text-[var(--text-color)]">
+                  <FaUsers className="mr-2 text-[var(--icon-color)]" />
+                  <span>
+                    {selectedInternship.internship.numberOfOpenings} Openings
+                  </span>
+                </div>
+
+                {selectedInternship.internship.internLocation && (
+                  <div className="flex items-center text-[var(--text-color)] md:col-span-2">
+                    <FaClipboardList className="mr-2 text-[var(--icon-color)]" />
+                    <span>{selectedInternship.internship.internshipType}</span>
+                  </div>
+                )}
+              </div>
+
+              {selectedInternship.internship.skills && selectedInternship.internship.skills.length > 0 && (
+                <>
+                  <h3 className="text-lg font-bold text-[var(--text-color)] mb-3">Skills Required:</h3>
+                  <div className="flex flex-wrap mb-6">
+                    {selectedInternship.internship.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="bg-[var(--icon-bg-color)] text-[var(--primary-color)] text-sm font-medium mr-2 mb-2 px-3 py-1 rounded-full"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </>
               )}
 
-              <h3 className="lg:text-lg font-medium mb-2">Skills Required:</h3>
-              <div className="flex flex-wrap mb-4">
-                {selectedInternship.internship.skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-
-              <h3 className="lg:text-lg font-medium mb-2">Description:</h3>
+              <h3 className="text-lg font-bold text-[var(--text-color)] mb-3">Description:</h3>
               <div
-                className="text-gray-700 mb-4 text-sm md:text-base"
+                className="text-[var(--text-light)] mb-6 text-sm md:text-base leading-relaxed"
                 dangerouslySetInnerHTML={{
                   __html: selectedInternship.internship.description,
                 }}
               ></div>
 
-              <h3 className="md:text-lg font-medium mb-2">
-                Perks and Benefits
-              </h3>
-              <div className="flex flex-wrap mb-4">
-                {selectedInternship.internship.perks.map((perk, index) => (
-                  <span
-                    key={index}
-                    className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
-                  >
-                    {perk}
-                  </span>
-                ))}
-              </div>
+              {selectedInternship.internship.perks && selectedInternship.internship.perks.length > 0 && (
+                <>
+                  <h3 className="text-lg font-bold text-[var(--text-color)] mb-3">Perks and Benefits</h3>
+                  <div className="flex flex-wrap mb-6">
+                    {selectedInternship.internship.perks.map((perk, index) => (
+                      <span
+                        key={index}
+                        className="bg-green-50 text-green-700 text-sm font-medium mr-2 mb-2 px-3 py-1 rounded-full border border-green-100"
+                      >
+                        {perk}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              )}
 
               {selectedInternship.internship.assessment !== "" && (
                 <>
-                  <h3 className="md:text-lg font-medium mb-2">Question from Recruiter</h3>
-                  <div className="flex items-start ">
-                    <span className="font-bold mr-2">Q:</span>
-                    <p className="text-gray-700">{selectedInternship.internship.assessment}</p>
+                  <h3 className="text-lg font-bold text-[var(--text-color)] mb-3">Question from Recruiter</h3>
+                  <div className="flex items-start mb-2">
+                    <span className="font-bold mr-2 text-[var(--primary-color)]">Q:</span>
+                    <p className="text-[var(--text-color)]">{selectedInternship.internship.assessment}</p>
                   </div>
-                  <div className="flex items-start mb-4">
-                    <span className="font-bold mr-2">A:</span>
-                    <div className="text-gray-700">{selectedInternship.assessmentAns}</div>
+                  <div className="flex items-start bg-[var(--bg-light-color)] p-4 rounded-lg border border-gray-100">
+                    <span className="font-bold mr-2 text-[var(--primary-color)]">A:</span>
+                    <div className="text-[var(--text-color)]">{selectedInternship.assessmentAns}</div>
                   </div>
                 </>
               )}
 
               {selectedInternship.aboutText && (
                 <>
-                  <h3 className="md:text-lg font-medium mb-2">About yourself</h3>
-                  <div className="flex items-start">
-                    <p>{selectedInternship.aboutText}</p>
+                  <h3 className="text-lg font-bold text-[var(--text-color)] mb-3 mt-6">About yourself</h3>
+                  <div className="bg-[var(--bg-light-color)] p-4 rounded-lg border border-gray-100">
+                    <p className="text-[var(--text-color)] leading-relaxed">{selectedInternship.aboutText}</p>
                   </div>
                 </>
               )}

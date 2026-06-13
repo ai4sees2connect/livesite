@@ -3,58 +3,52 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import api from '../common/server_url';
 import Spinner from '../common/Spinner';
-// import { useRecruiter } from './context/recruiterContext';
 import getUserIdFromToken from './auth/authUtilsRecr';
-import TimeAgo from '../common/TimeAgo'
-import { FaSpinner } from 'react-icons/fa';
+import TimeAgo from '../common/TimeAgo';
+import { 
+  FaChevronRight, FaClock, FaMapMarkerAlt, FaBriefcase, FaVenusMars, 
+  FaClipboardCheck, FaEnvelope, FaQuestionCircle, FaCalendarCheck, 
+  FaExclamationCircle, FaCheckCircle, FaUserCircle, FaGraduationCap, 
+  FaAward, FaFileDownload, FaFileAlt, FaDownload, FaSpinner 
+} from 'react-icons/fa';
 
 const ApplicationDetails = () => {
-  const { studentId, internshipId } = useParams(); // Get studentId and internshipId from URL
+  const { studentId, internshipId } = useParams();
   const [studentDetails, setStudentDetails] = useState(null);
   const [internshipDetails, setInternshipDetails] = useState(null);
-  const [resumeUrl,setResumeUrl]=useState(null);
-  const [resumeLoading,setResumeLoading]=useState(true);
-  const [resumeFileName,setResumeFileName]=useState(null);
-  // const {recruiter}=useRecruiter();
+  const [resumeUrl, setResumeUrl] = useState(null);
+  const [resumeLoading, setResumeLoading] = useState(true);
+  const [resumeFileName, setResumeFileName] = useState(null);
   const recruiterId = getUserIdFromToken();
-  console.log(recruiterId);
 
   useEffect(() => {
     const fetchApplicationDetails = async () => {
       try {
-        // Make a GET request to your backend API
         const response = await axios.get(`${api}/recruiter/internship/${studentId}/${internshipId}/application-details`);
-        // console.log(response.data);
         setStudentDetails(response.data);
-        console.log(response.data);
 
-        const secondResponse = await axios.get(`${api}/recruiter/internship/${recruiterId}/getDetails/${internshipId}`)
+        const secondResponse = await axios.get(`${api}/recruiter/internship/${recruiterId}/getDetails/${internshipId}`);
         setInternshipDetails(secondResponse.data);
-
       } catch (error) {
         console.error('Error fetching application details:', error);
       }
     };
 
-    // Fetch the application details when the component mounts
     fetchApplicationDetails();
-  }, [studentId, internshipId]); // Run effect when studentId or internshipId changes
+  }, [studentId, internshipId]);
 
   useEffect(() => {
     const fetchResume = async () => {
       try {
         const response = await axios.get(`${api}/student/resume/${studentId}`, {
-          responseType: 'blob', // Set to 'blob' to handle file downloads
+          responseType: 'blob',
         });
 
         const filename = response.headers['content-disposition']
           .split('filename=')[1]
-          .replace(/"/g, ''); // Clean up any surrounding quotes
+          .replace(/"/g, '');
 
-        // If you need to create a URL for the resume file (for example, to display it in a link or a button)
         const fileURL = URL.createObjectURL(response.data);
-
-        // Set the URL to the state
         setResumeUrl(fileURL);
         setResumeFileName(filename);
         setResumeLoading(false);
@@ -67,17 +61,14 @@ const ApplicationDetails = () => {
     fetchResume();
   }, [studentId]);
 
-  console.log('this is resume',resumeUrl)
-  console.log('this is file name',resumeFileName)
-
   const calculateMatchPercentage = (studentSkills, requiredSkills) => {
     if (!requiredSkills || requiredSkills.length === 0) return 0;
 
     const sanitizeSkill = (skill) => {
       return skill
         .toLowerCase()
-        .replace(/[\.\-]/g, '') // Remove dots and hyphens
-        .split(/\s+/); // Split into words
+        .replace(/[\.\-]/g, '')
+        .split(/\s+/);
     };
 
     const matchingSkills = studentSkills.filter(studentSkill => {
@@ -85,7 +76,6 @@ const ApplicationDetails = () => {
         const studentSkillWords = sanitizeSkill(studentSkill.skillName);
         const requiredSkillWords = sanitizeSkill(requiredSkill);
 
-        // Check if all words in requiredSkill match any word in studentSkill
         return requiredSkillWords.every(word =>
           studentSkillWords.includes(word)
         );
@@ -96,12 +86,10 @@ const ApplicationDetails = () => {
     return Math.round(matchPercentage);
   };
 
-
   if (!studentDetails || !internshipDetails) {
     return <Spinner />;
   }
 
-  // Destructure the necessary details from studentDetails
   const {
     firstname,
     lastname,
@@ -115,14 +103,11 @@ const ApplicationDetails = () => {
     skills,
   } = studentDetails;
 
-  const { aboutText, appliedAt, assessmentAns, availability, } = studentDetails.appliedInternships[0]
+  const { aboutText, appliedAt, assessmentAns, availability } = studentDetails.appliedInternships[0];
   const { assessment } = internshipDetails;
 
   const handleDownload = (file) => {
-    console.log('this is file', file);
-    
-    // Decode base64 string to binary
-    const byteCharacters = atob(file.data); // Decode base64 data
+    const byteCharacters = atob(file.data);
     const byteNumbers = new Array(byteCharacters.length);
     
     for (let i = 0; i < byteCharacters.length; i++) {
@@ -138,191 +123,231 @@ const ApplicationDetails = () => {
     link.download = file.filename;
     link.click();
     
-    // Clean up the URL object after download
     URL.revokeObjectURL(url);
   };
 
+  // Match Percentage Styling
+  const matchPercentage = calculateMatchPercentage(skills, internshipDetails.skills);
+  let matchColor = "bg-red-100 text-red-700 border border-red-200";
+  if (matchPercentage >= 20 && matchPercentage <= 60) matchColor = "bg-orange-100 text-orange-700 border border-orange-200";
+  else if (matchPercentage > 60 && matchPercentage <= 90) matchColor = "bg-yellow-100 text-yellow-700 border border-yellow-200";
+  else if (matchPercentage > 90) matchColor = "bg-green-100 text-green-700 border border-green-200";
+
   return (
-    <>
-      <h1 className='mt-20 text-sm sm:text-base text-gray-600 mx-auto w-[96%] sm:w-[70%] font-[500] capitalize'>Dashboard &gt; Applications Received &gt; <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internshipId}`}>{internshipDetails.internshipName}</Link> &gt; {firstname} {lastname}</h1>
-      <h1 className="text-lg  sm:text-2xl font-semibold mt-6 mx-auto w-[95%] md:w-[70%] text-gray-700">Application for {internshipDetails.internshipName}</h1>
-      <div className="">
+    <div className="min-h-screen bg-[var(--bg-light-color)] py-8 px-4 sm:px-6 lg:px-8">
+      
+      {/* Breadcrumb Navigation */}
+      <nav className="flex items-center flex-wrap gap-2 text-sm text-[var(--text-light)] mb-4 max-w-5xl mx-auto">
+        <Link to={`/recruiter/dashboard/${recruiterId}`} className="hover:text-[var(--primary-color)] transition-colors font-medium">Dashboard</Link>
+        <FaChevronRight className="text-xs" />
+        <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internshipId}`} className="hover:text-[var(--primary-color)] transition-colors font-medium">Applications Received</Link>
+        <FaChevronRight className="text-xs" />
+        <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internshipId}`} className="hover:text-[var(--primary-color)] transition-colors font-medium truncate max-w-[150px]">{internshipDetails.internshipName}</Link>
+        <FaChevronRight className="text-xs" />
+        <span className="text-[var(--text-color)] font-semibold">{firstname} {lastname}</span>
+      </nav>
 
+      {/* Page Header */}
+      <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-color)] max-w-5xl mx-auto my-8">
+        Application for <span className="text-[var(--primary-color)]">{internshipDetails.internshipName}</span>
+      </h1>
 
-        <div className='border border-gray-300 mt-5 mx-auto p-6 w-[90%] md:w-[70%] rounded-lg shadow-md '>
-          <div className="mb-4">
-          <div className="mb-2 flex justify-between relative">
-            
-                <div className={`font-semibold rounded-md p-2 w-full ${calculateMatchPercentage(skills, internshipDetails.skills) < 20
-                  ? 'text-red-500 bg-gradient-to-r from-red-100 to-white'
-                  : calculateMatchPercentage(skills, internshipDetails.skills) >= 20 &&
-                    calculateMatchPercentage(skills, internshipDetails.skills) <= 60
-                    ? 'text-orange-300 bg-gradient-to-r from-orange-100 to-white'
-                    : calculateMatchPercentage(skills, internshipDetails.skills) > 60 &&
-                      calculateMatchPercentage(skills, internshipDetails.skills) <= 90
-                      ? 'text-yellow-600 bg-gradient-to-r from-yellow-100 to-white'
-                      : 'text-green-500 bg-gradient-to-r from-green-100 to-white'
-                  }`}>
-                  {calculateMatchPercentage(skills, internshipDetails.skills)}% Matched
-                </div>
-                <div className=' absolute right-3 top-2 text-gray-600 text-sm font-[500]'>
-                  Applied {TimeAgo(appliedAt)}
-                </div>
-                
-              </div>
-
-              <p className="capitalize text-2xl font-bold">{`${firstname} ${lastname}`}</p>
-
-            <p className='text-gray-600'>{homeLocation.country + "," + homeLocation.state + ","+ homeLocation.city} ({availability === 'Yes! Will join Immediately' ? 'can join immediately' : 'not an immediate joiner'})</p>
-            <p className='text-gray-600'>Exp: {yearsOfExp} years</p>
+      {/* Card 1: Basic Info & Match */}
+      <div className="bg-white rounded-2xl shadow-sm border border-[var(--border-color)] p-6 max-w-5xl mx-auto mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div className={`px-4 py-2 rounded-full text-sm font-bold ${matchColor}`}>
+            {matchPercentage}% Matched
           </div>
+          <p className="text-sm text-[var(--text-light)] flex items-center gap-1.5">
+            <FaClock className="text-[var(--icon-color)]" /> Applied {TimeAgo(appliedAt)}
+          </p>
+        </div>
 
-          <div className="mb-4">
-            <p className="text-lg font-medium">Gender:</p>
-            <p className="text-gray-700">{gender || 'Not provided'}</p>
+        <div className="flex items-start gap-4 mb-6">
+          <div className="w-16 h-16 rounded-full bg-[var(--icon-bg-color)] flex items-center justify-center text-2xl font-bold text-[var(--primary-color)] flex-shrink-0">
+            {firstname.charAt(0)}{lastname.charAt(0)}
           </div>
-
-          {/* Skills */}
-          <div className='flex space-x-2 '>
-            <span className='text-gray-600'>Skill(s): </span>
-            <div className="flex flex-wrap gap-3">
-              {skills.map((skill, index) => (
-                <p key={index} className="text-sm sm:text-base rounded-lg bg-blue-200 capitalize px-2 md:px-3 py-1">
-                  {skill.skillName}
-                </p>
-              ))}
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold text-[var(--text-color)] capitalize">{firstname} {lastname}</h2>
+            <p className="text-[var(--text-light)] flex items-center gap-1.5 mt-1 flex-wrap">
+              <FaMapMarkerAlt className="text-[var(--icon-color)] text-xs" /> 
+              {homeLocation.city}, {homeLocation.state}, {homeLocation.country}
+            </p>
+            <div className="flex flex-wrap gap-3 mt-3 text-sm">
+              <span className="flex items-center gap-1.5 text-[var(--text-light)] bg-[var(--bg-light-color)] px-2.5 py-1 rounded-lg">
+                <FaBriefcase className="text-[var(--icon-color)] text-xs" /> {yearsOfExp} Years Exp
+              </span>
+              <span className="flex items-center gap-1.5 text-[var(--text-light)] bg-[var(--bg-light-color)] px-2.5 py-1 rounded-lg">
+                <FaVenusMars className="text-[var(--icon-color)] text-xs" /> {gender || 'Not provided'}
+              </span>
+              <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${availability === 'Yes! Will join Immediately' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`}>
+                {availability === 'Yes! Will join Immediately' ? <FaCheckCircle /> : <FaExclamationCircle />}
+                {availability === 'Yes! Will join Immediately' ? 'Immediate Joiner' : 'Not Immediate'}
+              </span>
             </div>
           </div>
         </div>
 
-        <h1 className='w-[90%] md:w-[70%] mx-auto mt-8 text-2xl font-semibold'>Availabilty & Assessment </h1>
-        <div className='border border-gray-300 mx-auto p-6 w-[90%] md:w-[70%] rounded-lg shadow-md '>
-
-          <div className="mb-4">
-            <p className="text-lg font-medium">Cover Letter</p>
-            <p className="text-sm sm:text-base text-gray-700">{aboutText}</p>
+        <div className="pt-4 border-t border-[var(--border-color)]">
+          <h3 className="text-sm font-semibold text-[var(--text-light)] uppercase tracking-wide mb-3">Skills</h3>
+          <div className="flex flex-wrap gap-2">
+            {skills.map((skill, index) => (
+              <span key={index} className="px-3 py-1 bg-[var(--icon-bg-color)] text-[var(--primary-color)] text-xs font-semibold rounded-full">
+                {skill.skillName}
+              </span>
+            ))}
           </div>
-
-          <div className="mb-4">
-            <p className="text-lg font-medium">Assessment </p>
-            <p className='text-sm sm:text-base text-gray-700'>Ques: {assessment}</p>
-            <p className="text-sm sm:text-base text-gray-700 ">Ans: <span className='ml-2'>{assessmentAns}</span></p>
-          </div>
-
-          <div className='mb-4'>
-          <p className="text-lg font-medium">Availability </p>
-          {availability!=='Yes! Will join Immediately'? <p className='text-yellow-400'>{availability}</p>: <p className='text-green-600'>Immediate Joiner</p>}
-          </div>
-
-
         </div>
-        <h1 className='w-[90%] md:w-[70%] mx-auto mt-8 text-2xl font-semibold'>Profile</h1>
-        <div className='border border-gray-300  mx-auto p-6 w-[90%] md:w-[70%] rounded-lg shadow-md mb-10 '>
+      </div>
 
-          {/* Education Details */}
+      {/* Card 2: Availability & Assessment */}
+      <div className="bg-white rounded-2xl shadow-sm border border-[var(--border-color)] p-6 max-w-5xl mx-auto mb-8">
+        <h2 className="text-xl font-bold text-[var(--text-color)] mb-6 flex items-center gap-2">
+          <FaClipboardCheck className="text-[var(--primary-color)]" /> Availability & Assessment
+        </h2>
 
-          <div className="mb-6">
-            <p className="text-lg font-medium">Education:</p>
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-sm font-semibold text-[var(--text-light)] uppercase tracking-wide mb-2 flex items-center gap-2">
+              <FaEnvelope className="text-[var(--icon-color)]" /> Cover Letter
+            </h3>
+            <p className="text-[var(--text-color)] bg-[var(--bg-light-color)] p-4 rounded-xl border border-[var(--border-color)] leading-relaxed">
+              {aboutText}
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-[var(--text-light)] uppercase tracking-wide mb-2 flex items-center gap-2">
+              <FaQuestionCircle className="text-[var(--icon-color)]" /> Assessment
+            </h3>
+            <div className="bg-[var(--bg-light-color)] p-4 rounded-xl border border-[var(--border-color)] space-y-3">
+              <p className="text-[var(--text-color)]"><span className="font-semibold">Ques:</span> {assessment}</p>
+              <p className="text-[var(--text-color)] pt-3 border-t border-[var(--border-color)]"><span className="font-semibold">Ans:</span> {assessmentAns}</p>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-[var(--text-light)] uppercase tracking-wide mb-2 flex items-center gap-2">
+              <FaCalendarCheck className="text-[var(--icon-color)]" /> Availability
+            </h3>
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold ${availability !== 'Yes! Will join Immediately' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' : 'bg-green-100 text-green-700 border border-green-200'}`}>
+              {availability !== 'Yes! Will join Immediately' ? <FaExclamationCircle /> : <FaCheckCircle />}
+              {availability !== 'Yes! Will join Immediately' ? availability : 'Immediate Joiner'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Card 3: Profile Details */}
+      <div className="bg-white rounded-2xl shadow-sm border border-[var(--border-color)] p-6 max-w-5xl mx-auto mb-16">
+        <h2 className="text-xl font-bold text-[var(--text-color)] mb-6 flex items-center gap-2">
+          <FaUserCircle className="text-[var(--primary-color)]" /> Profile Details
+        </h2>
+
+        <div className="space-y-8">
+          {/* Education */}
+          <div>
+            <h3 className="text-base font-bold text-[var(--text-color)] mb-3 flex items-center gap-2">
+              <FaGraduationCap className="text-[var(--primary-color)]" /> Education
+            </h3>
             {education.length > 0 ? (
-              <ul className="list-disc list-inside text-gray-700">
+              <div className="space-y-3">
                 {education.map((edu, index) => (
-                  <li key={index} className='text-sm sm:text-base'>
-                    {edu.degree}, {edu.fieldOfStudy} - {edu.institution} ({edu.startYear} - {edu.endYear})
-                    -({edu.score +" "+ edu.gradeType})
-                  </li>
+                  <div key={index} className="bg-[var(--bg-light-color)] p-4 rounded-xl border border-[var(--border-color)]">
+                    <p className="font-semibold text-[var(--text-color)]">{edu.degree} in {edu.fieldOfStudy}</p>
+                    <p className="text-sm text-[var(--text-light)] mt-1">{edu.institution} ({edu.startYear} - {edu.endYear})</p>
+                    <p className="text-sm font-medium text-[var(--primary-color)] mt-1">{edu.score} {edu.gradeType}</p>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
-              <p className="text-gray-700 text-sm sm:text-base">No education details provided</p>
+              <p className="text-[var(--text-light)] text-sm">No education details provided</p>
             )}
           </div>
 
           {/* Work Experience */}
-          <div className="mb-6">
-            <p className="text-lg font-medium">Work Experience:</p>
+          <div>
+            <h3 className="text-base font-bold text-[var(--text-color)] mb-3 flex items-center gap-2">
+              <FaBriefcase className="text-[var(--primary-color)]" /> Work Experience
+            </h3>
             {workExperience.length > 0 ? (
-              <ul className="list-disc list-inside text-sm sm:text-base text-gray-700">
+              <div className="space-y-3">
                 {workExperience.map((exp, index) => (
-                  <li key={index}>
-                    {exp.role} at {exp.company} ({exp.startDate} - {exp.endDate})
-                    <br />
-                    <span className='ml-5 break-words'>Desc: {exp.description}</span>
-                  </li>
+                  <div key={index} className="bg-[var(--bg-light-color)] p-4 rounded-xl border border-[var(--border-color)]">
+                    <p className="font-semibold text-[var(--text-color)]">{exp.role} at {exp.company}</p>
+                    <p className="text-sm text-[var(--text-light)] mt-1">{exp.startDate} - {exp.endDate}</p>
+                    <p className="text-sm text-[var(--text-color)] mt-2 leading-relaxed">{exp.description}</p>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
-              <p className="text-gray-700">No work experience details provided</p>
+              <p className="text-[var(--text-light)] text-sm">No work experience details provided</p>
             )}
           </div>
 
           {/* Certificates */}
-          <div className="mb-6">
-            <p className="text-lg font-medium">Certificates:</p>
+          <div>
+            <h3 className="text-base font-bold text-[var(--text-color)] mb-3 flex items-center gap-2">
+              <FaAward className="text-[var(--primary-color)]" /> Certificates
+            </h3>
             {certificates.length > 0 ? (
-              <ul className="list-disc list-inside text-gray-700">
+              <div className="space-y-3">
                 {certificates.map((cert, index) => (
-                  <li key={index} className='text-sm sm:text-base'>
-                    {cert.title} - {cert.issuingOrganization} (Issued on: {cert.issueDate})
-                    <br />
-                    <span className='ml-5'>Desc: {cert.description}</span>
-                    <br />
+                  <div key={index} className="bg-[var(--bg-light-color)] p-4 rounded-xl border border-[var(--border-color)]">
+                    <p className="font-semibold text-[var(--text-color)]">{cert.title}</p>
+                    <p className="text-sm text-[var(--text-light)] mt-1">{cert.issuingOrganization} (Issued on: {cert.issueDate})</p>
+                    <p className="text-sm text-[var(--text-color)] mt-2">{cert.description}</p>
                     {cert.fileUpload && (
                       <button
                         onClick={() => handleDownload(cert.fileUpload)}
-                        className="text-blue-500 underline ml-5"
+                        className="mt-3 inline-flex items-center gap-2 text-sm text-[var(--primary-color)] hover:text-[var(--button-hover-color)] font-semibold bg-white px-3 py-1.5 rounded-lg border border-[var(--border-color)] hover:border-[var(--primary-color)] transition-colors"
                       >
-                        Download Certificate
+                        <FaFileDownload /> Download Certificate
                       </button>
                     )}
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
-              <p className="text-gray-700">No certificates provided</p>
+              <p className="text-[var(--text-light)] text-sm">No certificates provided</p>
             )}
           </div>
 
-          {/* Resume */}
-          {resumeLoading ? (
-        // Show a spinner or loading indicator while the resume is being fetched
-        <div className="spinner-container">
-          <div>Loading Resume</div>
-          <FaSpinner className="animate-spin text-blue-500 h-8 w-8"/>
-        </div>
-      ) : (
-        // Show the resume download link once the resume is available
-        <>
-          {resumeUrl ? (
-            <>
-              <p className="text-lg font-medium">Resume:</p>
-              <div className="mb-6">
+          {/* Resume & Email */}
+          <div className="grid md:grid-cols-2 gap-6 pt-6 border-t border-[var(--border-color)]">
+            <div>
+              <h3 className="text-base font-bold text-[var(--text-color)] mb-3 flex items-center gap-2">
+                <FaFileAlt className="text-[var(--primary-color)]" /> Resume
+              </h3>
+              {resumeLoading ? (
+                <div className="flex items-center gap-2 text-[var(--text-light)]">
+                  <FaSpinner className="animate-spin text-[var(--primary-color)] h-5 w-5" />
+                  <span className="text-sm">Loading Resume...</span>
+                </div>
+              ) : resumeUrl ? (
                 <a
                   href={resumeUrl}
-                  download={resumeFileName} // Use the filename from backend
-                  className="text-blue-500  py-2 hover:underline transition-all"
+                  download={resumeFileName}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--button-color)] text-white rounded-lg font-semibold hover:bg-[var(--button-hover-color)] transition-colors shadow-sm text-sm"
                 >
-                  Download Resume
+                  <FaDownload /> Download Resume
                 </a>
-              </div>
-            </>
-          ) : (
-            <div>No resume found.</div>
-          )}
-        </>
-      )}
-
-          <div className="mb-4">
-            <p className="text-lg font-medium">Email:</p>
-            <p className="text-gray-700">{email}</p>
+              ) : (
+                <p className="text-[var(--text-light)] text-sm">No resume found.</p>
+              )}
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-[var(--text-color)] mb-3 flex items-center gap-2">
+                <FaEnvelope className="text-[var(--primary-color)]" /> Contact Email
+              </h3>
+              <p className="text-[var(--text-color)] bg-[var(--bg-light-color)] p-3 rounded-lg border border-[var(--border-color)] text-sm font-medium break-all">
+                {email}
+              </p>
+            </div>
           </div>
-
         </div>
-
-
-
-
       </div>
-    </>
+    </div>
   );
 };
 

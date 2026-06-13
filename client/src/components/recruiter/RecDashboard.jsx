@@ -1,25 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import Spinner from "../common/Spinner"; // Assuming you have a spinner component
-import getUserIdFromToken from "./auth/authUtilsRecr"; // Utility to get user ID from token
-import api from "../common/server_url"; // Your server URL
+import Spinner from "../common/Spinner";
+import getUserIdFromToken from "./auth/authUtilsRecr";
+import api from "../common/server_url";
 import {
-  FaMapMarkerAlt,
-  FaMoneyBillWave,
-  FaUsers,
-  FaClipboardList,
   FaTimes,
-  FaClock,
   FaAngleLeft,
   FaAngleRight,
   FaSearch,
+  FaEye,
+  FaPen,
+  FaPlayCircle,
+  FaPauseCircle,
+  FaCheckCircle,
+  FaClipboardList,
 } from "react-icons/fa";
 import TimeAgo from "../common/TimeAgo";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRecruiter } from "./context/recruiterContext";
 import ReactQuill from "react-quill";
-// import { useRecruiter } from "./context/recruiterContext";
+import "react-quill/dist/quill.snow.css";
 
 const RecDashboard = () => {
   const [internships, setInternships] = useState([]);
@@ -30,17 +31,14 @@ const RecDashboard = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [searchName, setSearchName] = useState("");
-  const { refreshData,recruiter } = useRecruiter();
+  const { refreshData, recruiter } = useRecruiter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [updatedInternship, setUpdatedInternship] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [postsleft,setPostsLeft]=useState(null);
-  //  const { recruiter, refreshData } = useRecruiter();
+  const [postsleft, setPostsLeft] = useState(null);
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(null);
-  const itemsPerPage = 10;
   const scrollRef = useRef();
 
   useEffect(() => {
@@ -50,20 +48,17 @@ const RecDashboard = () => {
     refreshData();
   }, [token]);
 
-  useEffect(()=>{
-    if(recruiter){
-    setPostsLeft(recruiter.subscription.postsRemaining);
+  useEffect(() => {
+    if (recruiter) {
+      setPostsLeft(recruiter.subscription.postsRemaining);
     }
-  },[recruiter])
-
-  console.log(postsleft);
+  }, [recruiter]);
 
   const constructQueryStringPageUpdation = (page, name) => {
     let query = `page=${page}`;
     if (name) query += `&searchName=${name}`;
     return query;
   };
-
 
   const fetchInternships = async (pageNo, name) => {
     try {
@@ -95,28 +90,24 @@ const RecDashboard = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchInternships(currentPage, searchName);
   }, [recruiterId, currentPage]);
 
-  const openModal = (internship) => {
-    setSelectedInternship(internship);
-  };
-
-  const closeModal = () => {
-    setSelectedInternship(null);
-  };
+  const openModal = (internship) => setSelectedInternship(internship);
+  const closeModal = () => setSelectedInternship(null);
 
   const handleSearchName = () => {
     if (searchName) {
       fetchInternships(1, searchName);
     }
-  }
+  };
 
   const handleClearSearch = () => {
     setSearchName("");
     fetchInternships(1, "");
-  }
+  };
 
   const updateStatus = async (newStatus, internshipId) => {
     try {
@@ -124,7 +115,6 @@ const RecDashboard = () => {
         `${api}/recruiter/internship/${internshipId}/change-status`,
         { status: newStatus }
       );
-
       if (response.status === 200) {
         toast.success("Status updated successfully");
         window.location.reload();
@@ -138,7 +128,7 @@ const RecDashboard = () => {
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
-      handleScroll()
+      handleScroll();
     }
   };
 
@@ -151,519 +141,300 @@ const RecDashboard = () => {
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }, 500);
-    scrollRef.current.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }
+    scrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const openEditModal = (internship) => {
-    setUpdatedInternship(internship); // Populate with current internship details
+    setUpdatedInternship(internship);
     setIsEditModalOpen(true);
   };
 
-  const closeEditModal = () => {
-    setIsEditModalOpen(false);
-  };
+  const closeEditModal = () => setIsEditModalOpen(false);
+
   const handleUpdateInternship = async () => {
-    if(postsleft<1){
+    if (postsleft < 1) {
       toast.error("You have reached your post limit. Please upgrade your subscription to continue");
       return;
-    }else{
-    try {
-     
-
-      
-      const { internshipName, description, numberOfOpenings,_id } = updatedInternship;
-  
-      // Example API call (replace URL with your endpoint)
-      const response = await axios.put(`${api}/internship/${_id}/update`, {
-        internshipName,
-        description,
-        numberOfOpenings,
-        recruiterId
-      });
-  
-      // Log success response or show success message
-      console.log("Internship updated successfully:", response.data);
-      toast.success("Internship updated successfully!");
-  
-      // Close modals
-      setShowConfirmation(false);
-      closeEditModal();
-      window.location.reload();
-    } catch (error) {
-      console.error("Error updating internship:", error);
-      toast.error("Failed to update the internship. Please try again.");
+    } else {
+      try {
+        const { internshipName, description, numberOfOpenings, _id } = updatedInternship;
+        const response = await axios.put(`${api}/internship/${_id}/update`, {
+          internshipName,
+          description,
+          numberOfOpenings,
+          recruiterId,
+        });
+        console.log("Internship updated successfully:", response.data);
+        toast.success("Internship updated successfully!");
+        setShowConfirmation(false);
+        closeEditModal();
+        window.location.reload();
+      } catch (error) {
+        console.error("Error updating internship:", error);
+        toast.error("Failed to update the internship. Please try again.");
+      }
     }
-  }
   };
 
-
-  console.log('this is updated internship', updatedInternship)
-
-  if (loading) {
-    return <Spinner />;
-  }
+  if (loading) return <Spinner />;
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-xl font-semibold text-red-500">{error}</p>
+      <div className="flex justify-center items-center h-screen bg-[var(--bg-light-color)]">
+        <p className="text-xl font-semibold text-red-500 bg-red-50 px-6 py-3 rounded-lg border border-red-100">{error}</p>
       </div>
     );
   }
-
-  // Calculate internships to display based on current page
-  // const startIndex = (currentPage - 1) * itemsPerPage;
-  // const paginatedInternships = internships.slice(
-  //   startIndex,
-  //   startIndex + itemsPerPage
-  // );
-
-  // // const totalPages = Math.ceil(internships.length / itemsPerPage);
-  // console.log("these are internships:", paginatedInternships);
-
-  // const filteredInternships = paginatedInternships
-  //   .filter((internship) =>
-  //     internship.internshipName.toLowerCase().includes(searchTerm.toLowerCase())
-  //   )
-  //   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   if (internships.length === 0 && !searchName) {
     return (
-      <div className="flex flex-col justify-center items-center h-screen space-y-4">
-        <p className="text-xl font-semibold text-gray-500">
-          No internships found.
-        </p>
-        <Link
-          to={`/recruiter/posting/${recruiterId}`}
-          className="px-2 py-1 bg-blue-500 text-white rounded-md"
-        >
-          Post internship
-        </Link>
+      <div className="min-h-screen bg-[var(--bg-light-color)] flex flex-col items-center justify-center p-4">
+        <div className="bg-white p-10 rounded-2xl shadow-sm border border-[var(--border-color)] text-center max-w-md">
+          <div className="w-16 h-16 bg-[var(--icon-bg-color)] rounded-full flex items-center justify-center mx-auto mb-4">
+            <FaClipboardList className="text-2xl text-[var(--primary-color)]" />
+          </div>
+          <h2 className="text-xl font-bold text-[var(--text-color)] mb-2">No Internships Posted</h2>
+          <p className="text-[var(--text-light)] mb-6">You haven't posted any internships yet. Start hiring top talent today!</p>
+          <Link to={`/recruiter/posting/${recruiterId}`} className="inline-block px-6 py-3 bg-[var(--button-color)] text-white font-semibold rounded-lg hover:bg-[var(--button-hover-color)] transition-colors shadow-md">
+            Post Your First Internship
+          </Link>
+        </div>
       </div>
     );
   }
-  
-  if (internships.length === 0 && searchName) {
-    return (
-      <div className="py-10 px-3 lg:px-5 mt-10 bg-gray-100 min-h-screen">
-        <h1 className="text-xl lg:text-3xl font-bold text-center mb-8">
-  My Posted Internships
-</h1>
-<div className="relative">
-  <FaSearch className="absolute left-4 top-[13px]" />
-  <div className="mb-4 lg:w-[30%] flex space-x-4">
-    <input
-      type="text"
-      placeholder="Search by internship name"
-      value={searchName}
-      onChange={(e) => setSearchName(e.target.value)}
-      className="w-full p-2 border pl-10 border-gray-300 rounded-lg text-sm lg:text-base"
-    />
-    <button
-      onClick={handleSearchName}
-      className="text-white bg-blue-400 rounded-md px-3"
-    >
-      Search
-    </button>
-    <button
-      onClick={handleClearSearch}
-      className="text-white bg-red-400 rounded-md px-3"
-    >
-      Clear
-    </button>
-  </div>
-</div>
-        <p className="text-xl font-semibold text-gray-500">
-          No results found for "{searchName}".
-        </p>
-      </div>
-    );
-  }
-  
 
   return (
-    <div className="py-10 px-3 lg:px-5 mt-10 bg-gray-100 min-h-screen">
-      <h1 className="text-xl lg:text-3xl font-bold text-center mb-8">
-  My Posted Internships
-</h1>
-<div className="relative">
-  <FaSearch className="absolute left-4 top-[13px]" />
-  <div className="mb-4 lg:w-[30%] flex space-x-4">
-    <input
-      type="text"
-      placeholder="Search by internship name"
-      value={searchName}
-      onChange={(e) => setSearchName(e.target.value)}
-      className="w-full p-2 border pl-10 border-gray-300 rounded-lg text-sm lg:text-base"
-    />
-    <button
-      onClick={handleSearchName}
-      className="text-white bg-blue-400 rounded-md px-3"
-    >
-      Search
-    </button>
-    <button
-      onClick={handleClearSearch}
-      className="text-white bg-red-400 rounded-md px-3"
-    >
-      Clear
-    </button>
-  </div>
-</div>
-      <div className="bg-white w-full shadow-md rounded-lg p-2 lg:p-6 my-3 sm:mx-auto">
-        <div className="grid grid-cols-4 font-semibold mb-2 border-b-2 pb-2 text-center">
-          <div className="text-xs -ml-3 lg:text-base lg:w-[190px] lg:ml-10">
-            Post
+    <div className="min-h-screen bg-white py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-[var(--text-color)] my-8">My Posted Internships</h1>
+
+        {/* Search Bar */}
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-[var(--border-color)] mb-6 flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-light)]" />
+            <input
+              type="text"
+              placeholder="Search by internship name..."
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              className="w-full pl-11 pr-4 py-2.5 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent text-[var(--text-color)]"
+            />
           </div>
-          <div className="text-xs ml-3 lg:text-base lg:w-[90px] lg:ml-28">
-            Status
-          </div>
-          {/* <div className="text-xs ml-3 lg:text-base lg:w-[90px] lg:ml-20">
-            Total Views
-          </div> */}
-          <div className="text-xs ml-4 lg:text-base lg:w-[90px] lg:ml-16 md:mr-3">
-            View Applicants
-          </div>
-          <div className="text-xs ml-6 lg:text-base lg:w-[90px] lg:ml-[93px] md:mr-4">
-            View Details
-          </div>
-          {/* <div className="text-xs ml-6 lg:text-base lg:w-[90px] lg:ml-[93px] md:mr-4">
-            Edit
-          </div> */}
+          <button onClick={handleSearchName} className="px-6 py-2.5 bg-[var(--button-color)] text-white font-semibold rounded-lg hover:bg-[var(--button-hover-color)] transition-colors shadow-sm">
+            Search
+          </button>
+          <button onClick={handleClearSearch} className="px-6 py-2.5 bg-gray-100 text-[var(--text-color)] font-semibold rounded-lg hover:bg-gray-200 transition-colors">
+            Clear
+          </button>
         </div>
 
-        <div ref={scrollRef} className="overflow-y-auto h-screen scrollbar-thin">
-          {internships.map((internship) => (
-            <div
-              key={internship._id}
-              className="grid grid-cols-4 gap-2 py-2 border-b-2"
-            >
-              <div className="text-xs text-left ml-1 my-3 w-[80%] sm:text-center sm:text-sm sm:ml-4 lg:text-base lg:ml-10 lg:w-[190px]">
-                {internship.internshipName}
-              </div>
+        {/* Internships Table */}
+        <div className="bg-white rounded-xl shadow-sm border border-[var(--border-color)] overflow-hidden">
+          {/* Table Header */}
+          <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 bg-[var(--bg-light-color)] border-b border-[var(--border-color)] text-xs font-semibold text-[var(--text-light)] uppercase tracking-wider">
+            <div className="col-span-4">Internship</div>
+            <div className="col-span-2 text-center">Status</div>
+            <div className="col-span-2 text-center">Applicants</div>
+            <div className="col-span-4 text-right">Actions</div>
+          </div>
 
-              <div className="relative inline-flex justify-center h-8 my-auto w-[80%] lg:w-[90px] ml-4 sm:ml-5 md:ml-6 lg:ml-28  group">
-                <div className="flex items-center text-xs sm:text-base">
-                  <span
-                    className={`${internship.status === "On Hold" && "bg-orange-300"
-                      } ${internship.status === "Fulfilled" && "bg-green-400"
-                      } bg-gray-200 rounded-lg px-2 py-1 flex flex-col items-center`}
-                  >
-                    {internship.status}
-
-                    <p className="text-blue-400">({internship.applicantCount} views)</p>
-                  </span>
+          {/* Table Body */}
+          <div ref={scrollRef} className="divide-y divide-gray-100 max-h-[60vh] overflow-y-auto scrollbar-thin">
+            {internships.map((internship) => (
+              <div key={internship._id} className="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-5 hover:bg-[var(--icon-bg-color)] transition-colors items-center">
+                {/* Internship Name */}
+                <div className="md:col-span-4">
+                  <h3 className="text-base font-bold text-[var(--text-color)] truncate">{internship.internshipName}</h3>
+                  <p className="text-xs text-[var(--text-light)] mt-1">Posted {TimeAgo(internship.createdAt)}</p>
                 </div>
-                <div className="absolute top-[90%] left-0 mt-1 text-sm lg:text-base hidden w-20 lg:w-32 bg-white border rounded shadow-md group-hover:block z-10">
-                  <ul className="text-gray-700">
-                    <li
-                      className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => updateStatus("Active", internship._id)}
-                    >
-                      Active
-                    </li>
-                    <li
-                      className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => updateStatus("On Hold", internship._id)}
-                    >
-                      On Hold
-                    </li>
-                    <li
-                      className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => updateStatus("Fulfilled", internship._id)}
-                    >
-                      Fulfilled
-                    </li>
-                  </ul>
+
+                {/* Status */}
+                <div className="md:col-span-2 flex md:justify-center">
+                  <div className="relative group w-full md:w-auto">
+                    <button className={`px-3 py-1.5 rounded-full text-xs font-semibold border flex items-center gap-1.5 w-full md:w-auto justify-center ${
+                      internship.status === "Active" ? "bg-green-50 text-green-700 border-green-200" :
+                      internship.status === "On Hold" ? "bg-yellow-50 text-yellow-700 border-yellow-200" :
+                      "bg-gray-50 text-gray-700 border-gray-200"
+                    }`}>
+                      {internship.status === "Active" && <FaPlayCircle className="text-[10px]" />}
+                      {internship.status === "On Hold" && <FaPauseCircle className="text-[10px]" />}
+                      {internship.status === "Fulfilled" && <FaCheckCircle className="text-[10px]" />}
+                      {internship.status}
+                    </button>
+                    {/* Dropdown */}
+                    <div className="absolute top-full left-0 md:left-1/2 md:-translate-x-1/2 mt-2 w-32 bg-white border border-gray-100 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">
+                      <ul className="py-1">
+                        {["Active", "On Hold", "Fulfilled"].map((status) => (
+                          <li key={status} onClick={() => updateStatus(status, internship._id)} className="px-4 py-2 text-sm text-[var(--text-color)] hover:bg-[var(--icon-bg-color)] cursor-pointer">
+                            {status}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Applicants */}
+                <div className="md:col-span-2 flex md:justify-center">
+                  <Link to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}/page-1`} className="px-4 py-1.5 bg-[var(--icon-bg-color)] text-[var(--primary-color)] rounded-full text-xs font-semibold hover:bg-[var(--primary-color)] hover:text-white transition-colors text-center w-full md:w-auto">
+                    {internship.applicantCount} Applicants
+                  </Link>
+                </div>
+
+                {/* Actions */}
+                <div className="md:col-span-4 flex md:justify-end gap-3">
+                  <button onClick={() => openModal(internship)} className="flex items-center gap-2 px-4 py-2 bg-white border border-[var(--border-color)] text-[var(--text-color)] rounded-lg text-sm font-medium hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors">
+                    <FaEye className="text-xs" /> View
+                  </button>
+                  <button onClick={() => openEditModal(internship)} className="flex items-center gap-2 px-4 py-2 bg-white border border-[var(--border-color)] text-[var(--text-color)] rounded-lg text-sm font-medium hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-colors">
+                    <FaPen className="text-xs" /> Edit
+                  </button>
                 </div>
               </div>
-              {/* <div className="w-[80%] text-xs sm:text-base lg:w-[80px] mx-auto text-center h-6 my-auto ml-3 lg:ml-20">
-                {internship.views}
-              </div> */}
-
-              <Link
-                to={`/recruiter/dashboard/${recruiterId}/applicants/${internship._id}/page-1`}
-                className=" md:mx-auto text-xs px-1 sm:text-base mx-auto  sm:ml-5 lg:ml-4 text-center my-auto rounded-xl bg-blue-400 text-white w-20 sm:w-24 lg:w-[190px] hover:bg-blue-700 hover:cursor-pointer py-1"
-              >
-                {internship.applicantCount} Applicants
-              </Link>
-              <div className="flex space-x-3 items-center justify-center text-xs sm:text-base mx-auto sm:ml-14 md:ml-16  lg:w-32 my-auto">
-                <button
-                  onClick={() => openModal(internship)}
-                  className="text-blue-500 hover:underline"
-                >
-                  View
-                </button>
-                <span>/</span>
-                <button onClick={() => openEditModal(internship)} className="text-blue-500 hover:underline">Edit</button>
-              </div>
-
-
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        {/* Pagination Controls */}
+        {/* Pagination */}
         {internships.length > 0 && (
-          <div className="flex justify-center my-4 space-x-4">
-            <button
-              onClick={handlePreviousPage}
-              disabled={currentPage === 1}
-              className={`px-4 py-2 rounded-md ${currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
-                }`}
-            >
+          <div className="flex justify-center items-center gap-4 mt-8">
+            <button onClick={handlePreviousPage} disabled={currentPage === 1} className={`p-3 rounded-lg transition-colors ${currentPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-[var(--button-color)] text-white hover:bg-[var(--button-hover-color)]"}`}>
               <FaAngleLeft />
             </button>
-
-            <span>
-              {currentPage} / {totalPages}
-            </span>
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-              className={`px-4 py-2 rounded-md ${currentPage === totalPages
-                ? "bg-gray-300"
-                : "bg-blue-500 text-white"
-                }`}
-            >
+            <span className="text-[var(--text-color)] font-medium">Page {currentPage} of {totalPages}</span>
+            <button onClick={handleNextPage} disabled={currentPage === totalPages} className={`p-3 rounded-lg transition-colors ${currentPage === totalPages ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-[var(--button-color)] text-white hover:bg-[var(--button-hover-color)]"}`}>
               <FaAngleRight />
             </button>
           </div>
         )}
 
+        {/* View Details Modal */}
         {selectedInternship && (
           <>
-            <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40  "
-              onClick={closeModal}
-            ></div>
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-full lg:w-[60%] h-[90%] p-6 relative overflow-auto mx-1 lg:mx-0">
-                <h2 className="text-2xl font-semibold mb-4">
-                  {selectedInternship.internshipName}
-                </h2>
-                <button
-                  onClick={closeModal}
-                  className="absolute top-7 right-4 text-blue-500 hover:text-blue-700 focus:outline-none"
-                >
-                  <FaTimes />
-                </button>
-                {/* <p className="text-gray-600 mb-4">Posted by: {selectedInternship.recruiter.firstname} {selectedInternship.recruiter.lastname}</p> */}
-                <p className="text-gray-600 mb-4">
-                  Posted: {TimeAgo(selectedInternship.createdAt)}
-                </p>
-
-                <div className="flex items-center text-gray-700 mb-2">
-                  <FaMapMarkerAlt className="mr-2" />
-                  <span>
-                    {selectedInternship.internLocation.city
-                      ? `${selectedInternship.internLocation.country + ", " + selectedInternship.internLocation.state + ", " + selectedInternship.internLocation.city}`
-                      : "Remote"}
-                  </span>
-                </div>
-
-                <div className="flex items-center text-gray-700 mb-2">
-                  <FaMoneyBillWave className="mr-2" />
-                  {selectedInternship.stipend && <span>{selectedInternship.currency} {selectedInternship.stipend}</span>}
-                  {!selectedInternship.stipend && <span>Unpaid</span>}
-                </div>
-                <div className="flex items-center text-gray-700 mb-2">
-                  <FaClock className="mr-2" />
-                  <span>{selectedInternship.duration} Months</span>
-                </div>
-
-                <div className="flex items-center text-gray-700 mb-2">
-                  <FaUsers className="mr-2" />
-                  <span>{selectedInternship.numberOfOpenings} Openings</span>
-                </div>
-
-                {selectedInternship.internLocation && (
-                  <div className="flex items-center text-gray-700 mb-4">
-                    <FaClipboardList className="mr-2" />
-                    <span>{selectedInternship.internshipType}</span>
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity" onClick={closeModal}></div>
+            <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-thin">
+                <div className="p-6 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-2xl">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1 min-w-0 mr-4">
+                      <h2 className="text-2xl font-bold text-[var(--text-color)] leading-tight">{selectedInternship.internshipName}</h2>
+                      <p className="text-[var(--text-light)] text-sm mt-1">Posted {TimeAgo(selectedInternship.createdAt)}</p>
+                    </div>
+                    <button onClick={closeModal} className="text-[var(--text-light)] hover:text-[var(--text-color)] transition-colors p-2 rounded-full hover:bg-gray-100 flex-shrink-0">
+                      <FaTimes className="w-5 h-5" />
+                    </button>
                   </div>
-                )}
-
-                <h3 className="text-lg font-medium mb-2">Skills Required:</h3>
-                <div className="flex flex-wrap mb-4">
-                  {selectedInternship.skills.map((skill, index) => (
-                    <span
-                      key={index}
-                      className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
-                    >
-                      {skill}
-                    </span>
-                  ))}
                 </div>
 
-                <h3 className="text-lg font-medium mb-2">Description:</h3>
-                <div
-                  className="text-gray-700 mb-4"
-                  dangerouslySetInnerHTML={{
-                    __html: selectedInternship.description,
-                  }}
-                ></div>
+                <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4 border-b border-gray-100 bg-[var(--bg-light-color)]">
+                  <div className="text-center p-3 bg-white rounded-xl shadow-sm border border-gray-50">
+                    <p className="text-xs text-[var(--text-light)] mb-1 uppercase font-semibold">Location</p>
+                    <p className="text-sm font-bold text-[var(--text-color)] truncate">{selectedInternship.internLocation.city ? selectedInternship.internLocation.city : "Remote"}</p>
+                  </div>
+                  <div className="text-center p-3 bg-white rounded-xl shadow-sm border border-gray-50">
+                    <p className="text-xs text-[var(--text-light)] mb-1 uppercase font-semibold">Stipend</p>
+                    <p className="text-sm font-bold text-[var(--text-color)]">{selectedInternship.stipend ? `${selectedInternship.currency} ${selectedInternship.stipend}` : "Unpaid"}</p>
+                  </div>
+                  <div className="text-center p-3 bg-white rounded-xl shadow-sm border border-gray-50">
+                    <p className="text-xs text-[var(--text-light)] mb-1 uppercase font-semibold">Duration</p>
+                    <p className="text-sm font-bold text-[var(--text-color)]">{selectedInternship.duration} Mo.</p>
+                  </div>
+                  <div className="text-center p-3 bg-white rounded-xl shadow-sm border border-gray-50">
+                    <p className="text-xs text-[var(--text-light)] mb-1 uppercase font-semibold">Openings</p>
+                    <p className="text-sm font-bold text-[var(--text-color)]">{selectedInternship.numberOfOpenings}</p>
+                  </div>
+                </div>
 
-                <h3 className="text-lg font-medium mb-2">Perks</h3>
-                <div className="flex flex-wrap mb-4">
-                  {selectedInternship.perks.map((perk, index) => (
-                    <span
-                      key={index}
-                      className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 mb-2 px-2.5 py-0.5 rounded"
-                    >
-                      {perk}
-                    </span>
-                  ))}
+                <div className="p-6 space-y-6">
+                  <div className="flex items-center gap-2 text-sm">
+                    <FaClipboardList className="text-[var(--primary-color)]" />
+                    <span className="font-medium text-[var(--text-color)]">{selectedInternship.internshipType}</span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-bold text-[var(--text-color)] uppercase tracking-wide mb-3">Skills Required</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedInternship.skills.map((skill, index) => (
+                        <span key={index} className="px-3 py-1 bg-[var(--icon-bg-color)] text-[var(--primary-color)] text-xs font-semibold rounded-full">{skill}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-bold text-[var(--text-color)] uppercase tracking-wide mb-3">Description</h3>
+                    <div className="text-sm text-[var(--text-light)] leading-relaxed" dangerouslySetInnerHTML={{ __html: selectedInternship.description }}></div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-bold text-[var(--text-color)] uppercase tracking-wide mb-3">Perks & Benefits</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedInternship.perks.map((perk, index) => (
+                        <span key={index} className="px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full border border-green-100">{perk}</span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </>
         )}
 
+        {/* Edit Modal */}
         {isEditModalOpen && (
           <>
-            {/* Background overlay */}
-            <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={closeEditModal}></div>
-
-            {/* Edit Modal */}
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div className="bg-white border-2 border-gray-600 rounded-lg shadow-3xl w-full lg:w-[60%] h-[80%] p-6 relative overflow-auto mx-1 lg:mx-0">
-                <h2 className="text-2xl font-semibold mb-4">Edit Internship</h2>
-                <button
-                  onClick={closeEditModal}
-                  className="absolute top-7 right-4 text-blue-500 hover:text-blue-700 focus:outline-none"
-                >
-                  <FaTimes />
-                </button>
-
-                <form className="space-y-4">
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onClick={closeEditModal}></div>
+            <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-thin">
+                <div className="p-6 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-2xl">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-[var(--text-color)]">Edit Internship</h2>
+                    <button onClick={closeEditModal} className="text-[var(--text-light)] hover:text-[var(--text-color)] p-2 rounded-full hover:bg-gray-100">
+                      <FaTimes className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+                <div className="p-6 space-y-5">
                   <div>
-                    <label className="block font-medium">Internship Name:</label>
-                    <input
-                      type="text"
-                      name="internshipName"
-                      value={updatedInternship?.internshipName || ""}
-                      onChange={(e) =>
-                        setUpdatedInternship((prev) => ({
-                          ...prev,
-                          internshipName: e.target.value,
-                        }))
-                      }
-                      className="border rounded w-full p-2"
-                    />
+                    <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Internship Name</label>
+                    <input type="text" value={updatedInternship?.internshipName || ""} onChange={(e) => setUpdatedInternship((prev) => ({ ...prev, internshipName: e.target.value }))} className="w-full p-2.5 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-[var(--text-color)] bg-white" />
                   </div>
-
-                  {/* <div>
-                    <label className="block font-medium">Location:</label>
-                    <input
-                      type="text"
-                      name="internLocation"
-                      value={updatedInternship?.internLocation?.city || ""}
-                      onChange={(e) =>
-                        setUpdatedInternship((prev) => ({
-                          ...prev,
-                          internLocation: { ...prev.internLocation, city: e.target.value },
-                        }))
-                      }
-                      className="border rounded w-full p-2"
-                    />
-                  </div> */}
-
-                  <div className="flex flex-col my-5">
-                    <label htmlFor="numberOfOpenings" className="mb-2 font-medium">
-                      Number of Openings
-                    </label>
-                    <input
-                      id="numberOfOpenings"
-                      type="number"
-                      name="numberOfOpenings"
-                      value={updatedInternship?.numberOfOpenings || ""}
-                      onChange={(e) =>
-                        setUpdatedInternship((prev) => ({
-                          ...prev,
-                          numberOfOpenings: e.target.value,
-                        }))
-                      }
-                      className="p-2 border border-gray-300 rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="e.g., 4"
-                      min={1}
-                      max={100}
-                    />
+                  <div>
+                    <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Number of Openings</label>
+                    <input type="number" value={updatedInternship?.numberOfOpenings || ""} onChange={(e) => setUpdatedInternship((prev) => ({ ...prev, numberOfOpenings: e.target.value }))} className="w-full p-2.5 border border-[var(--border-color)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-[var(--text-color)] bg-white" min={1} max={100} />
                   </div>
-
-                  <div className="flex flex-col my-5 h-[320px]">
-                    <label className="my-2 ml-2 font-medium">
-                      Intern's responsibilities
-                    </label>
-                    <ReactQuill
-                      value={updatedInternship?.description}
-                      onChange={(val) =>
-                        setUpdatedInternship((prev) => ({
-                          ...prev,
-                          description: val,
-                        }))
-                      }
-                      className="p-2 rounded-md h-[200px]"
-                      theme="snow"
-                      placeholder="Enter the requirements...."
-                    />
+                  <div>
+                    <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Intern's Responsibilities</label>
+                    <div className="border border-[var(--border-color)] rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-[var(--primary-color)]">
+                      <ReactQuill value={updatedInternship?.description} onChange={(val) => setUpdatedInternship((prev) => ({ ...prev, description: val }))} theme="snow" placeholder="Enter the requirements...." className="h-[200px]" />
+                    </div>
                   </div>
-
-
-
-                  {/* Add more fields as needed */}
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmation(true)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                  >
-                    Update
-                  </button>
-                </form>
-              </div>
-            </div>
-          </>
-        )}
-
-        {showConfirmation && (
-          <>
-            {/* Background overlay */}
-            <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
-              onClick={() => setShowConfirmation(false)} // Close modal on outside click
-            ></div>
-
-            {/* Modal Content */}
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div className="bg-white border border-gray-300 rounded-lg p-6 w-full max-w-md mx-4 shadow-lg">
-                <h2 className="text-xl font-semibold mb-4">Confirm Update</h2>
-                <p className="mb-6 text-gray-700">
-                  Your available postings will be deducted by 1. Do you wish to update this internship?
-                </p>
-                <div className="flex justify-end space-x-4">
-                  <button
-                    onClick={() => setShowConfirmation(false)} // Cancel
-                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 focus:outline-none"
-                  >
-                    No
-                  </button>
-                  <button
-                    onClick={handleUpdateInternship}
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-                  >
-                    Yes
-                  </button>
+                  <div className="flex justify-end pt-4">
+                    <button type="button" onClick={() => setShowConfirmation(true)} className="px-6 py-2.5 bg-[var(--button-color)] text-white font-semibold rounded-lg hover:bg-[var(--button-hover-color)] transition-colors shadow-sm">
+                      Update Internship
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </>
         )}
 
-
-
+        {/* Confirmation Modal */}
+        {showConfirmation && (
+          <>
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]" onClick={() => setShowConfirmation(false)}></div>
+            <div className="fixed inset-0 flex items-center justify-center z-[70] p-4">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+                <h2 className="text-xl font-bold text-[var(--text-color)] mb-2">Confirm Update</h2>
+                <p className="text-[var(--text-light)] mb-6">Your available postings will be deducted by 1. Do you wish to update this internship?</p>
+                <div className="flex justify-end gap-3">
+                  <button onClick={() => setShowConfirmation(false)} className="px-5 py-2.5 bg-gray-100 text-[var(--text-color)] font-semibold rounded-lg hover:bg-gray-200 transition-colors">Cancel</button>
+                  <button onClick={handleUpdateInternship} className="px-5 py-2.5 bg-[var(--button-color)] text-white font-semibold rounded-lg hover:bg-[var(--button-hover-color)] transition-colors shadow-sm">Yes, Update</button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import React from "react";
-import Home from "./components/student/Home";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {
@@ -16,7 +15,6 @@ import Alerts from "./components/student/Alerts";
 import Profile from "./components/student/Profile";
 import Resume from "./components/student/Resume";
 import Login from "./components/student/auth/Login";
-import Main from "./components/common/Main";
 import Signup from "./components/student/auth/Signup";
 import SignupRecruit from "./components/recruiter/auth/Signup";
 import LoginRecruit from "./components/recruiter/auth/Login";
@@ -35,8 +33,8 @@ import AdminLogin from "./components/Admin/AdminLogin";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import RecPricing from "./components/recruiter/RecPricing";
 import Footer from "./components/common/company/Footer";
-import About from "./components/common/policies/About";
-import Contact from "./components/common/policies/Contact";
+import About from "./components/common/company/About";
+import Contact from "./components/common/company/Contact";
 import Privacy from "./components/common/policies/Privacy";
 import Terms from "./components/common/policies/Terms";
 import Cancellation from "./components/common/policies/Cancellation";
@@ -69,7 +67,7 @@ function App() {
 
         <Route path="/student/signup" element={<Signup />} />
         <Route path="/student/login" element={<Login />} />
-        <Route path="/student/dashboard/:userId" element={<Home />} />
+        <Route path="/student/dashboard/:userId" element={<HomeUniversal />} />
         <Route path="/student/resume/:userId" element={<Resume />} />
         <Route path="/student/locations" element={<Locations />} />
         <Route path="/student/category" element={<Category />} />
@@ -101,7 +99,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy-policy" element={<Privacy />} />
         <Route path="/terms-conditions" element={<Terms />} />
-        <Route path="/Cancellation-policy" element={<Cancellation />} />
+        <Route path="/cancellation-policy" element={<Cancellation />} />
         <Route path="/recruiter/forget-pass" element={<ForgetPasswordRecruiter />} />
         <Route path="/student/forget-pass" element={<ForgetPasswordStudent />} />
       </Routes>

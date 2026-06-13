@@ -19,17 +19,16 @@ import {
   FaArrowCircleDown,
   FaFilePdf,
   FaArrowLeft,
+  FaCircle,
+  FaArrowRight,
 } from "react-icons/fa";
 import { MdDoneAll } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../common/Spinner";
-import { FaArrowRight } from "react-icons/fa6";
-// import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Chats = () => {
   const { studentId } = useParams();
   const [shortlistedInternships, setShortlistedInternships] = useState([]);
-  // const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [chatHistories, setChatHistories] = useState({});
 
@@ -37,7 +36,7 @@ const Chats = () => {
   const [selectedInternship, setSelectedInternship] = useState(null);
 
   const [companyName, setCompanyName] = useState("");
-  const [recruiterName, setRecruiterName]=useState("");
+  const [recruiterName, setRecruiterName] = useState("");
 
   const [internshipName, setInternshipName] = useState("");
   const [activeStatus, setActiveStatus] = useState(false);
@@ -45,7 +44,6 @@ const Chats = () => {
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const chatEndRef = useRef(null);
-  // const [latestMessages, setLatestMessages] = useState({});
   const [activeFilter, setActiveFilter] = useState("all");
   const [latestMessagesSeenStatus, setLatestMessagesSeenStatus] = useState({});
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -68,51 +66,28 @@ const Chats = () => {
         );
         const result = response.data;
         setShortlistedInternships(result);
-        console.log("this is on initial fetching", response.data);
 
         const socketConnection = io(api, {
           query: { userType: "Student", userId: studentId },
         });
         setSocket(socketConnection);
-        console.log("socket connection established from student side");
 
         socketConnection.on("recruitersStatus", (recruiters) => {
-          if (shortlistedInternships) {
-            console.log("yes interns to haii", recruiters);
-            console.log("theeeeeseee", shortlistedInternships.length);
-          }
           setShortlistedInternships((prevInterns) =>
             prevInterns.map((intern) => {
-              // Find the matching recruiter in the recruiters array
               const matchingRecruiter = recruiters.find(
                 (rec) => rec.recruiterId === intern.recruiterId
               );
-              console.log("Intern recruiterId:", intern.recruiterId);
-              console.log("Matching recruiter:", matchingRecruiter);
-
-              // If a match is found, update the isActive status
               if (matchingRecruiter && intern.isActive !== true) {
-                console.log(
-                  "Updating isActive for recruiterId:",
-                  intern.recruiterId
-                );
-                return {
-                  ...intern,
-                  isActive: true, // Set the active status
-                };
+                return { ...intern, isActive: true };
               }
-
-              console.log("not changing any thing");
               return intern;
             })
           );
-          // setShortlistedRecruiters(recruiters);
         });
 
         socketConnection.on("recruitersActive", ({ userId, isActive }) => {
-          console.log("listening to all active recruiters");
           setShortlistedInternships((prevInterns) => {
-            console.log(isActive);
             return prevInterns.map((intern) =>
               intern.recruiterId === userId ? { ...intern, isActive } : intern
             );
@@ -120,11 +95,9 @@ const Chats = () => {
         });
 
         if (result.length > 0) {
-          result.forEach((intern, index) => {
+          result.forEach((intern) => {
             const { recruiterId, internshipId } = intern;
-            console.log(recruiterId, internshipId);
 
-            // Emit joinChatRoom for each student
             socketConnection.emit("joinChatRoom", {
               recruiterId,
               studentId,
@@ -136,41 +109,31 @@ const Chats = () => {
             socketConnection.on(chatHistoryEvent, (messages) => {
               setChatHistories((prevHistories) => ({
                 ...prevHistories,
-                [`${recruiterId}_${internshipId}`]: messages, // Store history for each student using their studentId as key
+                [`${recruiterId}_${internshipId}`]: messages,
               }));
 
-              const lastMessage =
-                messages.length > 0 ? messages[messages.length - 1] : null;
-
+              const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
               if (lastMessage) {
                 setLatestMessagesSeenStatus((prevStatus) => ({
                   ...prevStatus,
                   [`${recruiterId}_${internshipId}`]: lastMessage.seenStatus,
                 }));
-                console.log("status of last message", lastMessage.seenStatus);
               }
             });
 
             const receiveMessageEvent = `receiveMessages_${recruiterId}_${internshipId}`;
             socketConnection.on(receiveMessageEvent, (message) => {
-              console.log(
-                `New message from recruiter ${message.senderId}:`,
-                message
-              );
-
-              // Store real-time messages for each student
               setChatHistories((prevHistories) => ({
                 ...prevHistories,
                 [`${recruiterId}_${internshipId}`]: [
-                  ...(prevHistories[`${recruiterId}_${internshipId}`] || []), // Preserve previous history
-                  message, // Add the new real-time message
+                  ...(prevHistories[`${recruiterId}_${internshipId}`] || []),
+                  message,
                 ],
               }));
 
               setLatestMessagesSeenStatus((prev) => ({
                 ...prev,
-                [`${message.senderId}_${message.internshipId}`]:
-                  message.seenStatus,
+                [`${message.senderId}_${message.internshipId}`]: message.seenStatus,
               }));
             });
           });
@@ -180,7 +143,7 @@ const Chats = () => {
           setInternsFoundCheck(false);
           return;
         }
-        toast.success("some error occured");
+        toast.error("Some error occurred");
       }
     };
 
@@ -192,25 +155,21 @@ const Chats = () => {
       try {
         const response = await axios.get(`${api}/recruiter/blocked-chats`);
         const blockedChats = response.data;
-
         const blockedMap = blockedChats.reduce((acc, chat) => {
           const chatRoomKey = `${chat.recruiter}_${chat.internship}`;
           acc[chatRoomKey] = "recruiter";
           return acc;
         }, {});
-
-        setChatBlocked(blockedMap); // Update the state with blocked chats
+        setChatBlocked(blockedMap);
       } catch (error) {
         console.error("Error fetching blocked chats:", error);
       }
     };
-
-    fetchBlockedChats(); // Call the function to fetch blocked chats when the component mounts
+    fetchBlockedChats();
   }, []);
 
   useEffect(() => {
     if (shortlistedInternships && shortlistedInternships.length > 0) {
-      console.log("Updated shortlistedInternships:", shortlistedInternships);
       if (socket) {
         handleInternClick(
           shortlistedInternships[0].internshipId,
@@ -221,12 +180,10 @@ const Chats = () => {
           shortlistedInternships[0].internshipName,
           shortlistedInternships[0].isActive,
           shortlistedInternships[0].recruiterFirstName,
-          shortlistedInternships[0].recruiterLastName,
-
+          shortlistedInternships[0].recruiterLastName
         );
       }
       setIsLoading(false);
-      console.log("loading status:", isLoading);
     }
   }, [socket, shortlistedInternships]);
 
@@ -235,39 +192,27 @@ const Chats = () => {
       chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     };
     const timer = setTimeout(scrollToBottom, 500);
-
     return () => clearTimeout(timer);
   }, [selectedInternship, selectedRecruiter, socket]);
 
   const sendMessage = () => {
     if (newMessage.trim() && socket) {
       const messageData = {
-        studentId, // or studentId depending on who is sending
+        studentId,
         recruiterId: selectedRecruiter,
         message: newMessage,
         internshipId: selectedInternship,
         type: "Student",
       };
-      console.log("message Data", messageData);
-
-      // Emit the message event to the backend
       socket.emit("sendMessage", messageData);
 
       setChatHistories((prevHistories) => ({
         ...prevHistories,
         [`${messageData.recruiterId}_${messageData.internshipId}`]: [
-          ...(prevHistories[
-            `${messageData.recruiterId}_${messageData.internshipId}`
-          ] || []), // Get existing messages or an empty array
-          {
-            senderId: studentId,
-            messageContent: newMessage,
-            sentAt: new Date(),
-          }, // Add the new message
+          ...(prevHistories[`${messageData.recruiterId}_${messageData.internshipId}`] || []),
+          { senderId: studentId, messageContent: newMessage, sentAt: new Date() },
         ],
       }));
-
-      // Optionally clear the message input
       setNewMessage("");
     }
   };
@@ -280,239 +225,135 @@ const Chats = () => {
     socket.emit("markLastMessageAsSeen", {
       studentId,
       internshipId,
-      recruiterId, // Assuming recruiterId is available in scope
+      recruiterId,
       type: "Student",
     });
 
-    socket.on(
-      "messageSeenUpdate",
-      ({ studentId, internshipId, recruiterId, type }) => {
-        // Construct the key based on the type of user (Recruiter or Student)
-        let key;
-        if (type === "Student") {
-          key = `${recruiterId}_${internshipId}`;
-
-          setLatestMessagesSeenStatus((prev) => ({
-            ...prev,
-            [key]: true, // Mark this chat as seen
-          }));
-        } else {
-          socket.off("messageSeenUpdate");
-        }
+    socket.on("messageSeenUpdate", ({ studentId, internshipId, recruiterId, type }) => {
+      if (type === "Student") {
+        const key = `${recruiterId}_${internshipId}`;
+        setLatestMessagesSeenStatus((prev) => ({ ...prev, [key]: true }));
+      } else {
+        socket.off("messageSeenUpdate");
       }
-    );
+    });
   };
 
   useEffect(() => {
-    const scrollToBottom = () => {
-      chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    };
-    scrollToBottom();
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [chatHistories]);
 
   const formatSentAt = (sentAt) => {
     const messageDate = new Date(sentAt);
-
-    // Format time as hh:mm AM/PM
-    return messageDate.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
+    return messageDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true });
   };
 
-  const handleInfoSetter = (companyName, internshipName, isActive, recruiterFirstName,recruiterLastName) => {
+  const handleInfoSetter = (companyName, internshipName, isActive, recruiterFirstName, recruiterLastName) => {
     setCompanyName(companyName);
     setInternshipName(internshipName);
     setActiveStatus(isActive);
     setRecruiterName(`${recruiterFirstName} ${recruiterLastName}`);
-    console.log("running");
   };
 
   const displayDate = (currentDate) => {
-    if (currentDate.toDateString() === new Date().toDateString()) {
-      return "Today";
-    } else {
-      return `${currentDate.getDate()} ${currentDate.toLocaleString("default", {
-        month: "long",
-      })} `;
-    }
+    if (currentDate.toDateString() === new Date().toDateString()) return "Today";
+    return `${currentDate.getDate()} ${currentDate.toLocaleString("default", { month: "long" })}`;
   };
 
   const getLastMessageTimestamp = (chatKey, chatHistories) => {
     const messages = chatHistories[chatKey] || [];
-
-    if (messages.length === 0) return new Date(0); // Return earliest date if no messages
-
-    // Find the message with the latest sentAt timestamp
-    const lastMessage = messages[messages.length - 1];
-
-    return new Date(lastMessage.sentAt); // Return the latest sentAt timestamp
+    if (messages.length === 0) return new Date(0);
+    return new Date(messages[messages.length - 1].sentAt);
   };
 
-  const sortShortlistedInternshipsByLastMessage = (
-    shortlistedInternships,
-    chatHistories
-  ) => {
+  const sortShortlistedInternshipsByLastMessage = (shortlistedInternships, chatHistories) => {
     return shortlistedInternships.sort((a, b) => {
-      // Get the last message timestamps for each student-internship pair
-      const timestampA = getLastMessageTimestamp(
-        `${a.recruiterId}_${a.internshipId}`,
-        chatHistories
-      );
-      const timestampB = getLastMessageTimestamp(
-        `${b.recruiterId}_${b.internshipId}`,
-        chatHistories
-      );
-
-      // Sort by descending order of timestamps (latest messages at the top)
+      const timestampA = getLastMessageTimestamp(`${a.recruiterId}_${a.internshipId}`, chatHistories);
+      const timestampB = getLastMessageTimestamp(`${b.recruiterId}_${b.internshipId}`, chatHistories);
       return timestampB - timestampA;
     });
   };
 
   const sortAndSetShortlistedStudents = () => {
-    setShortlistedInternships((prevShortlistedInternships) => {
-      // console.log('sorting running..................');
-      const sortedShortlistedInternships =
-        sortShortlistedInternshipsByLastMessage(
-          prevShortlistedInternships,
-          chatHistories
-        );
-      return [...sortedShortlistedInternships];
-    });
+    setShortlistedInternships((prev) => [...sortShortlistedInternshipsByLastMessage(prev, chatHistories)]);
   };
 
   useEffect(() => {
     sortAndSetShortlistedStudents();
   }, [chatHistories]);
 
-  const handleFilterChange = (filter) => {
-    setActiveFilter(filter);
-  };
+  const handleFilterChange = (filter) => setActiveFilter(filter);
 
-  console.log("this is shortlisted internships", shortlistedInternships);
   useEffect(() => {
     if (shortlistedInternships && shortlistedInternships.length > 0) {
-      const { filteredInternships, unreadCount } =
-        shortlistedInternships.reduce(
-          (acc, internship) => {
-            const key = `${internship.recruiterId}_${internship.internshipId}`;
+      const { filteredInternships, unreadCount } = shortlistedInternships.reduce(
+        (acc, internship) => {
+          const key = `${internship.recruiterId}_${internship.internshipId}`;
+          if (activeFilter === "all") acc.filteredInternships.push(internship);
+          else if (activeFilter === "unread" && latestMessagesSeenStatus[key] === false) acc.filteredInternships.push(internship);
+          else if (activeFilter === "important" && internship.importantForStudent) acc.filteredInternships.push(internship);
 
-            // Add to filtered internships based on the active filter
-            if (activeFilter === "all") {
-              acc.filteredInternships.push(internship); // Add all internships
-            } else if (
-              activeFilter === "unread" &&
-              latestMessagesSeenStatus[key] === false
-            ) {
-              acc.filteredInternships.push(internship); // Add to filtered list if unread
-            } else if (
-              activeFilter === "important" &&
-              internship.importantForStudent
-            ) {
-              acc.filteredInternships.push(internship);
-            }
-
-            // Count unread messages regardless of the active filter
-            if (latestMessagesSeenStatus[key] === false) {
-              acc.unreadCount += 1; // Increment the unread count
-            }
-
-            return acc; // Return the accumulator
-          },
-          { filteredInternships: [], unreadCount: 0 }
-        );
-
-      // Update state with new filtered internships and unread count
+          if (latestMessagesSeenStatus[key] === false) acc.unreadCount += 1;
+          return acc;
+        },
+        { filteredInternships: [], unreadCount: 0 }
+      );
       setFilteredInternships(filteredInternships);
       setUnreadCount(unreadCount);
     } else {
-      // Reset state if there are no shortlisted internships
       setFilteredInternships([]);
       setUnreadCount(0);
     }
   }, [shortlistedInternships, activeFilter, latestMessagesSeenStatus]);
 
-  console.log(unreadCount);
-  console.log("these are filtered", filteredInternships);
-
-  const openAssignmentPopup = () => {
-    setPopupOpen(true);
-  };
-
-  const closeAssignmentPopup = () => {
-    setPopupOpen(false);
-  };
+  const openAssignmentPopup = () => setPopupOpen(true);
+  const closeAssignmentPopup = () => setPopupOpen(false);
 
   const handleAssignmentSubmit = async (submissionData) => {
     const { files, link, additionalInfo, msgId } = submissionData;
-
     const submissionPayload = {
-      msgId, // The ID of the original assignment message sent by the recruiter
-      files, // The array of uploaded files
-      link, // The assignment submission link
-      additionalInfo, // Additional info about the submission
-      internshipId: selectedInternship,
+      msgId, files, link, additionalInfo, internshipId: selectedInternship,
     };
-
-    console.log(submissionPayload);
-
     socket.emit("submitAssignment", submissionPayload);
 
     setChatHistories((prevHistories) => {
       const newMessage = {
         senderId: studentId,
-        messageContent: "Assignment submission", // You might want to adjust this based on your needs
+        messageContent: "Assignment submission",
         sentAt: new Date(),
-        isAssignment: true, // Indicate this is an assignment submission
+        isAssignment: true,
         submissionDetails: {
           submittedFiles: files.map((file) => ({
             fileName: file.fileName,
-            fileSize: (file.fileSize / 1024).toFixed(2) + " KB", // Convert to KB with 2 decimal places
-            fileUrl: file.fileUrl || "", // Assuming you have a URL for the uploaded file
+            fileSize: (file.fileSize / 1024).toFixed(2) + " KB",
+            fileUrl: file.fileUrl || "",
           })),
           submissionLink: link,
           additionalInfo: additionalInfo || "",
-          originalAssignmentId: msgId, // Store the ID of the original assignment for reference
+          originalAssignmentId: msgId,
         },
       };
-
-      // console.log(newMessage);
-
       return {
         ...prevHistories,
         [`${selectedRecruiter}_${selectedInternship}`]: [
-          ...(prevHistories[`${selectedRecruiter}_${selectedInternship}`] ||
-            []), // Get existing messages or an empty array
-          newMessage, // Add the new message
+          ...(prevHistories[`${selectedRecruiter}_${selectedInternship}`] || []),
+          newMessage,
         ],
       };
     });
-
-    // Close the popup
     closeAssignmentPopup();
   };
 
   const downloadFile = async (fileId, fileName) => {
-    console.log("this is file id", fileId);
     try {
-      // Fetch the file from the backend using axios
-      const response = await axios.get(`${api}/student/get-file/${fileId}`, {
-        responseType: "blob", // Important: tell axios to handle the response as a Blob (binary data)
-      });
-
-      // Create a Blob from the response data
+      const response = await axios.get(`${api}/student/get-file/${fileId}`, { responseType: "blob" });
       const url = window.URL.createObjectURL(new Blob([response.data]));
-
-      // Create a temporary anchor element to trigger the download
       const a = document.createElement("a");
       a.href = url;
-      a.download = fileName; // Use the original file name
-      document.body.appendChild(a); // Append it to the DOM
-      a.click(); // Trigger the download
-      a.remove(); // Remove the anchor after download
-
-      // Clean up the temporary URL
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading the file:", error);
@@ -520,134 +361,61 @@ const Chats = () => {
   };
 
   const handleMarkAsImportant = () => {
-    // Emit socket event to mark the chat room as important for the current user
-    socket.emit("markAsImportant", {
-      recruiterId: selectedRecruiter,
-      internshipId: selectedInternship, // Pass the ID of the logged-in user
-      studentId,
-      type: "Student", // 'Student' or 'Recruiter'
-    });
+    socket.emit("markAsImportant", { recruiterId: selectedRecruiter, internshipId: selectedInternship, studentId, type: "Student" });
     setIsOptionsOpen(false);
-
     toast.success("Added to important");
-
-    setShortlistedInternships((prevInternships) =>
-      prevInternships.map((internship) => {
-        if (internship.internshipId === selectedInternship) {
-          // Mark as important for the student in the frontend
-          return { ...internship, importantForStudent: true };
-        }
-        return internship;
-      })
-    );
+    setShortlistedInternships((prev) => prev.map((i) => i.internshipId === selectedInternship ? { ...i, importantForStudent: true } : i));
   };
 
   const handleRemoveImportant = () => {
-    socket.emit("removeAsImportant", {
-      recruiterId: selectedRecruiter,
-      internshipId: selectedInternship, // Pass the ID of the logged-in user
-      studentId,
-      type: "Student", // 'Student' or 'Recruiter'
-    });
-
+    socket.emit("removeAsImportant", { recruiterId: selectedRecruiter, internshipId: selectedInternship, studentId, type: "Student" });
     setIsOptionsOpen(false);
-    toast.success("Removed to important");
-
-    setShortlistedInternships((prevInternships) =>
-      prevInternships.map((internship) => {
-        if (internship.internshipId === selectedInternship) {
-          // Mark as important for the student in the frontend
-          return { ...internship, importantForStudent: false };
-        }
-        return internship;
-      })
-    );
+    toast.success("Removed from important");
+    setShortlistedInternships((prev) => prev.map((i) => i.internshipId === selectedInternship ? { ...i, importantForStudent: false } : i));
   };
 
-  const handleViewDetails = () => {
-    navigate(`/student/myApplications/${studentId}`);
-  };
+  const handleViewDetails = () => navigate(`/student/myApplications/${studentId}`);
 
   useEffect(() => {
     if (socket) {
-      socket.on(
-        "studentStatusChangedAck",
-        ({ studentStatus, recruiterId, internshipId }) => {
-          setShortlistedInternships((prevInterns) =>
-            prevInterns.map((intern) => {
-              if (intern.internshipId === internshipId) {
-                return { ...intern, studentStatus };
-              }
-              return intern;
-            })
-          );
-        }
-      );
+      socket.on("studentStatusChangedAck", ({ studentStatus, internshipId }) => {
+        setShortlistedInternships((prev) => prev.map((i) => i.internshipId === internshipId ? { ...i, studentStatus } : i));
+      });
     }
   }, [socket]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    // Check if the file is a PDF
     if (file && file.type === "application/pdf") {
       setSelectedFile(file);
       setAttachmentSelected(true);
-      // setNewMessage(file.name);
-      console.log(file);
     } else {
       toast.error("Please upload a PDF file.");
     }
   };
 
   const handleFileUpload = async () => {
-    if (!selectedFile) {
-      toast.error("No file selected");
-      return;
-    }
+    if (!selectedFile) return toast.error("No file selected");
     const formData = new FormData();
     formData.append("file", selectedFile);
-    console.log("yooooooooooooooooo*******************", selectedFile);
 
-    const response = await axios.post(`${api}/student/file-to-url`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data", // Important for file uploads
-      },
-    });
+    const response = await axios.post(`${api}/student/file-to-url`, formData, { headers: { "Content-Type": "multipart/form-data" } });
 
     socket.emit("sentAttachment", {
-      file: selectedFile,
-      studentId,
-      recruiterId: selectedRecruiter,
-      internshipId: selectedInternship,
-      fileId: response.data.fileId,
-      fileName: selectedFile.name,
-      fileSize: selectedFile.size,
+      file: selectedFile, studentId, recruiterId: selectedRecruiter, internshipId: selectedInternship,
+      fileId: response.data.fileId, fileName: selectedFile.name, fileSize: selectedFile.size,
     });
 
-    setChatHistories((prevHistories) => {
+    setChatHistories((prev) => {
       const newMessage = {
-        senderId: studentId,
-        messageContent: "Attachment sent", // You might want to adjust this based on your needs
-        sentAt: new Date(),
-        isAttachment: true, // Indicate this is an assignment submission
-        attachment: {
-          fileName: selectedFile.name,
-          fileSize: (selectedFile.size / 1024).toFixed(2) + " KB",
-        },
+        senderId: studentId, messageContent: "Attachment sent", sentAt: new Date(), isAttachment: true,
+        attachment: { fileName: selectedFile.name, fileSize: (selectedFile.size / 1024).toFixed(2) + " KB" },
       };
-
-      // console.log(newMessage);
-
       return {
-        ...prevHistories,
-        [`${selectedRecruiter}_${selectedInternship}`]: [
-          ...(prevHistories[`${selectedRecruiter}_${selectedInternship}`] ||
-            []), // Get existing messages or an empty array
-          newMessage, // Add the new message
-        ],
+        ...prev,
+        [`${selectedRecruiter}_${selectedInternship}`]: [...(prev[`${selectedRecruiter}_${selectedInternship}`] || []), newMessage],
       };
     });
-
     setSelectedFile(null);
     setAttachmentSelected(false);
   };
@@ -659,587 +427,331 @@ const Chats = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.on(
-        "chatBlocked",
-        ({ recruiterId, studentId, internshipId, blockedBy, blocked }) => {
-          const chatRoomKey = `${recruiterId}_${internshipId}`;
-          if (blocked) {
-            setChatBlocked((prevState) => ({
-              ...prevState,
-              [chatRoomKey]: blockedBy, // Update the blocked status for this specific chat room
-            }));
-          } else {
-            setChatBlocked((prevState) => ({
-              ...prevState,
-              [chatRoomKey]: null, // Update the blocked status for this specific chat room
-            }));
-          }
-        }
-      );
+      socket.on("chatBlocked", ({ recruiterId, internshipId, blockedBy, blocked }) => {
+        const chatRoomKey = `${recruiterId}_${internshipId}`;
+        setChatBlocked((prev) => ({ ...prev, [chatRoomKey]: blocked ? blockedBy : null }));
+      });
     }
-
-    return () => {
-      if (socket) {
-        socket.off("chatBlocked"); // Clean up the event listener when component unmounts
-      }
-    };
+    return () => socket && socket.off("chatBlocked");
   }, [socket]);
 
-  console.log("blocked status", chatBlocked);
-
-  console.log("these are chat histories", chatHistories);
-  console.log("chat list", chatListOpen);
-
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500); // Set timer for 1 second
-
-    return () => clearTimeout(timer); // Cleanup on component unmount
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      sendMessage();
-    }
+    if (e.key === "Enter") sendMessage();
   };
 
-  if (loading) {
-    return <Spinner />;
-  }
+  if (loading) return <Spinner />;
 
-  console.log("internsFoundCheck", internsFoundCheck);
   if (!internsFoundCheck) {
     return (
-      <div className="h-screen flex items-center justify-center text-lg text-gray-600 tracking-wider font-semibold">
-        You are not shortlisted for any internship yet
+      <div className="h-[calc(100vh-66px)] flex flex-col items-center justify-center text-[var(--text-light)] bg-[var(--bg-light-color)] mt-[66px]">
+        <FaCommentDots className="text-6xl text-[var(--primary-color)] mb-4 opacity-50" />
+        <p className="text-xl font-semibold tracking-wide">You are not shortlisted for any internship yet</p>
       </div>
     );
   }
 
   return (
-    <div className="flex justify-center h-[90vh] w-full  mt-[66px] relative bg-gray-200">
-      {/* Left Column - Shortlisted Students */}
-      <div
-        className={`${
-          !chatListOpen ? "hidden" : "flex"
-        }  lg:flex  flex-col items-center   w-full  lg:w-[36%] xl:w-[37%] bg-white shadow-2xl overflow-y-scroll  scrollbar-thin`}
-      >
-        {/* <div className={`${!chatListOpen? 'hidden':'flex'} border lg:flex  flex-col items-center  absolute  top-0 left-5 lg:left-4 md:left-20 w-[90%]  lg:w-[36%] xl:w-[30%] bg-gray-100 py-4 lg:px-1 shadow-lg overflow-y-auto h-[90%] md:h-[80vh]`}> */}
-        <div className="flex flex-col items-center w-full mt-5 border-b-2">
-          <h2 className="text-xl lg:text-2xl text-blue-500 w-fit font-semibold mb-5">
-            Shortlisted Internships
+    <div className="flex h-[calc(100vh-66px)] w-full mt-[66px] bg-[var(--bg-light-color)] overflow-hidden">
+      
+      {/* Left Column - Chat List */}
+      <div className={`${!chatListOpen ? "hidden" : "flex"} lg:flex flex-col w-full lg:w-[35%] xl:w-[30%] bg-white border-r border-gray-200`}>
+        <div className="p-4 border-b border-gray-100 bg-white sticky top-0 z-10">
+          <h2 className="text-xl font-bold text-[var(--text-color)] flex items-center gap-2">
+            <FaCommentDots className="text-[var(--primary-color)]" /> Messages
           </h2>
 
-          <div className="flex items-center justify-center text-sm lg:text-base w-fit space-x-1 lg:space-x-2  rounded-md sm:rounded-full mb-4">
-            <button
-              className={`text-sm sm:text-base box-content ${
-                activeFilter === "all"
-                  ? " text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1"
-                  : "bg-blue-400 border-2 py-1 px-3 rounded-lg  font-semibold"
-              }`}
-              onClick={() => handleFilterChange("all")}
-            >
-              All Messages
-            </button>
-            <button
-              className={`text-sm sm:text-base box-content ${
-                activeFilter === "unread"
-                  ? "  text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1"
-                  : "bg-blue-400 border-2 py-1 px-3 rounded-lg  font-semibold"
-              }`}
-              onClick={() => handleFilterChange("unread")}
-            >
-              Unread({`${unreadCount}`})
-            </button>
-
-            <button
-              className={`text-sm sm:text-base box-content ${
-                activeFilter === "important"
-                  ? "text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-3 py-1"
-                  : "bg-blue-400 border-2 py-1 px-3 rounded-lg  font-semibold"
-              }`}
-              onClick={() => handleFilterChange("important")}
-            >
-              Important
-            </button>
+          <div className="flex items-center gap-2 mt-4 overflow-x-auto no-scrollbar pb-1">
+            {["all", "unread", "important"].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => handleFilterChange(filter)}
+                className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
+                  activeFilter === filter
+                    ? "bg-[var(--button-color)] text-white shadow-md"
+                    : "bg-gray-100 text-[var(--text-light)] hover:bg-gray-200"
+                }`}
+              >
+                {filter === "all" ? "All" : filter === "unread" ? `Unread (${unreadCount})` : "Important"}
+              </button>
+            ))}
           </div>
         </div>
 
-        <ul className="w-full">
-          {filteredInternships.map((intern) => {
-            const {
-              internshipId,
-              recruiterId,
-              companyName,
-              internshipName,
-              statusUpdatedAt,
-              isActive,
-              studentStatus,
-              recruiterFirstName,
-              recruiterLastName
-            } = intern;
+        <div className="flex-1 overflow-y-auto scrollbar-thin bg-white">
+          {filteredInternships.length > 0 ? (
+            filteredInternships.map((intern) => {
+              const { internshipId, recruiterId, companyName, internshipName, isActive, studentStatus, recruiterFirstName, recruiterLastName } = intern;
+              const chatKey = `${recruiterId}_${internshipId}`;
+              const chatHistory = chatHistories[chatKey] || [];
+              const lastMessage = chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
+              const isUnread = latestMessagesSeenStatus[chatKey] === false && lastMessage?.senderId !== studentId;
 
-            // Construct the chat key for retrieving messages from chatHistories
-            const chatKey = `${recruiterId}_${internshipId}`;
-            const chatHistory = chatHistories[chatKey] || [];
-
-            console.log("isActive status of intern", isActive);
-            const lastMessage =
-              chatHistory.length > 0
-                ? chatHistory[chatHistory.length - 1]
-                : null;
-
-            return (
-              <div
-                key={`${recruiterId}-${internshipId}`}
-                className={`student-internship-entry hover:bg-blue-200 border-b-2  p-4 flex items-start   hover:cursor-pointer ${
-                  selectedInternship === internshipId
-                    ? "border-2 border-blue-500 bg-blue-100"
-                    : ""
-                }  w-full`}
-                onClick={() => {
-                  handleInternClick(internshipId, recruiterId);
-                  handleInfoSetter(companyName, internshipName, isActive,recruiterFirstName,recruiterLastName);
-                }}
-              >
-                <div className="flex-grow">
-                  <h3 className="text-lg font-semibold text-black flex items-center relative">
-                    <span className="flex items-center text-black text-xl capitalize">
-                      {companyName?companyName:recruiterName}
+              return (
+                <div
+                  key={`${recruiterId}-${internshipId}`}
+                  onClick={() => {
+                    handleInternClick(internshipId, recruiterId);
+                    handleInfoSetter(companyName, internshipName, isActive, recruiterFirstName, recruiterLastName);
+                  }}
+                  className={`p-4 border-b border-gray-50 cursor-pointer transition-all hover:bg-[var(--icon-bg-color)] ${
+                    selectedInternship === internshipId ? "bg-[var(--icon-bg-color)] border-l-4 border-[var(--primary-color)]" : "border-l-4 border-transparent"
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-1">
+                    <h3 className="font-bold text-[var(--text-color)] truncate flex items-center gap-2">
+                      {companyName || `${recruiterFirstName} ${recruiterLastName}`}
+                      {isActive && <FaCircle className="w-2 h-2 text-green-500 fill-green-500" />}
+                    </h3>
+                    <span className="text-[10px] text-[var(--text-light)] whitespace-nowrap ml-2">
+                      {lastMessage ? formatSentAt(lastMessage.sentAt) : ""}
                     </span>
-                    {isActive && (
-                      <div className="ml-2 bg-green-300 rounded-full w-2 h-2"></div>
-                    )}
-                    {lastMessage && (
-                      <span className="absolute flex items-center right-0 text-sm font-normal">
-                        {intern.importantForStudent && (
-                          <FaStar className="mr-2 text-yellow-400" />
-                        )}
-                        {formatSentAt(lastMessage.sentAt)}
-                      </span>
-                    )}
-                  </h3>
-                  <p className="text-sm text-black font-semibold mb-3">
-                    {internshipName}
-                  </p>
-                  {lastMessage &&
-                    !latestMessagesSeenStatus[
-                      `${recruiterId}_${internshipId}`
-                    ] &&
-                    lastMessage.senderId !== studentId && (
-                      <div className="text-black font-semibold text-xs">
-                        New mesage
-                      </div>
-                    )}
-
-                  {/* Display the most recent message */}
-                  {lastMessage && (
-                    <p className="text-sm text-black">
-                      <span className="font-semibold text-sm md:text-base text-black">
-                        {lastMessage.senderId === studentId ? "You:  " : ""}
-                      </span>
-                      <span
-                        className={`${
-                          lastMessage.senderId !== studentId &&
-                          !latestMessagesSeenStatus[
-                            `${recruiterId}_${internshipId}`
-                          ]
-                            ? "text-black font-semibold"
-                            : "text-black"
-                        } text-md`}
-                      >
-                        {lastMessage
-                          ? lastMessage.messageContent.slice(0, 20) +
-                            (lastMessage.messageContent.length > 20
-                              ? "..."
-                              : "")
-                          : "No messages exchanged yet"}
-                      </span>
+                  </div>
+                  
+                  <p className="text-xs text-[var(--primary-color)] font-semibold truncate mb-1">{internshipName}</p>
+                  
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm text-[var(--text-light)] truncate flex-1">
+                      {lastMessage?.senderId === studentId && <span className="font-semibold text-[var(--text-color)]">You: </span>}
+                      {lastMessage?.messageContent?.slice(0, 35) || "No messages yet"}...
                     </p>
-                  )}
+                    <div className="flex items-center gap-2 ml-2">
+                      {intern.importantForStudent && <FaStar className="text-yellow-500 w-3 h-3" />}
+                      {isUnread && <div className="w-2.5 h-2.5 rounded-full bg-[var(--button-color)]"></div>}
+                    </div>
+                  </div>
 
-                  {studentStatus === "inTouch" && (
-                    <div className="mt-3 inline-flex space-x-1 items-center px-2 py-1 text-sm bg-blue-400 rounded-md ">
-                      <span className="text-white font-semibold">In-touch</span>
-                      <span>
-                        <FaBolt className="w-3 h-3 text-white " />
-                      </span>
-                    </div>
-                  )}
-                  {studentStatus === "notHired" && (
-                    <div className="inline-flex space-x-1 items-center px-2 py-1 mt-3 text-sm bg-yellow-100 rounded-md ">
-                      <span className="text-white font-semibold">
-                        Not selected
-                      </span>
-                      <span>
-                        <FaExclamation className="w-3 h-3 text-yellow-400 " />
-                      </span>
-                    </div>
-                  )}
-                  {studentStatus === "Hired" && (
-                    <div className="inline-flex space-x-1 items-center px-2 py-1 mt-3 text-sm bg-green-600 rounded-md ">
-                      <span className="text-white font-semibold">Hired</span>
-                      <span>
-                        <FaBolt className="w-3 h-3 text-white" />
-                      </span>
+                  {studentStatus && (
+                    <div className="mt-2">
+                      {studentStatus === "inTouch" && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">
+                          <FaBolt className="w-2.5 h-2.5" /> In-touch
+                        </span>
+                      )}
+                      {studentStatus === "notHired" && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700">
+                          <FaExclamation className="w-2.5 h-2.5" /> Not selected
+                        </span>
+                      )}
+                      {studentStatus === "Hired" && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700">
+                          <FaCheckCircle className="w-2.5 h-2.5" /> Hired
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
-              </div>
-            );
-          })}
-        </ul>
+              );
+            })
+          ) : (
+            <div className="flex flex-col items-center justify-center h-64 text-[var(--text-light)]">
+              <p className="text-sm">No chats found</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Right Column - Chat Interface */}
-      <div
-        className={`${
-          chatListOpen && "hidden"
-        } w-full lg:w-[70%] p-4 flex flex-col px-3`}
-      >
-        <div className="w-full h-[15%] lg:h-[10%] my-4 ml-1 relative">
-          <button
-            onClick={() => setChatListOpen(true)}
-            className="flex lg:hidden space-x-1 text-black items-center"
-          >
-            <FaArrowLeft />
-            <span>back</span>
+      <div className={`${chatListOpen ? "hidden" : "flex"} lg:flex flex-col flex-1 bg-[var(--bg-light-color)] relative`}>
+        
+        {/* Chat Header */}
+        <div className="h-16 lg:h-20 bg-white border-b border-gray-100 flex items-center px-4 shadow-sm z-10">
+          <button onClick={() => setChatListOpen(true)} className="lg:hidden mr-3 text-[var(--text-color)]">
+            <FaArrowLeft className="w-5 h-5" />
           </button>
-          <p className="font-semibold flex items-center space-x-4 capitalize text-2xl text-black">
-            <span>{companyName?companyName:recruiterName}</span>{" "}
-            {activeStatus && (
-              <span className="text-sm text-green-500 flex mt-2 items-center space-x-2">
-                <span>online</span>
-                <div className="ml-2 bg-green-500 rounded-full w-2 h-2"></div>
-              </span>
-            )}
-          </p>
-          <p className="text-gray-600 font-semibold">{internshipName}</p>
-          <div
-            className="absolute right-0 top-9 md:right-1 md:top-7 hover:cursor-pointer text-black "
-            onClick={() => setIsOptionsOpen(!isOptionsOpen)}
-          >
-            <FaEllipsisV />
+          
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-[var(--text-color)] text-lg truncate flex items-center gap-2">
+              {companyName || recruiterName}
+              {activeStatus && <FaCircle className="w-2.5 h-2.5 text-green-500 fill-green-500" />}
+            </h3>
+            <p className="text-xs text-[var(--text-light)] font-medium truncate">{internshipName}</p>
           </div>
-        </div>
 
-        {isOptionsOpen && (
-          <div className="absolute right-5 top-[80px] bg-white border shadow-md w-48 rounded-md text-gray-800 text-[14px] font-[500] z-10">
-            <div
-              className="hover:text-blue-400 p-2 cursor-pointer"
-              onClick={handleMarkAsImportant}
-            >
-              Mark as important
-            </div>
-            {shortlistedInternships.map(
-              (intern) =>
-                intern.internshipId === selectedInternship &&
-                intern.importantForStudent
-            ) && (
-              <div
-                className="hover:text-blue-400 p-2 cursor-pointer"
-                onClick={handleRemoveImportant}
-              >
-                Remove from important
+          <div className="relative">
+            <button onClick={() => setIsOptionsOpen(!isOptionsOpen)} className="p-2 rounded-full hover:bg-gray-100 text-[var(--text-light)]">
+              <FaEllipsisV />
+            </button>
+            {isOptionsOpen && (
+              <div className="absolute right-0 top-12 bg-white shadow-xl rounded-lg border border-gray-100 w-48 z-50 overflow-hidden">
+                <button onClick={handleMarkAsImportant} className="w-full text-left px-4 py-3 text-sm text-[var(--text-color)] hover:bg-[var(--icon-bg-color)] flex items-center gap-2 border-b border-gray-50">
+                  <FaStar className="text-yellow-500" /> Mark as important
+                </button>
+                {shortlistedInternships.find(i => i.internshipId === selectedInternship)?.importantForStudent && (
+                  <button onClick={handleRemoveImportant} className="w-full text-left px-4 py-3 text-sm text-[var(--text-color)] hover:bg-[var(--icon-bg-color)] flex items-center gap-2 border-b border-gray-50">
+                    <FaStar className="text-gray-400" /> Remove important
+                  </button>
+                )}
+                <button onClick={handleViewDetails} className="w-full text-left px-4 py-3 text-sm text-[var(--text-color)] hover:bg-[var(--icon-bg-color)] flex items-center gap-2">
+                  <FaFile className="text-[var(--primary-color)]" /> View Details
+                </button>
               </div>
             )}
-            <div
-              className="hover:text-blue-400 p-2 cursor-pointer"
-              onClick={handleViewDetails}
-            >
-              View internship details
-            </div>
           </div>
-        )}
+        </div>
 
-        <div className="flex-grow max-h-[450px] bg-gray-100 p-4 rounded-lg shadow-lg overflow-y-auto scrollbar-thin border-2 border-blue-300 mt-5">
-          {/* Chat messages */}
-          <div className="flex flex-col space-y-4 overflow-y-auto bg-gray-100">
-            {chatHistories[`${selectedRecruiter}_${selectedInternship}`]?.map(
-              (msg, index, arr) => {
-                const currentDate = new Date(msg.sentAt);
-                const previousDate =
-                  index > 0 ? new Date(arr[index - 1].sentAt) : null;
-                const isSameDay =
-                  previousDate &&
-                  currentDate.toDateString() === previousDate.toDateString();
-                // console.log('this is selected message',msg);
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto p-4 scrollbar-thin">
+          <div className="flex flex-col space-y-3 max-w-4xl mx-auto">
+            {chatHistories[`${selectedRecruiter}_${selectedInternship}`]?.map((msg, index, arr) => {
+              const currentDate = new Date(msg.sentAt);
+              const previousDate = index > 0 ? new Date(arr[index - 1].sentAt) : null;
+              const isSameDay = previousDate && currentDate.toDateString() === previousDate.toDateString();
 
-                return (
-                  <React.Fragment key={index}>
-                    {!isSameDay && (
-                      <div className="text-center text-gray-500 text-sm my-2 font-semibold">
+              return (
+                <React.Fragment key={index}>
+                  {!isSameDay && (
+                    <div className="text-center my-4">
+                      <span className="bg-white text-[var(--text-light)] text-xs font-semibold px-3 py-1 rounded-full shadow-sm border border-gray-100">
                         {displayDate(currentDate)}
-                      </div>
-                    )}
+                      </span>
+                    </div>
+                  )}
 
-                    {!msg.isAssignment && !msg.isAttachment && (
-                      <div
-                        key={index}
-                        className={`px-5 py-2 rounded-md  inline-block break-words shadow-lg  ${
-                          msg.senderId === studentId
-                            ? "bg-gray-100 self-end"
-                            : "bg-blue-500 text-white"
-                        } `}
-                        style={{ maxWidth: "fit-content" }}
-                      >
-                        <p className="max-w-[230px] md:max-w-[400px] md:min-w-[200px]">
-                          {msg.messageContent}
-                        </p>
-                        <p
-                          className={`flex justify-between items-center text-xs font-semibold text-right text-gray-500 mt-2`}
-                        >
-                          <span
-                            className={`${
-                              msg.senderId !== studentId
-                                ? "text-white"
-                                : "text-gray-600"
-                            }`}
-                          >
-                            {formatSentAt(msg.sentAt)}
-                          </span>
-                          {msg.senderId === studentId && (
-                            <span>
-                              <MdDoneAll
-                                className={`w-5 h-5 ${
-                                  msg.seenStatus && "text-blue-500"
-                                }`}
-                              />
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    )}
-
-                    {msg.isAssignment && msg.senderId === selectedRecruiter && (
-                      <>
-                        <div className=" break-words rounded-full w-fit max-w-max shadow-lg">
-                          <div className="relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full">
-                            <FaCheckCircle className="absolute top-4 left-4 text-white" />
-                            <h1 className="ml-8 text-white font-bold">
-                              Assignment Received
-                            </h1>
-                          </div>
-                          <div
-                            className={`py-2 px-3  inline-block  bg-gray-100 `}
-                          >
-                            <p className="max-w-[230px] md:max-w-[400px] min-w-[150px]">
-                              {msg.assignmentDetails.description}
-                            </p>
-                            <p className=" font-semibold mt-5 text-red-500">
-                              Submission deadline:{" "}
-                              {new Date(
-                                msg.assignmentDetails.deadline
-                              ).toLocaleDateString("en-GB")}
-                            </p>
-                            <button
-                              onClick={openAssignmentPopup}
-                              className="bg-blue-400 rounded-lg px-3 py-2 mt-8 text-sm text-white font-bold"
-                            >
-                              Submit assignment
-                            </button>
-
-                            <p
-                              className={`text-xs font-semibold text-right text-gray-500`}
-                            >
-                              {formatSentAt(msg.sentAt)}
-                            </p>
-                          </div>
+                  {/* Normal Text Message */}
+                  {!msg.isAssignment && !msg.isAttachment && (
+                    <div className={`flex ${msg.senderId === studentId ? "justify-end" : "justify-start"}`}>
+                      <div className={`max-w-[75%] p-3 shadow-sm ${
+                        msg.senderId === studentId
+                          ? "bg-[var(--button-color)] text-white rounded-2xl rounded-tr-none"
+                          : "bg-white text-[var(--text-color)] rounded-2xl rounded-tl-none border border-gray-100"
+                      }`}>
+                        <p className="text-sm break-words">{msg.messageContent}</p>
+                        <div className={`flex items-center justify-end gap-1 mt-1 ${msg.senderId === studentId ? "text-blue-100" : "text-[var(--text-light)]"}`}>
+                          <span className="text-[10px]">{formatSentAt(msg.sentAt)}</span>
+                          {msg.senderId === studentId && <MdDoneAll className={`w-3.5 h-3.5 ${msg.seenStatus ? "text-blue-200" : "text-blue-300"}`} />}
                         </div>
+                      </div>
+                    </div>
+                  )}
 
-                        <SubmitAssignment
-                          isOpen={isPopupOpen}
-                          onClose={closeAssignmentPopup}
-                          onSubmit={handleAssignmentSubmit}
-                          msgId={msg._id}
-                          recruiterId={msg.senderId}
-                        />
-                      </>
-                    )}
-
-                    {msg.isAssignment && msg.senderId === studentId && (
-                      <div className="flex flex-col self-end items-end break-words max-w-[260px] md:max-w-[400px] shadow-lg">
-                        <div className="relative bg-blue-400 rounded-t-lg p-3 shadow-lg w-full">
-                          <FaCheckCircle className="absolute top-4 left-4 text-white" />
-                          <h1 className="ml-8 text-white font-bold">
-                            Assignment Submitted
-                          </h1>
+                  {/* Assignment Received (Recruiter -> Student) */}
+                  {msg.isAssignment && msg.senderId === selectedRecruiter && (
+                    <div className="flex justify-start">
+                      <div className="max-w-[85%] bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                        <div className="bg-[var(--primary-color)] p-3 flex items-center gap-2 text-white">
+                          <FaCheckCircle />
+                          <span className="font-semibold text-sm">Assignment Received</span>
                         </div>
-                        <div className="bg-blue-100 p-4 rounded-b-lg shadow-lg w-full">
-                          {/* List of submitted files */}
-                          <div className="flex flex-col space-y-3 items-end">
-                            {msg.submissionDetails.submittedFiles.map(
-                              (file, index) => (
-                                <div
-                                  key={index}
-                                  className="flex justify-end items-center space-x-4 w-full py-1 border-b border-gray-400"
-                                >
-                                  <span
-                                    className="text-gray-600 hover:cursor-pointer hover:scale-105 duration-300"
-                                    onClick={() =>
-                                      downloadFile(file.fileId, file.fileName)
-                                    }
-                                  >
-                                    <FaFileDownload />
-                                  </span>
-                                  <span className="font-semibold text-sm md:text-base">
-                                    {file.fileName}
-                                  </span>
-                                  <span className="text-gray-500 text-sm ">
-                                    {file.fileSize}
-                                  </span>
-                                </div>
-                              )
-                            )}
-                          </div>
+                        <div className="p-4">
+                          <p className="text-sm text-[var(--text-color)] mb-3">{msg.assignmentDetails.description}</p>
+                          <p className="text-xs text-red-500 font-semibold mb-4">
+                            Deadline: {new Date(msg.assignmentDetails.deadline).toLocaleDateString("en-GB")}
+                          </p>
+                          <button onClick={openAssignmentPopup} className="w-full bg-[var(--button-color)] text-white py-2 rounded-lg text-sm font-semibold hover:bg-[var(--button-hover-color)] transition-colors">
+                            Submit Assignment
+                          </button>
+                          <p className="text-[10px] text-[var(--text-light)] text-right mt-2">{formatSentAt(msg.sentAt)}</p>
+                        </div>
+                      </div>
+                      <SubmitAssignment isOpen={isPopupOpen} onClose={closeAssignmentPopup} onSubmit={handleAssignmentSubmit} msgId={msg._id} recruiterId={msg.senderId} />
+                    </div>
+                  )}
 
-                          {/* Submission link */}
+                  {/* Assignment Submitted (Student -> Recruiter) */}
+                  {msg.isAssignment && msg.senderId === studentId && (
+                    <div className="flex justify-end">
+                      <div className="max-w-[85%] bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                        <div className="bg-green-500 p-3 flex items-center gap-2 text-white">
+                          <FaCheckCircle />
+                          <span className="font-semibold text-sm">Assignment Submitted</span>
+                        </div>
+                        <div className="p-4 bg-gray-50">
+                          <div className="flex flex-col space-y-2 mb-3">
+                            {msg.submissionDetails.submittedFiles.map((file, idx) => (
+                              <div key={idx} className="flex items-center justify-between bg-white p-2 rounded-lg border border-gray-100">
+                                <span className="text-xs font-medium text-[var(--text-color)] truncate mr-2">{file.fileName}</span>
+                                <FaFileDownload onClick={() => downloadFile(file.fileId, file.fileName)} className="text-[var(--primary-color)] cursor-pointer hover:scale-110 transition-transform flex-shrink-0" />
+                              </div>
+                            ))}
+                          </div>
                           {msg.submissionDetails.submissionLink && (
-                            <a
-                              href={msg.submissionDetails.submissionLink}
-                              target="_blank"
-                              className="mt-3 flex items-center space-x-4 justify-end border-b border-gray-400 font-semibold"
-                            >
-                              <FaPaperclip className="mx-2" />
-                              {msg.submissionDetails.submissionLink}
+                            <a href={msg.submissionDetails.submissionLink} target="_blank" className="flex items-center gap-2 text-xs text-[var(--primary-color)] font-medium mb-2 hover:underline">
+                              <FaPaperclip /> {msg.submissionDetails.submissionLink}
                             </a>
                           )}
-
-                          {/* Additional Information */}
                           {msg.submissionDetails.additionalInfo && (
-                            <p className="mt-3 text-right text-gray-700">
-                              {msg.submissionDetails.additionalInfo}
-                            </p>
+                            <p className="text-xs text-[var(--text-light)] mb-2">{msg.submissionDetails.additionalInfo}</p>
                           )}
-
-                          <div className="flex space-x-2 items-center justify-end text-xs font-semibold text-right text-gray-500 mt-2 ">
-                            <span>{formatSentAt(msg.sentAt)}</span>
-                            {msg.senderId === studentId && (
-                              <span>
-                                <MdDoneAll
-                                  className={`w-5 h-5 ${
-                                    msg.seenStatus && "text-blue-500"
-                                  }`}
-                                />
-                              </span>
-                            )}
+                          <div className="flex items-center justify-end gap-1 text-[10px] text-[var(--text-light)]">
+                            {formatSentAt(msg.sentAt)}
+                            <MdDoneAll className={`w-3.5 h-3.5 ${msg.seenStatus ? "text-blue-500" : "text-gray-400"}`} />
                           </div>
                         </div>
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {msg.isAttachment && (
-                      <div
-                        key={index}
-                        className={`p-2 rounded bg-[#DBEAFE] self-end text-right min-w-[240px] max-h-[200px] shadow-lg`}
-                      >
-                        <div className="flex justify-center h-[100%] w-full relative group">
-                          <FaFilePdf className="w-[60%] h-[60%] text-blue-400 " />
-                          <FaArrowCircleDown
-                            onClick={() =>
-                              downloadFile(
-                                msg.attachment.fileId,
-                                msg.attachment.fileName
-                              )
-                            }
-                            className="absolute top-16 w-[20%] h-[20%] hidden group-hover:block hover:cursor-pointer text-gray-700"
-                          />
+                  {/* Attachment Message */}
+                  {msg.isAttachment && (
+                    <div className={`flex ${msg.senderId === studentId ? "justify-end" : "justify-start"}`}>
+                      <div className="max-w-[240px] bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 p-3">
+                        <div className="flex flex-col items-center justify-center bg-red-50 p-4 rounded-lg mb-2 relative group cursor-pointer" onClick={() => downloadFile(msg.attachment.fileId, msg.attachment.fileName)}>
+                          <FaFilePdf className="w-12 h-12 text-red-500 mb-2" />
+                          <FaArrowCircleDown className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-white bg-black/50 rounded-full p-1.5 hidden group-hover:block transition-all" />
+                          <p className="text-xs font-semibold text-[var(--text-color)] text-center truncate w-full">{msg.attachment.fileName}</p>
+                          <p className="text-[10px] text-[var(--text-light)]">{msg.attachment.fileSize}</p>
                         </div>
-                        <p className="text-center text-blue-500">
-                          {msg.attachment.fileName}
-                        </p>
-
-                        <p
-                          className={`flex space-x-2 items-center justify-end text-xs font-semibold text-right text-gray-500`}
-                        >
-                          <span>{formatSentAt(msg.sentAt)}</span>
-                          {msg.senderId === studentId && (
-                            <span>
-                              <MdDoneAll
-                                className={`w-5 h-5 ${
-                                  msg.seenStatus && "text-blue-500"
-                                }`}
-                              />
-                            </span>
-                          )}
-                        </p>
+                        <div className="flex items-center justify-end gap-1 text-[10px] text-[var(--text-light)]">
+                          {formatSentAt(msg.sentAt)}
+                          {msg.senderId === studentId && <MdDoneAll className={`w-3.5 h-3.5 ${msg.seenStatus ? "text-blue-500" : "text-gray-400"}`} />}
+                        </div>
                       </div>
-                    )}
+                    </div>
+                  )}
+                  <div ref={chatEndRef} />
+                </React.Fragment>
+              );
+            })}
 
-                    <div ref={chatEndRef} />
-                  </React.Fragment>
-                );
-              }
-            )}
-
-            {chatBlocked[`${selectedRecruiter}_${selectedInternship}`] ===
-              "recruiter" && (
-              <>
-                <div className="flex justify-center items-center text-gray-500 font-semibold text-lg">
-                  <span>You can no longer send or receive messages</span>
-                </div>
-              </>
+            {chatBlocked[`${selectedRecruiter}_${selectedInternship}`] === "recruiter" && (
+              <div className="flex justify-center items-center text-[var(--text-light)] font-medium text-sm bg-white/80 p-3 rounded-lg border border-gray-200">
+                You can no longer send or receive messages in this chat.
+              </div>
             )}
           </div>
         </div>
 
-        {/* Chat input */}
-        {chatBlocked[`${selectedRecruiter}_${selectedInternship}`] !==
-          "recruiter" && (
-          <div className="mt-4 flex space-x-4 relative ">
+        {/* Chat Input Area */}
+        {chatBlocked[`${selectedRecruiter}_${selectedInternship}`] !== "recruiter" && (
+          <div className="bg-white border-t border-gray-100 p-3 flex items-center gap-3 relative">
+            <label className="text-[var(--text-light)] hover:text-[var(--primary-color)] cursor-pointer transition-colors p-2">
+              <FaPaperclip className="w-5 h-5" />
+              <input type="file" className="hidden" onChange={handleFileChange} accept=".pdf" />
+            </label>
+            
             <input
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full px-2 py-3 border-2 rounded-lg shadow-md focus:border-0"
+              className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-[var(--text-color)] placeholder-[var(--text-light)]"
               placeholder="Type a message..."
             />
-            <label
-              htmlFor="fileUpload"
-              className="my-auto text-black hover:cursor-pointer"
+            
+            <button
+              disabled={!newMessage.trim()}
+              className="bg-[var(--button-color)] text-white p-2.5 rounded-full hover:bg-[var(--button-hover-color)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              onClick={sendMessage}
             >
-              <FaPaperclip className="w-5 h-5 text-blue-500" />
-            </label>
-            <input
-              type="file"
-              id="fileUpload"
-              className="hidden"
-              onChange={handleFileChange}
-              accept=".pdf"
-            />
+              <FaArrowRight className="w-4 h-4" />
+            </button>
+
             {attachmentSelected && (
-              <div className="absolute flex items-center justify-between space-x-2 bg-white border border-gray-300 shadow-lg p-3 rounded-md w-full h-[105%] -left-4">
-                <span className="text-gray-800 font-medium">
-                  Send Attachment- {selectedFile.name}
+              <div className="absolute bottom-full left-0 w-full bg-white border-t border-gray-200 p-3 shadow-lg flex items-center justify-between">
+                <span className="text-sm text-[var(--text-color)] font-medium truncate mr-3 flex items-center gap-2">
+                  <FaFilePdf className="text-red-500" /> {selectedFile.name}
                 </span>
-                <div className="flex space-x-3 items-center">
-                  <button
-                    onClick={handleFileUpload} // Your file upload handler
-                    className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition duration-200"
-                  >
-                    Upload
-                  </button>
-                  <button
-                    className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition duration-200"
-                    onClick={handleFileRemove}
-                  >
-                    Delete
-                  </button>
+                <div className="flex gap-2">
+                  <button onClick={handleFileUpload} className="bg-[var(--button-color)] text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-[var(--button-hover-color)]">Send</button>
+                  <button onClick={handleFileRemove} className="bg-red-500 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-red-600">Cancel</button>
                 </div>
               </div>
             )}
-
-            <button
-              disabled={newMessage === "" ? true : false}
-              className={`bg-blue-500 text-white text-sm sm:text-base w-fit  px-5 py-1 rounded-lg hover:scale-105 duration-300 cursor-pointer ${
-                newMessage === "" && "bg-blue-00"
-              }`}
-              onClick={sendMessage}
-            >
-              <FaArrowRight className="text-2xl" />
-            </button>
           </div>
         )}
       </div>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FaPlus, FaPen, FaTrash, FaLaptopCode, FaExternalLinkAlt } from "react-icons/fa";
 import getUserIdFromToken from "./auth/authUtils";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -119,98 +118,115 @@ const PersonalProjects = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 border shadow-lg mt-[68px] w-full lg:w-[80%]">
-      <h2 className="text-xl font-semibold flex justify-between font-outfit">
-        Personal Projects(Optional)
-        <button
-          onClick={() => setIsEditing(true)}
-          className="text-blue-500 flex items-center space-x-1"
-        >
-          <span>Add</span>
-          <FontAwesomeIcon icon={faPlus} />
-        </button>
-      </h2>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 w-full">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-5">
+        <h2 className="text-lg font-bold text-[var(--text-color)] flex items-center gap-2">
+          <FaLaptopCode className="text-[var(--primary-color)] text-xl" />
+          Personal Projects <span className="text-xs font-normal text-[var(--text-light)]">(Optional)</span>
+        </h2>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-1.5 text-sm font-semibold text-[var(--primary-color)] hover:text-[var(--button-hover-color)] transition-colors bg-[var(--icon-bg-color)] px-3 py-1.5 rounded-lg"
+          >
+            <FaPlus className="text-xs" /> Add
+          </button>
+        )}
+      </div>
 
+      {/* Form Section */}
       {isEditing ? (
-        <form className="mt-4" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Project Title"
-            className="border p-2 mb-2 w-full"
-            required
-          />
+        <form className="space-y-4 mt-4 bg-[var(--bg-light-color)] p-5 rounded-xl border border-gray-100" onSubmit={handleSubmit}>
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Project Title</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. E-commerce Website"
+              className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white"
+              required
+            />
+          </div>
 
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description (100 words max)"
-            className="border p-2 mb-2 w-full"
-            rows="4"
-            required
-          />
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Brief description of your project (100 words max)..."
+              className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white resize-none"
+              rows="4"
+              required
+            />
+            <div className="text-right text-xs text-[var(--text-light)] mt-1.5 font-medium">
+              {description.trim().split(" ").filter(Boolean).length}/100 words
+            </div>
+          </div>
 
-          <input
-            type="text"
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-            placeholder="GitHub Link"
-            className="border p-2 mb-2 w-full"
-            required
-          />
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">GitHub Link</label>
+            <input
+              type="text"
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              placeholder="https://github.com/username/project"
+              className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white"
+              required
+            />
+          </div>
 
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 mt-4"
-          >
-            Save
-          </button>
-          <button
-            onClick={() => setIsEditing(false)}
-            className="border ml-4 px-4 py-2 text-gray-500 hover:bg-red-500 hover:text-white"
-          >
-            Cancel
-          </button>
+          <div className="flex gap-3 pt-2">
+            <button
+              type="submit"
+              className="bg-[var(--button-color)] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[var(--button-hover-color)] transition-colors shadow-sm text-sm"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              className="bg-gray-100 text-[var(--text-color)] px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-sm"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
       ) : (
-        <div className="flex flex-col items-center mt-10">
-          {personalProjects.length > 0 && (
+        /* List Section */
+        <div className="space-y-4 mt-2">
+          {personalProjects.length > 0 ? (
             personalProjects.map((project, index) => (
-              <div key={index} className="border p-5 mb-2 min-w-full">
-                <div>
-                  <div className="flex justify-between">
-                    <h3 className="text-lg font-semibold">{project.title}</h3>
-                    <div className="space-x-6 flex p-1">
-                      <FontAwesomeIcon
-                        icon={faPen}
-                        onClick={() => handleEdit(index)}
-                        className="hover:scale-125 duration-300 text-blue-500 hover:cursor-pointer"
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        onClick={() => handleDelete(index)}
-                        className="hover:scale-125 duration-300 text-red-600 hover:cursor-pointer"
-                      />
-                    </div>
+              <div key={index} className="bg-[var(--bg-light-color)] border border-gray-100 rounded-xl p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-base font-bold text-[var(--text-color)]">{project.title}</h3>
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => handleEdit(index)} className="text-[var(--icon-color)] hover:text-[var(--primary-color)] transition-colors p-1">
+                      <FaPen className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete(index)} className="text-red-400 hover:text-red-600 transition-colors p-1">
+                      <FaTrash className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  <div className="text-gray-600">
-                    <p>Description: {project.description}</p>
-                    <p>
-                      Link:{" "}
-                      <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500"
-                      >
-                        {project.link}
-                      </a>
-                    </p>
-                  </div>
+                </div>
+                <div className="text-sm text-[var(--text-light)] space-y-2">
+                  <p className="pt-1">{project.description}</p>
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[var(--primary-color)] hover:text-[var(--button-hover-color)] font-semibold text-xs bg-white px-3 py-1.5 rounded-lg border border-gray-200 hover:border-[var(--primary-color)] transition-colors mt-2"
+                  >
+                    <FaExternalLinkAlt className="text-[10px]" /> View Project
+                  </a>
                 </div>
               </div>
             ))
+          ) : (
+            <div className="text-center py-8 bg-[var(--bg-light-color)] rounded-xl border border-dashed border-gray-200">
+              <p className="text-[var(--text-light)] font-medium text-sm">No personal projects added yet.</p>
+            </div>
           )}
         </div>
       )}

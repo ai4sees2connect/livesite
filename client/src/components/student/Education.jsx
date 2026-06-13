@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FaPlus, FaPen, FaTrash, FaGraduationCap } from "react-icons/fa";
 import getUserIdFromToken from "./auth/authUtils";
 import { useStudent } from "./context/studentContext";
 import { toast } from "react-toastify";
@@ -8,7 +7,7 @@ import axios from "axios";
 import api from "../common/server_url";
 import Select from "react-select";
 
-const Education = ( {error, clearError,updateError }) => {
+const Education = ({ error, clearError, updateError }) => {
   const [clicked, setClicked] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [degree, setDegree] = useState("");
@@ -26,240 +25,126 @@ const Education = ( {error, clearError,updateError }) => {
   const startYears = Array.from({ length: 50 }, (_, i) => currentYear - i);
   const [scoreError, setScoreError] = useState('');
 
-
-
   const endYears = Array.from(
     { length: 11 },
     (_, i) => parseInt(startYear) + i
   ).reverse();
 
+  // Custom styles for React-Select
+  const customSelectStyles = {
+    control: (base) => ({
+      ...base,
+      borderColor: "#e5e7eb",
+      boxShadow: "none",
+      "&:hover": { borderColor: "var(--primary-color)" },
+      borderRadius: "0.5rem",
+      minHeight: "42px",
+      fontSize: "0.875rem",
+      backgroundColor: "white"
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected ? "var(--primary-color)" : state.isFocused ? "var(--icon-bg-color)" : "white",
+      color: state.isSelected ? "white" : "var(--text-color)",
+    }),
+    singleValue: (base) => ({ ...base, color: "var(--text-color)" }),
+    placeholder: (base) => ({ ...base, color: "var(--text-light)" })
+  };
+
   const degreeOptions = [
-    { value: "B.Tech", label: "B.Tech" },
-    { value: "M.Tech", label: "M.Tech" },
-    { value: "B.Sc", label: "B.Sc" },
-    { value: "M.Sc", label: "M.Sc" },
-    { value: "BCA", label: "BCA" },
-    { value: "B.Com", label: "B.Com" },
-    { value: "MCA", label: "MCA" },
-    { value: "BBA", label: "BBA" },
-    { value: "MBA", label: "MBA" },
-    { value: "X Standard", label: "X Standard" },
-    { value: "XII Standard", label: "XII Standard" },
-    { value: "Diploma", label: "Diploma" },
+    { value: "B.Tech", label: "B.Tech" }, { value: "M.Tech", label: "M.Tech" },
+    { value: "B.Sc", label: "B.Sc" }, { value: "M.Sc", label: "M.Sc" },
+    { value: "BCA", label: "BCA" }, { value: "B.Com", label: "B.Com" },
+    { value: "MCA", label: "MCA" }, { value: "BBA", label: "BBA" },
+    { value: "MBA", label: "MBA" }, { value: "X Standard", label: "X Standard" },
+    { value: "XII Standard", label: "XII Standard" }, { value: "Diploma", label: "Diploma" },
   ];
 
   const fieldOfStudyMapping = {
     "B.Tech": [
-      { value: "Telecommunication", label: "Telecommunication" },
-      { value: "Agriculture", label: "Agriculture" },
-      { value: "Automobile", label: "Automobile" },
-      { value: "Aviation", label: "Aviation" },
-      {
-        value: "Bio-Chemistry/Bio-Technology",
-        label: "Bio-Chemistry/Bio-Technology",
-      },
-      { value: "Biomedical", label: "Biomedical" },
-      { value: "Ceramics", label: "Ceramics" },
-      { value: "Chemical", label: "Chemical" },
-      { value: "Civil", label: "Civil" },
-      { value: "Computers", label: "Computers" },
-      { value: "Electrical", label: "Electrical" },
-      {
-        value: "Electrical and Electronics",
-        label: "Electrical and Electronics",
-      },
-      {
-        value: "Electronics/Telecommunication",
-        label: "Electronics/Telecommunication",
-      },
-      { value: "Energy", label: "Energy" },
-      { value: "Environmental", label: "Environmental" },
-      { value: "Information Technology", label: "Information Technology" },
-      { value: "Instrumentation", label: "Instrumentation" },
-      { value: "Marine", label: "Marine" },
-      { value: "Mechanical", label: "Mechanical" },
-      { value: "Metallurgy", label: "Metallurgy" },
-      { value: "Mineral", label: "Mineral" },
-      { value: "Mining", label: "Mining" },
-      { value: "Nuclear", label: "Nuclear" },
-      { value: "Paint/Oil", label: "Paint/Oil" },
-      { value: "Petroleum", label: "Petroleum" },
-      { value: "Plastics", label: "Plastics" },
-      { value: "Production/Industrial", label: "Production/Industrial" },
-      { value: "Textile", label: "Textile" },
+      { value: "Telecommunication", label: "Telecommunication" }, { value: "Agriculture", label: "Agriculture" },
+      { value: "Automobile", label: "Automobile" }, { value: "Aviation", label: "Aviation" },
+      { value: "Bio-Chemistry/Bio-Technology", label: "Bio-Chemistry/Bio-Technology" }, { value: "Biomedical", label: "Biomedical" },
+      { value: "Ceramics", label: "Ceramics" }, { value: "Chemical", label: "Chemical" },
+      { value: "Civil", label: "Civil" }, { value: "Computers", label: "Computers" },
+      { value: "Electrical", label: "Electrical" }, { value: "Electrical and Electronics", label: "Electrical and Electronics" },
+      { value: "Electronics/Telecommunication", label: "Electronics/Telecommunication" }, { value: "Energy", label: "Energy" },
+      { value: "Environmental", label: "Environmental" }, { value: "Information Technology", label: "Information Technology" },
+      { value: "Instrumentation", label: "Instrumentation" }, { value: "Marine", label: "Marine" },
+      { value: "Mechanical", label: "Mechanical" }, { value: "Metallurgy", label: "Metallurgy" },
+      { value: "Mineral", label: "Mineral" }, { value: "Mining", label: "Mining" },
+      { value: "Nuclear", label: "Nuclear" }, { value: "Paint/Oil", label: "Paint/Oil" },
+      { value: "Petroleum", label: "Petroleum" }, { value: "Plastics", label: "Plastics" },
+      { value: "Production/Industrial", label: "Production/Industrial" }, { value: "Textile", label: "Textile" },
       { value: "Other", label: "Other" },
     ],
-    "B.Com": [
-      { value: "Commerce", label: "Commerce" },
-      { value: "Other", label: "Other" },
-    ],
+    "B.Com": [{ value: "Commerce", label: "Commerce" }, { value: "Other", label: "Other" }],
     "M.Tech": [
-      { value: "Agriculture", label: "Agriculture" },
-      { value: "Automobile", label: "Automobile" },
-      { value: "Aviation", label: "Aviation" },
-      {
-        value: "Bio-Chemistry/Bio-Technology",
-        label: "Bio-Chemistry/Bio-Technology",
-      },
-      { value: "Biomedical", label: "Biomedical" },
-      { value: "VLSI", label: "VLSI" },
-      { value: "Ceramics", label: "Ceramics" },
-      { value: "Chemical", label: "Chemical" },
-      { value: "Civil", label: "Civil" },
-      { value: "Computers", label: "Computers" },
-      { value: "Electrical", label: "Electrical" },
-      {
-        value: "Electronics/Telecommunication",
-        label: "Electronics/Telecommunication",
-      },
-      { value: "Energy", label: "Energy" },
-      { value: "Environmental", label: "Environmental" },
-      { value: "Instrumentation", label: "Instrumentation" },
-      { value: "Marine", label: "Marine" },
-      { value: "Mechanical", label: "Mechanical" },
-      { value: "Metallurgy", label: "Metallurgy" },
-      { value: "Mineral", label: "Mineral" },
-      { value: "Mining", label: "Mining" },
-      { value: "Nuclear", label: "Nuclear" },
-      { value: "Paint/Oil", label: "Paint/Oil" },
-      { value: "Petroleum", label: "Petroleum" },
-      { value: "Plastics", label: "Plastics" },
-      { value: "Production/Industrial", label: "Production/Industrial" },
-      { value: "Textile", label: "Textile" },
+      { value: "Agriculture", label: "Agriculture" }, { value: "Automobile", label: "Automobile" },
+      { value: "Aviation", label: "Aviation" }, { value: "Bio-Chemistry/Bio-Technology", label: "Bio-Chemistry/Bio-Technology" },
+      { value: "Biomedical", label: "Biomedical" }, { value: "VLSI", label: "VLSI" },
+      { value: "Ceramics", label: "Ceramics" }, { value: "Chemical", label: "Chemical" },
+      { value: "Civil", label: "Civil" }, { value: "Computers", label: "Computers" },
+      { value: "Electrical", label: "Electrical" }, { value: "Electronics/Telecommunication", label: "Electronics/Telecommunication" },
+      { value: "Energy", label: "Energy" }, { value: "Environmental", label: "Environmental" },
+      { value: "Instrumentation", label: "Instrumentation" }, { value: "Marine", label: "Marine" },
+      { value: "Mechanical", label: "Mechanical" }, { value: "Metallurgy", label: "Metallurgy" },
+      { value: "Mineral", label: "Mineral" }, { value: "Mining", label: "Mining" },
+      { value: "Nuclear", label: "Nuclear" }, { value: "Paint/Oil", label: "Paint/Oil" },
+      { value: "Petroleum", label: "Petroleum" }, { value: "Plastics", label: "Plastics" },
+      { value: "Production/Industrial", label: "Production/Industrial" }, { value: "Textile", label: "Textile" },
       { value: "Other", label: "Other" },
     ],
     "B.Sc": [
-      { value: "Agriculture", label: "Agriculture" },
-      { value: "Zeology", label: "Zeology" },
-      { value: "Anthropology", label: "Anthropology" },
-      { value: "Bio-Chemistry", label: "Bio-Chemistry" },
-      { value: "Biology", label: "Biology" },
-      { value: "Botany", label: "Botany" },
-      { value: "Chemistry", label: "Chemistry" },
-      { value: "Computers", label: "Computers" },
-      { value: "Dairy Technology", label: "Dairy Technology" },
-      { value: "Electronics", label: "Electronics" },
-      { value: "Environmental Science", label: "Environmental Science" },
-      { value: "Food Technology", label: "Food Technology" },
-      { value: "General", label: "General" },
-      { value: "Geology", label: "Geology" },
-      { value: "Home Science", label: "Home Science" },
-      {
-        value: "Hospitality and Hotel Management",
-        label: "Hospitality and Hotel Management",
-      },
-      { value: "Maths", label: "Maths" },
-      { value: "Microbiology", label: "Microbiology" },
-      { value: "Nursing", label: "Nursing" },
-      { value: "Optometry", label: "Optometry" },
-      { value: "Physics", label: "Physics" },
-      { value: "Statistics", label: "Statistics" },
-      { value: "Zoology", label: "Zoology" },
-      { value: "Other", label: "Other" },
+      { value: "Agriculture", label: "Agriculture" }, { value: "Zeology", label: "Zeology" },
+      { value: "Anthropology", label: "Anthropology" }, { value: "Bio-Chemistry", label: "Bio-Chemistry" },
+      { value: "Biology", label: "Biology" }, { value: "Botany", label: "Botany" },
+      { value: "Chemistry", label: "Chemistry" }, { value: "Computers", label: "Computers" },
+      { value: "Dairy Technology", label: "Dairy Technology" }, { value: "Electronics", label: "Electronics" },
+      { value: "Environmental Science", label: "Environmental Science" }, { value: "Food Technology", label: "Food Technology" },
+      { value: "General", label: "General" }, { value: "Geology", label: "Geology" },
+      { value: "Home Science", label: "Home Science" }, { value: "Hospitality and Hotel Management", label: "Hospitality and Hotel Management" },
+      { value: "Maths", label: "Maths" }, { value: "Microbiology", label: "Microbiology" },
+      { value: "Nursing", label: "Nursing" }, { value: "Optometry", label: "Optometry" },
+      { value: "Physics", label: "Physics" }, { value: "Statistics", label: "Statistics" },
+      { value: "Zoology", label: "Zoology" }, { value: "Other", label: "Other" },
     ],
     "M.Sc": [
-      { value: "Zeology", label: "Zeology" },
-      {
-        value: "Aerospace & Mechanical Engineering",
-        label: "Aerospace & Mechanical Engineering",
-      },
-      { value: "Agriculture", label: "Agriculture" },
-      { value: "Anthropology", label: "Anthropology" },
-      {
-        value: "Astronautical Engineering",
-        label: "Astronautical Engineering",
-      },
-      { value: "Bio-Chemistry", label: "Bio-Chemistry" },
-      { value: "Biology", label: "Biology" },
-      { value: "Biotechnology", label: "Biotechnology" },
-      { value: "Botany", label: "Botany" },
-      {
-        value: "Chemical Engineering & Materials Science",
-        label: "Chemical Engineering & Materials Science",
-      },
-      { value: "Chemistry", label: "Chemistry" },
-      {
-        value: "Civil & Environmental Engineering",
-        label: "Civil & Environmental Engineering",
-      },
-      { value: "Computers", label: "Computers" },
-      {
-        value: "Cyber Security Engineering",
-        label: "Cyber Security Engineering",
-      },
-      { value: "Dairy Technology", label: "Dairy Technology" },
-      { value: "Data Informatics", label: "Data Informatics" },
-      { value: "Electrical Engineering", label: "Electrical Engineering" },
-      { value: "Electronics", label: "Electronics" },
-      {
-        value: "Electronics & Embedded Technology",
-        label: "Electronics & Embedded Technology",
-      },
-      { value: "Environmental Science", label: "Environmental Science" },
-      { value: "Food Technology", label: "Food Technology" },
-      { value: "Geology", label: "Geology" },
-      { value: "Home Science", label: "Home Science" },
-      {
-        value: "Hospitality Administration",
-        label: "Hospitality Administration",
-      },
-      {
-        value: "Industrial & Systems Engineering",
-        label: "Industrial & Systems Engineering",
-      },
-      { value: "Marine Engineering", label: "Marine Engineering" },
-      { value: "Maths", label: "Maths" },
-      { value: "Mechanical Engineering", label: "Mechanical Engineering" },
-      { value: "Mechatronics", label: "Mechatronics" },
-      { value: "Microbiology", label: "Microbiology" },
-      { value: "Nursing", label: "Nursing" },
-      { value: "Optometry", label: "Optometry" },
-      { value: "Organic Chemistry", label: "Organic Chemistry" },
-      { value: "Petroleum Engineering", label: "Petroleum Engineering" },
-      { value: "Physics", label: "Physics" },
-      { value: "Statistics", label: "Statistics" },
-      {
-        value: "Systems Architecting and Engineering",
-        label: "Systems Architecting and Engineering",
-      },
-      { value: "Veterinary Science", label: "Veterinary Science" },
-      { value: "Zoology", label: "Zoology" },
-      { value: "Other", label: "Other" },
+      { value: "Zeology", label: "Zeology" }, { value: "Aerospace & Mechanical Engineering", label: "Aerospace & Mechanical Engineering" },
+      { value: "Agriculture", label: "Agriculture" }, { value: "Anthropology", label: "Anthropology" },
+      { value: "Astronautical Engineering", label: "Astronautical Engineering" }, { value: "Bio-Chemistry", label: "Bio-Chemistry" },
+      { value: "Biology", label: "Biology" }, { value: "Biotechnology", label: "Biotechnology" },
+      { value: "Botany", label: "Botany" }, { value: "Chemical Engineering & Materials Science", label: "Chemical Engineering & Materials Science" },
+      { value: "Chemistry", label: "Chemistry" }, { value: "Civil & Environmental Engineering", label: "Civil & Environmental Engineering" },
+      { value: "Computers", label: "Computers" }, { value: "Cyber Security Engineering", label: "Cyber Security Engineering" },
+      { value: "Dairy Technology", label: "Dairy Technology" }, { value: "Data Informatics", label: "Data Informatics" },
+      { value: "Electrical Engineering", label: "Electrical Engineering" }, { value: "Electronics", label: "Electronics" },
+      { value: "Electronics & Embedded Technology", label: "Electronics & Embedded Technology" }, { value: "Environmental Science", label: "Environmental Science" },
+      { value: "Food Technology", label: "Food Technology" }, { value: "Geology", label: "Geology" },
+      { value: "Home Science", label: "Home Science" }, { value: "Hospitality Administration", label: "Hospitality Administration" },
+      { value: "Industrial & Systems Engineering", label: "Industrial & Systems Engineering" }, { value: "Marine Engineering", label: "Marine Engineering" },
+      { value: "Maths", label: "Maths" }, { value: "Mechanical Engineering", label: "Mechanical Engineering" },
+      { value: "Mechatronics", label: "Mechatronics" }, { value: "Microbiology", label: "Microbiology" },
+      { value: "Nursing", label: "Nursing" }, { value: "Optometry", label: "Optometry" },
+      { value: "Organic Chemistry", label: "Organic Chemistry" }, { value: "Petroleum Engineering", label: "Petroleum Engineering" },
+      { value: "Physics", label: "Physics" }, { value: "Statistics", label: "Statistics" },
+      { value: "Systems Architecting and Engineering", label: "Systems Architecting and Engineering" }, { value: "Veterinary Science", label: "Veterinary Science" },
+      { value: "Zoology", label: "Zoology" }, { value: "Other", label: "Other" },
     ],
-    BCA: [
-      { value: "Computers", label: "Computers" },
-      { value: "Other", label: "Other" },
-    ],
-    MCA: [
-      { value: "Computers", label: "Computers" },
-      { value: "Other", label: "Other" },
-    ],
-    BBA: [
-      { value: "Marketing", label: "Marketing" },
-      { value: "Management", label: "Management" },
-      { value: "Other", label: "Other" },
-    ],
+    BCA: [{ value: "Computers", label: "Computers" }, { value: "Other", label: "Other" }],
+    MCA: [{ value: "Computers", label: "Computers" }, { value: "Other", label: "Other" }],
+    BBA: [{ value: "Marketing", label: "Marketing" }, { value: "Management", label: "Management" }, { value: "Other", label: "Other" }],
     MBA: [
-      {
-        value: "Advertising/Mass Communication",
-        label: "Advertising/Mass Communication",
-      },
-      { value: "Tourism and Hospitality", label: "Tourism and Hospitality" },
-      { value: "Finance", label: "Finance" },
-      { value: "Hospitality Management", label: "Hospitality Management" },
-      { value: "HR/Industrial Relations", label: "HR/Industrial Relations" },
-      { value: "Information Technology", label: "Information Technology" },
-      { value: "International Business", label: "International Business" },
-      { value: "Marketing", label: "Marketing" },
-      { value: "Operations", label: "Operations" },
-      { value: "Systems", label: "Systems" },
+      { value: "Advertising/Mass Communication", label: "Advertising/Mass Communication" }, { value: "Tourism and Hospitality", label: "Tourism and Hospitality" },
+      { value: "Finance", label: "Finance" }, { value: "Hospitality Management", label: "Hospitality Management" },
+      { value: "HR/Industrial Relations", label: "HR/Industrial Relations" }, { value: "Information Technology", label: "Information Technology" },
+      { value: "International Business", label: "International Business" }, { value: "Marketing", label: "Marketing" },
+      { value: "Operations", label: "Operations" }, { value: "Systems", label: "Systems" },
       { value: "Other", label: "Other" },
     ],
     "XII Standard": [
-      { value: "Science", label: "Science" },
-      { value: "Medical", label: "Medical" },
-      { value: "Commerce", label: "Commerce" },
-      { value: "Arts", label: "Arts" },
+      { value: "Science", label: "Science" }, { value: "Medical", label: "Medical" },
+      { value: "Commerce", label: "Commerce" }, { value: "Arts", label: "Arts" },
       { value: "Humanities", label: "Humanities" },
     ],
     "X Standard": [{ value: "Core", label: "Core" }],
@@ -270,17 +155,12 @@ const Education = ( {error, clearError,updateError }) => {
   useEffect(() => {
     const fetchEducation = async () => {
       try {
-        const response = await axios.get(
-          `${api}/student/profile/${userId}/education`
-        );
+        const response = await axios.get(`${api}/student/profile/${userId}/education`);
         if (!response.data) {
           toast.error("sorry no details found");
           return;
         }
         setEducationDetails(response.data);
-
-        console.log(degree);
-        // console.log('useeffect');
         setClicked(false);
       } catch (error) {
         console.error("Error fetching education detailsvcc:", error);
@@ -291,40 +171,20 @@ const Education = ( {error, clearError,updateError }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log(score+gradeType)
     const educationData = {
       degree,
-      fieldOfStudy:
-        fieldOfStudy?.value !== "Other" ? fieldOfStudy?.value : otherField,
-      institution,
-      startYear,
-      endYear,
-      score,
-      gradeType
+      fieldOfStudy: fieldOfStudy?.value !== "Other" ? fieldOfStudy?.value : otherField,
+      institution, startYear, endYear, score, gradeType
     };
 
-    console.log("educationData", educationData);
-
-    if (
-      !degree ||
-      !fieldOfStudy ||
-      !institution ||
-      !startYear ||
-      !endYear ||
-      !score ||
-      !gradeType
-    ) {
+    if (!degree || !fieldOfStudy || !institution || !startYear || !endYear || !score || !gradeType) {
       toast.error("Please enter all fields");
       return;
     }
 
     try {
       if (editIndex !== null) {
-        // Update existing education entry
-        const response = await axios.put(
-          `${api}/student/profile/${userId}/education/${editIndex}`,
-          educationData
-        );
+        const response = await axios.put(`${api}/student/profile/${userId}/education/${editIndex}`, educationData);
         const updatedDetails = [...educationDetails];
         updatedDetails[editIndex] = response.data;
         setEducationDetails(updatedDetails);
@@ -332,27 +192,16 @@ const Education = ( {error, clearError,updateError }) => {
         toast.success("Details updated");
         clearError();
       } else {
-        // Add new education entry
-        const response = await axios.post(
-          `${api}/student/profile/${userId}/education`,
-          educationData
-        );
+        const response = await axios.post(`${api}/student/profile/${userId}/education`, educationData);
         setEducationDetails([...educationDetails, response.data]);
         toast.success("Details added");
         clearError();
       }
 
       setClicked(true);
-      setDegree("");
-      setFieldOfStudy(null);
-      setInstitution("");
-      setStartYear("");
-      setEndYear("");
-      setScore("");
-      setGradeType("CGPA");
-      setEditIndex(null);
-      setIsEditing(false);
-      // refreshData();
+      setDegree(""); setFieldOfStudy(null); setInstitution("");
+      setStartYear(""); setEndYear(""); setScore("");
+      setGradeType("CGPA"); setEditIndex(null); setIsEditing(false);
     } catch (error) {
       console.error("Error saving the education details:", error);
       toast.error("Failed to update details");
@@ -360,33 +209,24 @@ const Education = ( {error, clearError,updateError }) => {
   };
 
   const handleReset = () => {
-    setDegree("");
-    setFieldOfStudy(null);
-    setInstitution("");
-    setStartYear("");
-    setEndYear("");
-    setScore("");
-    setGradeType("CGPA");
-    setEditIndex(null);
-    setIsEditing(false);
+    setDegree(""); setFieldOfStudy(null); setInstitution("");
+    setStartYear(""); setEndYear(""); setScore("");
+    setGradeType("CGPA"); setEditIndex(null); setIsEditing(false);
   };
 
   const handleDegreeChange = (e) => {
     setDegree(e.target.value);
-    setFieldOfStudy(null); // Clear field of study when degree changes
+    setFieldOfStudy(null);
   };
 
   const handleDelete = async (index) => {
     try {
-      console.log(educationDetails[index]);
       await axios.delete(`${api}/student/profile/${userId}/education/${index}`);
       setEducationDetails(educationDetails.filter((_, i) => i !== index));
-      const list=educationDetails.filter((_, i) => i !== index)
-
+      const list = educationDetails.filter((_, i) => i !== index);
       toast.success("Education details deleted");
-      if(list.length ===0){
-      updateError("education", "* Please add your education");
-      console.log("triggered");
+      if (list.length === 0) {
+        updateError("education", "* Please add your education");
       }
     } catch (error) {
       console.error("Error deleting education details:", error);
@@ -396,7 +236,6 @@ const Education = ( {error, clearError,updateError }) => {
 
   const handleEdit = (index) => {
     const edu = educationDetails[index];
-    console.log(edu);
     setIsEditing(true);
     setDegree(edu.degree);
     setFieldOfStudy({ value: edu.fieldOfStudy, label: edu.fieldOfStudy });
@@ -405,238 +244,152 @@ const Education = ( {error, clearError,updateError }) => {
     setEndYear(edu.endYear);
     setScore(edu.score);
     setGradeType(edu.gradeType);
-
     setEditIndex(index);
   };
 
-  const handleGradeChange = (event) => {
-    setGradeType(event.target.value);
-  };
+  const handleGradeChange = (event) => setGradeType(event.target.value);
 
   const handleChangeScore = (e) => {
     const value = e.target.value;
-
     if (gradeType === "CGPA") {
-      // Allow up to 10.00 with 2 decimal places
       if (/^\d{0,2}(\.\d{0,2})?$/.test(value)) {
         const numericValue = parseFloat(value);
-        if (numericValue > 0 && numericValue <= 10) { // Ensure value is greater than 0
-          setScore(value);
-          setScoreError(''); // Clear error if value is valid
-        } else if (numericValue === 0) {
-          setScore(''); // Reset the field
-          setScoreError('CGPA cannot be 0 or 00');
-        } else {
-          setScore(''); // Reset the field
-          setScoreError('CGPA should not exceed 10.00');
-        }
-      } else {
-        setScore(''); // Reset the field for invalid input
-        setScoreError('Enter a valid CGPA up to 2 decimal places');
-      }
-    
+        if (numericValue > 0 && numericValue <= 10) { setScore(value); setScoreError(''); }
+        else if (numericValue === 0) { setScore(''); setScoreError('CGPA cannot be 0 or 00'); }
+        else { setScore(''); setScoreError('CGPA should not exceed 10.00'); }
+      } else { setScore(''); setScoreError('Enter a valid CGPA up to 2 decimal places'); }
     } else if (gradeType === "Percentage") {
-      // Allow up to 100.00 with 2 decimal places
       if (/^\d{0,3}(\.\d{0,2})?$/.test(value)) {
         const numericValue = parseFloat(value);
-        if (numericValue > 0 && numericValue <= 100) { // Ensure value is greater than 0
-          setScore(value);
-          setScoreError(''); // Clear error if value is valid
-        } else if (numericValue === 0) {
-          setScore(''); // Reset the field
-          setScoreError('Percentage cannot be 0 or 000');
-        } else {
-          setScore(''); // Reset the field
-          setScoreError('Percentage should not exceed 100');
-        }
-      } else {
-        setScore(''); // Reset the field for invalid input
-        setScoreError('Enter a valid percentage up to 2 decimal places');
-      }
+        if (numericValue > 0 && numericValue <= 100) { setScore(value); setScoreError(''); }
+        else if (numericValue === 0) { setScore(''); setScoreError('Percentage cannot be 0 or 000'); }
+        else { setScore(''); setScoreError('Percentage should not exceed 100'); }
+      } else { setScore(''); setScoreError('Enter a valid percentage up to 2 decimal places'); }
     }
   };
 
-  console.log(degree);
-  console.log(fieldOfStudy);
-
   return (
-    <div className="container mx-auto p-4 border shadow-md mt-[68px] w-full lg:w-[80%]">
-      <h2 className="text-xl font-outfit font-semibold flex justify-between">
-        <span className="text-red-700"><span className="text-black">Education</span> *</span>
-        <button
-          onClick={() => setIsEditing(true)}
-          className="text-blue-500  flex items-center space-x-1"
-        >
-          <span>Add</span> <FontAwesomeIcon icon={faPlus} />
-        </button>
-      </h2>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 w-full">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-5">
+        <h2 className="text-lg font-bold text-[var(--text-color)] flex items-center gap-2">
+          <FaGraduationCap className="text-[var(--primary-color)] text-xl" />
+          Education <span className="text-red-500">*</span>
+        </h2>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-1.5 text-sm font-semibold text-[var(--primary-color)] hover:text-[var(--button-hover-color)] transition-colors bg-[var(--icon-bg-color)] px-3 py-1.5 rounded-lg"
+          >
+            <FaPlus className="text-xs" /> Add
+          </button>
+        )}
+      </div>
 
+      {/* Form Section */}
       {isEditing ? (
-        <form className="mt-4" onSubmit={handleSubmit}>
-          {/* Form Fields for Education */}
-          <select
-            id="degree"
-            value={degree}
-            onChange={handleDegreeChange}
-            className="border p-2 mb-2 w-full"
-            required
-          >
-            <option value="">Select your degree / Course</option>
-            {degreeOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+        <form className="space-y-4 mt-4 bg-[var(--bg-light-color)] p-5 rounded-xl border border-gray-100" onSubmit={handleSubmit}>
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Degree / Course</label>
+            <select id="degree" value={degree} onChange={handleDegreeChange} className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white" required>
+              <option value="">Select your degree / Course</option>
+              {degreeOptions.map((option) => (<option key={option.value} value={option.value}>{option.label}</option>))}
+            </select>
+          </div>
 
-          {/* <input
-            type="text"
-            value={fieldOfStudy}
-            onChange={(e) => setFieldOfStudy(e.target.value)}
-            placeholder="Field of study"
-            className="border p-2 mb-2 w-full"
-          /> */}
           {degree && (
-            <Select
-              options={fieldOfStudyMapping[degree] || []}
-              value={fieldOfStudy}
-              onChange={(selectedOption) => setFieldOfStudy(selectedOption)}
-              placeholder="Select field of study"
-              className="mb-2 w-full"
-              required
-            />
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Field of Study</label>
+              <Select
+                options={fieldOfStudyMapping[degree] || []}
+                value={fieldOfStudy}
+                onChange={(selectedOption) => setFieldOfStudy(selectedOption)}
+                placeholder="Select field of study"
+                className="w-full"
+                styles={customSelectStyles}
+                required
+              />
+            </div>
           )}
+
           {fieldOfStudy?.value === "Other" && (
-            <input
-              type="text"
-              value={otherField}
-              onChange={(e) => setOtherField(e.target.value)}
-              placeholder="Please Specify Other"
-              className="border p-2 mb-2 w-full"
-              required
-            />
+            <input type="text" value={otherField} onChange={(e) => setOtherField(e.target.value)} placeholder="Please Specify Other" className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white" required />
           )}
 
-          <input
-            type="text"
-            value={institution}
-            onChange={(e) => setInstitution(e.target.value)}
-            placeholder="Institution"
-            className="border p-2 mb-2 w-full"
-            maxLength={70}
-            required
-          />
-          <div className="flex space-x-3 px-2 items-center mb-2 w-[50%] md:w-[40%]">
-            <label htmlFor="" className="">
-              Start Year
-            </label>
-            <select
-              value={startYear}
-              onChange={(e) => setStartYear(e.target.value)}
-              className="border p-2  w-fit"
-              required
-            >
-              <option value="">Select</option>
-              {startYears.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Institution</label>
+            <input type="text" value={institution} onChange={(e) => setInstitution(e.target.value)} placeholder="Institution Name" className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white" maxLength={70} required />
           </div>
 
-          <div className="flex space-x-4 md:space-x-4 px-2 items-center mb-2 w-[50%] md:w-[40%]">
-            <label htmlFor="" className="">
-              End Year
-            </label>
-            <select
-              value={endYear}
-              onChange={(e) => setEndYear(e.target.value)}
-              className="border p-2 w-fit "
-              required
-            >
-              <option value="">Select</option>
-              {endYears.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Start Year</label>
+              <select value={startYear} onChange={(e) => setStartYear(e.target.value)} className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white" required>
+                <option value="">Select</option>
+                {startYears.map((year) => (<option key={year} value={year}>{year}</option>))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">End Year</label>
+              <select value={endYear} onChange={(e) => setEndYear(e.target.value)} className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white" required>
+                <option value="">Select</option>
+                {endYears.map((year) => (<option key={year} value={year}>{year}</option>))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Grade Type</label>
+              <select id="gradeSelect" value={gradeType} onChange={handleGradeChange} className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white">
+                <option value="CGPA">CGPA</option>
+                <option value="Percentage">Percentage</option>
+              </select>
+            </div>
           </div>
 
-          <div className="flex space-x-4 md:space-x-4 px-2 items-center mb-2 w-[50%] md:w-[40%]">
-            <label htmlFor="gradeSelect">Select Grade Type:</label>
-            <select
-              id="gradeSelect"
-              value={gradeType}
-              onChange={handleGradeChange}
-              className="mx-3 border p-2 w-fit"
-            >
-              <option value="CGPA">CGPA</option>
-              <option value="Percentage">Percentage</option>
-            </select>
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Score</label>
+            <input type="text" placeholder={`Enter ${gradeType} scored`} value={score} onChange={handleChangeScore} className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white" required />
+            {scoreError && <p className="text-red-500 text-xs mt-1.5 font-medium">{scoreError}</p>}
           </div>
-          <input
-            type="text"
-            placeholder={`Enter ${gradeType} scored`}
-            value={score}
-            onChange={handleChangeScore}
-            className="border p-2 mb-2 w-full"
-            required
-          />
-          {scoreError && <p className="text-red-500 text-sm mt-1">{scoreError}</p>}
 
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 mt-4"
-          >
-            Save
-          </button>
-          <button
-            onClick={() => {
-              setIsEditing(false);
-              handleReset();
-            }}
-            className="border ml-4 px-4 py-2 text-gray-500 hover:bg-red-500 hover:text-white"
-          >
-            Cancel
-          </button>
+          <div className="flex gap-3 pt-2">
+            <button type="submit" className="bg-[var(--button-color)] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[var(--button-hover-color)] transition-colors shadow-sm text-sm">
+              Save
+            </button>
+            <button type="button" onClick={() => { setIsEditing(false); handleReset(); }} className="bg-gray-100 text-[var(--text-color)] px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-sm">
+              Cancel
+            </button>
+          </div>
         </form>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 justify-center gap-5  items-center mt-10">
+        /* List Section */
+        <div className="space-y-4 mt-2">
           {educationDetails.length > 0 ? (
             educationDetails.map((edu, index) => (
-              <div key={index} className="border p-5  ">
-                <div>
-                  <div className="flex justify-between">
-                    <h3 className="text-lg font-semibold">{edu?.degree}</h3>
-                    <div className="space-x-5">
-                      <FontAwesomeIcon
-                        icon={faPen}
-                        onClick={() => handleEdit(index)}
-                        className="hover:scale-125 duration-300 text-blue-500 hover:cursor-pointer"
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        onClick={() => handleDelete(index)}
-                        className="hover:scale-125 duration-300 text-red-600 hover:cursor-pointer"
-                      />
-                    </div>
+              <div key={index} className="bg-[var(--bg-light-color)] border border-gray-100 rounded-xl p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-base font-bold text-[var(--text-color)]">{edu?.degree}</h3>
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => handleEdit(index)} className="text-[var(--icon-color)] hover:text-[var(--primary-color)] transition-colors p-1">
+                      <FaPen className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete(index)} className="text-red-400 hover:text-red-600 transition-colors p-1">
+                      <FaTrash className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  <div className="text-gray-600">
-                    <p>{edu?.fieldOfStudy}</p>
-                    <p>{edu?.institution}</p>
-                    <p>Start Year: {edu?.startYear}</p>
-                    <p>Year of Completion: {edu?.endYear}</p>
-                    <p>Score: {edu?.score} {edu?.gradeType}</p>
-                  </div>
+                </div>
+                <div className="text-sm text-[var(--text-light)] space-y-1">
+                  <p className="font-medium text-[var(--text-color)]">{edu?.fieldOfStudy}</p>
+                  <p>{edu?.institution}</p>
+                  <p className="text-xs">{edu?.startYear} - {edu?.endYear}</p>
+                  <p className="font-semibold text-[var(--primary-color)] text-sm pt-1">Score: {edu?.score} {edu?.gradeType}</p>
                 </div>
               </div>
             ))
           ) : (
-            <p className="text-red-500 font-semibold">{error}</p>
+            <div className="text-center py-8 bg-[var(--bg-light-color)] rounded-xl border border-dashed border-gray-200">
+              <p className="text-red-500 font-semibold text-sm">{error || "No education details added yet."}</p>
+            </div>
           )}
-          {/* {error && <p className="text-red-500">{error}</p>} */}
         </div>
       )}
     </div>

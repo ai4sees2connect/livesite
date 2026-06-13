@@ -171,7 +171,7 @@ const NavbarUniversal = () => {
                     <FaUser className="w-5 h-5" style={{ color: 'var(--primary-color)' }} />
                   )}
                 </div>
-                <div className="absolute right-0 top-12 w-48 bg-white shadow-lg border rounded-md hidden group-hover:block">
+                <div className="absolute right-0 top-10 w-48 bg-white shadow-lg border rounded-md hidden group-hover:block">
                   <ul className="p-2">
                     <li className="py-2 px-4 hover:text-[var(--primary-color)]">
                       <NavLink to={`/student/profile/${userId}`}>Profile</NavLink>
@@ -202,7 +202,7 @@ const NavbarUniversal = () => {
                     <FaUser className="w-5 h-5" style={{ color: 'var(--primary-color)' }} />
                   )}
                 </div>
-                <div className="absolute right-0 top-12 w-48 bg-white shadow-lg border rounded-md hidden group-hover:block">
+                <div className="absolute right-0 top-10 w-48 bg-white shadow-lg border rounded-md hidden group-hover:block">
                   <ul className="p-2">
                     <li className="py-2 px-4 hover:text-[var(--primary-color)]">
                       <NavLink to={`/recruiter/profile/${userId}`}>Profile</NavLink>

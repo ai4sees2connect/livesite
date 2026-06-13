@@ -30,7 +30,7 @@ const Footer = () => {
     { to: "/contact", label: "Contact us" },
     { to: "/privacy-policy", label: "Privacy policy" },
     { to: "/terms-conditions", label: "Terms and conditions" },
-    { to: "/Cancellation", label: "Cancellation policy" },
+    { to: "/cancellation-policy", label: "Cancellation policy" },
   ];
 
   return (

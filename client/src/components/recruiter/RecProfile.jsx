@@ -23,10 +23,8 @@ import api from "../common/server_url";
 import axios from "axios";
 import { toast } from "react-toastify";
 import TimeAgo from "../common/TimeAgo";
-import statesAndCities from "../common/statesAndCities";
-import Select from "react-select";
-// country
 import countryData from "../TESTJSONS/countries+states+cities.json";
+import Select from "react-select";
 
 const RecProfile = () => {
   const fileInputRef = useRef(null);
@@ -35,1336 +33,617 @@ const RecProfile = () => {
   const navigate = useNavigate();
   const { logout, recruiter, refreshData } = useRecruiter();
   const token = localStorage.getItem("token");
-  const [logo, setLogo] = useState(null);
-  const [logoUrl, setLogoUrl] = useState(null);
-  // const [isCompanyEdit, setIsCompanyEdit] = useState(false);
-  // const [companyName, setCompanyName] = useState("");
+
+  // UI States
+  const [activeTab, setActiveTab] = useState("Tab1");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [companyUrl, setCompanyUrl] = useState("");
   const [pdfUrl, setPdfUrl] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const [countryCode, setCountryCode] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [progress, setProgress] = useState(0);
+
+  // Form States - Personal
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [countryCode, setCountryCode] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [showManualInput, setShowManualInput] = useState(false);
+
+  // Form States - Organization
   const [company, setCompany] = useState("");
   const [independentCheck, setIndependentCheck] = useState(false);
   const [companyDesc, setCompanyDesc] = useState("");
-  const [companyLocation, setCompanyLocation] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [industry, setIndustry] = useState("");
   const [employeesCount, setEmployeesCount] = useState("");
-  const [cityPresent, setCityPresent] = useState("");
+
+  // Derived states
   const [companyPresent, setCompanyPresent] = useState(false);
   const [linkPresent, setLinkPresent] = useState(false);
-  const [companyCountry,setCompanyCountry] =useState("");
-  const [companyState,setCompanyState] =useState("");
-  const [companyCity,setCompanyCity] =useState("");
-  
-const countryCodes = [
-  { value: "+1", label: "🇺🇸 +1 (USA)" },
-  { value: "+44", label: "🇬🇧 +44 (UK)" },
-  { value: "+91", label: "🇮🇳 +91 (India)" },
-  { value: "+61", label: "🇦🇺 +61 (Australia)" },
-  { value: "+81", label: "🇯🇵 +81 (Japan)" },
-  { value: "+49", label: "🇩🇪 +49 (Germany)" },
-  { value: "+33", label: "🇫🇷 +33 (France)" },
-  { value: "+39", label: "🇮🇹 +39 (Italy)" },
-  { value: "+86", label: "🇨🇳 +86 (China)" },
-  { value: "+55", label: "🇧🇷 +55 (Brazil)" },
-  { value: "+7", label: "🇷🇺 +7 (Russia)" },
-  { value: "+27", label: "🇿🇦 +27 (South Africa)" },
-  { value: "+34", label: "🇪🇸 +34 (Spain)" },
-  { value: "+971", label: "🇦🇪 +971 (UAE)" },
-  { value: "+62", label: "🇮🇩 +62 (Indonesia)" },
-  { value: "+90", label: "🇹🇷 +90 (Turkey)" },
-  { value: "+82", label: "🇰🇷 +82 (South Korea)" },
-  { value: "+234", label: "🇳🇬 +234 (Nigeria)" },
-  { value: "+92", label: "🇵🇰 +92 (Pakistan)" },
-  { value: "+52", label: "🇲🇽 +52 (Mexico)" },
-];
-  console.log(recruiter);
 
+  // Country codes for phone
+  const countryCodes = [
+    { value: "+1", label: "🇺🇸 +1 (USA)" },
+    { value: "+44", label: "🇬🇧 +44 (UK)" },
+    { value: "+91", label: "🇮🇳 +91 (India)" },
+    { value: "+61", label: "🇦🇺 +61 (Australia)" },
+    { value: "+81", label: "🇯🇵 +81 (Japan)" },
+    { value: "+49", label: "🇩🇪 +49 (Germany)" },
+    { value: "+33", label: "🇫🇷 +33 (France)" },
+    { value: "+39", label: "🇮🇹 +39 (Italy)" },
+    { value: "+86", label: "🇨🇳 +86 (China)" },
+    { value: "+55", label: "🇧🇷 +55 (Brazil)" },
+    { value: "+7", label: "🇷🇺 +7 (Russia)" },
+    { value: "+27", label: "🇿🇦 +27 (South Africa)" },
+    { value: "+34", label: "🇪🇸 +34 (Spain)" },
+    { value: "+971", label: "🇦🇪 +971 (UAE)" },
+    { value: "+62", label: "🇮🇩 +62 (Indonesia)" },
+    { value: "+90", label: "🇹🇷 +90 (Turkey)" },
+    { value: "+82", label: "🇰🇷 +82 (South Korea)" },
+    { value: "+234", label: "🇳🇬 +234 (Nigeria)" },
+    { value: "+92", label: "🇵🇰 +92 (Pakistan)" },
+    { value: "+52", label: "🇲🇽 +52 (Mexico)" },
+  ];
 
+  // Industry suggestions
+  const suggestions = [
+    "Accounting", "Advertising", "Aerospace", "Agriculture", "Apparel & Fashion",
+    "Architecture & Planning", "Arts & Crafts", "Automotive", "Aviation & Aerospace",
+    "Banking", "Biotechnology", "Broadcast Media", "Computer Software", "Construction",
+    "Education Management", "Financial Services", "Health, Wellness & Fitness",
+    "Hospital & Health Care", "Human Resources", "Information Technology & Services",
+    "Insurance", "Legal Services", "Marketing & Advertising", "Pharmaceuticals",
+    "Real Estate", "Retail", "Telecommunications", "Transportation", "Utilities"
+  ].map((item) => ({ label: item, value: item }));
 
+  const maxChars = 300;
 
-  useEffect(() => {
-    if (recruiter?.phone) {
-      setPhoneNumber(recruiter.phone); // Set phoneNumber once recruiter data is loaded
-      // console.log('**********************************************************')
-    }
-    if (recruiter?.countryCode) {
-      setCountryCode(recruiter.countryCode);
-    }
-    if (recruiter?.firstname) {
-      setFirstName(recruiter.firstname);
-    }
-    if (recruiter?.lastname) {
-      setLastName(recruiter.lastname);
-    }
-
-    if (recruiter?.companyName) {
-      setCompany(recruiter.companyName);
-    }
-
-    if (
-      recruiter?.independentRec === false ||
-      recruiter?.independentRec === true
-    ) {
-      setIndependentCheck(recruiter.independentRec);
-    }
-    if (recruiter?.orgDescription) {
-      setCompanyDesc(recruiter.orgDescription);
-    }
-
-    if (recruiter?.designation) {
-      setDesignation(recruiter.designation);
-    }
-
-    if (recruiter?.companyLocation?.country) {
-      setSelectedCountry(recruiter.companyLocation.country);
-    }
-    if (recruiter?.companyLocation?.state) {
-      setSelectedState(recruiter.companyLocation.state);
-    }
-    if (recruiter?.companyLocation?.city) {
-      setSelectedCity(recruiter.companyLocation.city);
-    }
-
-    if (recruiter?.industryType) {
-      setIndustry(recruiter.industryType);
-    }
-
-    if (recruiter?.numOfEmployees) {
-      setEmployeesCount(recruiter.numOfEmployees);
-    }
-
-    if (recruiter?.companyCertificate?.data) {
-      setCompanyPresent(true);
-      urlCreator(recruiter.companyCertificate)
-    }
-    if (recruiter?.companyWebsite) {
-      setLinkPresent(true);
-      setCompanyUrl(recruiter.companyWebsite.link);
-    }
-  }, [recruiter]);
-
-  const urlCreator = (companyCertificate) => {
-    const byteArray = new Uint8Array(companyCertificate.data.data);
-    const blob = new Blob([byteArray], {
-      type: companyCertificate.contentType,
-    });
-    const url = URL.createObjectURL(blob);
-    setPdfUrl(url);
-  }
-
-  console.log('this is link', companyUrl);
+  // ==================== EFFECTS ====================
 
   useEffect(() => {
-    if (!token) {
-      navigate("/recruiter/login");
-      return;
-    }
-    // console.log("id from token", idFromToken);
-    // console.log("id from params", userId);
-
-    if (idFromToken !== userId) {
-      logout(); //logout from studentContext to remove token and setToken to null in useeffect of context to trigger the useeffect of studentContext
+    if (!token || idFromToken !== userId) {
+      logout();
       navigate("/recruiter/login");
       return;
     }
   }, [userId, idFromToken, token]);
 
-  const fetchLogo = async () => {
-    try {
-      const response = await axios.get(
-        `${api}/recruiter/get-logo/${idFromToken}`,
-        {
-          responseType: "blob", // Fetching as a blob for image rendering
-        }
-      );
-      // console.log("response", response.status);
+  useEffect(() => {
+    if (!recruiter) return;
 
-      const logoBlob = new Blob([response.data], {
-        type: response.headers["content-type"],
-      });
-      const Url = URL.createObjectURL(logoBlob);
-      // console.log("logoUrl", Url);
-      // console.log("logo", logo);
-      setLogoUrl(Url);
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        console.log("Logo not found");
-        setLogoUrl(null); // Set the logo URL to null if not found
-      } else {
-        console.error("Error fetching logo:", error);
-      }
+    setFirstName(recruiter.firstname || "");
+    setLastName(recruiter.lastname || "");
+    setDesignation(recruiter.designation || "");
+    setCountryCode(recruiter.countryCode || "");
+    setPhoneNumber(recruiter.phone || "");
+    setCompany(recruiter.companyName || "");
+    setIndependentCheck(recruiter.independentRec === true);
+    setCompanyDesc(recruiter.orgDescription || "");
+    setSelectedCountry(recruiter.companyLocation?.country || "");
+    setSelectedState(recruiter.companyLocation?.state || "");
+    setSelectedCity(recruiter.companyLocation?.city || "");
+    setIndustry(recruiter.industryType || "");
+    setEmployeesCount(recruiter.numOfEmployees || "");
+
+    if (recruiter.companyCertificate?.data) {
+      setCompanyPresent(true);
+      urlCreator(recruiter.companyCertificate);
     }
-  };
+    if (recruiter.companyWebsite?.link) {
+      setLinkPresent(true);
+      setCompanyUrl(recruiter.companyWebsite.link);
+    }
+  }, [recruiter]);
 
   useEffect(() => {
     fetchLogo();
-
     return () => {
-      if (!logoUrl) {
-        URL.revokeObjectURL(logoUrl);
-        // console.log("Blob URL revoked on cleanup:", logoUrl); // Optional: Add a log to confirm revocation
-      }
+      if (logoUrl) URL.revokeObjectURL(logoUrl);
     };
-  }, [logo]);
+  }, []);
 
+  useEffect(() => {
+    const requiredFields = [
+      firstName, lastName, countryCode, phoneNumber, designation,
+      company, companyDesc, selectedCountry, selectedState, selectedCity,
+      industry, employeesCount, logoUrl, companyUrl
+    ];
+    const filled = requiredFields.filter(f => 
+      (typeof f === 'string' && f.trim() !== '') || 
+      (f !== null && f !== undefined)
+    ).length;
+    const percentage = Math.round((filled / requiredFields.length) * 100);
+    setProgress(percentage);
+    if (percentage === 100) {
+      toast.success("🎉 Profile Completed!", { autoClose: 3000 });
+    }
+  }, [
+    firstName, lastName, countryCode, phoneNumber, designation,
+    company, companyDesc, selectedCountry, selectedState, selectedCity,
+    industry, employeesCount, logoUrl, companyUrl
+  ]);
 
+  // ==================== HELPERS ====================
 
+  const urlCreator = (cert) => {
+    const byteArray = new Uint8Array(cert.data.data);
+    const blob = new Blob([byteArray], { type: cert.contentType });
+    setPdfUrl(URL.createObjectURL(blob));
+  };
+
+  const fetchLogo = async () => {
+    try {
+      const res = await axios.get(`${api}/recruiter/get-logo/${idFromToken}`, { responseType: "blob" });
+      const blob = new Blob([res.data], { type: res.headers["content-type"] });
+      setLogoUrl(URL.createObjectURL(blob));
+    } catch (err) {
+      if (err.response?.status !== 404) console.error("Logo fetch error:", err);
+    }
+  };
+
+  // ==================== HANDLERS ====================
+
+  const handleSelect = () => fileInputRef.current?.click();
 
   const handleFileUpload = async (e) => {
-    // if (!logo) return;
-    const selectedPicture = e.target.files[0];
-    if (!selectedPicture) {
-      toast.error("Please select a Picture to upload.");
-      return;
-    }
-
+    const file = e.target.files[0];
+    if (!file) return toast.error("Please select a picture.");
     const formData = new FormData();
-    formData.append("logo", selectedPicture);
-
+    formData.append("logo", file);
     try {
-      // setUploading(true);
-      const response = await axios.post(
-        `${api}/recruiter/upload-logo/${idFromToken}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`, // Include token if needed for authorization
-          },
-        }
-      );
-      // setUploading(false);
-      // console.log("Logo uploaded successfully", response.data);
+      await axios.post(`${api}/recruiter/upload-logo/${idFromToken}`, formData, {
+        headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` }
+      });
       toast.success("Logo uploaded successfully");
-
       fetchLogo();
-    } catch (error) {
-      // setUploading(false);
-      console.error("Error uploading logo", error);
+    } catch (err) {
+      console.error("Upload error:", err);
     }
   };
-
-  const handleSelect = () => {
-    fileInputRef.current.click();
-  };
-
-
 
   const handleDelete = async () => {
     try {
       await axios.delete(`${api}/recruiter/delete-logo/${idFromToken}`);
-
-      if (logoUrl) {
-        URL.revokeObjectURL(logoUrl);
-        console.log("Blob URL revoked:", logoUrl);
-      }
-
-      setLogo(null);
+      if (logoUrl) URL.revokeObjectURL(logoUrl);
       setLogoUrl(null);
       toast.error("Logo deleted successfully");
-    } catch (error) {
-      console.error("Error deleting logo", error);
+    } catch (err) {
+      console.error("Delete error:", err);
     }
   };
-  console.log('this is selected certificate', selectedFile);
 
-  const handleFileInput = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
-
-  const handleUrlInputChange = (e) => {
-    setCompanyUrl(e.target.value);
-  };
+  const handleFileInput = (e) => setSelectedFile(e.target.files[0]);
+  const handleUrlInputChange = (e) => setCompanyUrl(e.target.value);
 
   const handleSubmit = async () => {
-    // Check if either the company URL or the selected file is provided
     if (!companyUrl && !selectedFile) {
-      toast.error(
-        "Please provide either a company website URL or upload a certificate."
-      );
-      return;
+      return toast.error("Provide URL or upload certificate.");
     }
-
+    const formData = new FormData();
+    if (companyUrl) formData.append("companyWebsite", companyUrl);
+    if (selectedFile) formData.append("companyCertificate", selectedFile);
     try {
-      let formData = new FormData();
-
-      // Check if the company URL is provided
-      if (companyUrl) {
-        formData.append("companyWebsite", companyUrl);
-        toast.info('link is present');
-      }
-
-      if (selectedFile) {
-        formData.append("companyCertificate", selectedFile);
-        toast.info('file is present');
-      }
-
-      // Make an API call to submit the data
-      const response = await axios.post(
-        `${api}/recruiter/${idFromToken}/upload-details`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        toast.success("Details submitted successfully!");
-        // console.log('this is from backend',response.data.companyCertificate)
-        console.log('this is response', response.data);
-        if (response.data.companyCertificate) {
-          const url = URL.createObjectURL(selectedFile);
-          setPdfUrl(url);
-          
-          setCompanyUrl("");
+      const res = await axios.post(`${api}/recruiter/${idFromToken}/upload-details`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      if (res.status === 200) {
+        toast.success("Details submitted!");
+        if (res.data.companyCertificate) {
+          setPdfUrl(URL.createObjectURL(selectedFile));
           setCompanyPresent(true);
         }
-        if (response.data.companyWebsite) {
-          setCompanyUrl(response.data.companyWebsite.link)
+        if (res.data.companyWebsite) {
+          setCompanyUrl(res.data.companyWebsite.link);
           setLinkPresent(true);
-          setPdfUrl(null);
         }
         refreshData();
-        // setSelectedFile(null);
-        // window.location.reload();
-      } else {
-        toast.error("Failed to submit details. Please try again.");
-      }
-    } catch (error) {
-      toast.error("An error occurred during submission. Please try again.");
-      console.error(error);
+      } else toast.error("Submission failed.");
+    } catch (err) {
+      toast.error("Submission error.");
+      console.error(err);
     }
   };
-  // Separate state for country code and phone number
-
-  const handleCountryChange = (e) => {
-    setCountryCode(e.target.value);
-  };
-
-  // console.log(countryCode);
-  // console.log('this is recent ph no', phoneNumber);
-  // console.log('this is present city',companyLocation);
 
   const handleDetailsUpdate = async () => {
+    if (String(phoneNumber).length !== 10) return toast.error("Enter valid 10-digit number.");
+    if (!designation.trim()) return toast.error("Enter your designation.");
     try {
-      const phoneStr = String(phoneNumber); // Convert number to string
-      if (phoneStr.length !== 10) {
-        // console.log("This is length:", phoneStr.length);
-        // console.log(phoneNumber);
-        // console.log('this is length',phoneNumber.length);
-        toast.error("Please enter a valid 10-digit phone number");
-        return;
-      }
-
-      if (designation === "") {
-        toast.error("Please enter your designation");
-        return;
-      }
-
-      const response = await axios.put(
-        `${api}/recruiter/update-details/${idFromToken}`,
-        {
-          phone: phoneNumber,
-          countryCode,
-          firstname: firstName,
-          lastname: lastName,
-          designation,
-        }
-      );
-
-      // Handle success response (e.g., show success message, update UI, etc.)
-      // console.log("Details updated:", response.data);
-      toast.success("Details updated successfully");
-      setActiveTab("Tab2")
-      
-      // window.location.reload();
-    } catch (error) {
-      // Handle error (e.g., show error message)
-      console.error("Error updating Details:", error);
-      toast.error("Failed to update Details. Please try again.");
+      await axios.put(`${api}/recruiter/update-details/${idFromToken}`, {
+        phone: phoneNumber, countryCode, firstname: firstName, lastname: lastName, designation
+      });
+      toast.success("Details updated!");
+      setActiveTab("Tab2");
+    } catch (err) {
+      toast.error("Update failed.");
+      console.error(err);
     }
   };
-  
-  const handleDetailsUpdate_2 = async () => {
-    try {
-      if (company === "" && independentCheck === false) {
-        toast.error("Please enter your company name");
-        return;
-      }
-  
-      if (companyDesc === "") {
-        toast.error("Please enter your company description");
-        return;
-      }
-  
-      if (selectedCountry === "" || selectedState === "" || selectedCity === "") {
-        toast.error("Please enter your company location");
-        return;
-      }
-  
-      if (industry === "") {
-        toast.error("Please enter industry type");
-        return;
-      }
-  
-      if (employeesCount === "") {
-        toast.error("Please enter number of employees");
-        return;
-      }
-  
-      if (logoUrl === null) {
-        toast.error("Please upload the logo of your organization");
-        return; // Ensure execution stops here if logo is missing
-      }
 
-      if(companyUrl === null){
-        toast.error("Please enter official website of the organization");
-        return;
-      }
-  
+  const handleDetailsUpdate_2 = async () => {
+    if (!independentCheck && !company.trim()) return toast.error("Enter company name.");
+    if (!companyDesc.trim()) return toast.error("Enter company description.");
+    if (!selectedCountry || !selectedState || !selectedCity) return toast.error("Enter company location.");
+    if (!industry) return toast.error("Select industry type.");
+    if (!employeesCount) return toast.error("Select employee count.");
+    if (!logoUrl) return toast.error("Upload organization logo.");
+    if (!companyUrl) return toast.error("Enter official website.");
+
+    try {
       setProgress(100);
       toast.success("🎉 Profile completed!!");
       setActiveTab("Tab3");
-  
-      console.log("Updating details for recruiter ID:", idFromToken);
-      console.log("API Request URL:", `${api}/recruiter/update-details-2/${idFromToken}`);
-  
-      const response = await axios.put(`${api}/recruiter/update-details-2/${idFromToken}`, {
+      await axios.put(`${api}/recruiter/update-details-2/${idFromToken}`, {
         companyName: company,
         independentRec: independentCheck,
         orgDescription: companyDesc,
-        companyLocation: {
-          country: selectedCountry,
-          state: selectedState,
-          city: selectedCity
-        },
+        companyLocation: { country: selectedCountry, state: selectedState, city: selectedCity },
         industryType: industry,
         numOfEmployees: employeesCount
       });
-  
-      console.log("Response from API:", response.data);
-      toast.success("Details updated successfully");
-  
-      // Uncomment if navigation is needed
-      // navigate(`/recruiter/posting/${idFromToken}`);
-  
-    } catch (error) {
-      console.error("Error updating details:", error);
-      toast.error("Failed to update details. Please try again.");
+      toast.success("Details updated!");
+    } catch (err) {
+      toast.error("Update failed.");
+      console.error(err);
     }
   };
-  
-
-  // console.log(recruiter);
-  // console.log(firstName);
-  // console.log(lastName);
-  // console.log(company);
-  // console.log('independence', independentCheck);
-  // console.log('this is location', companyLocation);
-  // console.log('this is employeesCount', employeesCount);
-
-  // new recruiter profile  functionalities*******
-  const [activeTab, setActiveTab] = useState("Tab1");
-  // State for the checkbox
-  // const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
-
-  const [designation, setDesignation] = useState(recruiter?.designation || "");
-  const [showManualInput, setShowManualInput] = useState(false);
 
   const handleDesignationChange = (e) => {
-    const selectedValue = e.target.value;
-    if (selectedValue === "notAvailable") {
+    const val = e.target.value;
+    if (val === "notAvailable") {
       setShowManualInput(true);
       setDesignation("");
     } else {
       setShowManualInput(false);
-      setDesignation(selectedValue);
+      setDesignation(val);
     }
   };
 
-  // console.log('this is designation', designation);
   const handleCloseManualInput = () => {
     setShowManualInput(false);
     setDesignation("");
   };
-  // Handle changes to the company name input
+
   const handleCompanyNameChange = (e) => {
     setCompany(e.target.value);
-    if (e.target.value) {
-      setIndependentCheck(false);
-    }
+    if (e.target.value) setIndependentCheck(false);
   };
 
-  // console.log('this is company name', companyName);
-
-  // Handle changes to the checkbox
   const handleCheckboxChange = (e) => {
     setIndependentCheck(e.target.checked);
-    if (e.target.checked) {
-      setCompany("");
-    }
+    if (e.target.checked) setCompany("");
   };
-
-  // Industry functions
-  // const [industry, setIndustry] = useState("");
-  const [selectedIndustries, setSelectedIndustries] = useState([]);
-  const suggestions = [
-    "Accounting",
-    "Advertising",
-    "Aerospace",
-    "Agriculture",
-    "Apparel & Fashion",
-    "Architecture & Planning",
-    "Arts & Crafts",
-    "Automotive",
-    "Aviation & Aerospace",
-    "Banking",
-    "Biotechnology",
-    "Broadcast Media",
-    "Building Materials",
-    "Business Supplies & Equipment",
-    "Capital Markets",
-    "Chemicals",
-    "Civic & Social Organization",
-    "Civil Engineering",
-    "Commercial Real Estate",
-    "Computer & Network Security",
-    "Computer Games",
-    "Computer Hardware",
-    "Computer Networking",
-    "Computer Software",
-    "Construction",
-    "Consumer Electronics",
-    "Consumer Goods",
-    "Consumer Services",
-    "Cosmetics",
-    "Defense & Space",
-    "Design",
-    "Education Management",
-    "E-Learning",
-    "Electrical & Electronic Manufacturing",
-    "Entertainment",
-    "Environmental Services",
-    "Events Services",
-    "Facilities Services",
-    "Farming",
-    "Financial Services",
-    "Fine Art",
-    "Food & Beverages",
-    "Food Production",
-    "Fund-Raising",
-    "Furniture",
-    "Gambling & Casinos",
-    "Glass, Ceramics & Concrete",
-    "Government Administration",
-    "Government Relations",
-    "Graphic Design",
-    "Health, Wellness & Fitness",
-    "Higher Education",
-    "Hospital & Health Care",
-    "Hospitality",
-    "Human Resources",
-    "Import & Export",
-    "Individual & Family Services",
-    "Industrial Automation",
-    "Information Services",
-    "Information Technology & Services",
-    "Insurance",
-    "International Affairs",
-    "International Trade & Development",
-    "Internet",
-    "Investment Banking",
-    "Investment Management",
-    "Judiciary",
-    "Law Enforcement",
-    "Law Practice",
-    "Legal Services",
-    "Legislative Office",
-    "Leisure, Travel & Tourism",
-    "Libraries",
-    "Logistics & Supply Chain",
-    "Luxury Goods & Jewelry",
-    "Machinery",
-    "Management Consulting",
-    "Maritime",
-    "Marketing & Advertising",
-    "Market Research",
-    "Mechanical or Industrial Engineering",
-    "Media Production",
-    "Medical Devices",
-    "Medical Practice",
-    "Mental Health Care",
-    "Military",
-    "Mining & Metals",
-    "Motion Pictures & Film",
-    "Museums & Institutions",
-    "Music",
-    "Nanotechnology",
-    "Newspapers",
-    "Nonprofit Organization Management",
-    "Oil & Energy",
-    "Online Media",
-    "Outsourcing/Offshoring",
-    "Package/Freight Delivery",
-    "Packaging & Containers",
-    "Paper & Forest Products",
-    "Performing Arts",
-    "Pharmaceuticals",
-    "Philanthropy",
-    "Photography",
-    "Plastics",
-    "Political Organization",
-    "Primary/Secondary Education",
-    "Printing",
-    "Professional Training & Coaching",
-    "Program Development",
-    "Public Policy",
-    "Public Relations & Communications",
-    "Public Safety",
-    "Publishing",
-    "Railroad Manufacture",
-    "Ranching",
-    "Real Estate",
-    "Recreational Facilities & Services",
-    "Religious Institutions",
-    "Renewables & Environment",
-    "Research",
-    "Restaurants",
-    "Retail",
-    "Security & Investigations",
-    "Semiconductors",
-    "Shipbuilding",
-    "Sporting Goods",
-    "Sports",
-    "Staffing & Recruiting",
-    "Supermarkets",
-    "Telecommunications",
-    "Textiles",
-    "Think Tanks",
-    "Tobacco",
-    "Translation & Localization",
-    "Transportation/Trucking/Railroad",
-    "Utilities",
-    "Venture Capital & Private Equity",
-    "Veterinary",
-    "Warehousing",
-    "Wholesale",
-    "Wine & Spirits",
-    "Wireless",
-    "Writing & Editing",
-  ].map((item) => ({
-    label: item,
-    value: item,
-  }));
-
-  // console.log(suggestions)
-
-  // Handle industry change to filter suggestions
-  // const handleIndustryChange = (e) => {
-  //   setIndustry(e.target.value);
-  // };
-
-  // Add an industry to the selected list
-  // const handleSelectIndustry = (industry) => {
-  //   if (!selectedIndustries.includes(industry)) {
-  //     setSelectedIndustries([...selectedIndustries, industry]);
-  //   }
-  //   setIndustry(""); // Clear input field after selecting
-  // };
-
-  // Remove an industry from the selected list
-  // const handleRemoveIndustry = (industryToRemove) => {
-  //   setSelectedIndustries(
-  //     selectedIndustries.filter((ind) => ind !== industryToRemove)
-  //   );
-  // };
-
-  // Filter suggestions based on the input
-  // const filteredSuggestions = suggestions.filter(
-  //   (suggestion) =>
-  //     suggestion.toLowerCase().includes(industry.toLowerCase()) &&
-  //     !selectedIndustries.includes(suggestion)
-  // );
-  // company employee numbers
-  const [totalEmployees, setTotalEmployees] = useState();
-  // state for country and state
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedState, setSelectedState] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
-  const handleCompanySizeChange = (e) => {
-    setEmployeesCount(e.target.value);
-  };
-
-  console.log('this is country',selectedCountry);
-  console.log('this is state',selectedState);
-  console.log('this is city',selectedCity);
-
-
-  // console.log(recruiter.companyWebsite,'******', recruiter.companyCertificate,"******",pdfUrl);
-  // country state city Api
-
-  // Get available states and cities based on selections
-  const states = selectedCountry
-    ? countryData.find((c) => c.name === selectedCountry)?.states
-    : [];
-  const cities = selectedState
-    ? states.find((s) => s.name === selectedState)?.cities
-    : [];
-  const maxChars = 300; // Maximum character limit
 
   const handleInputChange = (e) => {
-    if (e.target.value.length <= maxChars) {
-      setCompanyDesc(e.target.value);
-    }
+    if (e.target.value.length <= maxChars) setCompanyDesc(e.target.value);
   };
-  const [progress, setProgress] = useState(0);
 
-useEffect(() => {
-  const requiredFields = [
-    firstName,
-    lastName,
-    countryCode,
-    phoneNumber,
-    designation,
-    company,
-    companyDesc,
-    companyCountry,
-    companyState,
-    companyCity,
-    industry,
-    employeesCount,
-    logoUrl,
-    companyUrl
-  ];
+  const handleCompanySizeChange = (e) => setEmployeesCount(e.target.value);
 
-  const filledFields = requiredFields.filter((field, index) => {
-    const isFilled =
-      (typeof field === "string" && field.trim() !== "") ||
-      (typeof field === "number" && !isNaN(field) && field !== 0) ||
-      (field !== null && field !== undefined);
-    
-    // Debugging Log
-    console.log(`Field ${index + 1}:`, field, " -> Filled:", isFilled);
-    return isFilled;
-  }).length;
+  // ==================== RENDER ====================
 
-  const percentage = Math.round((filledFields / requiredFields.length) * 100);
-  console.log("Filled Fields:", filledFields, "/", requiredFields.length);
-  console.log("Progress:", percentage, "%");
+  if (!recruiter) return <Spinner />;
 
-  setProgress(percentage);
+  const states = selectedCountry ? countryData.find(c => c.name === selectedCountry)?.states || [] : [];
+  const cities = selectedState ? states.find(s => s.name === selectedState)?.cities || [] : [];
 
-  if (percentage === 100) {
-    toast.success("🎉 Profile Completed!", {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
-  }
-}, [
-  firstName,
-  lastName,
-  countryCode,
-  phoneNumber,
-  designation,
-  company,
-  companyDesc,
-  companyCountry,
-  companyState,
-  companyCity,
-  industry,
-  employeesCount,
-  logoUrl,
-  companyUrl
-]);
-
-  return !recruiter ? (
-    <Spinner />
-  ) : (
-    
+  return (
     <div className="min-h-screen mt-20">
       <div className="w-full lg:w-[50%] mx-auto p-4">
         {/* Progress Bar */}
-        <div className="relative w-full h-2 bg-gray-300 rounded-md overflow-hidden mb-4">
+        <div className="relative w-full h-2 bg-gray-300 rounded-md overflow-hidden mb-6">
           <div
             className="h-full bg-blue-500 transition-all duration-300"
             style={{ width: `${progress}%` }}
-          ></div>
+          />
         </div>
-        {/* Tab Buttons */}
-        <div className="flex space-x-4 justify-center items-center">
-          {/* tab 1 */}
-          <button
-            className={`py-2 px-4 flex flex-col justify-center items-center ${activeTab === "Tab1"
-              ? "text-blue-500 border-b-2 border-blue-500"
-              : "text-gray-500 border-b-2 border-white"
+
+        {/* Tabs */}
+        <div className="flex justify-center space-x-6 mb-6">
+          {[
+            { id: "Tab1", icon: <CgProfile className="text-2xl" />, label: "Personal Details" },
+            { id: "Tab2", icon: <IoIosBriefcase className="text-2xl" />, label: "Organisational Details" },
+            { id: "Tab3", icon: <IoIosBriefcase className="text-2xl" />, label: "Profile" }
+          ].map(({ id, icon, label }) => (
+            <button
+              key={id}
+              className={`flex flex-col items-center py-2 px-3 rounded-t-lg border-b-2 ${
+                activeTab === id
+                  ? "text-blue-600 border-blue-600"
+                  : "text-gray-500 border-transparent"
               }`}
-            onClick={() => setActiveTab("Tab1")}
-          >
-            <CgProfile className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
-            <span> Personal Details</span>
-          </button>
-          {/* tab-2 */}
-          <button
-            className={`py-2 px-4 flex flex-col justify-center items-center  ${activeTab === "Tab2"
-              ? "text-blue-500 border-b-2 border-blue-500"
-              : "text-gray-500 border-b-2 border-white"
-              }`}
-            onClick={() => setActiveTab("Tab2")}
-          >
-            <IoIosBriefcase className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
-            Organisational Details
-          </button>
-          {/* tab-3 */}
-          <button
-            className={`py-2 px-4 flex flex-col justify-center items-center  ${activeTab === "Tab3"
-              ? "text-blue-500 border-b-2 border-blue-500"
-              : "text-gray-500 border-b-2 border-white"
-              }`}
-            onClick={() => setActiveTab("Tab3")}
-          >
-            <IoIosBriefcase className="bg-blue-500 text-white text-4xl p-2 rounded-full" />
-            Profile
-          </button>
+              onClick={() => setActiveTab(id)}
+            >
+              <span className="bg-blue-500 text-white p-2 rounded-full mb-1">{icon}</span>
+              <span className="text-sm font-medium">{label}</span>
+            </button>
+          ))}
         </div>
 
         {/* Tab Content */}
-        <div className="mt-4">
-          {/* Tab 1 content */}
+        <div className="bg-white rounded-lg shadow-sm p-5">
+          {/* Tab 1: Personal Details */}
           {activeTab === "Tab1" && (
-            <div>
-              <div className="p-5 border-2 rounded-md space-y-3">
-                {/* first and last name */}
-                <div className="flex flex-col md:flex-row gap-5 justify-center">
-                  {/* first name */}
-                  <div className="flex-1">
-                    <div className="flex flex-col">
-                      <label className="text-sm text-gray-600 mb-1 ml-1">
-                        First Name <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        name="firstname"
-                        className="border-2 rounded-md px-3 py-1"
-                        defaultValue={firstName}
-                        type="text"
-                        required
-                        onChange={(e) => {setFirstName(e.target.value);}}
-                      />
-                    </div>
-                  </div>
-                  {/* last name */}
-                  <div className="flex-1">
-                    <div className="flex flex-col">
-                      <label className="text-sm text-gray-600 mb-1 ml-1">
-                        Last Name <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        name="lastname"
-                        className="border-2 rounded-md px-3 py-1"
-                        defaultValue={lastName}
-                        type="text"
-                        required
-                        onChange={(e) => setLastName(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-                {/* email */}
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="flex flex-col">
-                    <label className="text-sm text-gray-600 mb-1 ml-1">
-                      E-mail <span className="text-red-500">*</span>
-                    </label>
+                  <label className="block text-sm text-gray-600 mb-1">First Name <span className="text-red-500">*</span></label>
+                  <input
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full border rounded-md px-3 py-2"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Last Name <span className="text-red-500">*</span></label>
+                  <input
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full border rounded-md px-3 py-2"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">E-mail <span className="text-red-500">*</span></label>
+                <input
+                  value={recruiter.email}
+                  readOnly
+                  className="w-full border rounded-md px-3 py-2 bg-gray-50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Designation <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <select
+                    value={showManualInput ? "notAvailable" : designation}
+                    onChange={handleDesignationChange}
+                    className="w-full border rounded-md px-3 py-2 appearance-none"
+                  >
+                    <option value="Manager">Manager</option>
+                    <option value="CEO">CEO</option>
+                    <option value="CTO">CTO</option>
+                    <option value="HR">HR</option>
+                    <option value="notAvailable">Designation Not Available?</option>
+                  </select>
+                  {showManualInput && (
+                    <button
+                      onClick={handleCloseManualInput}
+                      className="absolute right-3 top-2 text-gray-500 hover:text-gray-700"
+                    >
+                      &times;
+                    </button>
+                  )}
+                </div>
+                {showManualInput && (
+                  <input
+                    value={designation}
+                    onChange={(e) => setDesignation(e.target.value)}
+                    placeholder="Enter Designation"
+                    className="mt-2 w-full border rounded-md px-3 py-2"
+                  />
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Mobile <span className="text-red-500">*</span></label>
+                <div className="flex gap-2 items-start">
+                  <Select
+                    options={countryCodes}
+                    value={countryCodes.find(opt => opt.value === countryCode)}
+                    onChange={(opt) => setCountryCode(opt.value)}
+                    className="w-32 md:w-40"
+                    isSearchable
+                  />
+                  <div className="flex-1 relative">
                     <input
-                      className="border-2 rounded-md px-3 py-1"
-                      defaultValue={recruiter?.email}
-                      type="text"
-                      name="email"
-                      readOnly
+                      value={phoneNumber}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setPhoneNumber(val);
+                        setPhoneError(val.length !== 10 ? "Enter a valid 10-digit number" : "");
+                      }}
+                      maxLength={10}
+                      type="number"
+                      className="w-full border rounded-md px-3 py-2"
                     />
-                  </div>
-                </div>
-                {/* Designation */}
-                <div>
-                  <div className="flex flex-col">
-                    <label className="text-sm text-gray-600 mb-1 ml-1">
-                      Designation <span className="text-red-500">*</span>
-                    </label>
-
-                    <div className="relative flex items-center">
-                      <select
-                        className={`border-2 rounded-md px-3 py-1 w-full ${showManualInput ? "appearance-none" : ""
-                          }`}
-                        value={showManualInput ? "notAvailable" : designation}
-                        onChange={handleDesignationChange}
-                        name="designation"
-                        required
-                      >
-                        <option value="Manager">Manager</option>
-                        <option value="CEO">CEO</option>
-                        <option value="CTO">CTO</option>
-                        <option value="HR">HR</option>
-                        <option value="NotAvailable">
-                          Designation Not Available?
-                        </option>
-                      </select>
-
-                      {/* Conditionally render the close button on the dropdown */}
-                      {showManualInput && (
-                        <button
-                          className="absolute text-2xl top-0 right-2 text-gray-500 hover:text-gray-700"
-                          onClick={handleCloseManualInput}
-                          aria-label="Close"
-                        >
-                          &times;
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Conditionally render the manual input field */}
-                    {showManualInput && (
-                      <input
-                        className="border-2 rounded-md px-3 py-1 mt-2"
-                        placeholder="Enter Designation"
-                        value={designation}
-                        onChange={(e) => setDesignation(e.target.value)}
-                        type="text"
-                      />
+                    {phoneError && (
+                      <p className="absolute top-full left-0 text-red-500 text-xs mt-1">{phoneError}</p>
                     )}
                   </div>
-                </div>
-                {/* Mobile and status */}
-                <div>
-                  <div className="flex flex-col">
-                    <label className="text-sm text-gray-600 mb-1 ml-1">
-                      Mobile <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex gap-2 items-center relative">
-                    <Select
-                      options={countryCodes}
-                      value={countryCodes.find((option) => option.value === countryCode)}
-                      onChange={(selectedOption) => setCountryCode(selectedOption.value)}
-                      placeholder="Select Country Code"
-                      isSearchable
-                      className="w-[150px] md:w-[200px]"
-                    />
-                      <input
-                        className="border-2 rounded-md px-3 py-1 w-full lg:w-[50%]"
-                        // defaultValue={recruiter?.phone}
-                        value={phoneNumber}
-                        onChange={(e) => {
-                          setPhoneNumber(e.target.value);
-                          if (
-                            e.target.value.trim().length < 10 ||
-                            e.target.value.trim().length > 10
-                          ) {
-                            setPhoneError("Enter a valid phone number");
-                          } else {
-                            setPhoneError("");
-                          }
-                        }}
-                        maxLength={10}
-                        required
-                        type="number"
-                      />
-                      {phoneError !== "" && (
-                        <div className="absolute text-red-500 text-sm top-8 left-[69px] md:left-28">
-                          Enter a valid phone number
-                        </div>
-                      )}
-
-                      <p className="text-gray-600 ml-2 md:ml-5">
-                        <span
-                          className={`flex items-center gap-[2px] ${recruiter?.companyCertificate?.status === "pending"
-                            ? "text-yellow-500"
-                            : recruiter?.companyCertificate?.status ===
-                              "Verified"
-                              ? "text-green-500"
-                              : recruiter?.companyCertificate?.status ===
-                                "Rejected"
-                                ? "text-red-500"
-                                : ""
-                            }`}
-                        >
-                          <MdOutlineCancel
-                            className={`${recruiter?.companyCertificate?.status ===
-                              "Rejected"
-                              ? "block"
-                              : "hidden"
-                              }`}
-                          />
-                          <MdVerifiedUser
-                            className={`${recruiter?.companyCertificate?.status ===
-                              "Verified"
-                              ? "block"
-                              : "hidden"
-                              }`}
-                          />
-                          <MdOutlinePendingActions
-                            className={`${recruiter?.companyCertificate?.status ===
-                              "pending"
-                              ? "block"
-                              : "hidden"
-                              }`}
-                          />
-                          {recruiter?.companyCertificate?.status}
-                        </span>
-                      </p>
-                    </div>
+                  <div className="ml-2 mt-1">
+                    <span className={`flex items-center gap-1 ${
+                      recruiter?.companyCertificate?.status === "Verified" ? "text-green-500" :
+                      recruiter?.companyCertificate?.status === "pending" ? "text-yellow-500" :
+                      recruiter?.companyCertificate?.status === "Rejected" ? "text-red-500" : ""
+                    }`}>
+                      {recruiter?.companyCertificate?.status === "Verified" && <MdVerifiedUser />}
+                      {recruiter?.companyCertificate?.status === "pending" && <MdOutlinePendingActions />}
+                      {recruiter?.companyCertificate?.status === "Rejected" && <MdOutlineCancel />}
+                      {recruiter?.companyCertificate?.status || "N/A"}
+                    </span>
                   </div>
                 </div>
               </div>
-              <div className="mt-5 text-right">
+
+              <div className="text-right mt-4">
                 <button
                   onClick={handleDetailsUpdate}
-                  className="px-5 py-1 bg-blue-500 text-white rounded-sm"
+                  className="px-5 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                 >
-                  Done
+                  Save & Continue
                 </button>
               </div>
             </div>
           )}
-          {/* Tab 2 content */}
+
+          {/* Tab 2: Organisational Details */}
           {activeTab === "Tab2" && (
-            <div>
-              <div className="p-5 border-2 rounded-md space-y-3">
-                {/* Organization name */}
-                <div>
-                  <div className="flex flex-col">
-                    <label className="text-sm text-gray-600 mb-1 ml-1">
-                      Organization Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      className="border-2 rounded-md px-3 py-1"
-                      value={company}
-                      type="text"
-                      onChange={handleCompanyNameChange}
-                      disabled={independentCheck}
-                      name="orgname"
-                      required
-                    />
-                  </div>
-                  {/* Checkbox below the input */}
-                  <div className="flex items-start mt-3">
+            <div className="space-y-5">
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Organization Name <span className="text-red-500">*</span></label>
+                <input
+                  value={company}
+                  onChange={handleCompanyNameChange}
+                  disabled={independentCheck}
+                  className="w-full border rounded-md px-3 py-2"
+                />
+                <div className="flex items-start mt-2">
                   <input
-                    id="checkbox"
                     type="checkbox"
-                    className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded mt-[3px]"
                     checked={independentCheck}
                     onChange={handleCheckboxChange}
-                    disabled={company !== ""}
+                    disabled={!!company}
+                    className="mt-0.5 mr-2 h-4 w-4 text-blue-600 rounded"
                   />
-                  <label htmlFor="checkbox" className="text-sm text-gray-600">
-                    I am an Independent Practitioner (Freelancer, Architect, Lawyer, etc.), hiring for myself and not on behalf of any company.
+                  <label className="text-sm text-gray-600">
+                    I am an Independent Practitioner (Freelancer, Architect, Lawyer, etc.), hiring for myself.
                   </label>
-                  </div>
                 </div>
-                {/* Organization description */}
-                <div className="flex flex-col">
-                  <label className="text-sm text-gray-600 mb-1 ml-1">
-                    Organization Description <span className="text-red-500">*</span>
-                  </label>
-                  <div className="">
-                    <textarea
-                      className="border-2 rounded-md px-3 py-1 w-full"
-                      value={companyDesc}
-                      onChange={handleInputChange}
-                      type="text"
-                      rows={5}
-                      placeholder="Enter company description..."
-                      name="orgdesc"
-                      required
-                    />
-                    {/* Character Count */}
-                    <div
-                      className={`mt-1 text-sm ${companyDesc.length === maxChars
-                        ? "text-red-500"
-                        : "text-gray-500"
-                        }`}
-                    >
-                      {maxChars - companyDesc.length} characters remaining
-                    </div>
-                  </div>
-                </div>
-                {/* Organization city */}
-                <div className="flex flex-col">
-                  <label className="text-sm text-gray-600 mb-1 ml-1">
-                    Organization Location <span className="text-red-500">*</span>
-                  </label>
-              
-                  <div className="flex flex-col md:flex-row gap-3 w-full">
-                    {/* Country Dropdown */}
-                    <select
-                      className="border-2 py-1 rounded-md px-2 w-full"
-                      id="country"
-                      value={selectedCountry}
-                      onChange={(e) => {
-                        setSelectedCountry(e.target.value);
-                        setSelectedState(""); // Reset state and cities dropdowns
-                      }}
-                      name="orgloc"
-                      required
-                    >
-                      <option value="">-- Select Country --</option>
-                      {countryData.map((country) => (
-                        <option key={country.id} value={country.name}>
-                          {country.name}
-                        </option>
-                      ))}
-                    </select>
+              </div>
 
-                    {/* State Dropdown */}
-                    <select
-                      className="border-2 py-1 rounded-md px-2 w-full"
-                      id="state"
-                      value={selectedState}
-                      onChange={(e) => setSelectedState(e.target.value)}
-                      disabled={!selectedCountry}
-                      required
-                    >
-                      <option value="">-- Select State --</option>
-                      {states?.map((state) => (
-                        <option key={state.id} value={state.name}>
-                          {state.name}
-                        </option>
-                      ))}
-                    </select>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Organization Description <span className="text-red-500">*</span></label>
+                <textarea
+                  value={companyDesc}
+                  onChange={handleInputChange}
+                  rows={4}
+                  className="w-full border rounded-md px-3 py-2"
+                  placeholder="Enter company description..."
+                />
+                <p className={`text-xs mt-1 ${companyDesc.length === maxChars ? "text-red-500" : "text-gray-500"}`}>
+                  {maxChars - companyDesc.length} characters remaining
+                </p>
+              </div>
 
-                    {/* City Dropdown */}
-                    <select
-                      id="city"
-                      disabled={!selectedState}
-                      className="border-2 py-1 rounded-md px-2 w-full"
-                      value={selectedCity}
-                      onChange={(e) => setSelectedCity(e.target.value)}
-                      required
-                    >
-                      <option value="">-- Select City --</option>
-                      {cities?.map((city) => (
-                        <option key={city.id} value={city.name}>
-                          {city.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                {/* Industry */}
-                <div className="flex flex-col">
-                  <label className="text-sm text-gray-600 mb-1 ml-1">
-                    Industry Type <span className="text-red-500">*</span>
-                  </label>
-                  <Select
-                    options={suggestions}
-                    // values={industry}
-                    value={suggestions.find(
-                      (option) => option.value === industry
-                    )}
-                    onChange={(values) => setIndustry(values.value)}
-                    placeholder="Select Industry type"
-                    searchable={true}
-                    className="w-full shadow-md"
-                    classNamePrefix="custom-select-dropdown"
-                    name="indType"
-                  />
-                </div>
-                {/* number of employees */}
-                <div className="flex flex-col w-full lg:w-1/2">
-                  <label className="text-sm text-gray-600 mb-1 ml-1">
-                    Number Of Employees <span className="text-red-500">*</span>
-                  </label>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Organization Location <span className="text-red-500">*</span></label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <select
-                    className="border-2 rounded-md px-3 py-1"
-                    onChange={handleCompanySizeChange}
-                    value={employeesCount}
-                    name="empcnt"
-                    required
+                    value={selectedCountry}
+                    onChange={(e) => { setSelectedCountry(e.target.value); setSelectedState(""); }}
+                    className="border rounded-md px-3 py-2"
                   >
-                    <option value="">Select Number of Employees</option>
-                    <option value="0-5">0-5</option>
-                    <option value="5-50">5-50</option>
-                    <option value="50-200">50-200</option>
-                    <option value="200-500">200-500</option>
-                    <option value="500-1000">500-1000</option>
-                    <option value="1000+">More than 1000</option>
+                    <option value="">-- Select Country --</option>
+                    {countryData.map(country => (
+                      <option key={country.id} value={country.name}>{country.name}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={selectedState}
+                    onChange={(e) => setSelectedState(e.target.value)}
+                    disabled={!selectedCountry}
+                    className="border rounded-md px-3 py-2"
+                  >
+                    <option value="">-- Select State --</option>
+                    {states.map(state => (
+                      <option key={state.id} value={state.name}>{state.name}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={selectedCity}
+                    onChange={(e) => setSelectedCity(e.target.value)}
+                    disabled={!selectedState}
+                    className="border rounded-md px-3 py-2"
+                  >
+                    <option value="">-- Select City --</option>
+                    {cities.map(city => (
+                      <option key={city.id} value={city.name}>{city.name}</option>
+                    ))}
                   </select>
                 </div>
-                {/* Upload logo */}
-                <div>
-                  <label> Organization Logo(Recommended) <span className="text-red-500">*</span></label>
-                  <div className="h-auto flex mt-2 ">
-                    {!logoUrl ? (
-                      <FaBuilding className="text-gray-400 text-4xl" />
-                    ) : (
-                      <img
-                        src={logoUrl}
-                        alt="Company Logo"
-                        className="h-16 w-16 my-2 rounded-full"
-                      />
-                    )}
+              </div>
 
-                    {!logoUrl && !logo && (
-                      <>
-                        {/* <div className="text-gray-500">Upload</div> */}
-                        <button
-                          onClick={handleSelect}
-                          className="border-2 border-dashed border-green-400 bg-green-100 rounded-sm py-1 px-5 hover:bg-green-200 hover:scale-105 duration-300 flex items-center justify-center gap-2"
-                        >
-                          <FaUpload className="text-blue-500" />
-                          <span>Upload Logo</span>
-                        </button>
-                        <input
-                          ref={fileInputRef}
-                          onChange={handleFileUpload}
-                          type="file"
-                          className="my-2 hover:cursor-pointer w-full hidden"
-                          required
-                        />
-                      </>
-                    )}
-                    {logo && (
-                      <button
-                        type="submit"
-                        onClick={handleFileUpload}
-                        className={`  bg-gray-300 rounded-lg py-0 mt-4 px-2 hover:bg-green-200 hover:scale-105 duration-300  `}
-                      >
-                        UPLOAD
-                      </button>
-                    )}
-                    {logoUrl && (
-                      <button
-                        className="text-blue-500 underline ml-3"
-                        onClick={handleDelete}
-                      >
-                        Delete Logo
-                      </button>
-                    )}
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Industry Type <span className="text-red-500">*</span></label>
+                <Select
+                  options={suggestions}
+                  value={suggestions.find(opt => opt.value === industry)}
+                  onChange={(opt) => setIndustry(opt.value)}
+                  placeholder="Select Industry type"
+                  className="w-full"
+                  classNamePrefix="custom-select-dropdown"
+                />
+              </div>
 
-                    
-                  </div>
-                </div>
-
-                <div className="mt-5 text-left">
-                <button
-                  onClick={() => {
-                    handleDetailsUpdate_2(); // Call the update function
-                  }}
-                  className="px-5 py-1 bg-blue-500 text-white rounded-md"
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Number Of Employees <span className="text-red-500">*</span></label>
+                <select
+                  value={employeesCount}
+                  onChange={handleCompanySizeChange}
+                  className="w-full border rounded-md px-3 py-2"
                 >
-                  Save details
+                  <option value="">Select Number of Employees</option>
+                  <option value="0-5">0-5</option>
+                  <option value="5-50">5-50</option>
+                  <option value="50-200">50-200</option>
+                  <option value="200-500">200-500</option>
+                  <option value="500-1000">500-1000</option>
+                  <option value="1000+">More than 1000</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Organization Logo <span className="text-red-500">*</span></label>
+                <div className="flex items-center gap-4 mt-2">
+                  {logoUrl ? (
+                    <img src={logoUrl} alt="Logo" className="h-16 w-16 rounded-full object-cover" />
+                  ) : (
+                    <FaBuilding className="text-gray-400 text-3xl" />
+                  )}
+                  {!logoUrl ? (
+                    <>
+                      <button
+                        onClick={handleSelect}
+                        className="flex items-center gap-2 border-2 border-dashed border-green-400 bg-green-100 rounded px-4 py-2 hover:bg-green-200"
+                      >
+                        <FaUpload className="text-blue-500" /> Upload Logo
+                      </button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                    </>
+                  ) : (
+                    <button
+                      onClick={handleDelete}
+                      className="text-blue-500 underline"
+                    >
+                      Delete Logo
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="text-right mt-4">
+                <button
+                  onClick={handleDetailsUpdate_2}
+                  className="px-5 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                >
+                  Save Details
                 </button>
               </div>
-              </div>
-              {/* File Upload */}
-              <div className="p-5 border-2 mt-5 rounded-md">
-                {!companyPresent && !linkPresent &&(
-                  <div className="flex flex-col space-y-3  justify-center">
-                    {/* Trigger button to open popup */}
-                    <p className="text-red-400">
-                      Upload company's incorporation certificate or Official
-                      website link
-                    </p>
+
+              {/* Certificate / URL Section */}
+              <div className="mt-6 p-4 border rounded-md">
+                {!companyPresent && !linkPresent && (
+                  <div className="text-center">
+                    <p className="text-red-500 mb-3">Upload company's incorporation certificate or official website link</p>
                     <button
                       onClick={() => setIsModalOpen(true)}
-                      className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 flex items-center justify-center gap-3"
+                      className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto"
                     >
-                      <FaUpload /> <span>Upload PDF or Enter URL</span>
+                      <FaUpload /> Upload PDF or Enter URL
                     </button>
-
-                    {/* Modal Popup */}
-                    {isModalOpen && (
-                      <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-500 bg-opacity-50 z-50 mt-10 w-full]">
-                        <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-[90%]  lg:w-[600px] flex flex-col space-y-4 justify-between relative mx-5">
-                          {/* File Upload Section */}
-                          <FaTimes
-                            className="absolute right-3 top-3 text-red-500 hover:cursor-pointer"
-                            onClick={() => {
-                              setIsModalOpen(false);
-                              setSelectedFile(null);
-                              setCompanyUrl("");
-                              if (recruiter?.companyCertificate) {
-                                urlCreator(recruiter.companyCertificate);
-                                setCompanyPresent(true);
-                                setLinkPresent(false);
-                              }
-                              if(recruiter?.companyWebsite){
-                                setCompanyUrl(recruiter.companyWebsite.link);
-                                setLinkPresent(true);
-                                setCompanyPresent(false);
-                              }
-                            }}
-                          />
-                          <div className="flex flex-col md:flex-row  justify-center  items-center">
-                            <div className={`mx-3`}>
-                              {!companyUrl && (
-                                <div className="w-full  flex flex-col items-center justify-center">
-                                  <input
-                                    id="fileinput"
-                                    type="file"
-                                    onChange={handleFileInput}
-                                    className="hidden"
-                                    accept=".pdf"
-                                  />
-                                  <label
-                                    htmlFor="fileinput"
-                                    className="text-blue-500 text-lg hover:cursor-pointer hover:scale-105 duration-300 flex justify-center items-center gap-2 border-2 px-3 mx-auto rounded-md border-dashed border-blue-500"
-                                  >
-                                    <FaUpload />
-                                    <span>Upload PDF</span>
-                                  </label>
-                                  {selectedFile && (
-                                    <p className="text-center mt-5">
-                                      {selectedFile.name}
-                                    </p>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                            {/* OR Divider */}
-                            <div className="mx-3">
-                              {!selectedFile && !companyUrl && (
-                                <div className="">
-                                  <span className="text-gray-400">OR</span>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* URL Input Section */}
-                            <div className="mx-3">
-                              {!selectedFile && (
-                                <div className="w-full ">
-                                  <input
-                                    type="text"
-                                    placeholder="Enter website link"
-                                    onChange={handleUrlInputChange}
-                                    className="border border-gray-300 rounded-lg p-2 text-gray-800 focus:outline-none focus:border-blue-500  "
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => {
-                              setIsModalOpen(false);
-                              handleSubmit();
-                            }}
-                            className="bg-green-500 text-white mt-2 py-2 px-4 rounded hover:bg-green-700 "
-                          >
-                            Submit
-                          </button>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 )}
 
@@ -1372,243 +651,189 @@ useEffect(() => {
                   <div className="text-center space-y-2">
                     <a
                       href={pdfUrl}
-                      download={
-                        recruiter?.companyCertificate
-                          ? recruiter.companyCertificate.filename
-                          : selectedFile?.name || "Company_Certificate.pdf"
-                      }
-                      className="text-blue-500 text-lg underline"
+                      download={recruiter?.companyCertificate?.filename || "Company_Certificate.pdf"}
+                      className="text-blue-500 underline"
                     >
-                      Download Company Incorporation Certificate?
+                      Download Company Incorporation Certificate
                     </a>
-                    <div
+                    <button
                       onClick={() => {
-                        setIsModalOpen(true); // Open the modal dialog box
                         setPdfUrl(null);
                         setCompanyPresent(false);
-                        setSelectedFile(null);
+                        setIsModalOpen(true);
                       }}
-                      className="hover:cursor-pointer bg-blue-500 rounded-md px-2 py-1 w-fit mx-auto text-white"
+                      className="text-blue-500 underline"
                     >
                       Reupload
-                    </div>
-
-                    {companyPresent && <div onClick={()=>{setCompanyPresent(false);setIsModalOpen(true); setSelectedFile(null)}} className="text-green-600 hover:cursor-pointer">
-                      Want to provide company's website link?
-                    </div>}
-                    <p className="text-gray-600 text-md font-semibold">
-                      (
-                      {recruiter?.companyCertificate
-                        ? `Uploaded ${TimeAgo(recruiter.companyCertificate.uploadedDate)}`
-                        : selectedFile
-                          ? `Uploaded just now`
-                          : "No details available"}
-                      )
-                    </p>
-                    <p className="text-gray-600 text-md font-bold flex justify-center gap-2">
-                      Verification status:
-                      <span
-                        className={`flex items-center gap-[2px] ${recruiter?.companyCertificate?.status === "pending"
-                          ? "text-yellow-500"
-                          : recruiter?.companyCertificate?.status ===
-                            "Verified"
-                            ? "text-green-500"
-                            : recruiter?.companyCertificate?.status ===
-                              "Rejected"
-                              ? "text-red-500"
-                              : ""
-                          } `}
+                    </button>
+                    {companyPresent && (
+                      <button
+                        onClick={() => {
+                          setCompanyPresent(false);
+                          setIsModalOpen(true);
+                        }}
+                        className="text-green-600 underline"
                       >
-                        <MdOutlineCancel
-                          className={`${recruiter?.companyCertificate?.status === "Rejected"
-                            ? "block"
-                            : "hidden"
-                            }`}
-                        />
-                        <MdVerifiedUser
-                          className={`${recruiter?.companyCertificate?.status === "Verified"
-                            ? "block"
-                            : "hidden"
-                            }`}
-                        />
-                        <MdOutlinePendingActions
-                          className={`${recruiter?.companyCertificate?.status === "pending"
-                            ? "block"
-                            : "hidden"
-                            }`}
-                        />
+                        Want to provide company's website link?
+                      </button>
+                    )}
+                    <p className="text-gray-600">
+                      Uploaded {TimeAgo(recruiter?.companyCertificate?.uploadedDate || new Date())}
+                    </p>
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Verification status:</span>
+                      <span className={`flex items-center gap-1 ${
+                        recruiter?.companyCertificate?.status === "Verified" ? "text-green-500" :
+                        recruiter?.companyCertificate?.status === "pending" ? "text-yellow-500" :
+                        recruiter?.companyCertificate?.status === "Rejected" ? "text-red-500" : ""
+                      }`}>
+                        {recruiter?.companyCertificate?.status === "Verified" && <MdVerifiedUser />}
+                        {recruiter?.companyCertificate?.status === "pending" && <MdOutlinePendingActions />}
+                        {recruiter?.companyCertificate?.status === "Rejected" && <MdOutlineCancel />}
                         {recruiter?.companyCertificate?.status || "Pending"}
                       </span>
-                    </p>
-                    {recruiter.companyCertificate?.status !== "Verified" ||
-                      recruiter.companyCertificate?.status !== "Rejected" ? (
-                      ""
-                    ) : (
-                      <div className="flex flex-col md:flex-row items-center gap-1 justify-center text-md font-semibold">
-                        <p className="text-red-600">
-                          We will verify your certificate shortly!
-                        </p>
-                        <p className="text-red-600 text-center">
-                          (Estimated time-24hrs)
-                        </p>
-                      </div>
-                    )}
+                    </div>
                   </div>
                 )}
+
                 {companyUrl && (
                   <div className="text-center space-y-2">
-                    <div className="font-semibold text-lg">Your Company's Wesbite Link</div>
-                    <a href={companyUrl} target="_blank"
-                      rel="noopener noreferrer">{companyUrl}</a>
-                      <div onClick={()=>{setLinkPresent(false);setIsModalOpen(true);setPdfUrl(null);setCompanyUrl(null)}} className="hover:cursor-pointer bg-blue-500 rounded-md px-2 py-1 w-fit mx-auto text-white">Update Link</div>
-                      <p className="text-gray-600 text-md font-bold flex justify-center gap-2">
-                      Verification status:
-                      <span
-                        className={`flex items-center gap-[2px] ${recruiter?.companyWebsite?.status === "pending"
-                          ? "text-yellow-500"
-                          : recruiter?.companyWebsite?.status ===
-                            "Verified"
-                            ? "text-green-500"
-                            : recruiter?.companyWebsite?.status ===
-                              "Rejected"
-                              ? "text-red-500"
-                              : ""
-                          } `}
-                      >
-                        <MdOutlineCancel
-                          className={`${recruiter?.companyWebsite?.status === "Rejected"
-                            ? "block"
-                            : "hidden"
-                            }`}
-                        />
-                        <MdVerifiedUser
-                          className={`${recruiter?.companyWebsite?.status === "Verified"
-                            ? "block"
-                            : "hidden"
-                            }`}
-                        />
-                        <MdOutlinePendingActions
-                          className={`${recruiter?.companyWebsite?.status === "pending"
-                            ? "block"
-                            : "hidden"
-                            }`}
-                        />
+                    <p className="font-semibold">Your Company's Website Link</p>
+                    <a href={companyUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                      {companyUrl}
+                    </a>
+                    <button
+                      onClick={() => {
+                        setLinkPresent(false);
+                        setIsModalOpen(true);
+                        setCompanyUrl("");
+                      }}
+                      className="text-blue-500 underline"
+                    >
+                      Update Link
+                    </button>
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Verification status:</span>
+                      <span className={`flex items-center gap-1 ${
+                        recruiter?.companyWebsite?.status === "Verified" ? "text-green-500" :
+                        recruiter?.companyWebsite?.status === "pending" ? "text-yellow-500" :
+                        recruiter?.companyWebsite?.status === "Rejected" ? "text-red-500" : ""
+                      }`}>
+                        {recruiter?.companyWebsite?.status === "Verified" && <MdVerifiedUser />}
+                        {recruiter?.companyWebsite?.status === "pending" && <MdOutlinePendingActions />}
+                        {recruiter?.companyWebsite?.status === "Rejected" && <MdOutlineCancel />}
                         {recruiter?.companyWebsite?.status || "Pending"}
                       </span>
-                    </p>
-
-                    {recruiter.companyWebsite?.status !== "Verified" ||
-                      recruiter.companyWebsite?.status !== "Rejected" ? (
-                      ""
-                    ) : (
-                      <div className="flex flex-col md:flex-row items-center gap-1 justify-center text-md font-semibold">
-                        <p className="text-red-600">
-                          We will verify your website shortly!
-                        </p>
-                        <p className="text-red-600 text-center">
-                          (Estimated time-24hrs)
-                        </p>
-                      </div>
-                    )}
-                      
+                    </div>
                   </div>
                 )}
               </div>
-              
             </div>
           )}
-          {/* Tab 3 content */}
-          {activeTab === "Tab3" && (
-            <div>
-              <div className="p-5 border-2 rounded-md space-y-3">
-                {/* first and last name */}
-                <div className="flex flex-col md:flex-row gap-5 justify-center">
-                  {/* first name */}
-                  <div className="flex-1">
-                    <div className="flex flex-col">
-                      <label className="text-sm text-gray-600 mb-1 ml-1">
-                        First Name
-                      </label>
-                      <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{firstName}</p>
-                    </div>
-                  </div>
-                  {/* last name */}
-                  <div className="flex-1">
-                    <div className="flex flex-col">
-                      <label className="text-sm text-gray-600 mb-1 ml-1">
-                        Last Name
-                      </label>
-                      <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{lastName}</p>
-                    </div>
-                  </div>
-                </div>
-                {/* email */}
-                <div>
-                  <div className="flex flex-col">
-                    <label className="text-sm text-gray-600 mb-1 ml-1">
-                      E-mail
-                    </label>
-                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{recruiter?.email}</p>
-                  </div>
-                </div>
-                {/* Designation */}
-                <div>
-                  <div className="flex flex-col">
-                    <label className="text-sm text-gray-600 mb-1 ml-1">
-                      Designation
-                    </label>
 
-                    <div className="relative flex items-center">
-                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{designation}</p>
-                    </div>
-                  </div>
-                </div>
-                {/* Mobile and status */}
+          {/* Tab 3: Profile View */}
+          {activeTab === "Tab3" && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="flex flex-col">
-                    <label className="text-sm text-gray-600 mb-1 ml-1">
-                      Mobile
-                    </label>
-                    <div className="flex gap-2 items-center relative">
-                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{countryCode}</p>
-                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{phoneNumber}</p>
-                    </div>
-                    <div className="flex flex-col">
-                    <label className="text-sm text-gray-600 mb-1 ml-1">
-                      Organization Name
-                    </label>
-                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{company}</p>
-                  </div>
-                  <div className="flex flex-col">
-                  <label className="text-sm text-gray-600 mb-1 ml-1">
-                    Organization Location
-                  </label>
-              
-                  <div className="flex flex-col md:flex-row gap-3 w-full">
-                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{selectedCountry}</p>
-                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{selectedState}</p>
-                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{selectedCity}</p>
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-sm text-gray-600 mb-1 ml-1">
-                      Industry Type
-                    </label>
-                    <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{industry}</p>
-                  </div>
-                  <div className="flex flex-col w-full lg:w-1/2">
-                  <label className="text-sm text-gray-600 mb-1 ml-1">
-                    Number Of Employees
-                  </label>
-                  <p className="border-2 rounded-md px-3 py-1 bg-white border-none">{employeesCount}</p>
+                  <label className="block text-sm text-gray-600 mb-1">First Name</label>
+                  <p className="border rounded-md px-3 py-2 bg-gray-50">{firstName}</p>
                 </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Last Name</label>
+                  <p className="border rounded-md px-3 py-2 bg-gray-50">{lastName}</p>
                 </div>
-                  </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">E-mail</label>
+                <p className="border rounded-md px-3 py-2 bg-gray-50">{recruiter.email}</p>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Designation</label>
+                <p className="border rounded-md px-3 py-2 bg-gray-50">{designation}</p>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Mobile</label>
+                <div className="flex gap-2">
+                  <p className="border rounded-md px-3 py-2 bg-gray-50">{countryCode}</p>
+                  <p className="border rounded-md px-3 py-2 bg-gray-50">{phoneNumber}</p>
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Organization Name</label>
+                <p className="border rounded-md px-3 py-2 bg-gray-50">{company}</p>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Organization Location</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <p className="border rounded-md px-3 py-2 bg-gray-50">{selectedCountry}</p>
+                  <p className="border rounded-md px-3 py-2 bg-gray-50">{selectedState}</p>
+                  <p className="border rounded-md px-3 py-2 bg-gray-50">{selectedCity}</p>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Industry Type</label>
+                <p className="border rounded-md px-3 py-2 bg-gray-50">{industry}</p>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Number Of Employees</label>
+                <p className="border rounded-md px-3 py-2 bg-gray-50">{employeesCount}</p>
               </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+            >
+              <FaTimes />
+            </button>
+            <h3 className="text-lg font-semibold mb-4">Upload Certificate or Enter URL</h3>
+            <div className="space-y-4">
+              {!companyUrl && (
+                <div>
+                  <label className="block text-sm mb-2">Upload PDF</label>
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleFileInput}
+                    className="w-full"
+                  />
+                  {selectedFile && <p className="text-sm text-gray-600 mt-1">{selectedFile.name}</p>}
+                </div>
+              )}
+              {!selectedFile && !companyUrl && <div className="text-center text-gray-400">OR</div>}
+              {!selectedFile && (
+                <div>
+                  <label className="block text-sm mb-2">Website URL</label>
+                  <input
+                    type="text"
+                    value={companyUrl}
+                    onChange={handleUrlInputChange}
+                    placeholder="https://example.com"
+                    className="w-full border rounded-md px-3 py-2"
+                  />
+                </div>
+              )}
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  handleSubmit();
+                }}
+                className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

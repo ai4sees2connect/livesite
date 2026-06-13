@@ -1,206 +1,5 @@
-// import React, { useState, useEffect } from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faPlus, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
-// import getUserIdFromToken from "./auth/authUtils";
-// import { toast } from "react-toastify";
-// import axios from "axios";
-// import api from "../common/server_url";
-
-// const Portfolio = () => {
-//   const [isEditing, setIsEditing] = useState(false);
-//   const [isClicked, setIsClicked] = useState(false);
-//   const [linkType, setLinkType] = useState("");
-//   const [linkUrl, setLinkUrl] = useState("");
-//   const [portfolioLinks, setPortfolioLinks] = useState([]);
-//   const [editIndex, setEditIndex] = useState(null);
-
-//   const userId = getUserIdFromToken();
-
-//   useEffect(() => {
-//     const fetchPortfolioLinks = async () => {
-//       try {
-//         const response = await axios.get(
-//           `${api}/student/profile/${userId}/portfolioLinks`
-//         );
-//         if (!response.data) {
-//           toast.error("Sorry, no portfolio links found");
-//           return;
-//         }
-//         setPortfolioLinks(response.data);
-//         setIsEditing(false);
-//         setIsClicked(false);
-//       } catch (error) {
-//         console.error("Error fetching portfolio links:", error);
-//       }
-//     };
-//     fetchPortfolioLinks();
-//   }, [userId, isClicked]);
-//   //hello
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     if (!linkType || !linkUrl) {
-//       toast.error("Please enter all fields");
-//       return;
-//     }
-
-//     const portfolioData = {
-//       linkType,
-//       linkUrl,
-//     };
-
-//     try {
-//       if (editIndex !== null) {
-//         // Update existing portfolio link
-//         const response = await axios.put(
-//           `${api}/student/profile/${userId}/portfolioLinks/${editIndex}`,
-//           portfolioData
-//         );
-//         const updatedPortfolioLinks = [...portfolioLinks];
-//         updatedPortfolioLinks[editIndex] = response.data;
-//         setPortfolioLinks(updatedPortfolioLinks);
-//         setIsEditing(false);
-//         toast.success("Portfolio link updated");
-//       } else {
-//         // Add new portfolio link
-//         const response = await axios.post(
-//           `${api}/student/profile/${userId}/portfolioLinks`,
-//           portfolioData
-//         );
-//         setPortfolioLinks([...portfolioLinks, response.data.portfolioLink]);
-//         toast.success("Portfolio link added");
-//       }
-
-//       setLinkType("");
-//       setLinkUrl("");
-//       setEditIndex(null);
-//       setIsEditing(false);
-//       setIsClicked(true);
-//     } catch (error) {
-//       console.error("Error saving the portfolio link:", error);
-//       toast.error("Failed to update details");
-//     }
-//   };
-
-//   const handleDelete = async (index) => {
-//     try {
-//       await axios.delete(
-//         `${api}/student/profile/${userId}/portfolioLinks/${index}`
-//       );
-//       setPortfolioLinks(portfolioLinks.filter((_, i) => i !== index));
-//       toast.success("Portfolio link deleted");
-//     } catch (error) {
-//       console.error("Error deleting portfolio link:", error);
-//       toast.error("Failed to delete details");
-//     }
-//   };
-
-//   const handleEdit = (index) => {
-//     const portfolioLink = portfolioLinks[index];
-//     setIsEditing(true);
-//     setLinkType(portfolioLink.linkType);
-//     setLinkUrl(portfolioLink.linkUrl);
-//     setEditIndex(index);
-//   };
-
-//   return (
-//     <div className="container mx-auto p-4 border-b shadow-lg mt-[68px] w-full lg:w-2/3">
-//       <h2 className="text-xl font-semibold flex justify-between font-outfit">
-//         Portfolio Links
-//         <button
-//           onClick={() => setIsEditing(true)}
-//           className="text-blue-500 flex items-center space-x-1"
-//         >
-//           <span>Add </span>
-//         </button>
-//       </h2>
-
-//       {isEditing ? (
-//         <form className="mt-4" onSubmit={handleSubmit}>
-//           {/* Form Fields for Portfolio Links */}
-//           <input
-//             type="text"
-//             value={linkType}
-//             onChange={(e) => setLinkType(e.target.value)}
-//             placeholder="Link Type (e.g., GitHub, LinkedIn)"
-//             className="border p-2 mb-2 w-full"
-//           />
-
-//           <input
-//             type="url"
-//             value={linkUrl}
-//             onChange={(e) => setLinkUrl(e.target.value)}
-//             placeholder="Link URL"
-//             className="border p-2 mb-2 w-full"
-//           />
-
-//           <button
-//             type="submit"
-//             className="bg-blue-500 text-white px-4 py-2 mt-4"
-//           >
-//             Save
-//           </button>
-//           <button
-//             onClick={() => setIsEditing(false)}
-//             className="border ml-4 px-4 py-2 text-gray-500 hover:bg-red-500 hover:text-white"
-//           >
-//             Cancel
-//           </button>
-//         </form>
-//       ) : (
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-10">
-//           {portfolioLinks.length > 0 ? (
-//             portfolioLinks.map((portfolioLink, index) => (
-//               <div
-//                 key={index}
-//                 className="border p-5 mb-2 flex justify-between"
-//               >
-//                 <div>
-//                   <div className="flex justify-between">
-//                     <h3 className="text-lg font-semibold">
-//                       {portfolioLink.linkType}
-//                     </h3>
-//                     <div className="space-x-5">
-//                       <FontAwesomeIcon
-//                         icon={faPen}
-//                         onClick={() => handleEdit(index)}
-//                         className="hover:scale-125 duration-300 text-blue-500 hover:cursor-pointer"
-//                       />
-//                       <FontAwesomeIcon
-//                         icon={faTrash}
-//                         onClick={() => handleDelete(index)}
-//                         className="hover:scale-125 duration-300 text-red-600 hover:cursor-pointer"
-//                       />
-//                     </div>
-//                   </div>
-//                   <p>
-//                     URL:{" "}
-//                     <a
-//                       href={portfolioLink.linkUrl}
-//                       className="text-blue-500"
-//                       target="_blank"
-//                       rel="noopener noreferrer"
-//                     >
-//                       {portfolioLink.linkUrl}
-//                     </a>
-//                   </p>
-//                 </div>
-//               </div>
-//             ))
-//           ) : (
-//             <p>No portfolio links added yet.</p>
-//           )}
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default Portfolio;
-
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FaPlus, FaPen, FaTrash, FaLink, FaGithub, FaLinkedin } from "react-icons/fa";
 import getUserIdFromToken from "./auth/authUtils";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -312,93 +111,108 @@ const Portfolio = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 border shadow-lg mt-[68px] w-full lg:w-[80%]">
-      <h2 className="text-xl font-semibold flex justify-between font-outfit">
-        Portfolio (Optional)
-        <button
-          onClick={() => setIsEditing(true)}
-          className="text-blue-500 hover:text-green-600 flex items-center space-x-1"
-        >
-          <span>Add</span> <FontAwesomeIcon icon={faPlus} />
-        </button>
-      </h2>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 w-full">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-5">
+        <h2 className="text-lg font-bold text-[var(--text-color)] flex items-center gap-2">
+          <FaLink className="text-[var(--primary-color)] text-xl" />
+          Portfolio <span className="text-xs font-normal text-[var(--text-light)]">(Optional)</span>
+        </h2>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-1.5 text-sm font-semibold text-[var(--primary-color)] hover:text-[var(--button-hover-color)] transition-colors bg-[var(--icon-bg-color)] px-3 py-1.5 rounded-lg"
+          >
+            <FaPlus className="text-xs" /> Add
+          </button>
+        )}
+      </div>
 
+      {/* Form Section */}
       {isEditing ? (
-        <form className="mt-4" onSubmit={handleSubmit}>
-          {/* Dropdown for Link Type */}
-          <select
-            value={linkType}
-            onChange={(e) => setLinkType(e.target.value)}
-            className="border p-2 mb-2 w-full"
-            required
-          >
-            <option value="">Select Link Type</option>
-            <option value="GitHub">GitHub</option>
-            <option value="LinkedIn">LinkedIn</option>
-          </select>
+        <form className="space-y-4 mt-4 bg-[var(--bg-light-color)] p-5 rounded-xl border border-gray-100" onSubmit={handleSubmit}>
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Link Type</label>
+            <select
+              value={linkType}
+              onChange={(e) => setLinkType(e.target.value)}
+              className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white"
+              required
+            >
+              <option value="">Select Link Type</option>
+              <option value="GitHub">GitHub</option>
+              <option value="LinkedIn">LinkedIn</option>
+            </select>
+          </div>
 
-          <input
-            type="url"
-            value={linkUrl}
-            onChange={(e) => setLinkUrl(e.target.value)}
-            placeholder="Link URL"
-            className="border p-2 mb-2 w-full"
-            required
-          />
-          {urlError && <p className="text-red-500">{urlError}</p>}
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Link URL</label>
+            <input
+              type="url"
+              value={linkUrl}
+              onChange={(e) => { setLinkUrl(e.target.value); setUrlError(""); }}
+              placeholder="https://..."
+              className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white"
+              required
+            />
+            {urlError && <p className="text-red-500 text-xs mt-1.5 font-medium">{urlError}</p>}
+          </div>
 
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 mt-4"
-          >
-            Save
-          </button>
-          <button
-            onClick={() => setIsEditing(false)}
-            className="border ml-4 px-4 py-2 text-gray-500 hover:bg-red-500 hover:text-white"
-          >
-            Cancel
-          </button>
+          <div className="flex gap-3 pt-2">
+            <button
+              type="submit"
+              className="bg-[var(--button-color)] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[var(--button-hover-color)] transition-colors shadow-sm text-sm"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              className="bg-gray-100 text-[var(--text-color)] px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-sm"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
       ) : (
-        <div className="flex flex-col items-center mt-10">
-          {portfolioLinks.length > 0 && (
+        /* List Section */
+        <div className="space-y-4 mt-2">
+          {portfolioLinks.length > 0 ? (
             portfolioLinks.map((portfolioLink, index) => (
-              <div
-                key={index}
-                className="border-2 shadow-lg p-5 mb-2 flex justify-between w-full md:w-[70%]"
-              >
-                <div>
-                  <h3 className="text-lg font-semibold">
-                    {portfolioLink.linkType}
-                  </h3>
-                  <p>
-                    URL:{" "}
-                    <a
-                      href={portfolioLink.linkUrl}
-                      className="text-blue-500"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {portfolioLink.linkUrl}
-                    </a>
-                  </p>
+              <div key={index} className="bg-[var(--bg-light-color)] border border-gray-100 rounded-xl p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex items-center gap-3">
+                    {portfolioLink.linkType === "GitHub" ? (
+                      <FaGithub className="text-2xl text-gray-800" />
+                    ) : (
+                      <FaLinkedin className="text-2xl text-blue-600" />
+                    )}
+                    <h3 className="text-base font-bold text-[var(--text-color)]">{portfolioLink.linkType}</h3>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => handleEdit(index)} className="text-[var(--icon-color)] hover:text-[var(--primary-color)] transition-colors p-1">
+                      <FaPen className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete(index)} className="text-red-400 hover:text-red-600 transition-colors p-1">
+                      <FaTrash className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex gap-5">
-                  <FontAwesomeIcon
-                    icon={faPen}
-                    onClick={() => handleEdit(index)}
-                    className="hover:scale-125 duration-300 text-blue-500 hover:cursor-pointer"
-                  />
-                  <FontAwesomeIcon
-                    icon={faTrash}
-                    onClick={() => handleDelete(index)}
-                    className="hover:scale-125 duration-300 text-red-600 hover:cursor-pointer"
-                  />
-                </div>
+                <a
+                  href={portfolioLink.linkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-[var(--primary-color)] hover:text-[var(--button-hover-color)] font-semibold text-xs bg-white px-3 py-1.5 rounded-lg border border-gray-200 hover:border-[var(--primary-color)] transition-colors break-all"
+                >
+                  {portfolioLink.linkUrl}
+                </a>
               </div>
             ))
-          ) }
+          ) : (
+            <div className="text-center py-8 bg-[var(--bg-light-color)] rounded-xl border border-dashed border-gray-200">
+              <p className="text-[var(--text-light)] font-medium text-sm">No portfolio links added yet.</p>
+            </div>
+          )}
         </div>
       )}
     </div>

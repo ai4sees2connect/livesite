@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FaPlus, FaPen, FaTrash, FaBriefcase } from "react-icons/fa";
 import { toast } from "react-toastify";
 import axios from "axios";
 import getUserIdFromToken from "./auth/authUtils";
@@ -135,132 +134,152 @@ const WorkExp = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 border shadow-lg mt-[68px] w-full lg:w-[80%]">
-      <h2 className="text-xl font-semibold flex justify-between font-outfit">
-        Work Experience / Internship (Optional)
-        <button
-          onClick={() => setIsEditing(true)}
-          className="text-blue-500 flex items-center space-x-1"
-        >
-          <span>Add</span>
-          <FontAwesomeIcon icon={faPlus} />
-        </button>
-      </h2>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 w-full">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-5">
+        <h2 className="text-lg font-bold text-[var(--text-color)] flex items-center gap-2">
+          <FaBriefcase className="text-[var(--primary-color)] text-xl" />
+          Work Experience <span className="text-xs font-normal text-[var(--text-light)]">(Optional)</span>
+        </h2>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-1.5 text-sm font-semibold text-[var(--primary-color)] hover:text-[var(--button-hover-color)] transition-colors bg-[var(--icon-bg-color)] px-3 py-1.5 rounded-lg"
+          >
+            <FaPlus className="text-xs" /> Add
+          </button>
+        )}
+      </div>
 
+      {/* Form Section */}
       {isEditing ? (
-        <form className="mt-4" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={company}
-            onChange={(e) => setCompany(e.target.value)}
-            placeholder="Company"
-            className="border p-2 mb-2 w-full"
-            required
-          />
-          <input
-            type="text"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            placeholder="Role"
-            className="border p-2 mb-2 w-full"
-            required
-          />
-
-          <div className="flex items-center space-x-4">
-            <label className="text-gray-500 mx-2 px-1">Start Date</label>
+        <form className="space-y-4 mt-4 bg-[var(--bg-light-color)] p-5 rounded-xl border border-gray-100" onSubmit={handleSubmit}>
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Company</label>
             <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="border p-2 mb-2"
+              type="text"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              placeholder="Company Name"
+              className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white"
               required
             />
           </div>
 
-          <div className="flex items-center space-x-4">
-            <label className="text-gray-500 mx-3 px-1">End Date</label>
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Role</label>
             <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="border p-2 mb-2"
+              type="text"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              placeholder="Your Role"
+              className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white"
               required
             />
           </div>
 
-          <select
-            type="text"
-            value={typeofwork}
-            onChange={(e) => setTypeOfWork(e.target.value)}
-            className="border p-2 mb-2 w-full"
-            required
-          >
-            <option value="">Select Type</option>
-            <option value="job">Job</option>
-            <option value="internship">Internship</option>
-          </select>
-          <textarea
-            rows={5}
-            value={description}
-            onChange={handleDescriptionChange}
-            placeholder="Description"
-            className="border p-2 mb-2 w-full"
-            required
-          ></textarea>
-          <div className="text-right text-sm text-gray-500">
-            {500 - description.length} characters remaining
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Start Date</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">End Date</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white"
+                required
+              />
+            </div>
           </div>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 mt-4"
-          >
-            {currentEditIndex !== null ? "Update" : "Save"}
-          </button>
-          <button
-            onClick={() => {
-              setIsEditing(false);
-              resetForm();
-            }}
-            className="border ml-4 px-4 py-2 text-gray-500 hover:bg-red-500 hover:text-white"
-          >
-            Cancel
-          </button>
+
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Type of Work</label>
+            <select
+              value={typeofwork}
+              onChange={(e) => setTypeOfWork(e.target.value)}
+              className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white"
+              required
+            >
+              <option value="">Select Type</option>
+              <option value="job">Job</option>
+              <option value="internship">Internship</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Description</label>
+            <textarea
+              rows={5}
+              value={description}
+              onChange={handleDescriptionChange}
+              placeholder="Describe your role and responsibilities..."
+              className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm text-[var(--text-color)] bg-white resize-none"
+              required
+            ></textarea>
+            <div className="text-right text-xs text-[var(--text-light)] mt-1.5 font-medium">
+              {500 - description.length} characters remaining
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button
+              type="submit"
+              className="bg-[var(--button-color)] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[var(--button-hover-color)] transition-colors shadow-sm text-sm"
+            >
+              {currentEditIndex !== null ? "Update" : "Save"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsEditing(false);
+                resetForm();
+              }}
+              className="bg-gray-100 text-[var(--text-color)] px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-sm"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
       ) : (
-        <div className="flex gap-5 flex-col items-center mt-10">
-          {workExperiences.length > 0 && (
+        /* List Section */
+        <div className="space-y-4 mt-2">
+          {workExperiences.length > 0 ? (
             workExperiences.map((work, index) => (
-              <div key={index} className="border p-5 mb-2 w-[90%]">
-                <div className="flex justify-between">
-                  <h3 className="text-lg font-semibold">
-                    {work.role} at: {work.company}
+              <div key={index} className="bg-[var(--bg-light-color)] border border-gray-100 rounded-xl p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-base font-bold text-[var(--text-color)]">
+                    {work.role} <span className="font-normal text-[var(--text-light)]">at</span> {work.company}
                   </h3>
-                  <div className="flex space-x-5">
-                    <FontAwesomeIcon
-                      icon={faPen}
-                      onClick={() => handleEdit(index)}
-                      className="hover:scale-125 duration-300 text-blue-500 hover:cursor-pointer"
-                    />
-                    <FontAwesomeIcon
-                      icon={faTrash}
-                      onClick={() => handleDelete(index)}
-                      className="hover:scale-125 duration-300 text-red-500 hover:cursor-pointer"
-                    />
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => handleEdit(index)} className="text-[var(--icon-color)] hover:text-[var(--primary-color)] transition-colors p-1">
+                      <FaPen className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete(index)} className="text-red-400 hover:text-red-600 transition-colors p-1">
+                      <FaTrash className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
-                <div className="text-gray-600 max-w-[80%]">
-                  <p>({work.typeofwork})</p>
-                  <p>
-                    Duration: {formatDate(work.startDate)} -{" "}
-                    {formatDate(work.endDate)}
-                  </p>
-                  <p className="w-[90%] break-words">
-                    Details: {work.description}
-                  </p>
+                <div className="text-sm text-[var(--text-light)] space-y-1">
+                  <p className="font-medium text-[var(--primary-color)] capitalize">{work.typeofwork}</p>
+                  <p className="text-xs">Duration: {formatDate(work.startDate)} - {formatDate(work.endDate)}</p>
+                  <p className="pt-1 break-words">{work.description}</p>
                 </div>
               </div>
             ))
-          ) }
+          ) : (
+            <div className="text-center py-8 bg-[var(--bg-light-color)] rounded-xl border border-dashed border-gray-200">
+              <p className="text-[var(--text-light)] font-medium text-sm">No work experience added yet.</p>
+            </div>
+          )}
         </div>
       )}
     </div>
