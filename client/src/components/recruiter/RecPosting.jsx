@@ -16,6 +16,18 @@ import statesAndCities from "../common/statesAndCities";
 
 import countryData from "../TESTJSONS/countries+states+cities.json";
 
+import {
+  FaLaptopCode,
+   FaGlobe,
+  FaBullseye,
+  FaClipboardList,
+  FaCalendarAlt,
+  FaPenNib,
+  FaFileAlt,
+  FaEnvelope,
+  FaUserClock,
+} from "react-icons/fa";
+
 const RecPosting = () => {
   const [formData, setFormData] = useState({
     internshipName: "",
@@ -497,11 +509,12 @@ const RecPosting = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 py-10">
       <div className="max-w-5xl mx-auto mb-8">
-  <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-8 shadow-xl text-white">
+  <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-400 rounded-3xl p-8 shadow-xl text-white">
 
-    <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm mb-4">
-      🚀 Internship Portal
-    </div>
+     <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm mb-4 gap-2">
+  <FaGlobe />
+  Internship Portal
+</div>
 
     <h2 className="text-4xl md:text-5xl font-bold">
       Create Internship
@@ -538,9 +551,11 @@ const RecPosting = () => {
           <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-6">
 
             {/* <label className="mb-2 font-medium">Internship Name:</label> */}
-            <label className="text-xl font-bold text-slate-800 mb-3 block">
+             <label className="text-xl font-bold text-slate-800 mb-3 flex items-center gap-2">
+  <FaPenNib className="text-indigo-600" />
   Internship Title
 </label>
+
             <input
               type="text"
               name="internshipName"
@@ -589,7 +604,7 @@ transition-all
   flex-shrink-0
   "
 >
-  <span className="text-lg">🖥️</span>
+  <FaLaptopCode className="text-violet-600 text-lg" />
 </div>
 
     <h3 className="text-xl font-semibold text-slate-800">
@@ -739,12 +754,14 @@ transition-all
         />
 
         <div className="text-3xl mb-2">
-          {type === "Remote"
-            ? "🏠"
-            : type === "Office"
-            ? "🏢"
-            : "🔄"}
-        </div>
+  {type === "Remote" ? (
+    <FaGlobe className="text-indigo-600" />
+  ) : type === "Office" ? (
+    <FaBriefcase className="text-indigo-600" />
+  ) : (
+    <FaClipboardList className="text-indigo-600" />
+  )}
+</div>
 
         <div className="font-semibold">{type}</div>
 
@@ -852,8 +869,9 @@ focus:border-indigo-500
 
           {/* Internship start ques */}
           <div className="my-8 p-6 bg-slate-50 rounded-2xl border border-slate-200">
-            <p className="font-semibold text-lg mb-4">
-  📅 Internship Start Date
+            <p className="font-semibold text-lg mb-4 flex items-center gap-2">
+  <FaCalendarAlt className="text-indigo-600" />
+  Internship Start Date
 </p>
             <div className="flex space-x-16 text-gray-600">
               <label className=" flex items-center">
@@ -1011,7 +1029,7 @@ focus:border-indigo-500
       flex-shrink-0
       "
     >
-      <span className="text-lg">🎯</span>
+      <FaBullseye className="text-amber-600 text-lg" />
     </div>
 
     <h3 className="text-xl font-semibold text-slate-800">
@@ -1134,7 +1152,7 @@ duration-300
       flex-shrink-0
       "
     >
-      <span className="text-lg">📝</span>
+      <FaClipboardList className="text-indigo-600 text-lg" />
     </div>
 
     <h3 className="text-xl font-semibold text-slate-800">
@@ -1212,8 +1230,9 @@ duration-300
   {/* Header */}
   <div className="px-5 py-4 border-b border-slate-200 bg-slate-50">
     <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-      📋 Cover Letter, Availability & Assessment Question
-    </h3>
+  <FaFileAlt className="text-blue-600" />
+  Cover Letter, Availability & Assessment Question
+</h3>
 
     <p className="text-slate-500 text-sm mt-2">
       Cover letter and availability questions will be asked to every applicant by default.
@@ -1228,8 +1247,8 @@ duration-300
     <div className="flex items-start gap-3 pb-4 border-b border-slate-200">
 
       <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-        ✉️
-      </div>
+  <FaEnvelope className="text-blue-600 text-lg" />
+</div>
 
       <div>
         <h4 className="font-semibold text-base text-slate-800">
@@ -1247,8 +1266,8 @@ duration-300
     <div className="flex items-start gap-3 py-4 border-b border-slate-200">
 
       <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
-        📅
-      </div>
+  <FaCalendarAlt className="text-green-600 text-lg" />
+</div>
 
       <div>
         <h4 className="font-semibold text-base text-slate-800">
@@ -1352,9 +1371,10 @@ duration-300
 >
   <div className="p-8">
     <div className="mb-10">
-      <label className="block text-xl font-bold text-slate-800 mb-5">
-        💰 Stipend
-      </label>
+      <label className="flex items-center gap-2 text-xl font-bold text-slate-800 mb-5">
+  <FaMoneyBillWave className="text-green-600" />
+  Stipend
+</label>
 
       <div className="flex flex-wrap gap-8 text-[17px]">
 
