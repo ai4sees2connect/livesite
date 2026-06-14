@@ -42,26 +42,70 @@ router.post('/login', async (req, res) => {
 
 router.get('/fetch-recruiters', async (req, res) => {
   try {
-    // Query to find recruiters where either companyWebsite.link or companyCertificate is present
+    const { page = 1, limit = 10 } = req.query; // ✅ Add pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    // ✅ Exclude binary data from initial query
     const recruiters = await Recruiter.find({
       $or: [
-        { 'companyWebsite.link': { $exists: true, $ne: null } },  // companyWebsite.link is not null
-        { 'companyCertificate.data': { $exists: true, $ne: null } }     // companyCertificate is not null
+        { 'companyWebsite.link': { $exists: true, $ne: null } },
+        { 'companyCertificate.data': { $exists: true, $ne: null } }
       ]
     })
-    .select('firstname lastname email phone companyName companyWebsite companyCertificate'); // Select only necessary fields
-
-    if (!recruiters.length) {
-      return res.status(404).json({ message: 'No recruiters found' });
-    }
-
-    // Send the list of recruiters
-    res.json(recruiters);
+    .select('firstname lastname email phone companyName companyWebsite companyCertificate.contentType companyCertificate.filename') // ✅ Don't fetch binary data
+    .skip(skip)
+    .limit(parseInt(limit))
+    .lean(); // ✅ .lean() for faster plain JS objects
+    
+    // Get total count for pagination
+    const totalCount = await Recruiter.countDocuments({
+      $or: [
+        { 'companyWebsite.link': { $exists: true, $ne: null } },
+        { 'companyCertificate.data': { $exists: true, $ne: null } }
+      ]
+    });
+    
+    // ✅ Add separate endpoint for certificate if needed
+    const recruitersWithCertificateUrl = recruiters.map(recruiter => ({
+      ...recruiter,
+      certificateUrl: recruiter.companyCertificate?.contentType 
+        ? `/admin/certificate/${recruiter._id}` 
+        : null
+    }));
+    
+    res.json({
+      recruiters: recruitersWithCertificateUrl,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: parseInt(page)
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+// Separate endpoint for serving certificate (load on demand)
+router.get('/certificate/:recruiterId', async (req, res) => {
+  try {
+    const recruiter = await Recruiter.findById(
+      req.params.recruiterId,
+      'companyCertificate.data companyCertificate.contentType'
+    );
+    
+    if (!recruiter?.companyCertificate?.data) {
+      return res.status(404).json({ error: 'Certificate not found' });
+    }
+    
+    res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+    res.setHeader('Content-Type', recruiter.companyCertificate.contentType);
+    res.send(recruiter.companyCertificate.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to serve certificate' });
+  }
+});
+
 router.get('/recruiters/download-certificate/:id', async (req, res) => {
   try {
     const recruiter = await Recruiter.findById(req.params.id);
