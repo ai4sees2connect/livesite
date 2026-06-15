@@ -9,7 +9,7 @@ const updateStudentEducationGradeType = async () => {
       useUnifiedTopology: true,
     });
 
-    console.log("Connected to MongoDB");
+   
 
     // Fetch all students
     const students = await Student.find({});
@@ -17,7 +17,7 @@ const updateStudentEducationGradeType = async () => {
     for (const student of students) {
       // Skip students with no education
       if (!student.education || student.education.length === 0) {
-        console.log(`Skipping student ID: ${student._id} (no education data)`);
+        
         continue;
       }
 
@@ -44,11 +44,11 @@ const updateStudentEducationGradeType = async () => {
       // Save only if there was a modification
       if (isModified) {
         await student.save();
-        console.log(`Updated student ID: ${student._id}`);
+        
       }
     }
 
-    console.log("Migration completed successfully");
+    
     mongoose.disconnect();
   } catch (error) {
     console.error("Error during migration:", error);

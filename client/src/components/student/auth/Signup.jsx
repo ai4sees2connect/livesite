@@ -114,7 +114,7 @@ function Signup() {
       localStorage.setItem("token", data.token); // Store token if needed
       login();
       const userId = getUserIdFromToken();
-      console.log(data.token);
+
       navigate(`/student/dashboard/${userId}`);
     } catch (error) {
       toast.error(error.response?.data?.message || "An error occurred during signup.");

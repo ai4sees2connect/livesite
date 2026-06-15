@@ -133,7 +133,7 @@ router.put('/verify-recruiter/:recruiterId',async(req,res)=>{
   try{
     const recruiter=await Recruiter.findById(recruiterId);
     if(!recruiter) return res.status(404).json({ message: 'Recruiter not found' });
-    console.log(recruiter);
+   
     if (recruiter.companyWebsite.link) {
       // Update the status for companyWebsite if it exists
       recruiter.companyWebsite.status = 'Verified';

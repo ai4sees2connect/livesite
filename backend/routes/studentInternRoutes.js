@@ -62,7 +62,7 @@ router.post("/:studentId/apply/:internshipId", async (req, res) => {
     res.status(200).json({ message: "Successfully applied to internship" });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
-    console.log(error);
+    
   }
 });
 
@@ -78,7 +78,7 @@ router.get("/:studentId/applied-internships", async (req, res) => {
         select: "firstname lastname email companyName",
       },
     });
-    console.log('this is studentssssssssss',student);
+   
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });

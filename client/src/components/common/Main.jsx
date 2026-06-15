@@ -16,7 +16,6 @@ const Main = () => {
 
   useEffect(() => {
    
-    console.log('Inside Useeffect of main');
     if(!token) return;
     else{
       const userId=getUserIdFromToken();

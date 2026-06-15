@@ -451,7 +451,6 @@ const RecChatRoom = () => {
     if (option) {
       setSelectedInternFilter(option.value);
     } else {
-      console.log("Selection cleared");
     }
   };
 

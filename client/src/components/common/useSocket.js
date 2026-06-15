@@ -13,7 +13,7 @@ const useSocket = (api, userType) => {
     setSocket(socketConnection);
 
     socketConnection.on('connect', () => {
-      console.log('Connected with ID:', socketConnection.id);
+      
     });
 
     // Clean up the connection when the component unmounts
@@ -22,7 +22,8 @@ const useSocket = (api, userType) => {
     };
   }, [userType]);
 
-  return socket;
+  return socket;// useSocket.js
+
 };
 
 export default useSocket;

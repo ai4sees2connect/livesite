@@ -26,7 +26,7 @@ const Home = () => {
       return;
     }
 
-    console.log(userId);
+    
   }, [userId, idFromToken, token]);
 
   if (!student) {

@@ -53,7 +53,7 @@ const ApplicationDetails = () => {
         setResumeFileName(filename);
         setResumeLoading(false);
       } catch (error) {
-        console.log('Error fetching student resume:', error);
+        
         setResumeLoading(false);
       }
     };

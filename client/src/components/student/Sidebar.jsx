@@ -7,12 +7,12 @@ import { Link } from "react-router-dom";
 const bannerImg = "/backgrounds/about_image.jpeg";
 const Sidebar = ({ student }) => {
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 770);
-  console.log("this student is inside sidebarrrr", student);
+  
   useEffect(() => {
     const handleResize = () => {
       const isCurrentlyLargeScreen = window.innerWidth >= 770;
       setIsLargeScreen(isCurrentlyLargeScreen);
-      console.log("Screen size changed:", isCurrentlyLargeScreen);
+      
     };
 
     window.addEventListener("resize", handleResize);

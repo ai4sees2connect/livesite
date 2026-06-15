@@ -62,7 +62,7 @@ router.post('/forget-pass/send-otp', async (req, res) => {
   if(!recruiter){
     return res.status(404).json({message: 'This email does not exist'});
   }
-  // console.log('founddd');
+  
 
   try {
     // Step 1: Generate a random OTP and set expiration time (10 minutes)
@@ -85,7 +85,7 @@ router.post('/forget-pass/send-otp', async (req, res) => {
       if (error) {
         console.error('Transporter verification failed:', error);
       } else {
-        console.log('Server is ready to send messages');
+       
       }
     });
 
@@ -280,7 +280,7 @@ const activateFreePlan = async (recruiter) => {
       ); // One month after activation
 
       await recruiter.save(); // Save the changes
-      console.log("Free plan activated for recruiter:", recruiter._id);
+    
       return { success: true, message: "Free plan activated successfully." };
     }
 
@@ -325,7 +325,7 @@ router.get("/details", async (req, res) => {
     }
     // await refreshPostsForNewMonth(recruiter);
     // Send user data as response
-    // console.log(recruiter);
+    
     res.status(200).json({
       success: true,
       recruiter: {
@@ -527,11 +527,10 @@ router.get("/api/get-profiles", async (req, res) => {
 //       student: { $in: shortlistedStudents.map((student) => student._id) },
 //     }).select("student internship importantForRecruiter studentStatus");
 
-//     // console.log(shortlistedStudents[0].appliedInternships);
+// 
 
 //     const formattedStudents = shortlistedStudents.map((student) => {
-//       // console.log('type of Internship ID 1:', internshipIds[0]);
-//       // console.log('Applied Internships:', student.appliedInternships);
+//     
 
 //       const shortlistedInternships = student.appliedInternships.filter(
 //         (appliedInternship) =>
@@ -539,7 +538,7 @@ router.get("/api/get-profiles", async (req, res) => {
 //             id.equals(appliedInternship.internship._id)
 //           ) && appliedInternship.internshipStatus.status === "Shortlisted"
 //       );
-//       // console.log(shortlistedInternships);
+//       
 
 //       return {
 //         _id: student._id,
@@ -606,7 +605,7 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
       select: "internshipName", // Select only needed fields
     });
 
-    // console.log('shortlisted students',shortlistedStudents[0].appliedInternships)
+   
 
     // Fetch chat rooms for the recruiter and their internships
     const chatRooms = await ChatRoom.find({
@@ -648,7 +647,7 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
 
     res.status(200).json(formattedStudents);
 
-    // console.log('this is final list',formattedStudents[0].appliedInternships.status);
+   
   } catch (error) {
     console.error("Error fetching shortlisted students:", error);
     res.status(500).json({ message: "Server error" });
@@ -758,14 +757,13 @@ router.post('/send-otp', async (req, res) => {
       },
     });
 
-    console.log('Email User:', process.env.EMAIL_USER);
-    console.log('Email Pass:', process.env.EMAIL_PASS);
+    
 
     transporter.verify((error, success) => {
       if (error) {
         console.error('Transporter verification failed:', error);
       } else {
-        console.log('Server is ready to send messages');
+        
       }
     });
 
@@ -776,7 +774,7 @@ router.post('/send-otp', async (req, res) => {
       text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
     };
 
-    console.log(mailOptions);
+    
     // Step 4: Send email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {

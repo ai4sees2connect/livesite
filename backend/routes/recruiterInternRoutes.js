@@ -214,7 +214,6 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
 
     const filters = {};
 
-    // console.log("this is page value", page);
 
     const recruiter = await Recruiter.findById(recruiterId);
     if (!recruiter)
@@ -240,7 +239,7 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
         },
       };
       filters.$expr = nameFilter;
-      console.log("Name Filter:", JSON.stringify(nameFilter, null, 2)); // Log for debugging
+    
     }
 
     if (country) {
@@ -313,7 +312,6 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       }
     }
 
-    console.log("Filters:", JSON.stringify(filters, null, 2));
 
     const applicants = await Student.aggregate([
       // Match students who applied for the specific internship
@@ -372,7 +370,7 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       { $limit: limit },
     ]);
 
-    // console.log("list size",applicants[1])
+  
 
     delete filters["appliedInternships.internshipStatus.status"];
 
@@ -418,19 +416,18 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       },
     ]);
 
-    // console.log("Initial applicants:", applicants.length);
-    // console.log('Education records:', applicants.map(applicant => applicant.education));
+   
     const countsByStatus = applicantsCounts[0]?.countsByStatus || [];
     const totalCount = applicantsCounts[0]?.totalApplicants || 0;
     const totalPages = Math.ceil(totalCount / limit);
-    // console.log("this is count", totalCount);
+    
     const hiredCount =
       countsByStatus.find((item) => item.status === "Hired")?.count || 0;
     const shortlistedCount =
       countsByStatus.find((item) => item.status === "Shortlisted")?.count || 0;
     const rejectedCount =
       countsByStatus.find((item) => item.status === "Rejected")?.count || 0;
-    console.log(shortlistedCount);
+    
     res.status(200).json({
       totalApplicants: totalCount,
       totalPages,
@@ -521,7 +518,7 @@ router.get("/:recruiterId/get-all-internships", async (req, res) => {
         .status(404)
         .json({ message: "No internships found for this recruiter." });
     }
-    // console.log(internships);
+   
     res.status(200).json(internships);
   } catch (error) {
     console.error("Error fetching internships:", error.message, error.stack);

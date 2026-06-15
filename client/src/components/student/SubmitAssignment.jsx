@@ -8,7 +8,7 @@ const SubmitAssignment = ({ isOpen, onClose, onSubmit, msgId }) => {
   const [assignmentLink, setAssignmentLink] = useState("");
   const [additionalInfo, setAdditionalInfo] = useState("");
   const fileInputRef = useRef(null);
-  console.log("this is message id", msgId);
+
 
   const handleFileUpload = async (event) => {
     const newFiles = Array.from(event.target.files); // Get the newly selected files
@@ -61,7 +61,7 @@ const SubmitAssignment = ({ isOpen, onClose, onSubmit, msgId }) => {
           },
         }
       );
-      console.log("this is the new file", response.data);
+      
       return response.data;
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -69,7 +69,7 @@ const SubmitAssignment = ({ isOpen, onClose, onSubmit, msgId }) => {
     }
   };
 
-  console.log("urls of uploaded file", uploadedFiles);
+ 
 
   const removeFile = (indexToRemove) => {
     const updatedFiles = uploadedFiles.filter(

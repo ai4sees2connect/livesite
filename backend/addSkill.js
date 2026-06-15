@@ -7,7 +7,6 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB connection error:', err));
 
 // Define the skill to add
@@ -24,14 +23,14 @@ const addSkill = async () => {
     // Check if the skill already exists
     const existingSkill = await Skill.findOne({ name: newSkillName });
     if (existingSkill) {
-      console.log('Skill already exists.');
+      
       process.exit(1);
     }
 
     // Create and save the new skill
     const newSkill = new Skill({ name: newSkillName });
     await newSkill.save();
-    console.log('Skill added successfully:', newSkill);
+    
   } catch (error) {
     console.error('Error adding skill:', error);
   } finally {

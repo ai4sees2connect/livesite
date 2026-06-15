@@ -6,7 +6,7 @@ const getUserIdFromToken = () => {
   
   try {
     const decodedToken = jwtDecode(token);
-    // console.log(decodedToken);
+    
     return decodedToken.id;
   } catch (error) {
     console.error('Error decoding token:', error);

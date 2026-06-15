@@ -36,7 +36,7 @@ router.get('/', (req, res) => {
 
     // Handle the stdout (stream data)
     dumpProcess.stdout.on('data', (chunk) => {
-      console.log(`Chunk size: ${chunk.length} bytes`);
+      
       
       // Ensure the chunk is a Buffer
       if (typeof chunk === 'string') {
@@ -44,7 +44,7 @@ router.get('/', (req, res) => {
       }
       
       allChunks.push(chunk);  // Collect all chunks
-      console.log(`Collected ${allChunks.length} chunks so far`);
+      
     });
 
     // Handle stderr (error during mongodump)
@@ -79,7 +79,7 @@ router.get('/', (req, res) => {
             console.error('Error uploading to Google Drive:', err);
             return res.status(500).send('Backup upload failed.');
           }
-          console.log('Backup uploaded to Google Drive:', file.data.id);
+        
           res.send('Backup created and uploaded to Google Drive successfully.');
         });
       } catch (uploadError) {

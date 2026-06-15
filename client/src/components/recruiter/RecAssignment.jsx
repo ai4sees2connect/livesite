@@ -19,7 +19,7 @@ const RecAssignment = ({ onClose, sendAssignment }) => {
       setSelectedFile(file);
       setAttachmentSelected(true);
       // setNewMessage(file.name);
-      console.log(file);
+      
     } else {
       toast.error("Please upload a PDF file.");
     }

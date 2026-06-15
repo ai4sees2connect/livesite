@@ -27,7 +27,6 @@ const AdminLogin = () => {
 
     try {
       const response = await axios.post(`${api}/admin/login`, { email, password });
-      console.log('Login successful:', response.data);
       const token=response.data.token
       localStorage.setItem('adminToken', token);
       navigate('/admin/dashboard');

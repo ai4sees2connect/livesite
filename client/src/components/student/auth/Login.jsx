@@ -34,7 +34,7 @@ function Login() {
   const params = useParams();
   useEffect(() => {
     if (params && Object.keys(params).length > 0) {
-      console.log("URL parameters:", params);
+
     }
   }, [params]);
 

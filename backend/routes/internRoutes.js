@@ -7,8 +7,7 @@ const router = express.Router();
 router.get('/get-internship/:internshipId', async (req, res) => {
   try {
     // const { workType, locationName,minStipend,profile } = req.query;
-    // console.log('Received workType:', workType);
-    // console.log('Received locationName:', locationName);
+
     const {internshipId}=req.params;
 
     const internship=await Internship.findById(internshipId).populate('recruiter')
@@ -44,7 +43,7 @@ router.get('/get-internship/:internshipId', async (req, res) => {
       // Add studentCount as a new property to the internship object
       internship.studentCount = students.length;
     }
-    // console.log(internships);
+    
      res.status(200).json(internships);
   } catch (error) {
     console.error('Error fetching internships:', error);

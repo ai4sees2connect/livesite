@@ -82,9 +82,9 @@ initSocket(server);  // Initialize the socket
 const startServer= async()=>{
   try {
     connection(process.env.MONGO_URI);
-    server.listen(PORT,()=> console.log(`Server has Started on port http://localhost:${PORT}`))
+    server.listen(PORT);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 startServer();

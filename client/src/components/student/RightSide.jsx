@@ -106,7 +106,7 @@ const RightSide = () => {
   const [error, setError] = useState(null);
   const userId = getUserIdFromToken();
   const [internshipFetched, setInternshipFetched] = useState(false);
-  console.log('this is id', userId)
+
 
 
   const token = localStorage.getItem("token");
@@ -124,13 +124,9 @@ const RightSide = () => {
       // const cachedInternships = localStorage.getItem("cachedInternships");
 
       try {
-        // console.log("LocationName", selectedLocation);
-        // console.log("WorkType:", workType);
-        // console.log("profile", selectedProfile);
-        console.log('hello')
-
+        
         const response = await axios.get(`${api}/student/internships/top-15`);
-        console.log('internship fetched', response.data);
+       
         setInternships(response.data);
 
         setInternshipFetched(true);
@@ -204,7 +200,7 @@ const RightSide = () => {
     }
   }, [internshipFetched])
 
-  console.log(internships);
+
 
   const settings = {
     dots: false, // Disable dots

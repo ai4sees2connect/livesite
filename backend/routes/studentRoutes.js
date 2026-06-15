@@ -27,7 +27,7 @@ const generateOtp = () => {
 // filepath: f:\livesite\livesite\backend\routes\studentRoutes.js
 router.post('/send-otp', async (req, res) => {
   const { email } = req.body;
-  console.log("Received email:", email); // Add this line
+ 
 
   if (!email) {
     return res.status(400).json({ message: 'Email is required' });
@@ -56,14 +56,13 @@ router.post('/send-otp', async (req, res) => {
       },
     });
 
-    //console.log('Email User:', process.env.EMAIL_USER);
-    //console.log('Email Pass:', process.env.EMAIL_PASS);
+    
 
     transporter.verify((error, success) => {
       if (error) {
         console.error('Transporter verification failed:', error);
       } else {
-        console.log('Server is ready to send messages');
+       
       }
     });
 
@@ -74,15 +73,15 @@ router.post('/send-otp', async (req, res) => {
       text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
     };
 
-    // console.log(mailOptions);
+   
     // Step 4: Send email
-    console.log("Sending email..."); // Add this line
+    
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error("Error sending email:", error); // Add this line
         return res.status(500).json({ message: 'Error sending OTP email' });
       }
-      console.log("Email sent successfully:", info); // Add this line
+     
       return res.status(200).json({ message: 'OTP sent successfully' });
     });
 
@@ -159,7 +158,7 @@ router.post('/forget-pass/send-otp', async (req, res) => {
   if(!student){
     return res.status(404).json({message: 'This email does not exist'});
   }
-  // console.log('founddd');
+  
 
   try {
     // Step 1: Generate a random OTP and set expiration time (10 minutes)
@@ -178,8 +177,7 @@ router.post('/forget-pass/send-otp', async (req, res) => {
       },
     });
 
-    // console.log('Email User:', process.env.EMAIL_USER);
-    // console.log('Email Pass:', process.env.EMAIL_PASS);
+ 
 
     transporter.verify((error, success) => {
       if (error) {
@@ -196,7 +194,7 @@ router.post('/forget-pass/send-otp', async (req, res) => {
       text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
     };
 
-    // console.log(mailOptions);
+    
     // Step 4: Send email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
@@ -239,7 +237,7 @@ router.put('/update-password', async (req, res) => {
 
 router.post('/signup', async (req, res) => {
   const { firstname,lastname,email, password } = req.body;
-  console.log('running signup')
+  
 
   try {
     let student = await Student.findOne({ email });
@@ -422,7 +420,7 @@ router.get('/details', async (req, res) => {
     const student = await Student.findById(userId);
     
     if (!student) return res.status(200).json({success:false}); // Not found if user does not exist
-    // console.log(student);
+    
 
     // Send user data as response
     res.status(200).json({
@@ -672,7 +670,7 @@ router.get('/internships', async (req, res) => {
       filters.stipend = { $gte: parseInt(stipend) };
     }
 
-    // console.log('Filters:', filters);
+  
 
     // Fetch internships with recruiters in one query
     const internships = await Internship.find(filters)
@@ -903,7 +901,7 @@ router.get('/get-file/:id', async (req, res) => {
     if (!file) {
       return res.status(404).json({ message: 'File not found' });
     }
-    // console.log('File data size:', file.data.length);
+
 
     // Set the correct content type for the file
     res.set({

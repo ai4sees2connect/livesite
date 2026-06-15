@@ -208,7 +208,7 @@ function Signup() {
       return;
     }
     setEmailError("");
-    console.log("new phone no is", countryCode + " " + phone);
+    
     try {
       // Send a POST request to the backend
       const response = await axios.post(`${api}/recruiter/signup`, {
@@ -224,7 +224,7 @@ function Signup() {
       toast.success("You are Signed in");
       localStorage.setItem("token", response.data.token); // Store token if needed
       const userId = getUserIdFromToken();
-      console.log(response.data.token);
+      
       navigate(`/recruiter/dashboard/${userId}`);
     } catch (error) {
       // Handle error

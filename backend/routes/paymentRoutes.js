@@ -28,15 +28,11 @@ router.post("/:recruiterId/create-order", async (req, res) => {
     receipt: `receipt_order_${Math.random() * 10000}`,
   };
 
-  // console.log(options);
 
   try {
     // Create order in Razorpay
     const order = await razorpay.orders.create(options);
 
-    console.log(order);
-
-    console.log("order-created");
     // Send back the order, recruiterId, and planType to the frontend
     res.status(200).json({
       success: true,
@@ -81,7 +77,7 @@ router.post("/verify-payment", async (req, res) => {
 
     if (expectedSignature === razorpay_signature) {
       // Payment is verified
-      console.log("Payment verified successfully");
+      
 
       // Fetch recruiter data
       const recruiter = await Recruiter.findById(recruiterId);
@@ -128,7 +124,7 @@ router.post("/verify-payment", async (req, res) => {
           "subscription.status": "active",
         });
 
-        console.log("Subscription updated:", recruiter);
+     
       } else if (!planType.includes("post")) {
         // If the recruiter is already on a paid plan (e.g., '1-month', '3-month', etc.)
         const subscriptionPlans = {
@@ -162,7 +158,7 @@ router.post("/verify-payment", async (req, res) => {
         // orderDocument.orderType = orderType;
         orderDocument.postsProvided = postsProvided;
         orderDocument.expirationDate = expirationDate;
-        console.log("this is the doc", orderDocument);
+       
         await orderDocument.save();
 
         // Update recruiter with the extended plan
@@ -174,7 +170,6 @@ router.post("/verify-payment", async (req, res) => {
           "subscription.status": "active",
         });
 
-        console.log("Subscription updated:", recruiter);
       }
 
       // Handle top-ups (for adding posts)
@@ -193,7 +188,6 @@ router.post("/verify-payment", async (req, res) => {
           "subscription.postsRemaining": postsTotal,
         });
 
-        console.log("Top-up applied:", recruiter);
       }
 
       // Update the order document with expirationDate, postsProvided, and orderType

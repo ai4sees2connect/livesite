@@ -11,7 +11,7 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('MongoDB connected');
+   
   } catch (err) {
     console.error('Failed to connect to MongoDB', err);
     process.exit(1);
@@ -28,7 +28,7 @@ const insertAdmin = async () => {
     // Check if admin already exists
     const existingAdmin = await Admin.findOne({ email: adminEmail });
     if (existingAdmin) {
-      console.log('Admin already exists');
+      
       return;
     }
 
@@ -45,7 +45,7 @@ const insertAdmin = async () => {
 
     // Save the admin to the database
     await newAdmin.save();
-    console.log('Admin inserted successfully');
+   
   } catch (err) {
     console.error('Error inserting admin:', err);
   } finally {

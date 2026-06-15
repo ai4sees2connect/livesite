@@ -21,7 +21,7 @@ router.get("/:userId/education", async (req, res) => {
         message: "Student having the education field is not available",
       });
     }
-    console.log(student.education);
+   
     res.status(200).json(student.education);
   } catch (error) {
     console.error("Error fetching education details:", error);
@@ -35,7 +35,7 @@ router.post("/:userId/education", async (req, res) => {
       req.body;
     const userId = req.params.userId;
 
-    console.log("Request Body:", req.body);
+    
 
     const student = await Student.findById(userId);
 
@@ -101,7 +101,7 @@ router.put("/:userId/education/:index", async (req, res) => {
 
 router.delete("/:userId/education/:index", async (req, res) => {
   const { userId, index } = req.params;
-  console.log("inside delete backend");
+  
   try {
     const student = await Student.findById(userId);
     if (!student) {
@@ -157,7 +157,7 @@ router.post("/:userId/work-experience", async (req, res) => {
     const student = await Student.findById(userId);
     if (!student) return res.status(404).json({ message: "Student not found" });
 
-    console.log("foundddddddd");
+   
 
     // Add new work experience
     student.workExperience.push({
@@ -301,7 +301,7 @@ router.put(
       if (index < 0 || student.certificates.length <= index)
         return res.status(400).json({ message: "Invalid education index" });
 
-      console.log("this is file", file);
+  
       student.certificates[index] = {
         title,
         issuingOrganization,

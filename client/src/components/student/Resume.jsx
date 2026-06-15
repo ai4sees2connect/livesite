@@ -127,7 +127,7 @@ const Resume = () => {
     window.open(resumeUrl, "_blank");
   };
 
-  console.log(resumeUrl);
+  
 
   return (
     <div className="w-full mx-auto p-4">

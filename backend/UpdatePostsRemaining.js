@@ -10,7 +10,7 @@ const updatePostsRemaining = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('Connected to MongoDB.');
+   
 
     // Update all recruiters: convert postsRemaining from string to number
     const result = await Recruiter.updateMany(
@@ -24,13 +24,13 @@ const updatePostsRemaining = async () => {
       ]
     );
 
-    console.log(`Updated ${result.modifiedCount} recruiters.`);
+    
   } catch (error) {
     console.error('Error updating recruiters:', error);
   } finally {
     // Close the database connection
     await mongoose.disconnect();
-    console.log('Disconnected from MongoDB.');
+   
   }
 };
 

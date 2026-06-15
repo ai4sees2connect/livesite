@@ -19,8 +19,8 @@ const initSocket = (server) => {
 
   io.on("connection", (socket) => {
     const { userId, userType } = socket.handshake.query;
-    console.log(`${userType} connected: ${socket.id}`);
-    // console.log(`the user type is ${userType}`);
+    
+    
 
     if (userType === "Student") {
       // Add student to the active list
@@ -35,7 +35,7 @@ const initSocket = (server) => {
       socket.emit("recruitersStatus", recruitersStatus);
 
       socket.on("disconnect", () => {
-        console.log(`${userType} disconnected`);
+      
         onlineStudents.delete(userId);
         io.emit("studentsActive", { userId, isActive: false });
       });
@@ -53,14 +53,13 @@ const initSocket = (server) => {
       socket.emit("studentsStatus", studentsStatus);
 
       socket.on("disconnect", () => {
-        console.log(`${userType} disconnected`);
+        
         onlineRecruiters.delete(userId);
         io.emit("recruitersActive", { userId, isActive: false });
       });
     }
 
-    console.log("list of students active", onlineStudents);
-    console.log("list of recruiters active", onlineRecruiters);
+
 
     socket.on(
       "joinChatRoom",
@@ -73,18 +72,15 @@ const initSocket = (server) => {
           );
           const roomId = chatRoom._id.toString();
 
-          // console.log("Chat Room:", chatRoom);
-          // console.log(socket.rooms);
-          console.log(
-            `joinChatRoom event received for internship with id:${internshipId}`
-          );
+          
+          
           socket.join(roomId);
-          console.log(`${type}: joined a room with id:${roomId}`);
+          
 
           // const clientsInRoom = io.sockets.adapter.rooms.get(
           //   "66ec63214ef22a5eefd69ce4"
           // );
-          // console.log("no of clients", clientsInRoom);
+          
 
           const chatHistory = await Message.find({ chatRoomId: chatRoom._id })
             .sort({ sentAt: 1 }) // Sort messages by date (oldest to newest)
@@ -96,8 +92,7 @@ const initSocket = (server) => {
           }));
 
           const receiverId = type === "Recruiter" ? studentId : recruiterId;
-          // console.log(' chatHistory',chatHistory);
-          // console.log(`emiting history to ${type}`);
+       
           socket.emit(
             `chatHistory_${receiverId}_${internshipId}`,
             chatHistoryWithInternshipId
@@ -144,10 +139,7 @@ const initSocket = (server) => {
             for (const message of unseenMessages) {
               message.seenStatus = true;
               await message.save();
-              console.log(
-                "status updated for this message",
-                message.messageContent
-              );
+              
             }
 
             // Optionally, emit an event back to confirm the update
@@ -263,16 +255,16 @@ const initSocket = (server) => {
             { $set: { studentStatus: valueToChange } },
             { new: true }
           );
-          console.log('this is value to change',valueToChange);
+      
           let statusToSet = "";
           if (valueToChange === "Hired") {
             statusToSet = "Hired";
           } else{
             statusToSet = "Rejected";
-            console.log("Founddddd")
+            
           }
 
-          console.log('changinggggg',statusToSet)
+         
 
           const student = await Student.findOneAndUpdate(
             {
@@ -287,7 +279,7 @@ const initSocket = (server) => {
             },
             { new: true }
           );
-          console.log('this is changed student',student)
+        
       
           if (!student) {
             throw new Error("Student or internship not found");
@@ -328,8 +320,7 @@ const initSocket = (server) => {
 
         // Save the message in the database
         await newMessage.save();
-        console.log(`message sent by ${type}`);
-        console.log("this is chat room id:", chatRoom._id);
+ 
 
         const messageWithInternshipId = {
           ...newMessage.toObject(), // Converts Mongoose model to a plain object
@@ -337,7 +328,7 @@ const initSocket = (server) => {
         };
 
         // Emit the message to the chat room
-        console.log("before emiting");
+        
 
         //now emit the message to other user type, i.e if recruiter is sender then trigger receiveMessages_recruiterId_internshipId event inside student component
         const receiverId = type === "Recruiter" ? recruiterId : studentId;
@@ -348,7 +339,7 @@ const initSocket = (server) => {
             messageWithInternshipId
           );
 
-        console.log("after emiting");
+     
       } catch (error) {
         console.error("Error saving message:", error);
       }
@@ -383,7 +374,7 @@ const initSocket = (server) => {
 
         // Save the assignment message in the database
         await newAssignment.save();
-        console.log(`Assignment sent by Recruiter`);
+        
 
         const messageWithInternshipId = {
           ...newAssignment.toObject(), // Converts Mongoose model to a plain object
@@ -391,7 +382,7 @@ const initSocket = (server) => {
         };
 
         // Emit the assignment using the same `receiveMessages` event
-        console.log("before emitting message with assignment");
+      
 
         // Emit the message (assignment) to the student using the same event
         const receiverId = recruiterId; // For this case, student is always the receiver
@@ -402,7 +393,7 @@ const initSocket = (server) => {
             messageWithInternshipId
           );
 
-        console.log("after emitting message with assignment");
+   
       } catch (error) {
         console.error("Error sending assignment:", error);
       }
@@ -425,7 +416,7 @@ const initSocket = (server) => {
             studentId,
             internshipId
           );
-          console.log(file);
+         
 
           const newAttachment = new Message({
             chatRoomId: chatRoom._id,
@@ -543,7 +534,6 @@ const initSocket = (server) => {
             blocked: true,
           });
 
-          console.log("emitted");
         } catch (error) {
           console.error("Failed to block chat:", error);
         }
@@ -574,7 +564,7 @@ const initSocket = (server) => {
             blocked: false,
           });
 
-          console.log("emitted");
+         
         } catch (error) {
           console.error("Failed to block chat:", error);
         }

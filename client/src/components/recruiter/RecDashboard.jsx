@@ -164,7 +164,7 @@ const RecDashboard = () => {
           numberOfOpenings,
           recruiterId,
         });
-        console.log("Internship updated successfully:", response.data);
+
         toast.success("Internship updated successfully!");
         setShowConfirmation(false);
         closeEditModal();

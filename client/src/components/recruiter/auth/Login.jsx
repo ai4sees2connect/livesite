@@ -57,7 +57,7 @@ function Login() {
       // toast.success("Login successful!");
 
       // Handle success
-      console.log(response.data.message);
+  
       localStorage.setItem("token", response.data.token);
       login();
       const userId = getUserIdFromToken();

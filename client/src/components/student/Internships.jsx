@@ -61,8 +61,6 @@ const Internships = () => {
   const location = useLocation(); // Access state
   const internshipId = location.state?.internshipId;
 
-  console.log("Location state:", location.state); // Log the entire state
-  console.log("Internship ID:", internshipId);
 
   useEffect(() => {
     if (internshipId) {
@@ -345,8 +343,6 @@ const Internships = () => {
   const [assessmentAns, setAssessmentAns] = useState("");
   const [detailedAvailability, setDetailedAvailability] = useState("");
   // const [cachedInternships, setCachedInternships] = useState(null);
-  console.log(workType);
-  console.log("this student is from context", student);
 
   useEffect(() => {
     refreshData();
@@ -561,14 +557,12 @@ const Internships = () => {
         // Create a URL for the blob data
         const url = window.URL.createObjectURL(new Blob([response.data]));
         setResumeUrl(url);
-        console.log(resumeUrl);
+        
 
         const contentDisposition = response.headers["content-disposition"];
-        // console.log('contentDisposition:', contentDisposition);
-        // console.log(Object.keys(response.headers));
-        // console.log('response.headers:', response.headers);
+       
         if (contentDisposition) {
-          console.log("yattttaaa");
+          
           const matches = /filename="([^"]*)"/.exec(contentDisposition);
           if (matches) setResumeName(matches[1]);
         }
@@ -600,10 +594,10 @@ const Internships = () => {
 
   const openModal = async (internship) => {
     setSelectedInternship(internship);
-    console.log("selected internship", internship);
+
     try {
       await axios.put(`${api}/student/internship/${internship._id}/view`);
-      // console.log(response.data);
+      
     } catch (error) {
       console.error("Error updating views:", error);
     }
@@ -613,11 +607,11 @@ const Internships = () => {
     setSelectedInternship(null);
   };
 
-  console.log("this is about text", aboutText);
+  
 
   const applyToInternship = async (internshipId) => {
     try {
-      console.log("this is student", student);
+
       if (
         student.education.length === 0 ||
         student.skills.length === 0 ||
@@ -701,12 +695,6 @@ const Internships = () => {
       setAvailability("No! Cannot Join immediately");
   };
 
-  // console.log(selectedStipend);
-  // console.log(aboutText);
-  console.log(assessmentAns);
-  console.log(userId);
-  console.log("this is availability", availability);
-  console.log("this is detailed availability", detailedAvailability);
 
   if (loading) {
     return <Spinner />;
