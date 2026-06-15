@@ -87,6 +87,22 @@ const AdminDashboard = () => {
 
       if (response.status === 200) {
         toast.success("Recruiter has been successfully verified");
+        setRecruiters((prevRecruiters) =>
+          prevRecruiters.map((rec) =>
+            rec._id === recruiterId
+              ? {
+                  ...rec,
+                  companyWebsite: rec.companyWebsite
+                    ? { ...rec.companyWebsite, status: "Verified" }
+                    : rec.companyWebsite,
+                  companyCertificate: rec.companyCertificate
+                    ? { ...rec.companyCertificate, status: "Verified" }
+                    : rec.companyCertificate,
+                }
+              : rec,
+          ),
+        );
+
         setTimeout(() => {
           // Refresh current page data without full reload
           setPage((prev) => prev);
@@ -108,6 +124,22 @@ const AdminDashboard = () => {
 
       if (response.status === 200) {
         toast.success("Recruiter has been successfully rejected");
+        setRecruiters((prevRecruiters) =>
+          prevRecruiters.map((rec) =>
+            rec._id === recruiterId
+              ? {
+                  ...rec,
+                  companyWebsite: rec.companyWebsite
+                    ? { ...rec.companyWebsite, status: "Rejected" }
+                    : rec.companyWebsite,
+                  companyCertificate: rec.companyCertificate
+                    ? { ...rec.companyCertificate, status: "Rejected" }
+                    : rec.companyCertificate,
+                }
+              : rec,
+          ),
+        );
+
         setTimeout(() => {
           setPage((prev) => prev);
         }, 1000);
@@ -189,81 +221,77 @@ const AdminDashboard = () => {
               </tr>
             ) : (
               recruiters.map((recruiter) => {
-                const companyWebsite = recruiter?.companyWebsite?.link
-                  ? recruiter.companyWebsite
-                  : null;
-               const companyCertificate = (recruiter.companyCertificate?.contentType || recruiter.certificateUrl) 
-                          ? recruiter.companyCertificate 
-                          : null;
-                const status = recruiter.companyWebsite?.status || 
-               recruiter.companyCertificate?.status || 
-               'Pending';
+                let status = "Pending";
+
+                if (recruiter.companyWebsite?.status) {
+                  status = recruiter.companyWebsite.status;
+                } else if (recruiter.companyCertificate?.status) {
+                  status = recruiter.companyCertificate.status;
+                }
+
+                // Check if certificate exists (for display)
+                const hasCertificate =
+                  recruiter.companyCertificate?.contentType ||
+                  recruiter.certificateUrl;
+                const hasWebsite = recruiter.companyWebsite?.link;
 
                 return (
-                  <tr
-                    key={recruiter._id}
-                    className="bg-white text-center border-b border-gray-200 hover:bg-gray-100 transition"
-                  >
-                    <td className="px-4 py-3 border">
-                      {recruiter.companyName}
-                    </td>
-                    <td className="px-4 py-3 border capitalize">
-                      {recruiter.firstname} {recruiter.lastname}
-                    </td>
-                    <td className="px-4 py-3 border">{recruiter.email}</td>
-                    <td className="px-4 py-3 border">
-                      {companyWebsite ? (
-                        <a
-                          href={companyWebsite.link}
-                          className="text-blue-500 underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {companyWebsite.link.length > 30
-                            ? companyWebsite.link.substring(0, 30) + "..."
-                            : companyWebsite.link}
-                        </a>
-                      ) : companyCertificate ? (
-                        <button
-                          onClick={() =>
-                            downloadCertificate(
-                              recruiter._id,
-                              recruiter.companyCertificate.filename,
-                            )
-                          }
-                          className="text-blue-500 underline"
-                        >
-                          {recruiter.companyCertificate.filename}
-                        </button>
-                      ) : (
-                        "No website or certificate available"
-                      )}
-                    </td>
-                    <td className="px-4 py-3 border font-semibold text-blue-600">
-                      {recruiter.subscription?.planType || "Free"}
-                    </td>
-                    <td className="px-4 py-3 border">
-                      <div className="flex justify-center space-x-2">
-                        <button
-                          className="bg-green-600 text-white px-4 py-1 rounded-md hover:bg-green-700 transition duration-300"
-                          onClick={() => handleVerified(recruiter._id)}
-                        >
-                          Verify
-                        </button>
-                        <button
-                          className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600 transition duration-300"
-                          onClick={() => handleReject(recruiter._id)}
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    </td>
-                    <td
-                      className={`px-4 py-3 border font-semibold ${status === "Verified" ? "text-green-600" : status === "Rejected" ? "text-red-600" : "text-yellow-600"}`}
-                    >
-                      {status}
-                    </td>
-                  </tr>
+                  <tr key={recruiter._id} className="bg-white text-center border-b border-gray-200 hover:bg-gray-100 transition">
+      <td className="px-4 py-3 border">{recruiter.companyName || 'N/A'}</td>
+      <td className="px-4 py-3 border capitalize">{recruiter.firstname} {recruiter.lastname}</td>
+      <td className="px-4 py-3 border">{recruiter.email}</td>
+      <td className="px-4 py-3 border">
+        {hasWebsite ? (
+          <a
+            href={recruiter.companyWebsite.link}
+            className="text-blue-500 underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {recruiter.companyWebsite.link.length > 30
+              ? recruiter.companyWebsite.link.substring(0, 30) + "..."
+              : recruiter.companyWebsite.link}
+          </a>
+        ) : hasCertificate ? (
+          <button
+            onClick={() => downloadCertificate(recruiter._id, recruiter.companyCertificate?.filename || 'certificate.pdf')}
+            className="text-blue-500 underline"
+          >
+            {recruiter.companyCertificate?.filename || 'Download Certificate'}
+          </button>
+        ) : (
+          "No website or certificate available"
+        )}
+      </td>
+      <td className="px-4 py-3 border font-semibold text-blue-600">
+        {recruiter.subscription?.planType || "Free"}
+      </td>
+      <td className="px-4 py-3 border">
+        <div className="flex justify-center space-x-2">
+          <button
+            className="bg-green-600 text-white px-4 py-1 rounded-md hover:bg-green-700 transition duration-300"
+            onClick={() => handleVerified(recruiter._id)}
+            disabled={status === "Verified"} // ✅ Disable if already verified
+          >
+            Verify
+          </button>
+          <button
+            className="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600 transition duration-300"
+            onClick={() => handleReject(recruiter._id)}
+            disabled={status === "Rejected"} // ✅ Disable if already rejected
+          >
+            Reject
+          </button>
+        </div>
+      </td>
+      <td className={`px-4 py-3 border font-semibold ${
+        status === "Verified" ? "text-green-600" : 
+        status === "Rejected" ? "text-red-600" : 
+        "text-yellow-600"
+      }`}>
+        {status}
+      </td>
+    </tr>
                 );
               })
             )}

@@ -52,7 +52,7 @@ router.get('/fetch-recruiters', async (req, res) => {
         { 'companyCertificate.data': { $exists: true, $ne: null } }
       ]
     })
-    .select('firstname lastname email phone companyName companyWebsite companyCertificate.contentType companyCertificate.filename') // ✅ Don't fetch binary data
+    .select('firstname lastname email phone companyName companyWebsite.link companyWebsite.status companyWebsite.uploadedDate companyCertificate.contentType companyCertificate.filename companyCertificate.status companyCertificate.uploadedDate') // ✅ Don't fetch binary data
     .skip(skip)
     .limit(parseInt(limit))
     .lean(); // ✅ .lean() for faster plain JS objects
