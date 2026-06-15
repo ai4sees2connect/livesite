@@ -7,15 +7,8 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
+.then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB connection error:', err));
-
-// Define the skill to add
-const newSkillName = 'Effective Communication'; // Get skill name from command line argument
-
-if (!newSkillName) {
-  console.error('Please provide a skill name.');
-  process.exit(1);
-}
 
 // Function to add the skill
 const addSkill = async () => {

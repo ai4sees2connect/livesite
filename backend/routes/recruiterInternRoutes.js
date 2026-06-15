@@ -48,16 +48,22 @@ router.post("/post/:userId", async (req, res) => {
       return res.status(403).json({ message: "Subscription is inactive." });
     }
 
+    if (recruiter.subscription.postsRemaining <= 0) {
+      return res.status(403).json({ message: "No posts remaining. Please upgrade your plan." });
+    }
+    
     // Decrement postsRemaining
     recruiter.subscription.postsRemaining =
       parseInt(recruiter.subscription.postsRemaining) - 1;
 
     // Check if the subscription should be set to inactive
     const currentDate = new Date();
-    const expirationDate = new Date(recruiter.subscription.expirationDate);
+    const expirationDate = recruiter.subscription.expirationDate 
+    ? new Date(recruiter.subscription.expirationDate) 
+    : null;
     if (
       recruiter.subscription.postsRemaining <= 0 ||
-      currentDate > expirationDate
+      (expirationDate && currentDate > expirationDate)
     ) {
       recruiter.subscription.status = "inactive"; // Set subscription to inactive
     }

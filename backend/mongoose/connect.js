@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 // mongoose.set('debug', true);
 const connection=async(url)=>{
   await mongoose.connect(url,)
-  
-  .catch(err=>console.error(err));
+  .then(()=>console.log("MongoDB connected"))
+  .catch(err=>console.log(err));
 }
 
 module.exports= connection;

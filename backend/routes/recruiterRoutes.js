@@ -10,8 +10,8 @@ const { jwtDecode } = require("jwt-decode");
 const Student = require("../schema/studentSchema");
 const ChatRoom = require("../schema/chatRoomSchema");
 const Otp = require("../schema/otpSchema");
-const nodemailer = require('nodemailer');
-const crypto = require('crypto');
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 const Profile = require("../schema/profileSchema");
 const Order = require("../schema/ordersSchema");
 
@@ -23,13 +23,11 @@ const generateOtp = () => {
   return crypto.randomInt(100000, 999999).toString();
 };
 
-
-
-router.post('/forget-pass/verify-otp', async (req, res) => {
+router.post("/forget-pass/verify-otp", async (req, res) => {
   const { email, otp } = req.body;
 
   if (!email || !otp) {
-    return res.status(400).json({ message: 'Email and OTP are required' });
+    return res.status(400).json({ message: "Email and OTP are required" });
   }
 
   try {
@@ -37,32 +35,30 @@ router.post('/forget-pass/verify-otp', async (req, res) => {
     const otpEntry = await Otp.findOne({ email, otp });
 
     if (!otpEntry) {
-      return res.status(400).json({ message: 'Invalid OTP' });
+      return res.status(400).json({ message: "Invalid OTP" });
     }
 
     // Check if the OTP is expired
     if (otpEntry.expiresAt < Date.now()) {
-      return res.status(400).json({ message: 'OTP has expired' });
+      return res.status(400).json({ message: "OTP has expired" });
     }
 
     // OTP is valid, proceed to the next step (e.g., complete signup)
 
-    return res.status(200).json({ message: 'OTP verified successfully' });
-
+    return res.status(200).json({ message: "OTP verified successfully" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
-router.post('/forget-pass/send-otp', async (req, res) => {
+router.post("/forget-pass/send-otp", async (req, res) => {
   const { email } = req.body;
-  
-  const recruiter=await Recruiter.findOne({email:email});
-  if(!recruiter){
-    return res.status(404).json({message: 'This email does not exist'});
+
+  const recruiter = await Recruiter.findOne({ email: email });
+  if (!recruiter) {
+    return res.status(404).json({ message: "This email does not exist" });
   }
-  
 
   try {
     // Step 1: Generate a random OTP and set expiration time (10 minutes)
@@ -74,7 +70,7 @@ router.post('/forget-pass/send-otp', async (req, res) => {
 
     // Step 3: Configure nodemailer to send the OTP email
     const transporter = nodemailer.createTransport({
-      service: 'Gmail',
+      service: "Gmail",
       auth: {
         user: process.env.EMAIL_USER, // Use environment variables
         pass: process.env.EMAIL_PASS, // App-specific password
@@ -83,34 +79,33 @@ router.post('/forget-pass/send-otp', async (req, res) => {
 
     transporter.verify((error, success) => {
       if (error) {
-        console.error('Transporter verification failed:', error);
-      } else {
-       
+        console.error("Transporter verification failed:", error);
       }
     });
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Your OTP Code',
+      subject: "Your OTP Code",
       text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
     };
+
+    console.log(mailOptions);
 
     // Step 4: Send email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        return res.status(500).json({ message: 'Error sending OTP email' });
+        return res.status(500).json({ message: "Error sending OTP email" });
       }
-      return res.status(200).json({ message: 'OTP sent successfully' });
+      return res.status(200).json({ message: "OTP sent successfully" });
     });
-
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
-router.put('/update-password', async (req, res) => {
+router.put("/update-password", async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -118,7 +113,7 @@ router.put('/update-password', async (req, res) => {
     const recruiter = await Recruiter.findOne({ email });
 
     if (!recruiter) {
-      return res.status(404).json({ message: 'recruiter not found' });
+      return res.status(404).json({ message: "recruiter not found" });
     }
 
     // Set the new password (will be hashed automatically)
@@ -127,10 +122,10 @@ router.put('/update-password', async (req, res) => {
     // Save the student with the new password
     await recruiter.save();
 
-    return res.status(200).json({ message: 'Password updated successfully' });
+    return res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
-    console.error('Error updating password:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error("Error updating password:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -153,17 +148,22 @@ router.post("/signup", async (req, res) => {
       phone,
       countryCode,
       password,
-      subscription: { // Initialize the subscription field
-        planType: 'free', // You can set a default plan type
+      subscription: {
+        // Initialize the subscription field
+        planType: "free", // You can set a default plan type
         activationDate: currentDate,
         expirationDate: null,
-        status: 'active', // Default status
-      }
+        status: "active", // Default status
+      },
     });
 
-    const token = jwt.sign({ id: recruiter._id, userType: 'Recruiter' }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "10d",
-    });
+    const token = jwt.sign(
+      { id: recruiter._id, userType: "Recruiter" },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "10d",
+      },
+    );
     res.status(201).json({ message: "recruiter created successfully", token });
   } catch (error) {
     console.error("Server error:", error);
@@ -179,30 +179,34 @@ router.post("/signup/googleauth", async (req, res) => {
     let recruiter = await Recruiter.findOne({ email });
 
     if (!recruiter) {
-
       const currentDate = new Date();
-    // const oneMonthLater = new Date(currentDate);
-    // oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+      // const oneMonthLater = new Date(currentDate);
+      // oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
 
       // If user doesn't exist, create a new one
       recruiter = new Recruiter({
         firstname,
         lastname,
         email,
-        subscription: { // Initialize the subscription field
-          planType: 'free', // You can set a default plan type
+        subscription: {
+          // Initialize the subscription field
+          planType: "free", // You can set a default plan type
           activationDate: currentDate,
           expirationDate: null,
-          status: 'active', // Default status
-        }
+          status: "active", // Default status
+        },
         // Password can be omitted or a default value if using Google Auth
       });
       await recruiter.save();
     }
 
-    const token = jwt.sign({ id: recruiter._id, userType: 'Recruiter' }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "10d",
-    });
+    const token = jwt.sign(
+      { id: recruiter._id, userType: "Recruiter" },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "10d",
+      },
+    );
     res.json({ success: true, recruiter, token });
   } catch (error) {
     console.error("Error handling Google sign-in on the server:", error);
@@ -224,9 +228,13 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ id: recruiter._id, userType: 'Recruiter' }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "10d",
-    });
+    const token = jwt.sign(
+      { id: recruiter._id, userType: "Recruiter" },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "10d",
+      },
+    );
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -248,16 +256,19 @@ router.post("/login/googleauth", async (req, res) => {
       });
       await recruiter.save();
     }
-    const token = jwt.sign({ id: recruiter._id, userType: 'Recruiter' }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "10d",
-    });
+    const token = jwt.sign(
+      { id: recruiter._id, userType: "Recruiter" },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "10d",
+      },
+    );
     res.json({ success: true, token, recruiter });
   } catch (error) {
     console.error("Error handling Google login on the server:", error);
     res.json({ success: false, message: "Server error" });
   }
 });
-
 
 const activateFreePlan = async (recruiter) => {
   try {
@@ -276,11 +287,11 @@ const activateFreePlan = async (recruiter) => {
 
       // Set expiration date to exactly one month from activation date
       recruiter.subscription.expirationDate = new Date(
-        currentDate.setMonth(currentDate.getMonth() + 1)
+        currentDate.setMonth(currentDate.getMonth() + 1),
       ); // One month after activation
 
       await recruiter.save(); // Save the changes
-    
+
       return { success: true, message: "Free plan activated successfully." };
     }
 
@@ -291,7 +302,6 @@ const activateFreePlan = async (recruiter) => {
     return { success: false, message: "Error activating free plan." };
   }
 };
-
 
 router.get("/details", async (req, res) => {
   const authHeader = req.headers["authorization"];
@@ -306,9 +316,9 @@ router.get("/details", async (req, res) => {
 
     // Find the user in the database
     const recruiter = await Recruiter.findById(userId);
-    
+
     if (!recruiter) return res.json({ success: false });
-    
+
     const currentDate = new Date();
     if (
       recruiter.subscription.postsRemaining === 0 &&
@@ -325,7 +335,7 @@ router.get("/details", async (req, res) => {
     }
     // await refreshPostsForNewMonth(recruiter);
     // Send user data as response
-    
+
     res.status(200).json({
       success: true,
       recruiter: {
@@ -333,17 +343,17 @@ router.get("/details", async (req, res) => {
         lastname: recruiter.lastname,
         email: recruiter.email,
         phone: recruiter.phone,
-        designation:recruiter.designation,
-        industryType:recruiter.industryType,
-        numOfEmployees:recruiter.numOfEmployees,
-        orgDescription:recruiter.orgDescription,
-        independentRec:recruiter.independentRec,
-        industryType:recruiter.industryType,
-        numOfEmployees:recruiter.numOfEmployees,
-        countryCode:recruiter.countryCode,
-        companyLocation:recruiter.companyLocation,
+        designation: recruiter.designation,
+        industryType: recruiter.industryType,
+        numOfEmployees: recruiter.numOfEmployees,
+        orgDescription: recruiter.orgDescription,
+        independentRec: recruiter.independentRec,
+        industryType: recruiter.industryType,
+        numOfEmployees: recruiter.numOfEmployees,
+        countryCode: recruiter.countryCode,
+        companyLocation: recruiter.companyLocation,
         companyLogo: recruiter.companyLogo,
-        subscription:recruiter.subscription,
+        subscription: recruiter.subscription,
         companyName: recruiter.companyName,
         ...(recruiter.companyWebsite?.link && {
           companyWebsite: recruiter.companyWebsite,
@@ -359,51 +369,64 @@ router.get("/details", async (req, res) => {
   }
 });
 
-router.put('/update-details/:recruiterId', async (req, res) => {
-  const { phone, countryCode,firstname,lastname, designation} = req.body;
-  const recruiterId= req.params.recruiterId; // Assuming the user ID is stored in req.user
+router.put("/update-details/:recruiterId", async (req, res) => {
+  const { phone, countryCode, firstname, lastname, designation } = req.body;
+  const recruiterId = req.params.recruiterId; // Assuming the user ID is stored in req.user
 
   try {
     // Update the user contact information in the database
     const recruiter = await Recruiter.findByIdAndUpdate(
       recruiterId,
-      { phone, countryCode,firstname,lastname,designation },
-      { new: true } // returns the updated document
+      { phone, countryCode, firstname, lastname, designation },
+      { new: true }, // returns the updated document
     );
 
     if (!recruiter) {
-      return res.status(404).json({ message: 'recruiter not found' });
+      return res.status(404).json({ message: "recruiter not found" });
     }
 
-    res.json({ message: 'details updated successfully', user: recruiter });
+    res.json({ message: "details updated successfully", user: recruiter });
   } catch (error) {
-    console.error('Error updating details:', error);
-    res.status(500).json({ message: 'Server error', error });
+    console.error("Error updating details:", error);
+    res.status(500).json({ message: "Server error", error });
   }
 });
-router.put('/update-details-2/:recruiterId', async (req, res) => {
-  const { companyName, independentRec,orgDescription,companyLocation, industryType, numOfEmployees} = req.body;
-  const recruiterId= req.params.recruiterId; // Assuming the user ID is stored in req.user
+router.put("/update-details-2/:recruiterId", async (req, res) => {
+  const {
+    companyName,
+    independentRec,
+    orgDescription,
+    companyLocation,
+    industryType,
+    numOfEmployees,
+  } = req.body;
+  const recruiterId = req.params.recruiterId; // Assuming the user ID is stored in req.user
 
   try {
     // Update the user contact information in the database
     const recruiter = await Recruiter.findByIdAndUpdate(
       recruiterId,
-      { companyName, independentRec,orgDescription,companyLocation, industryType,numOfEmployees},
-      { new: true } // returns the updated document
+      {
+        companyName,
+        independentRec,
+        orgDescription,
+        companyLocation,
+        industryType,
+        numOfEmployees,
+      },
+      { new: true }, // returns the updated document
     );
 
     if (!recruiter) {
-      return res.status(404).json({ message: 'recruiter not found' });
+      return res.status(404).json({ message: "recruiter not found" });
     }
 
-    res.json({ message: 'details updated successfully', user: recruiter });
+    res.json({ message: "details updated successfully", user: recruiter });
   } catch (error) {
-    console.error('Error updating details:', error);
-    res.status(500).json({ message: 'Server error', error });
+    console.error("Error updating details:", error);
+    res.status(500).json({ message: "Server error", error });
   }
 });
-
 
 router.post(
   "/upload-logo/:recruiterId",
@@ -415,7 +438,6 @@ router.post(
       if (!recruiter) {
         return res.status(404).send("recruiter not found.");
       }
-    
 
       recruiter.companyLogo = {
         data: req.file.buffer, // The actual logo data
@@ -429,7 +451,7 @@ router.post(
       console.error("Error saving logo:", error);
       res.status(500).send("Error saving logo.");
     }
-  }
+  },
 );
 
 router.get("/get-logo/:recruiterId", async (req, res) => {
@@ -455,7 +477,7 @@ router.delete("/delete-logo/:recruiterId", async (req, res) => {
       return res.status(404).json({ message: "Recruiter not found" });
     await Recruiter.updateOne(
       { _id: req.params.recruiterId },
-      { $unset: { companyLogo: "" } } // This removes the companyLogo field entirely
+      { $unset: { companyLogo: "" } }, // This removes the companyLogo field entirely
     );
     return res.status(200).json({ message: "Logo deleted successfully" });
   } catch (error) {
@@ -527,10 +549,10 @@ router.get("/api/get-profiles", async (req, res) => {
 //       student: { $in: shortlistedStudents.map((student) => student._id) },
 //     }).select("student internship importantForRecruiter studentStatus");
 
-// 
+//
 
 //     const formattedStudents = shortlistedStudents.map((student) => {
-//     
+//
 
 //       const shortlistedInternships = student.appliedInternships.filter(
 //         (appliedInternship) =>
@@ -538,7 +560,7 @@ router.get("/api/get-profiles", async (req, res) => {
 //             id.equals(appliedInternship.internship._id)
 //           ) && appliedInternship.internshipStatus.status === "Shortlisted"
 //       );
-//       
+//
 
 //       return {
 //         _id: student._id,
@@ -575,7 +597,6 @@ router.get("/api/get-profiles", async (req, res) => {
 //   }
 // });
 
-
 router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
   const { recruiterId } = req.params;
 
@@ -590,7 +611,9 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
       return res.status(404).json({ message: "Recruiter not found" });
     }
 
-    const internshipIds = recruiter.internships.map((internship) => internship._id);
+    const internshipIds = recruiter.internships.map(
+      (internship) => internship._id,
+    );
 
     // Fetch all students who have applied for these internships and are shortlisted
     const shortlistedStudents = await Student.find({
@@ -605,8 +628,6 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
       select: "internshipName", // Select only needed fields
     });
 
-   
-
     // Fetch chat rooms for the recruiter and their internships
     const chatRooms = await ChatRoom.find({
       recruiter: recruiterId,
@@ -618,8 +639,11 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
     const formattedStudents = shortlistedStudents.map((student) => {
       const shortlistedInternships = student.appliedInternships.filter(
         (appliedInternship) =>
-          internshipIds.some((id) => id.equals(appliedInternship.internship._id)) &&
-          (appliedInternship.internshipStatus.status === "Shortlisted" || appliedInternship.internshipStatus.status === "Hired")
+          internshipIds.some((id) =>
+            id.equals(appliedInternship.internship._id),
+          ) &&
+          (appliedInternship.internshipStatus.status === "Shortlisted" ||
+            appliedInternship.internshipStatus.status === "Hired"),
       );
 
       return {
@@ -627,34 +651,35 @@ router.get("/:recruiterId/fetch-all-shortlisted", async (req, res) => {
         firstname: student.firstname,
         lastname: student.lastname,
         email: student.email,
-        shortlistedInternships: shortlistedInternships.map((shortlistedInternship) => {
-          const chatRoom = chatRooms.find(
-            (room) =>
-              room.student.equals(student._id) &&
-              room.internship.equals(shortlistedInternship.internship._id)
-          );
+        shortlistedInternships: shortlistedInternships.map(
+          (shortlistedInternship) => {
+            const chatRoom = chatRooms.find(
+              (room) =>
+                room.student.equals(student._id) &&
+                room.internship.equals(shortlistedInternship.internship._id),
+            );
 
-          return {
-            internshipId: shortlistedInternship.internship._id,
-            internshipName: shortlistedInternship.internship.internshipName,
-            statusUpdatedAt: shortlistedInternship.internshipStatus.statusUpdatedAt,
-            importantForRecruiter: chatRoom ? chatRoom.importantForRecruiter : false,
-            studentStatus: chatRoom?.studentStatus || null,
-          };
-        }),
+            return {
+              internshipId: shortlistedInternship.internship._id,
+              internshipName: shortlistedInternship.internship.internshipName,
+              statusUpdatedAt:
+                shortlistedInternship.internshipStatus.statusUpdatedAt,
+              importantForRecruiter: chatRoom
+                ? chatRoom.importantForRecruiter
+                : false,
+              studentStatus: chatRoom?.studentStatus || null,
+            };
+          },
+        ),
       };
     });
 
     res.status(200).json(formattedStudents);
-
-   
   } catch (error) {
     console.error("Error fetching shortlisted students:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
-
-
 
 router.get("/blocked-chats", async (req, res) => {
   try {
@@ -712,7 +737,7 @@ router.post(
       const recruiter = await Recruiter.findByIdAndUpdate(
         recruiterId,
         { $set: updateData },
-        { new: true }
+        { new: true },
       );
 
       if (!recruiter) {
@@ -721,25 +746,25 @@ router.post(
 
       return res
         .status(200)
-        .json({ message: "Details updated successfully", ...responseData  });
+        .json({ message: "Details updated successfully", ...responseData });
     } catch (error) {
       console.error("Error uploading company details:", error);
       res.status(500).json({ message: "Server error", error });
     }
-  }
+  },
 );
 
-router.post('/send-otp', async (req, res) => {
+router.post("/send-otp", async (req, res) => {
   const { email } = req.body;
-  
+
   if (!email) {
-    return res.status(400).json({ message: 'Email is required' });
+    return res.status(400).json({ message: "Email is required" });
   }
 
   try {
-    const recruiter=await Recruiter.findOne({email:email});
-    if(recruiter){
-      return res.status(404).json({ message:"Recruiter already exists" });
+    const recruiter = await Recruiter.findOne({ email: email });
+    if (recruiter) {
+      return res.status(404).json({ message: "Recruiter already exists" });
     }
     // Step 1: Generate a random OTP and set expiration time (10 minutes)
     const otp = generateOtp();
@@ -750,50 +775,47 @@ router.post('/send-otp', async (req, res) => {
 
     // Step 3: Configure nodemailer to send the OTP email
     const transporter = nodemailer.createTransport({
-      service: 'Gmail',
+      service: "Gmail",
       auth: {
         user: process.env.EMAIL_USER, // Use environment variables
         pass: process.env.EMAIL_PASS, // App-specific password
       },
     });
 
-    
-
     transporter.verify((error, success) => {
       if (error) {
-        console.error('Transporter verification failed:', error);
+        console.error("Transporter verification failed:", error);
       } else {
-        
       }
     });
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Your OTP Code',
+      subject: "Your OTP Code",
       text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
     };
 
-    
+    console.log(mailOptions);
+
     // Step 4: Send email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        return res.status(500).json({ message: 'Error sending OTP email' });
+        return res.status(500).json({ message: "Error sending OTP email" });
       }
-      return res.status(200).json({ message: 'OTP sent successfully' });
+      return res.status(200).json({ message: "OTP sent successfully" });
     });
-
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
-router.post('/verify-otp', async (req, res) => {
+router.post("/verify-otp", async (req, res) => {
   const { email, otp } = req.body;
 
   if (!email || !otp) {
-    return res.status(400).json({ message: 'Email and OTP are required' });
+    return res.status(400).json({ message: "Email and OTP are required" });
   }
 
   try {
@@ -801,33 +823,34 @@ router.post('/verify-otp', async (req, res) => {
     const otpEntry = await Otp.findOne({ email, otp });
 
     if (!otpEntry) {
-      return res.status(400).json({ message: 'Invalid OTP' });
+      return res.status(400).json({ message: "Invalid OTP" });
     }
 
     // Check if the OTP is expired
     if (otpEntry.expiresAt < Date.now()) {
-      return res.status(400).json({ message: 'OTP has expired' });
+      return res.status(400).json({ message: "OTP has expired" });
     }
 
     // OTP is valid, proceed to the next step (e.g., complete signup)
 
-    return res.status(200).json({ message: 'OTP verified successfully' });
-
+    return res.status(200).json({ message: "OTP verified successfully" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
-router.get('/:userId/get-orders', async (req, res) => {
+router.get("/:userId/get-orders", async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const orders = await Order.find({ recruiterId: userId }).sort({ transactionDate: -1 });
+    const orders = await Order.find({ recruiterId: userId }).sort({
+      transactionDate: -1,
+    });
     res.status(200).json(orders);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Failed to retrieve orders' });
+    res.status(500).json({ error: "Failed to retrieve orders" });
   }
 });
 
