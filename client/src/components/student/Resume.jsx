@@ -176,7 +176,8 @@ const Resume = () => {
           <div className="text-red-400 font-semibold">No resume uploaded</div>
         )}
       </div>
-      <ToastContainer />
+
+      <ToastContainer className="!z-[999999]" />
     </div>
   );
 };

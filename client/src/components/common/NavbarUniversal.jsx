@@ -80,7 +80,7 @@ const NavbarUniversal = () => {
     `p-2 md:p-5 transition-colors duration-200 ${isActive ? 'text-[var(--primary-color)]' : 'hover:text-[var(--primary-color)]'}`;
 
   return (
-    <nav className="bg-white fixed top-0 w-full shadow-md z-20">
+    <nav className="navbar bg-white fixed top-0 w-full shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         
         {/* Logo */}

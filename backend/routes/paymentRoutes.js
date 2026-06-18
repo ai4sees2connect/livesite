@@ -89,9 +89,7 @@ router.post("/verify-payment", async (req, res) => {
       // Handle the case where recruiter is on free plan and is upgrading to a paid plan
       if (recruiter.subscription.planType === "free") {
         const subscriptionPlans = {
-          "1-month": { duration: 1, unit: "month", posts: 3 },
-          "3-month": { duration: 3, unit: "month", posts: 12 },
-          "1-year": { duration: 12, unit: "month", posts: 120 },
+          "1-year": { duration: 12, unit: "month", posts: 50 },
         };
 
         const selectedPlan = subscriptionPlans[planType];
@@ -128,9 +126,7 @@ router.post("/verify-payment", async (req, res) => {
       } else if (!planType.includes("post")) {
         // If the recruiter is already on a paid plan (e.g., '1-month', '3-month', etc.)
         const subscriptionPlans = {
-          "1-month": { duration: 1, unit: "month", posts: 3 },
-          "3-month": { duration: 3, unit: "month", posts: 12 },
-          "1-year": { duration: 12, unit: "month", posts: 120 },
+          "1-year": { duration: 12, unit: "month", posts: 50 },
         };
 
         const selectedPlan = subscriptionPlans[planType];

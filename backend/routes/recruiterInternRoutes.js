@@ -11,6 +11,7 @@ const mime = require("mime-types");
 const { jwtDecode } = require("jwt-decode");
 const Skill = require("../schema/skillsSchema");
 const Profile = require("../schema/profileSchema");
+const Industry = require("../schema/industrySchema");
 
 dotenv.config();
 const router = express.Router();
@@ -34,6 +35,7 @@ router.post("/post/:userId", async (req, res) => {
     currency,
     incentiveDescription,
     ppoCheck,
+    industry,
   } = req.body;
 
   try {
@@ -49,18 +51,20 @@ router.post("/post/:userId", async (req, res) => {
     }
 
     if (recruiter.subscription.postsRemaining <= 0) {
-      return res.status(403).json({ message: "No posts remaining. Please upgrade your plan." });
+      return res
+        .status(403)
+        .json({ message: "No posts remaining. Please upgrade your plan." });
     }
-    
+
     // Decrement postsRemaining
     recruiter.subscription.postsRemaining =
       parseInt(recruiter.subscription.postsRemaining) - 1;
 
     // Check if the subscription should be set to inactive
     const currentDate = new Date();
-    const expirationDate = recruiter.subscription.expirationDate 
-    ? new Date(recruiter.subscription.expirationDate) 
-    : null;
+    const expirationDate = recruiter.subscription.expirationDate
+      ? new Date(recruiter.subscription.expirationDate)
+      : null;
     if (
       recruiter.subscription.postsRemaining <= 0 ||
       (expirationDate && currentDate > expirationDate)
@@ -108,6 +112,7 @@ router.post("/post/:userId", async (req, res) => {
       assessment,
       skills,
       recruiter: userId,
+      industry,
     });
     await newInternship.save();
 
@@ -220,7 +225,6 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
 
     const filters = {};
 
-
     const recruiter = await Recruiter.findById(recruiterId);
     if (!recruiter)
       return res.status(404).json({ message: "Recruiter not found" });
@@ -245,7 +249,6 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
         },
       };
       filters.$expr = nameFilter;
-    
     }
 
     if (country) {
@@ -318,7 +321,6 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       }
     }
 
-
     const applicants = await Student.aggregate([
       // Match students who applied for the specific internship
       {
@@ -376,8 +378,6 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       { $limit: limit },
     ]);
 
-  
-
     delete filters["appliedInternships.internshipStatus.status"];
 
     const applicantsCounts = await Student.aggregate([
@@ -422,18 +422,17 @@ router.get("/:recruiterId/applicants/:internshipId", async (req, res) => {
       },
     ]);
 
-   
     const countsByStatus = applicantsCounts[0]?.countsByStatus || [];
     const totalCount = applicantsCounts[0]?.totalApplicants || 0;
     const totalPages = Math.ceil(totalCount / limit);
-    
+
     const hiredCount =
       countsByStatus.find((item) => item.status === "Hired")?.count || 0;
     const shortlistedCount =
       countsByStatus.find((item) => item.status === "Shortlisted")?.count || 0;
     const rejectedCount =
       countsByStatus.find((item) => item.status === "Rejected")?.count || 0;
-    
+
     res.status(200).json({
       totalApplicants: totalCount,
       totalPages,
@@ -524,7 +523,7 @@ router.get("/:recruiterId/get-all-internships", async (req, res) => {
         .status(404)
         .json({ message: "No internships found for this recruiter." });
     }
-   
+
     res.status(200).json(internships);
   } catch (error) {
     console.error("Error fetching internships:", error.message, error.stack);
@@ -589,22 +588,114 @@ router.get("/recruiter/logo/:recruiterId", async (req, res) => {
   try {
     const recruiter = await Recruiter.findById(
       req.params.recruiterId,
-      "companyLogo.data companyLogo.contentType"
+      "companyLogo.data companyLogo.contentType",
     );
-    
+
     if (!recruiter?.companyLogo?.data) {
       return res.status(404).json({ error: "Logo not found" });
     }
-    
+
     // Cache headers - browser cache karega logo ko
-    res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
-    res.setHeader('Content-Type', recruiter.companyLogo.contentType);
-    
+    res.setHeader("Cache-Control", "public, max-age=31536000"); // 1 year
+    res.setHeader("Content-Type", recruiter.companyLogo.contentType);
+
     // Direct binary send - NO Base64 conversion!
     res.send(recruiter.companyLogo.data);
   } catch (error) {
     console.error("Error serving logo:", error);
     res.status(500).json({ error: "Failed to serve logo" });
+  }
+});
+
+// Industry se related skills fetch karne ka API
+router.get("/industries/:industryName/skills", async (req, res) => {
+  try {
+    const { industryName } = req.params;
+    const industry = await Industry.findOne({ name: industryName });
+
+    if (!industry) {
+      return res.status(404).json({ message: "Industry not found" });
+    }
+
+    res.status(200).json(industry.skills);
+  } catch (error) {
+    console.error("Error fetching industry skills:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Saari industries fetch karne ka API
+router.get("/industries", async (req, res) => {
+  try {
+    const industries = await Industry.find().sort({ name: 1 });
+    res.status(200).json(industries);
+  } catch (error) {
+    console.error("Error fetching industries:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// New skill add karne ka API (frontend se "Other" select karke)
+router.post("/industries/skills", async (req, res) => {
+  try {
+    const { industryName, skillName } = req.body;
+
+    // Check if industry exists
+    let industry = await Industry.findOne({ name: industryName });
+
+    // If industry doesn't exist, create as "other"
+    if (!industry) {
+      industry = new Industry({
+        name: industryName,
+        category: "other",
+        skills: [],
+      });
+    }
+
+    // Add skill if not already present
+    if (!industry.skills.includes(skillName)) {
+      industry.skills.push(skillName);
+      await industry.save();
+    }
+
+    // Also add to global skills collection
+    const existingSkill = await Skill.findOne({ name: skillName });
+    if (!existingSkill) {
+      await Skill.create({ name: skillName });
+    }
+
+    res.status(200).json({ message: "Skill added successfully" });
+  } catch (error) {
+    console.error("Error adding skill:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Recruiter ki industry update karne ka API
+router.put("/recruiter/:recruiterId/industry", async (req, res) => {
+  try {
+    const { recruiterId } = req.params;
+    const { industry } = req.body;
+
+    const recruiter = await Recruiter.findByIdAndUpdate(
+      recruiterId,
+      { industry },
+      { new: true },
+    );
+
+    if (!recruiter) {
+      return res.status(404).json({ message: "Recruiter not found" });
+    }
+
+    res
+      .status(200)
+      .json({
+        message: "Industry updated successfully",
+        industry: recruiter.industry,
+      });
+  } catch (error) {
+    console.error("Error updating industry:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

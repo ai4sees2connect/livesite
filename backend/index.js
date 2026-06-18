@@ -14,7 +14,6 @@ const studentInternRoutes = require('./routes/studentInternRoutes');
 const adminRoutes=require('./routes/adminRoutes')
 const paymentRoutes=require('./routes/paymentRoutes')
 const  internRoutes=require('./routes/internRoutes')
-const backupRoute=require('./routes/backupRoute')
 const QueryRoute=require('./routes/QueryRoute')
 const initSocket= require('./socket');
 const http = require('http');
@@ -44,7 +43,6 @@ app.use('/student/internship',studentInternRoutes);
 app.use('/admin',adminRoutes);
 app.use('/payments',paymentRoutes);
 app.use('/internship',internRoutes);
-app.use('/backups',backupRoute);
 app.use('/send-query',QueryRoute)
 app.get('/',(req,res)=>{
   res.send('Welcome to our Server......')

@@ -265,3 +265,21 @@ body {
   so it doesn't affect the whole site unexpectedly. 
   Developers can use the variables defined above or style them locally inside components.
 */
+
+.Toastify__toast-container {
+  z-index: 999999 !important;
+  position: fixed !important;
+}
+
+/* Make sure toast is above everything */
+.Toastify__toast {
+  z-index: 999999 !important;
+}
+
+/* Profile right sidebar ko neeche rakho */
+.profile-sidebar {
+  z-index: 1 !important;
+}
+.navbar {
+  z-index: 2;
+}

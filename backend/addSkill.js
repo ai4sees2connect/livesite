@@ -15,8 +15,7 @@ const addSkill = async () => {
   try {
     // Check if the skill already exists
     const existingSkill = await Skill.findOne({ name: newSkillName });
-    if (existingSkill) {
-      
+    if (existingSkill) {      
       process.exit(1);
     }
 

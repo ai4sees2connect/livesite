@@ -23,7 +23,7 @@ const WorkExp = () => {
     const fetchWorkExperiences = async () => {
       try {
         const response = await axios.get(
-          `${api}/student/profile/${userId}/work-experience`
+          `${api}/student/profile/${userId}/work-experience`,
         );
         setWorkExperiences(response.data);
         setClicked(false);
@@ -58,11 +58,15 @@ const WorkExp = () => {
       return;
     }
 
+    if (!validateDates(startDate, endDate)) {
+      return;
+    }
+
     try {
       if (currentEditIndex !== null) {
         await axios.put(
           `${api}/student/profile/${userId}/work-experience/${currentEditIndex}`,
-          workExpData
+          workExpData,
         );
         const updatedExperiences = [...workExperiences];
         updatedExperiences[currentEditIndex] = workExpData;
@@ -71,7 +75,7 @@ const WorkExp = () => {
       } else {
         const response = await axios.post(
           `${api}/student/profile/${userId}/work-experience`,
-          workExpData
+          workExpData,
         );
         setWorkExperiences([...workExperiences, response.data.workExperience]);
         toast.success("Experience added successfully");
@@ -88,7 +92,7 @@ const WorkExp = () => {
   const handleDelete = async (index) => {
     try {
       await axios.delete(
-        `${api}/student/profile/${userId}/work-experience/${index}`
+        `${api}/student/profile/${userId}/work-experience/${index}`,
       );
       const updatedExperiences = workExperiences.filter((_, i) => i !== index);
       setWorkExperiences(updatedExperiences);
@@ -133,13 +137,27 @@ const WorkExp = () => {
     return `${day}-${month}-${year}`;
   };
 
+  // Add this validation function
+  const validateDates = (start, end) => {
+    const startDateObj = new Date(start);
+    const endDateObj = new Date(end);
+
+    if (endDateObj <= startDateObj) {
+      toast.error("End date must be after start date");
+      return false;
+    }
+    return true;
+  };
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 w-full">
       {/* Header */}
       <div className="flex justify-between items-center mb-5">
         <h2 className="text-lg font-bold text-[var(--text-color)] flex items-center gap-2">
           <FaBriefcase className="text-[var(--primary-color)] text-xl" />
-          Work Experience <span className="text-xs font-normal text-[var(--text-light)]">(Optional)</span>
+          Work Experience{" "}
+          <span className="text-xs font-normal text-[var(--text-light)]">
+            (Optional)
+          </span>
         </h2>
         {!isEditing && (
           <button
@@ -153,9 +171,14 @@ const WorkExp = () => {
 
       {/* Form Section */}
       {isEditing ? (
-        <form className="space-y-4 mt-4 bg-[var(--bg-light-color)] p-5 rounded-xl border border-gray-100" onSubmit={handleSubmit}>
+        <form
+          className="space-y-4 mt-4 bg-[var(--bg-light-color)] p-5 rounded-xl border border-gray-100"
+          onSubmit={handleSubmit}
+        >
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Company</label>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">
+              Company
+            </label>
             <input
               type="text"
               value={company}
@@ -167,7 +190,9 @@ const WorkExp = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Role</label>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">
+              Role
+            </label>
             <input
               type="text"
               value={role}
@@ -180,7 +205,9 @@ const WorkExp = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Start Date</label>
+              <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">
+                Start Date
+              </label>
               <input
                 type="date"
                 value={startDate}
@@ -190,7 +217,9 @@ const WorkExp = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">End Date</label>
+              <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">
+                End Date
+              </label>
               <input
                 type="date"
                 value={endDate}
@@ -202,7 +231,9 @@ const WorkExp = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Type of Work</label>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">
+              Type of Work
+            </label>
             <select
               value={typeofwork}
               onChange={(e) => setTypeOfWork(e.target.value)}
@@ -216,7 +247,9 @@ const WorkExp = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">Description</label>
+            <label className="block text-xs font-semibold text-[var(--text-light)] uppercase tracking-wide mb-1.5">
+              Description
+            </label>
             <textarea
               rows={5}
               value={description}
@@ -254,30 +287,50 @@ const WorkExp = () => {
         <div className="space-y-4 mt-2">
           {workExperiences.length > 0 ? (
             workExperiences.map((work, index) => (
-              <div key={index} className="bg-[var(--bg-light-color)] border border-gray-100 rounded-xl p-4 hover:shadow-md transition-shadow">
+              <div
+                key={index}
+                className="bg-[var(--bg-light-color)] border border-gray-100 rounded-xl p-4 hover:shadow-md transition-shadow"
+              >
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-base font-bold text-[var(--text-color)]">
-                    {work.role} <span className="font-normal text-[var(--text-light)]">at</span> {work.company}
+                    {work.role}{" "}
+                    <span className="font-normal text-[var(--text-light)]">
+                      at
+                    </span>{" "}
+                    {work.company}
                   </h3>
                   <div className="flex items-center gap-3">
-                    <button onClick={() => handleEdit(index)} className="text-[var(--icon-color)] hover:text-[var(--primary-color)] transition-colors p-1">
+                    <button
+                      onClick={() => handleEdit(index)}
+                      className="text-[var(--icon-color)] hover:text-[var(--primary-color)] transition-colors p-1"
+                    >
                       <FaPen className="w-3.5 h-3.5" />
                     </button>
-                    <button onClick={() => handleDelete(index)} className="text-red-400 hover:text-red-600 transition-colors p-1">
+                    <button
+                      onClick={() => handleDelete(index)}
+                      className="text-red-400 hover:text-red-600 transition-colors p-1"
+                    >
                       <FaTrash className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
                 <div className="text-sm text-[var(--text-light)] space-y-1">
-                  <p className="font-medium text-[var(--primary-color)] capitalize">{work.typeofwork}</p>
-                  <p className="text-xs">Duration: {formatDate(work.startDate)} - {formatDate(work.endDate)}</p>
+                  <p className="font-medium text-[var(--primary-color)] capitalize">
+                    {work.typeofwork}
+                  </p>
+                  <p className="text-xs">
+                    Duration: {formatDate(work.startDate)} -{" "}
+                    {formatDate(work.endDate)}
+                  </p>
                   <p className="pt-1 break-words">{work.description}</p>
                 </div>
               </div>
             ))
           ) : (
             <div className="text-center py-8 bg-[var(--bg-light-color)] rounded-xl border border-dashed border-gray-200">
-              <p className="text-[var(--text-light)] font-medium text-sm">No work experience added yet.</p>
+              <p className="text-[var(--text-light)] font-medium text-sm">
+                No work experience added yet.
+              </p>
             </div>
           )}
         </div>

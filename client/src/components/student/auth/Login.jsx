@@ -116,7 +116,7 @@ function Login() {
   return (
     <div className="flex mt-10 md:mt-0 min-h-screen">
       {/* ToastContainer now used for toast notifications */}
-      <ToastContainer autoClose={3000} />
+      <ToastContainer autoClose={3000} className="!z-[999999]" />
       <div className="flex-1 relative hidden lg:block">
         <img src={login_bg} alt="" className="w-full h-full" />
       </div>

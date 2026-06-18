@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const Internship=require('./internshipSchema')
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const Internship = require("./internshipSchema");
 
 // const internshipSchema = new mongoose.Schema({
 //   internshipName: {
@@ -32,122 +32,128 @@ const Internship=require('./internshipSchema')
 //   // Additional fields related to internships can be added here if needed
 // }, {timestamps: true});
 
-
-
-const recruiterSchema = new mongoose.Schema({
-  firstname: {
-    type: String,
-    required: true,
-  },
-  lastname: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  designation:{
-    type: String,
-    default:"hr"
-  },
-  phone: {
-    type: Number,
-  },
-  countryCode:{
-    type:String,
-    default:""
-  },
-  orgDescription:{
-    type: String,
-    default:""
-  },
-  companyLocation:{
-    country: {
+const recruiterSchema = new mongoose.Schema(
+  {
+    firstname: {
       type: String,
+      required: true,
     },
-    state: {
+    lastname: {
       type: String,
+      required: true,
     },
-    city: {
+    email: {
       type: String,
+      required: true,
+      unique: true,
     },
-  },
-  industryType:{
-    type: String,
-    default:""
-  },
-  numOfEmployees:{
-    type:String,
-    default:""
-  },
-  password: { 
-    type: String,
-  },
-  companyName: {
-    type: String,
-  },
-  independentRec:{
-    type:Boolean,
-    default:false
-  },
-  internships: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Internship',
-    default: [],
-  }],
-  companyLogo: {
-    data: Buffer,        
-    contentType: String, 
-    filename: String,     
-  },
-  companyWebsite: {
-    link: { type: String },
-    uploadedDate: { type: Date },
-    status: {
+    designation: {
       type: String,
-      default: 'pending',
+      default: "hr",
     },
-  },
-  companyCertificate: {
-    data: Buffer, 
-    contentType: String, 
-    filename: String, 
-    fileSize: Number, 
-    uploadedDate: { type: Date },
-    status: {
-      type: String,
-      default: 'pending',
-    },
-  },
-  subscription: {
-    planType: {
-      type: String, // e.g., 'free', '1-month', '3-month', '1-year'
-      default: 'free',
-    },
-    activationDate: {
-      type: Date,
-      default: Date.now,
-    },
-    expirationDate: {
-      type: Date, // Automatically calculated when plan is purchased
-    },
-    postsRemaining:{
+    phone: {
       type: Number,
-      default: 2
     },
-    status: {
+    countryCode: {
       type: String,
-      default: 'active', // 'active', 'expired', etc.
+      default: "",
+    },
+    orgDescription: {
+      type: String,
+      default: "",
+    },
+    companyLocation: {
+      country: {
+        type: String,
+      },
+      state: {
+        type: String,
+      },
+      city: {
+        type: String,
+      },
+    },
+    // recruiterSchema mein ye add karo
+    industry: {
+      type: String,
+      default: "",
+    },
+    industryType: {
+      type: String,
+      default: "",
+    },
+    numOfEmployees: {
+      type: String,
+      default: "",
+    },
+    password: {
+      type: String,
+    },
+    companyName: {
+      type: String,
+    },
+    independentRec: {
+      type: Boolean,
+      default: false,
+    },
+    internships: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Internship",
+        default: [],
+      },
+    ],
+    companyLogo: {
+      data: Buffer,
+      contentType: String,
+      filename: String,
+    },
+    companyWebsite: {
+      link: { type: String },
+      uploadedDate: { type: Date },
+      status: {
+        type: String,
+        default: "pending",
+      },
+    },
+    companyCertificate: {
+      data: Buffer,
+      contentType: String,
+      filename: String,
+      fileSize: Number,
+      uploadedDate: { type: Date },
+      status: {
+        type: String,
+        default: "pending",
+      },
+    },
+    subscription: {
+      planType: {
+        type: String, // e.g., 'free', '1-month', '3-month', '1-year'
+        default: "free",
+      },
+      activationDate: {
+        type: Date,
+        default: Date.now,
+      },
+      expirationDate: {
+        type: Date, // Automatically calculated when plan is purchased
+      },
+      postsRemaining: {
+        type: Number,
+        default: 2,
+      },
+      status: {
+        type: String,
+        default: "active", // 'active', 'expired', etc.
+      },
     },
   },
-}, { timestamps: true });
+  { timestamps: true },
+);
 
-
-
-recruiterSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
+recruiterSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
     return next();
   }
   try {
@@ -163,6 +169,6 @@ recruiterSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-const Recruiter = mongoose.model('Recruiter', recruiterSchema);
+const Recruiter = mongoose.model("Recruiter", recruiterSchema);
 
-module.exports= Recruiter;
+module.exports = Recruiter;

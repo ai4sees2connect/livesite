@@ -13,7 +13,6 @@ const internshipSchema = new mongoose.Schema(
     internLocation: {
       country: {
         type: String,
-       
       },
       state: {
         type: String,
@@ -29,61 +28,66 @@ const internshipSchema = new mongoose.Schema(
     stipend: {
       type: Number,
     },
-    stipendType:{
-      type: String
+    stipendType: {
+      type: String,
     },
-    currency:{
-      type: String
+    currency: {
+      type: String,
     },
-    incentiveDescription:{
-      type: String
+    incentiveDescription: {
+      type: String,
     },
-    internshipStartDate:{
-      type: String
+    internshipStartDate: {
+      type: String,
     },
-    ppoCheck:{
-      type: String
+    ppoCheck: {
+      type: String,
     },
-    duration:{
-      type:Number,
-      required:true
+    duration: {
+      type: Number,
+      required: true,
     },
     description: {
       type: String,
       required: true,
     },
-    
-    assessment:{
-      type:String,
+
+    assessment: {
+      type: String,
     },
-    perks:{
+    perks: {
       type: [String],
-      default: []
+      default: [],
     },
     skills: {
       type: [String],
       default: [],
     },
-    jobProfile:{
+    jobProfile: {
       type: String,
-      required: true
+      required: true,
     },
-    recruiter: {  // Add this field to link to the recruiter who posted the internship
+    recruiter: {
+      // Add this field to link to the recruiter who posted the internship
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Recruiter',
+      ref: "Recruiter",
       required: true,
     },
     views: {
       type: Number,
       default: 0, // Initialize with 0 views
     },
-    status:{
+    status: {
       type: String,
-      default: "Active"
-    }
-  
-    
-  },{ timestamps: true });
+      default: "Active",
+    },
+    industry: {
+      type: String,
+      default: "",
+    },
+  },
+  { timestamps: true },
+);
 
 const Internship = mongoose.model("Internship", internshipSchema);
 
