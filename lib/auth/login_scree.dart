@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:internship_app/auth/signup_screen.dart';
+import 'package:internship_app/student/student_home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -160,7 +161,16 @@ Widget build(BuildContext context) {
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      if (isStudent) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const StudentHomeScreen(),
+                          ),
+                        );
+                      }
+                    },
                     child: const Text(
                       "Login",
                       style: TextStyle(
