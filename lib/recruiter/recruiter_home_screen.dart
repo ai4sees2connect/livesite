@@ -1,30 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:internship_app/student/internships_screen.dart';
-import 'package:internship_app/student/messages_screen.dart';
-import 'package:internship_app/student/my_applications_screen.dart';
-import 'package:internship_app/student/profile_screen.dart';
+import 'package:internship_app/recruiter/dashboard_screen.dart';
+import 'package:internship_app/recruiter/post_internship_screen.dart';
+import 'package:internship_app/recruiter/recruiter_messages_screen.dart';
+import 'package:internship_app/recruiter/plans_pricing_screen.dart';
+import 'package:internship_app/recruiter/recruiter_profile_screen.dart';
 
-class StudentHomeScreen extends StatefulWidget {
-  const StudentHomeScreen({super.key});
+class RecruiterHomeScreen extends StatefulWidget {
+  const RecruiterHomeScreen({super.key});
 
   @override
-  State<StudentHomeScreen> createState() => _StudentHomeScreenState();
+  State<RecruiterHomeScreen> createState() => _RecruiterHomeScreenState();
 }
 
-class _StudentHomeScreenState extends State<StudentHomeScreen> {
+class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = const [
-    InternshipsScreen(),
-    MessagesScreen(),
-    MyApplicationsScreen(),
-    ProfileScreen(),
+    DashboardScreen(),
+    PostInternshipScreen(),
+    RecruiterMessagesScreen(),
+    PlansPricingScreen(),
+    RecruiterProfileScreen(),
   ];
 
   final _navItems = const [
-    _NavItem(icon: Icons.work_outline, activeIcon: Icons.work_rounded, label: 'Internships'),
+    _NavItem(icon: Icons.dashboard_outlined, activeIcon: Icons.dashboard_rounded, label: 'Dashboard'),
+    _NavItem(icon: Icons.add_circle_outline_rounded, activeIcon: Icons.add_circle_rounded, label: 'Post'),
     _NavItem(icon: Icons.chat_bubble_outline_rounded, activeIcon: Icons.chat_bubble_rounded, label: 'Messages'),
-    _NavItem(icon: Icons.folder_open_outlined, activeIcon: Icons.folder_rounded, label: 'Applications'),
+    _NavItem(icon: Icons.workspace_premium_outlined, activeIcon: Icons.workspace_premium_rounded, label: 'Plans'),
     _NavItem(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'Profile'),
   ];
 
@@ -36,7 +39,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
         currentIndex: _currentIndex,
         items: _navItems,
         onTap: (i) => setState(() => _currentIndex = i),
-        activeColor: const Color(0xFF3B82F6),
+        activeColor: const Color(0xFF6366F1),
       ),
     );
   }
@@ -79,7 +82,7 @@ class _CustomBottomNav extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(items.length, (i) {
@@ -92,7 +95,7 @@ class _CustomBottomNav extends StatelessWidget {
                   duration: const Duration(milliseconds: 250),
                   curve: Curves.easeInOut,
                   padding: EdgeInsets.symmetric(
-                    horizontal: selected ? 18 : 10,
+                    horizontal: selected ? 14 : 10,
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
@@ -114,7 +117,7 @@ class _CustomBottomNav extends StatelessWidget {
                           style: TextStyle(
                             color: activeColor,
                             fontWeight: FontWeight.w700,
-                            fontSize: 13,
+                            fontSize: 12,
                           ),
                         ),
                       ],
