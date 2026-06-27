@@ -39,7 +39,7 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
         currentIndex: _currentIndex,
         items: _navItems,
         onTap: (i) => setState(() => _currentIndex = i),
-        activeColor: const Color(0xFF6366F1),
+        activeColor: const Color(0xFF5B5CEB),
       ),
     );
   }
@@ -73,7 +73,7 @@ class _CustomBottomNav extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.10),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),

@@ -6,207 +6,233 @@ class RecruiterProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF3B82F6);
-
     final menuItems = [
-      {'icon': Icons.business_outlined, 'label': 'Company Profile'},
-      {'icon': Icons.people_outline, 'label': 'Team Members'},
-      {'icon': Icons.bar_chart_outlined, 'label': 'Analytics'},
-      {'icon': Icons.notifications_outlined, 'label': 'Notifications'},
-      {'icon': Icons.lock_outline, 'label': 'Change Password'},
-      {'icon': Icons.help_outline, 'label': 'Help & Support'},
+      {'icon': Icons.business_outlined, 'label': 'Company Profile', 'color': 0xFF5B5CEB},
+      {'icon': Icons.people_outline_rounded, 'label': 'Team Members', 'color': 0xFF10B981},
+      {'icon': Icons.bar_chart_rounded, 'label': 'Analytics', 'color': 0xFFF59E0B},
+      {'icon': Icons.notifications_outlined, 'label': 'Notifications', 'color': 0xFFEC4899},
+      {'icon': Icons.lock_outline_rounded, 'label': 'Change Password', 'color': 0xFF6366F1},
+      {'icon': Icons.help_outline_rounded, 'label': 'Help & Support', 'color': 0xFF06B6D4},
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Profile header
-              Container(
-                width: double.infinity,
-                color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 28),
-                child: Column(
-                  children: [
-                    Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        CircleAvatar(
-                          radius: 48,
-                          backgroundColor: primary.withValues(alpha: 0.12),
-                          child: const Text(
-                            'TC',
-                            style: TextStyle(
-                              color: primary,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        CircleAvatar(
-                          radius: 14,
-                          backgroundColor: primary,
-                          child: const Icon(Icons.edit,
-                              size: 14, color: Colors.white),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    const Text(
-                      'TechCorp',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'hr@techcorp.com',
-                      style: TextStyle(
-                          color: Colors.grey.shade600, fontSize: 14),
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Text(
-                        'Pro Plan',
-                        style: TextStyle(
-                          color: Color(0xFF10B981),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _stat('6', 'Active Posts'),
-                        _divider(),
-                        _stat('48', 'Applicants'),
-                        _divider(),
-                        _stat('3', 'Hired'),
-                      ],
-                    ),
-                  ],
+      backgroundColor: const Color(0xFFF1F5F9),
+      body: CustomScrollView(
+        slivers: [
+          // Gradient header
+          SliverToBoxAdapter(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF4338CA), Color(0xFF5B5CEB)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
               ),
-
-              const SizedBox(height: 12),
-
-              Container(
-                color: Colors.white,
-                child: Column(
-                  children: menuItems.map((item) {
-                    return Column(
-                      children: [
-                        ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 2),
-                          leading: CircleAvatar(
-                            radius: 20,
-                            backgroundColor: primary.withValues(alpha: 0.08),
-                            child: Icon(
-                              item['icon'] as IconData,
-                              color: primary,
-                              size: 20,
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+                  child: Column(
+                    children: [
+                      Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          Container(
+                            width: 88,
+                            height: 88,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withValues(alpha: 0.2),
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 3),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'TC',
+                                style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
-                          title: Text(
-                            item['label'] as String,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: Color(0xFF1E293B),
+                          Container(
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF10B981),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
                             ),
+                            child: const Icon(Icons.edit_rounded, size: 14, color: Colors.white),
                           ),
-                          trailing: const Icon(Icons.chevron_right,
-                              color: Colors.grey),
-                          onTap: () {},
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      const Text(
+                        'TechCorp',
+                        style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'hr@techcorp.com',
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 14),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        if (item != menuItems.last)
-                          Divider(
-                            height: 1,
-                            indent: 64,
-                            color: Colors.grey.shade100,
-                          ),
-                      ],
-                    );
-                  }).toList(),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              Container(
-                color: Colors.white,
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 2),
-                  leading: CircleAvatar(
-                    radius: 20,
-                    backgroundColor:
-                        const Color(0xFFEF4444).withValues(alpha: 0.1),
-                    child: const Icon(Icons.logout,
-                        color: Color(0xFFEF4444), size: 20),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.workspace_premium_rounded, color: Colors.amber, size: 14),
+                            SizedBox(width: 5),
+                            Text(
+                              'Pro Plan',
+                              style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _stat('6', 'Active Posts'),
+                            Container(width: 1, height: 28, color: Colors.white.withValues(alpha: 0.3)),
+                            _stat('48', 'Applicants'),
+                            Container(width: 1, height: 28, color: Colors.white.withValues(alpha: 0.3)),
+                            _stat('3', 'Hired'),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  title: const Text(
-                    'Logout',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Color(0xFFEF4444),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => const RecruiterLoginScreen()),
-                      (_) => false,
-                    );
-                  },
                 ),
               ),
-
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _stat(String value, String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1E293B),
             ),
           ),
-          Text(
-            label,
-            style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+
+          // Menu
+          SliverToBoxAdapter(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: List.generate(menuItems.length, (index) {
+                  final item = menuItems[index];
+                  final color = Color(item['color'] as int);
+                  return Column(
+                    children: [
+                      ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                        leading: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: color.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(item['icon'] as IconData, color: color, size: 20),
+                        ),
+                        title: Text(
+                          item['label'] as String,
+                          style: const TextStyle(fontSize: 15, color: Color(0xFF1E293B), fontWeight: FontWeight.w500),
+                        ),
+                        trailing: Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(Icons.chevron_right_rounded, color: Colors.grey, size: 18),
+                        ),
+                        onTap: () {},
+                      ),
+                      if (index < menuItems.length - 1)
+                        Divider(height: 1, indent: 72, color: Colors.grey.shade100),
+                    ],
+                  );
+                }),
+              ),
+            ),
           ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: 12)),
+
+          // Logout
+          SliverToBoxAdapter(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEF4444).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.logout_rounded, color: Color(0xFFEF4444), size: 20),
+                ),
+                title: const Text(
+                  'Logout',
+                  style: TextStyle(fontSize: 15, color: Color(0xFFEF4444), fontWeight: FontWeight.w600),
+                ),
+                onTap: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const RecruiterLoginScreen()),
+                    (_) => false,
+                  );
+                },
+              ),
+            ),
+          ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
     );
   }
 
-  Widget _divider() {
-    return Container(height: 30, width: 1, color: Colors.grey.shade200);
+  Widget _stat(String value, String label) {
+    return Column(
+      children: [
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(label, style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12)),
+      ],
+    );
   }
 }
