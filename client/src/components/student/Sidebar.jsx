@@ -43,15 +43,28 @@ const Sidebar = ({ student }) => {
       <div className="mt-8 bg-white shadow-xl rounded-2xl p-4 border border-gray-100">
 
         <input
-          type="text"
-          placeholder="Search internships, roles, skills..."
-          className="w-full outline-none text-gray-700"
-        />
+  type="text"
+  placeholder="Search internships, roles, skills..."
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  className="w-full p-2 border rounded"
+/>
 
         <div className="flex flex-wrap gap-3 mt-4 text-sm">
-          <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full">🌍 Remote</span>
-          <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full">🏢 Office</span>
-          <span className="px-3 py-1 bg-cyan-50 text-cyan-600 rounded-full">⚡ Hybrid</span>
+          <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full flex items-center gap-1">
+  <FaGlobeAmericas className="text-sm" />
+  Remote
+</span>
+
+<span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full flex items-center gap-1">
+  <FaBuilding className="text-sm" />
+  Office
+</span>
+
+<span className="px-3 py-1 bg-cyan-50 text-cyan-600 rounded-full flex items-center gap-1">
+  <FaExchangeAlt className="text-sm" />
+  Hybrid
+</span>
         </div>
 
         <button className="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700">
@@ -63,6 +76,10 @@ const Sidebar = ({ student }) => {
       {/* CTA Buttons */}
       <div className="flex gap-4 mt-6">
         <button className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold">
+          <Link
+        to="/internships/all-internships"
+        className="bg-white text-blue-700 px-8 py-4  font-bold shadow-lg"
+      ></Link>
           Explore Internships
         </button>
 

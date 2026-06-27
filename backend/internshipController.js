@@ -21,10 +21,20 @@ const getInternships = async (req, res) => {
     }
 
     // Stipend Range
-    if (req.query.stipendRange) {
-      const [min, max] = req.query.stipendRange.split(",").map(Number);
-      query.stipend = { $gte: min, $lte: max };
-    }
+if (req.query.stipendRange) {
+  const [min, max] = req.query.stipendRange.split(",").map(Number);
+  query.stipend = {
+  $gte: Number(min),
+  $lte: Number(max),
+};
+}
+
+//     // Minimum Stipend Filter
+// if (req.query.stipend) {
+//   query.stipend = {
+//     $gte: Number(req.query.stipend),
+//   };
+// }
 
     // Fetch internships
     const internships = await Internship.find(query);

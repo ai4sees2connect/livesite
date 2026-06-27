@@ -145,7 +145,7 @@ const InternshipsUniversal = () => {
         let query = `page=${page}`;
         if (workType && workType !== "All Internships") query += `&workType=${workType}`;
         if (selectedProfile.length > 0) query += `&jobProfile=${selectedProfile.join(",")}`;
-        if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
+        if (selectedStipend !== 0) query += `&stipendRange=0,${selectedStipend}`;
         if (selectedCountry) query += `&country=${selectedCountry}`;
         if (selectedState) query += `&state=${selectedState}`;
         if (selectedCity) query += `&city=${selectedCity}`;
@@ -365,7 +365,10 @@ const InternshipsUniversal = () => {
               <div ref={scrollableRef} className="overflow-y-scroll scrollbar-thin h-[90vh] overflow-x-hidden flex flex-col gap-5 pr-2">
                 {filteredInternships.length > 0 ? (
                   filteredInternships.map((internship) => (
-                    <div key={internship._id} className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6 border border-gray-100 hover:scale-[1.01] duration-300 cursor-pointer">
+                    <div
+  key={internship._id}
+  className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6 border border-gray-100 hover:scale-[1.01] duration-300 cursor-pointer"
+>
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex-1">
                           <h3 className="text-xl font-bold text-[var(--text-color)] mb-1">{internship.internshipName}</h3>

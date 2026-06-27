@@ -102,6 +102,7 @@ const PrevArrow = ({ onClick }) => (
 
 const RightSide = () => {
   const [internships, setInternships] = useState([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const userId = getUserIdFromToken();
@@ -383,7 +384,7 @@ const RightSide = () => {
 
         <div className="z-0 ">
           <Slider {...settings}>
-            {internships?.map((intern, index) => (
+            {filteredInternships?.map((intern, index) => (
               <div key={index} className="mx-0  md:mx-3 mb-6">
                 <div
                   key={index}
@@ -837,10 +838,13 @@ const RightSide = () => {
 
   {/* Button */}
   <div className="flex justify-center mt-14">
-    <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold shadow-md transition-all">
-      View All Categories →
-    </button>
-  </div>
+  <button
+    onClick={() => navigate("/internships/all-internships")}
+    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold shadow-md transition-all"
+  >
+    View All Categories →
+  </button>
+</div>
 
 </section>
 
@@ -999,12 +1003,10 @@ const RightSide = () => {
 
 </section>
 
-
-      <section className="py-2 bg-white overflow-hidden">
+<section className="py-10 bg-white overflow-hidden">
 
   {/* Heading */}
   <div className="text-center mb-14">
-
     <h2 className="mt-5 text-4xl md:text-5xl font-bold text-gray-900">
       Success Stories
     </h2>
@@ -1014,63 +1016,20 @@ const RightSide = () => {
     </p>
   </div>
 
-  <div className="testimonial-slider relative w-full py-10">
+  {/* Slider Wrapper */}
+  <div className="relative w-full overflow-hidden">
 
-    {/* Left Fade */}
-    <div className="absolute left-0 h-full w-24 bg-gradient-to-r from-white to-transparent z-10"></div>
+    {/* Fade Left */}
+    <div className="absolute left-0 top-0 h-full w-24 bg-gradient-to-r from-white to-transparent z-10"></div>
 
-    {/* Right Fade */}
-    <div className="absolute right-0 h-full w-24 bg-gradient-to-l from-white to-transparent z-10"></div>
+    {/* Fade Right */}
+    <div className="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-white to-transparent z-10"></div>
 
-    <div className="testimonial-track gap-6">
+    {/* Track */}
+    <div className="testimonial-track flex gap-6 w-max">
 
-      {/* ===== FIRST SET ===== */}
-
-      {[
-        {
-          name: "Rahul Sharma",
-          role: "React Developer Intern",
-          letter: "R",
-          color: "bg-blue-600",
-          text: "Got my first React Internship through InternsNest within 10 days."
-        },
-        {
-          name: "Priya Verma",
-          role: "Frontend Intern",
-          letter: "P",
-          color: "bg-pink-600",
-          text: "Found a remote internship that perfectly matched my skills."
-        },
-        {
-          name: "Ankit Patel",
-          role: "Software Engineer Intern",
-          letter: "A",
-          color: "bg-green-600",
-          text: "Verified companies and smooth application process."
-        },
-        {
-          name: "Neha Gupta",
-          role: "UI/UX Design Intern",
-          letter: "N",
-          color: "bg-purple-600",
-          text: "Much better opportunities than many other platforms."
-        },
-        {
-          name: "Rohit Kumar",
-          role: "Backend Developer Intern",
-          letter: "R",
-          color: "bg-orange-600",
-          text: "Received interview calls within the first week."
-        },
-        {
-          name: "Sneha Joshi",
-          role: "Data Analyst Intern",
-          letter: "S",
-          color: "bg-red-600",
-          text: "Simple, fast and completely hassle-free experience."
-        },
-      ]
-        .concat([
+      {[...Array(2)].flatMap((_, copyIndex) =>
+        [
           {
             name: "Rahul Sharma",
             role: "React Developer Intern",
@@ -1112,12 +1071,11 @@ const RightSide = () => {
             letter: "S",
             color: "bg-red-600",
             text: "Simple, fast and completely hassle-free experience."
-          },
-        ])
-        .map((item, index) => (
+          }
+        ].map((item, index) => (
           <div
-            key={index}
-            className="w-[340px] flex-shrink-0 bg-white rounded-3xl p-7 border border-gray-200 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+            key={`${copyIndex}-${index}`}
+            className="w-[340px] flex-shrink-0 bg-white rounded-3xl p-7 border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300"
           >
             <div className="text-yellow-400 text-lg mb-4">
               ⭐⭐⭐⭐⭐
@@ -1128,9 +1086,7 @@ const RightSide = () => {
             </p>
 
             <div className="flex items-center gap-4 mt-6">
-              <div
-                className={`w-12 h-12 rounded-full ${item.color} text-white flex items-center justify-center font-bold`}
-              >
+              <div className={`w-12 h-12 rounded-full ${item.color} text-white flex items-center justify-center font-bold`}>
                 {item.letter}
               </div>
 
@@ -1138,20 +1094,19 @@ const RightSide = () => {
                 <h4 className="font-semibold text-gray-900">
                   {item.name}
                 </h4>
-
                 <p className="text-sm text-gray-500">
                   {item.role}
                 </p>
               </div>
             </div>
           </div>
-        ))}
+        ))
+      )}
 
     </div>
-
   </div>
-
 </section>
+
 <section className="relative py-10 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-blue-50">
 
 {/* Background Effects */}
@@ -1424,7 +1379,7 @@ const RightSide = () => {
           duration-300
         "
         >
-          Explore Opportunities →
+          <Link to="/internships/all-internships"> Explore Opportunities → </Link>
         </button>
 
       </div>

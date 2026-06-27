@@ -127,25 +127,34 @@
 
 .testimonial-track {
   display: flex;
-  width: max-content;
   gap: 24px;
-  animation: scrollTestimonials 40s linear infinite;
-  /* will-change: transform; */
- align-items: stretch;
+  width: max-content;
+  animation: scrollTestimonials 25s linear infinite;
+  will-change: transform;
+}
+
+@keyframes scrollTestimonials {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 .testimonial-track:hover {
   animation-play-state: paused;
 }
 
-@keyframes scrollTestimonials {
-  from {
-    transform: translateX(0);
-  }
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  gap: 24px;
+  animation: marqueeSmooth 25s linear infinite;
+}
 
-  to {
-    transform: translateX(-50%);
-  }
+.animate-marquee:hover {
+  animation-play-state: paused;
 }
 
 /* Mobile Speed */
@@ -281,5 +290,6 @@ body {
   z-index: 1 !important;
 }
 .navbar {
-  z-index: 2;
+  position: fixed;
+  z-index: 9999;
 }

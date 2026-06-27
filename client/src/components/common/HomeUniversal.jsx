@@ -41,6 +41,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Spinner from "../common/Spinner";
 import api from "../common/server_url";
+import { FaGlobeAmericas,  FaExchangeAlt } from "react-icons/fa";
 
 const aboutImage = "/backgrounds/about_image.jpeg";
 
@@ -63,6 +64,7 @@ const HomeUniversal = () => {
   const token = localStorage.getItem("token");
 
   const [internships, setInternships] = useState([]);
+  const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(true);
   const [internshipFetched, setInternshipFetched] = useState(false);
 
@@ -127,6 +129,18 @@ const HomeUniversal = () => {
     }
   }, [internshipFetched]);
 
+  const filteredInternships = internships.filter((intern) => {
+  const keyword = searchText.toLowerCase().trim();
+
+  return (
+    intern.internshipName?.toLowerCase().includes(keyword) ||
+    intern.recruiter?.companyName?.toLowerCase().includes(keyword) ||
+    intern.internshipType?.toLowerCase().includes(keyword) ||
+    intern.internLocation?.city?.toLowerCase().includes(keyword) ||
+    intern.internLocation?.state?.toLowerCase().includes(keyword)
+  );
+});
+
   // Slider settings
   const settings = {
     dots: false,
@@ -167,19 +181,49 @@ const HomeUniversal = () => {
               <div className="flex items-center gap-2">
                 <FaSearch className="text-gray-400" />
                 <input
-                  type="text"
-                  placeholder="Search internships, roles, skills..."
-                  className="w-full outline-none text-gray-700"
-                />
+  type="text"
+  placeholder="Search internships, roles, skills..."
+  className="w-full outline-none text-gray-700"
+  value={searchText}
+  onChange={(e) => setSearchText(e.target.value)}
+/>
               </div>
               <div className="flex flex-wrap gap-3 mt-4 text-sm">
-                <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full">🌍 Remote</span>
-                <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full">🏢 Office</span>
-                <span className="px-3 py-1 bg-cyan-50 text-cyan-600 rounded-full">⚡ Hybrid</span>
-              </div>
-              <button className="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all duration-300">
-                Search Internships
-              </button>
+  {/* Remote */}
+  <button
+    onClick={() => navigate("/internships/work-from-home")}
+    className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full flex items-center gap-1 hover:bg-blue-100 transition cursor-pointer"
+  >
+    <FaGlobeAmericas className="text-sm" />
+    Remote
+  </button>
+
+  {/* Office */}
+  <button
+    onClick={() => navigate("/internships/work-from-office")}
+    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full flex items-center gap-1 hover:bg-gray-200 transition cursor-pointer"
+  >
+    <FaBuilding className="text-sm" />
+    Office
+  </button>
+
+  {/* Hybrid */}
+  <button
+    onClick={() => navigate("/internships/hybrid")}
+    className="px-3 py-1 bg-cyan-50 text-cyan-600 rounded-full flex items-center gap-1 hover:bg-cyan-100 transition cursor-pointer"
+  >
+    <FaExchangeAlt className="text-sm" />
+    Hybrid
+  </button>
+</div>
+              <button
+  onClick={() => {
+    console.log("Search text:", searchText);
+  }}
+  className="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700"
+>
+  Search Internships
+</button>
             </div>
 
             <div className="flex gap-4 mt-6">
@@ -192,7 +236,7 @@ const HomeUniversal = () => {
             </div>
           </div>
 
-          <div className="relative flex justify-center items-center">
+          {/* <div className="relative flex justify-center items-center">
             <div className="absolute -top-10 -left-10 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-40"></div>
             <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-cyan-200 rounded-full blur-3xl opacity-40"></div>
             <img
@@ -200,8 +244,20 @@ const HomeUniversal = () => {
               alt="hero"
               className="w-[420px] lg:w-[520px] object-contain rounded-3xl shadow-2xl relative z-10"
             />
-          </div>
-        </div>
+          </div> */}
+        
+
+        <div className="relative flex justify-center items-center">
+  <div className="absolute -top-10 -left-10 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-40"></div>
+  <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-cyan-200 rounded-full blur-3xl opacity-40"></div>
+
+  <img
+    src={aboutImage}
+    alt="hero"
+    className="w-[420px] lg:w-[520px] object-contain rounded-3xl shadow-2xl relative z-10 sticky top-24"
+  />
+</div>
+</div>
       </section>
 
       {/* Trusted Companies */}
@@ -243,7 +299,7 @@ const HomeUniversal = () => {
           <p className="text-blue-600 text-xl mt-2">Explore opportunities from top companies</p>
         </div>
         <Slider {...settings}>
-          {internships.map((intern, index) => (
+          {filteredInternships.map((intern, index) => (
             <div key={index} className="px-2">
               <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 h-full flex flex-col">
                 {/* Card Header */}
@@ -392,10 +448,13 @@ const HomeUniversal = () => {
           ))}
         </div>
         <div className="flex justify-center mt-14">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold shadow-md transition-all duration-300">
-            View All Categories →
-          </button>
-        </div>
+  <button
+    onClick={() => navigate("/internships/all-internships")}
+    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold shadow-md transition-all"
+  >
+    View All Categories →
+  </button>
+</div>
       </section>
 
       {/* Dual CTA (only for guests) */}
@@ -551,8 +610,10 @@ const HomeUniversal = () => {
                       </div>
                     ))}
                   </div>
-                  <button className="mt-10 px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold shadow-lg hover:scale-105 transition-all duration-300">
-                    Explore Opportunities →
+                  <button className="mt-10 px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold shadow-lg hover:scale-105 transition-all duration-300"><Link
+        to="/internships/all-internships"
+      > Explore Opportunities → </Link>
+            
                   </button>
                 </div>
               </div>

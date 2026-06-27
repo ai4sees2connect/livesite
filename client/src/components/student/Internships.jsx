@@ -363,7 +363,7 @@ const Internships = () => {
       query += `&workType=${workType}`;
     if (selectedProfile.length > 0)
       query += `&jobProfile=${selectedProfile.join(",")}`;
-    if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
+    if (selectedStipend !== 0) query += `&stipendRange=0,${selectedStipend}`;
     if (selectedCountry) query += `&country=${selectedCountry}`;
     if (selectedState) query += `&state=${selectedState}`;
     if (selectedCity) query += `&city=${selectedCity}`;
@@ -376,7 +376,7 @@ const Internships = () => {
       query += `&workType=${workType}`;
     if (selectedProfile.length > 0)
       query += `&jobProfile=${selectedProfile.join(",")}`;
-    if (selectedStipend !== 0) query += `&stipend=${selectedStipend}`;
+    if (selectedStipend !== 0) query += `&stipendRange=0,${selectedStipend}`;
     if (selectedCountry) query += `&country=${selectedCountry}`;
     if (selectedState) query += `&state=${selectedState}`;
     if (selectedCity) query += `&city=${selectedCity}`;
