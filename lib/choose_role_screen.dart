@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:internship_app/auth/recruiter_login_screen.dart';
+import 'package:internship_app/auth/student_login_screen.dart';
 import 'package:lottie/lottie.dart';
 
 class ChooseRoleScreen extends StatelessWidget {
@@ -163,7 +165,7 @@ class ChooseRoleScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(22),
                         boxShadow: [
                           BoxShadow(
-                            color: primary.withOpacity(.35),
+                            color: primary.withValues(alpha: .35),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           )
@@ -199,7 +201,10 @@ class ChooseRoleScreen extends StatelessWidget {
                           Icons.arrow_forward_ios,
                           color: Colors.white,
                         ),
-                        onTap: () {},
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const StudentLoginScreen()),
+                        ),
                       ),
                     ),
 
@@ -213,7 +218,7 @@ class ChooseRoleScreen extends StatelessWidget {
                         border: Border.all(color: primary, width: 1.6),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(.05),
+                            color: Colors.black.withValues(alpha: .05),
                             blurRadius: 15,
                           )
                         ],
@@ -224,7 +229,7 @@ class ChooseRoleScreen extends StatelessWidget {
                           vertical: 10,
                         ),
                         leading: CircleAvatar(
-                          backgroundColor: primary.withOpacity(.1),
+                          backgroundColor: primary.withValues(alpha: .1),
                           child: const Icon(
                             Icons.business_center,
                             color: primary,
@@ -244,7 +249,10 @@ class ChooseRoleScreen extends StatelessWidget {
                           Icons.arrow_forward_ios,
                           color: primary,
                         ),
-                        onTap: () {},
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const RecruiterLoginScreen()),
+                        ),
                       ),
                     ),
 
