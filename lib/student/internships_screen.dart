@@ -8,7 +8,9 @@ class InternshipsScreen extends StatefulWidget {
 }
 
 class _InternshipsScreenState extends State<InternshipsScreen> {
+  int _selectedPayFilter = 0;
   int _selectedFilter = 0;
+  final _payFilters = ['All', 'Paid', 'Unpaid'];
   final _filters = ['All', 'Remote', 'On-site', 'Hybrid'];
 
   final _internships = const [
@@ -30,7 +32,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       'duration': '6 months',
       'stipend': '₹12,000',
       'logo': 'DH',
-      'color': 0xFFEC4899,
+      'color': 0xFF3B82F6,
       'tags': ['Figma', 'Adobe XD'],
       'featured': false,
     },
@@ -41,7 +43,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       'duration': '4 months',
       'stipend': '₹18,000',
       'logo': 'DS',
-      'color': 0xFF10B981,
+      'color': 0xFF3B82F6,
       'tags': ['Node.js', 'MongoDB'],
       'featured': false,
     },
@@ -52,7 +54,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       'duration': '6 months',
       'stipend': '₹20,000',
       'logo': 'AL',
-      'color': 0xFF8B5CF6,
+      'color': 0xFF3B82F6,
       'tags': ['Python', 'TensorFlow'],
       'featured': true,
     },
@@ -63,7 +65,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       'duration': '3 months',
       'stipend': '₹10,000',
       'logo': 'SX',
-      'color': 0xFFF59E0B,
+      'color': 0xFF3B82F6,
       'tags': ['Agile', 'Jira'],
       'featured': false,
     },
@@ -202,10 +204,50 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
             ),
           ),
 
-          // Filter chips
+          // Pay filter chips (Paid / Unpaid)
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 0, 0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(_payFilters.length, (i) {
+                    final selected = i == _selectedPayFilter;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedPayFilter = i),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                          decoration: BoxDecoration(
+                            color: selected ? const Color(0xFF10B981) : Colors.white,
+                            borderRadius: BorderRadius.circular(22),
+                            boxShadow: selected
+                                ? [BoxShadow(color: const Color(0xFF10B981).withValues(alpha: 0.35), blurRadius: 8, offset: const Offset(0, 3))]
+                                : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4)],
+                          ),
+                          child: Text(
+                            _payFilters[i],
+                            style: TextStyle(
+                              color: selected ? Colors.white : Colors.grey.shade600,
+                              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
+          ),
+
+          // Location filter chips (All / Remote / On-site / Hybrid)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 0, 0),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
