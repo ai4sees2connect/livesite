@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:internship_app/auth/login_scree.dart';
+import 'package:internship_app/auth/student_login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -152,7 +152,7 @@ class ProfileScreen extends StatelessWidget {
                   onTap: () {
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      MaterialPageRoute(builder: (_) => const StudentLoginScreen()),
                       (_) => false,
                     );
                   },

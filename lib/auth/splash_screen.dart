@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:internship_app/auth/login_scree.dart';
 import 'package:internship_app/choose_role_screen.dart';
 import 'package:lottie/lottie.dart';
 

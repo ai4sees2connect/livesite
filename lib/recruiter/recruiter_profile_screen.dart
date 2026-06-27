@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:internship_app/auth/login_scree.dart';
+import 'package:internship_app/auth/recruiter_login_screen.dart';
 
 class RecruiterProfileScreen extends StatelessWidget {
   const RecruiterProfileScreen({super.key});
@@ -169,7 +169,7 @@ class RecruiterProfileScreen extends StatelessWidget {
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                          builder: (_) => const LoginScreen()),
+                          builder: (_) => const RecruiterLoginScreen()),
                       (_) => false,
                     );
                   },
