@@ -64,7 +64,7 @@ const HomeUniversal = () => {
   const token = localStorage.getItem("token");
 
   const [internships, setInternships] = useState([]);
-  const [searchText, setSearchText] = useState("");
+ const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [internshipFetched, setInternshipFetched] = useState(false);
 
@@ -130,7 +130,7 @@ const HomeUniversal = () => {
   }, [internshipFetched]);
 
   const filteredInternships = internships.filter((intern) => {
-  const keyword = searchText.toLowerCase().trim();
+  const keyword = searchTerm.toLowerCase().trim();
 
   return (
     intern.internshipName?.toLowerCase().includes(keyword) ||
@@ -184,8 +184,8 @@ const HomeUniversal = () => {
   type="text"
   placeholder="Search internships, roles, skills..."
   className="w-full outline-none text-gray-700"
-  value={searchText}
-  onChange={(e) => setSearchText(e.target.value)}
+  value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
 />
               </div>
               <div className="flex flex-wrap gap-3 mt-4 text-sm">
@@ -217,10 +217,8 @@ const HomeUniversal = () => {
   </button>
 </div>
               <button
-  onClick={() => {
-    console.log("Search text:", searchText);
-  }}
-  className="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700"
+  onClick={() => navigate("/internships/all-internships")}
+  className="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all duration-300"
 >
   Search Internships
 </button>

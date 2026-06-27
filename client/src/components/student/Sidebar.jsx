@@ -67,9 +67,12 @@ const Sidebar = ({ student }) => {
 </span>
         </div>
 
-        <button className="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700">
-          Search Internships
-        </button>
+       <button
+  onClick={() => navigate("/internships/all-internships")}
+  className="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all duration-300"
+>
+  Search Internships
+</button>
 
       </div>
 
