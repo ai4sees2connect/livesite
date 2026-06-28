@@ -1,6 +1,6 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:internship_app/choose_role_screen.dart';
-import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,15 +13,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
-
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) => const ChooseRoleScreen(),
-        ),
+        MaterialPageRoute(builder: (_) => const ChooseRoleScreen()),
       );
     });
   }
@@ -34,143 +30,271 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          /// Background Gradient
+          // Background gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xffF7F8FF),
-                  Colors.white,
-                ],
+                colors: [Color(0xFFEEF2FF), Colors.white],
               ),
             ),
           ),
 
-          /// Top Right Paper Plane
+          // Top-right circle arc
           Positioned(
-            top: 60,
-            right: -30,
-            child: Transform.rotate(
-              angle: 0.4,
-              child: Icon(
-                Icons.send_rounded,
-                size: 120,
-                color: const Color(0xff5B5CEB).withOpacity(.12),
-              ),
-            ),
-          ),
-
-          /// Left Circle
-          Positioned(
-            top: 180,
-            left: -70,
+            top: -70,
+            right: -70,
             child: Container(
-              width: 170,
-              height: 170,
+              width: 220,
+              height: 220,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xff5B5CEB).withOpacity(.05),
+                color: const Color(0xFF3B82F6).withValues(alpha: 0.08),
               ),
             ),
           ),
 
-          /// Right Bottom Circle
+          // Dot grid – top left
+          const Positioned(top: 52, left: 16, child: _DotGrid()),
+
+          // Plus sign – right side
           Positioned(
-            bottom: 120,
-            right: -40,
-            child: Container(
-              width: 150,
-              height: 150,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xff5B5CEB).withOpacity(.05),
-              ),
-            ),
+            top: size.height * 0.38,
+            right: 20,
+            child: const _PlusSign(color: Color(0xFF3B82F6)),
           ),
 
-          /// Blue Strip
+          // Plus sign – left side lower
           Positioned(
-            top: size.height * .56,
-            left: -130,
-            child: Transform.rotate(
-              angle: -0.35,
-              child: Container(
-                width: size.width * 1.8,
-                height: 90,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(60),
-                  color: const Color(0xff5B5CEB).withOpacity(.12),
-                ),
-              ),
-            ),
+            top: size.height * 0.58,
+            left: 14,
+            child: const _PlusSign(color: Color(0xFFADB5FF)),
           ),
 
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  const SizedBox(height: 25),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Headline ──────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 22, 24, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 60),
+                      RichText(
+                        text: const TextSpan(
+                          style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF111827),
+                            height: 1.2,
+                          ),
+                          children: [
+                            TextSpan(text: 'Find Internships\nthat actually\n'),
+                            TextSpan(
+                              text: 'match you.',
+                              style: TextStyle(color: Color(0xFF3B82F6)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
 
-                  /// Logo
-                  Center(
+                const SizedBox(height: 16),
+
+                // ── Photo + Floating icons ─────────────────────────
+                Expanded(
+                  child: Center(
+                    child: Transform.scale(
+                      scale: 1.019, // Change to 1.1, 1.2, 1.3 as needed
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Image.asset(
+                          'assets/splash.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // ── Bottom logo bar ────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 20),
+                  child: Center(
                     child: Image.network(
                       'https://livesite-two.vercel.app/logos/INTERNSNEST%20LOGO.png',
-                      width: 220,
+                      width: 262,
+                      height: 89,
+                      fit: BoxFit.contain,
                     ),
                   ),
-
-                  const SizedBox(height: 40),
-
-                  /// Heading
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: RichText(
-                      text: const TextSpan(
-                        style: TextStyle(
-                          fontSize: 38,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff111827),
-                          height: 1.15,
-                        ),
-                        children: [
-                          TextSpan(
-                            text:
-                                "Find Internships\nthat actually\n",
-                          ),
-                          TextSpan(
-                            text: "match you.",
-                            style: TextStyle(
-                              color: Color(0xff5B5CEB),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  /// Lottie Animation
-                  Expanded(
-                    child: Center(
-                      child: Lottie.asset(
-                        'assets/Welcome.json',
-                        width: size.width * .82,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
+}
+
+// ── Dot grid ───────────────────────────────────────────────────────────────
+class _DotGrid extends StatelessWidget {
+  const _DotGrid();
+
+  @override
+  Widget build(BuildContext context) {
+    const rows = 5;
+    const cols = 5;
+    return Column(
+      children: List.generate(
+        rows,
+        (r) => Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            children: List.generate(
+              cols,
+              (c) => Container(
+                margin: const EdgeInsets.only(right: 8),
+                width: 4,
+                height: 4,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFFBFC8FF),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Plus sign ──────────────────────────────────────────────────────────────
+class _PlusSign extends StatelessWidget {
+  final Color color;
+  const _PlusSign({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 16,
+      height: 16,
+      child: CustomPaint(painter: _PlusPainter(color: color)),
+    );
+  }
+}
+
+class _PlusPainter extends CustomPainter {
+  final Color color;
+  const _PlusPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(
+      Offset(size.width / 2, 0),
+      Offset(size.width / 2, size.height),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(0, size.height / 2),
+      Offset(size.width, size.height / 2),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_) => false;
+}
+
+// ── Floating icon card ─────────────────────────────────────────────────────
+// ignore: unused_element
+class _FloatingIcon extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final Color bgColor;
+
+  const _FloatingIcon({
+    required this.icon,
+    required this.iconColor,
+    required this.bgColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 52,
+      height: 52,
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: iconColor.withValues(alpha: 0.2),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Icon(icon, color: iconColor, size: 26),
+    );
+  }
+}
+
+// ── Wavy underline ─────────────────────────────────────────────────────────
+
+// ── Dashed connector lines ─────────────────────────────────────────────────
+// ignore: unused_element
+class _ConnectorPainter extends CustomPainter {
+  final double screenWidth;
+  const _ConnectorPainter({required this.screenWidth});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFFBFC8FF)
+      ..strokeWidth = 1.2
+      ..style = PaintingStyle.stroke;
+
+    void drawDashed(Offset from, Offset to) {
+      final dx = to.dx - from.dx;
+      final dy = to.dy - from.dy;
+      final dist = math.sqrt(dx * dx + dy * dy);
+      final steps = (dist / 8).floor();
+      for (int i = 0; i < steps; i += 2) {
+        final t1 = i / steps;
+        final t2 = (i + 1) / steps;
+        canvas.drawLine(
+          Offset(from.dx + dx * t1, from.dy + dy * t1),
+          Offset(from.dx + dx * t2, from.dy + dy * t2),
+          paint,
+        );
+      }
+    }
+
+    // center of briefcase icon
+    final briefcase = Offset(screenWidth * 0.42 + 26, 26);
+    // center of search icon
+    final search = Offset(30, size.height * 0.12 + 26);
+    // center of document icon
+    final document = Offset(size.width - 30, size.height * 0.12 + 26);
+
+    drawDashed(briefcase, search);
+    drawDashed(briefcase, document);
+    drawDashed(search, document);
+  }
+
+  @override
+  bool shouldRepaint(_) => false;
 }
