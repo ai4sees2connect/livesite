@@ -127,7 +127,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                     children: [
                       const Text("Don't have an account?", style: TextStyle(color: Colors.grey, fontSize: 13)),
                       TextButton(
-                        onPressed: () => Navigator.pushReplacement(
+                        onPressed: () => Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => const StudentSignupScreen()),
                         ),

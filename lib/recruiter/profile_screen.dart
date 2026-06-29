@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:internship_app/auth/recruiter_login_screen.dart';
+import 'package:internship_app/auth/choose_role_screen.dart';
 
 class RecruiterProfileScreen extends StatelessWidget {
   const RecruiterProfileScreen({super.key});
@@ -188,7 +188,7 @@ class RecruiterProfileScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 15, color: Color(0xFFEF4444), fontWeight: FontWeight.w600)),
                 onTap: () => Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (_) => const RecruiterLoginScreen()),
+                  MaterialPageRoute(builder: (_) => const ChooseRoleScreen()),
                   (_) => false,
                 ),
               ),

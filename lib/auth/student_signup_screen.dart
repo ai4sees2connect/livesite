@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:internship_app/auth/student_login_screen.dart';
 
 class StudentSignupScreen extends StatefulWidget {
   const StudentSignupScreen({super.key});
@@ -129,10 +128,7 @@ class _StudentSignupScreenState extends State<StudentSignupScreen> {
                     children: [
                       const Text('Already have an account?', style: TextStyle(color: Colors.grey, fontSize: 13)),
                       TextButton(
-                        onPressed: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => const StudentLoginScreen()),
-                        ),
+                        onPressed: () => Navigator.pop(context),
                         child: const Text('Login', style: TextStyle(color: primary, fontWeight: FontWeight.w700)),
                       ),
                     ],

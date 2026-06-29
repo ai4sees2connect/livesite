@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:internship_app/auth/student_login_screen.dart';
+import 'package:internship_app/auth/choose_role_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -109,7 +109,7 @@ class ProfileScreen extends StatelessWidget {
                           fontSize: 15, color: Color(0xFFEF4444), fontWeight: FontWeight.w600)),
                   onTap: () => Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (_) => const StudentLoginScreen()),
+                    MaterialPageRoute(builder: (_) => const ChooseRoleScreen()),
                     (_) => false,
                   ),
                 ),
