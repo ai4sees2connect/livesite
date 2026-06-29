@@ -194,7 +194,7 @@ class RecruiterProfileScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          SliverToBoxAdapter(child: SizedBox(height: MediaQuery.paddingOf(context).bottom + 80)),
         ],
       ),
     );

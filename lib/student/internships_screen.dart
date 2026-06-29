@@ -205,7 +205,7 @@ class InternshipsScreen extends StatelessWidget {
                       ),
                     )
                   : SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                      padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.paddingOf(context).bottom + 80),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (ctx, index) => InternshipCard(

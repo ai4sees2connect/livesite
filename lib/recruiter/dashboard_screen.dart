@@ -23,9 +23,9 @@ class DashboardScreen extends StatelessWidget {
       {'name': 'Neha Gupta', 'role': 'Backend Developer Intern', 'status': 'New', 'statusColor': 0xFF5B5CEB, 'initials': 'NG', 'avatarColor': 0xFFEEF2FF},
     ];
 
-    // Responsive stat card aspect ratio
+    // Responsive stat card aspect ratio — lower = taller cards
     final cardW = (screenWidth - hPad * 2 - 12) / 2;
-    final cardAspectRatio = (cardW / 110).clamp(1.2, 1.8);
+    final cardAspectRatio = (cardW / 130).clamp(1.1, 1.5);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF1F5F9),
@@ -190,7 +190,7 @@ class DashboardScreen extends StatelessWidget {
           ),
 
           SliverPadding(
-            padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 100),
+            padding: EdgeInsets.fromLTRB(hPad, 0, hPad, MediaQuery.paddingOf(context).bottom + 80),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
