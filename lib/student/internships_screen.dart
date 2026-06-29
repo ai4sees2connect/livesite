@@ -8,10 +8,9 @@ class InternshipsScreen extends StatefulWidget {
 }
 
 class _InternshipsScreenState extends State<InternshipsScreen> {
-  int _selectedPayFilter = 0;
-  int _selectedFilter = 0;
-  final _payFilters = ['All', 'Paid', 'Unpaid'];
-  final _filters = ['All', 'Remote', 'On-site', 'Hybrid'];
+  String _selectedPay = 'All';
+  String _selectedWorkType = 'All';
+  RangeValues _stipendRange = const RangeValues(0, 50000);
 
   final _internships = const [
     {
@@ -20,10 +19,12 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       'location': 'Remote',
       'duration': '3 months',
       'stipend': '₹15,000',
+      'stipendValue': 15000,
       'logo': 'TC',
       'color': 0xFF3B82F6,
       'tags': ['Flutter', 'Dart'],
       'featured': true,
+      'paid': true,
     },
     {
       'title': 'UI/UX Design Intern',
@@ -31,21 +32,25 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       'location': 'Bangalore',
       'duration': '6 months',
       'stipend': '₹12,000',
+      'stipendValue': 12000,
       'logo': 'DH',
       'color': 0xFF3B82F6,
       'tags': ['Figma', 'Adobe XD'],
       'featured': false,
+      'paid': true,
     },
     {
       'title': 'Backend Developer Intern',
       'company': 'DataSoft',
-      'location': 'Mumbai',
+      'location': 'On-site',
       'duration': '4 months',
       'stipend': '₹18,000',
+      'stipendValue': 18000,
       'logo': 'DS',
       'color': 0xFF3B82F6,
       'tags': ['Node.js', 'MongoDB'],
       'featured': false,
+      'paid': true,
     },
     {
       'title': 'Machine Learning Intern',
@@ -53,27 +58,187 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       'location': 'Remote',
       'duration': '6 months',
       'stipend': '₹20,000',
+      'stipendValue': 20000,
       'logo': 'AL',
       'color': 0xFF3B82F6,
       'tags': ['Python', 'TensorFlow'],
       'featured': true,
+      'paid': true,
     },
     {
       'title': 'Product Management Intern',
       'company': 'StartupX',
       'location': 'Hybrid',
       'duration': '3 months',
-      'stipend': '₹10,000',
+      'stipend': 'Unpaid',
+      'stipendValue': 0,
       'logo': 'SX',
       'color': 0xFF3B82F6,
       'tags': ['Agile', 'Jira'],
       'featured': false,
+      'paid': false,
     },
   ];
+
+  List<Map<String, Object>> get _filtered {
+    return _internships.where((item) {
+      if (_selectedPay == 'Paid' && !(item['paid'] as bool)) return false;
+      if (_selectedPay == 'Unpaid' && (item['paid'] as bool)) return false;
+      if (_selectedWorkType != 'All' && item['location'] != _selectedWorkType) return false;
+      final val = item['stipendValue'] as int;
+      if (val < _stipendRange.start || val > _stipendRange.end) return false;
+      return true;
+    }).cast<Map<String, Object>>().toList();
+  }
+
+  bool get _hasActiveFilters =>
+      _selectedPay != 'All' || _selectedWorkType != 'All' || _stipendRange != const RangeValues(0, 50000);
+
+  void _openFilterSheet() {
+    String tempPay = _selectedPay;
+    String tempWorkType = _selectedWorkType;
+    RangeValues tempRange = _stipendRange;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Handle
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Filter Internships',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1E293B)),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setSheet(() {
+                        tempPay = 'All';
+                        tempWorkType = 'All';
+                        tempRange = const RangeValues(0, 50000);
+                      });
+                    },
+                    child: const Text('Reset', style: TextStyle(color: Color(0xFF3B82F6))),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Pay type
+              const Text('Pay Type', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
+              const SizedBox(height: 10),
+              _FilterChipRow(
+                options: const ['All', 'Paid', 'Unpaid'],
+                selected: tempPay,
+                activeColor: const Color(0xFF10B981),
+                onSelected: (v) => setSheet(() => tempPay = v),
+              ),
+              const SizedBox(height: 20),
+
+              // Work type
+              const Text('Work Type', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
+              const SizedBox(height: 10),
+              _FilterChipRow(
+                options: const ['All', 'Remote', 'On-site', 'Hybrid'],
+                selected: tempWorkType,
+                activeColor: const Color(0xFF3B82F6),
+                onSelected: (v) => setSheet(() => tempWorkType = v),
+              ),
+              const SizedBox(height: 20),
+
+              // Stipend range
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Stipend Range', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
+                  Text(
+                    tempPay == 'Unpaid'
+                        ? 'N/A'
+                        : '₹${tempRange.start.round()} – ₹${tempRange.end.round()}',
+                    style: const TextStyle(fontSize: 12, color: Color(0xFF3B82F6), fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              RangeSlider(
+                values: tempRange,
+                min: 0,
+                max: 50000,
+                divisions: 50,
+                activeColor: const Color(0xFF3B82F6),
+                inactiveColor: const Color(0xFFE2E8F0),
+                onChanged: tempPay == 'Unpaid' ? null : (v) => setSheet(() => tempRange = v),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('₹0', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                  Text('₹50,000', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Apply button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3B82F6),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _selectedPay = tempPay;
+                      _selectedWorkType = tempWorkType;
+                      _stipendRange = tempRange;
+                    });
+                    Navigator.pop(ctx);
+                  },
+                  child: const Text('Apply Filters', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xFF3B82F6);
+    final filtered = _filtered;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF1F5F9),
@@ -155,7 +320,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      // Search bar
+                      // Search bar with filter icon
                       Container(
                         height: 50,
                         decoration: BoxDecoration(
@@ -185,14 +350,35 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                                 ),
                               ),
                             ),
-                            Container(
-                              margin: const EdgeInsets.all(6),
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: primary,
-                                borderRadius: BorderRadius.circular(10),
+                            GestureDetector(
+                              onTap: _openFilterSheet,
+                              child: Container(
+                                margin: const EdgeInsets.all(6),
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: _hasActiveFilters ? const Color(0xFF1D4ED8) : primary,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    const Icon(Icons.tune_rounded, color: Colors.white, size: 16),
+                                    if (_hasActiveFilters)
+                                      Positioned(
+                                        top: -4,
+                                        right: -4,
+                                        child: Container(
+                                          width: 8,
+                                          height: 8,
+                                          decoration: const BoxDecoration(
+                                            color: Color(0xFFFBBF24),
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
                               ),
-                              child: const Icon(Icons.tune_rounded, color: Colors.white, size: 16),
                             ),
                           ],
                         ),
@@ -204,102 +390,22 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
             ),
           ),
 
-          // Pay filter chips (Paid / Unpaid)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 0, 0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(_payFilters.length, (i) {
-                    final selected = i == _selectedPayFilter;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: GestureDetector(
-                        onTap: () => setState(() => _selectedPayFilter = i),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-                          decoration: BoxDecoration(
-                            color: selected ? const Color(0xFF10B981) : Colors.white,
-                            borderRadius: BorderRadius.circular(22),
-                            boxShadow: selected
-                                ? [BoxShadow(color: const Color(0xFF10B981).withValues(alpha: 0.35), blurRadius: 8, offset: const Offset(0, 3))]
-                                : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4)],
-                          ),
-                          child: Text(
-                            _payFilters[i],
-                            style: TextStyle(
-                              color: selected ? Colors.white : Colors.grey.shade600,
-                              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
-            ),
-          ),
-
-          // Location filter chips (All / Remote / On-site / Hybrid)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 0, 0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(_filters.length, (i) {
-                    final selected = i == _selectedFilter;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: GestureDetector(
-                        onTap: () => setState(() => _selectedFilter = i),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-                          decoration: BoxDecoration(
-                            color: selected ? primary : Colors.white,
-                            borderRadius: BorderRadius.circular(22),
-                            boxShadow: selected
-                                ? [BoxShadow(color: primary.withValues(alpha: 0.35), blurRadius: 8, offset: const Offset(0, 3))]
-                                : [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4)],
-                          ),
-                          child: Text(
-                            _filters[i],
-                            style: TextStyle(
-                              color: selected ? Colors.white : Colors.grey.shade600,
-                              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
-            ),
-          ),
-
           // Section title
-          const SliverToBoxAdapter(
+          SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 12),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Recommended for you',
-                    style: TextStyle(
+                    _hasActiveFilters ? 'Filtered Results (${filtered.length})' : 'Recommended for you',
+                    style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF1E293B),
                     ),
                   ),
-                  Text(
+                  const Text(
                     'See all',
                     style: TextStyle(
                       fontSize: 13,
@@ -313,188 +419,203 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
           ),
 
           // Cards
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final item = _internships[index];
-                  final color = Color(item['color'] as int);
-                  final tags = item['tags'] as List<String>;
-                  final isFeatured = item['featured'] as bool;
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.06),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+          filtered.isEmpty
+              ? SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 60),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Icon(Icons.search_off_rounded, size: 52, color: Colors.grey.shade300),
+                          const SizedBox(height: 12),
+                          Text('No internships match your filters',
+                              style: TextStyle(color: Colors.grey.shade500, fontSize: 14)),
+                        ],
+                      ),
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: IntrinsicHeight(
-                        child: Row(
-                          children: [
-                            // Left accent bar
-                            Container(width: 4, color: color),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Container(
-                                          width: 44,
-                                          height: 44,
-                                          decoration: BoxDecoration(
-                                            color: color.withValues(alpha: 0.12),
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              item['logo'] as String,
-                                              style: TextStyle(
-                                                color: color,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                )
+              : SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final item = filtered[index];
+                        final color = Color(item['color'] as int);
+                        final tags = item['tags'] as List<String>;
+                        final isFeatured = item['featured'] as bool;
+
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 14),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.06),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: IntrinsicHeight(
+                              child: Row(
+                                children: [
+                                  Container(width: 4, color: color),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
                                             children: [
-                                              Text(
-                                                item['title'] as String,
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.w800,
-                                                  fontSize: 15,
-                                                  color: Color(0xFF1E293B),
+                                              Container(
+                                                width: 44,
+                                                height: 44,
+                                                decoration: BoxDecoration(
+                                                  color: color.withValues(alpha: 0.12),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    item['logo'] as String,
+                                                    style: TextStyle(
+                                                      color: color,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
-                                              const SizedBox(height: 2),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      item['title'] as String,
+                                                      style: const TextStyle(
+                                                        fontWeight: FontWeight.w800,
+                                                        fontSize: 15,
+                                                        color: Color(0xFF1E293B),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 2),
+                                                    Text(
+                                                      item['company'] as String,
+                                                      style: TextStyle(
+                                                        color: Colors.grey.shade500,
+                                                        fontSize: 12,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              if (isFeatured)
+                                                Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(0xFFFEF3C7),
+                                                    borderRadius: BorderRadius.circular(8),
+                                                  ),
+                                                  child: const Text(
+                                                    '⭐ Featured',
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: Color(0xFFD97706),
+                                                    ),
+                                                  ),
+                                                ),
+                                              IconButton(
+                                                icon: const Icon(Icons.bookmark_border_rounded, size: 20),
+                                                color: Colors.grey.shade400,
+                                                onPressed: () {},
+                                                padding: EdgeInsets.zero,
+                                                constraints: const BoxConstraints(),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Row(
+                                            children: [
+                                              _infoChip(Icons.location_on_rounded, item['location'] as String, color),
+                                              const SizedBox(width: 8),
+                                              _infoChip(Icons.schedule_rounded, item['duration'] as String, color),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            children: [
+                                              ...tags.map((t) => Padding(
+                                                    padding: const EdgeInsets.only(right: 6),
+                                                    child: Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(0xFFF1F5F9),
+                                                        borderRadius: BorderRadius.circular(8),
+                                                      ),
+                                                      child: Text(
+                                                        t,
+                                                        style: const TextStyle(
+                                                          fontSize: 11,
+                                                          fontWeight: FontWeight.w600,
+                                                          color: Color(0xFF475569),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )),
+                                              const Spacer(),
                                               Text(
-                                                item['company'] as String,
+                                                item['paid'] as bool
+                                                    ? '${item['stipend']}/mo'
+                                                    : 'Unpaid',
                                                 style: TextStyle(
-                                                  color: Colors.grey.shade500,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w800,
+                                                  color: item['paid'] as bool ? color : Colors.grey.shade500,
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                        if (isFeatured)
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFFFEF3C7),
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: const Text(
-                                              '⭐ Featured',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w700,
-                                                color: Color(0xFFD97706),
+                                          const SizedBox(height: 12),
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: color,
+                                                foregroundColor: Colors.white,
+                                                elevation: 0,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                padding: const EdgeInsets.symmetric(vertical: 11),
+                                              ),
+                                              onPressed: () {},
+                                              child: const Text(
+                                                'Apply Now',
+                                                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
                                               ),
                                             ),
                                           ),
-                                        IconButton(
-                                          icon: const Icon(Icons.bookmark_border_rounded, size: 20),
-                                          color: Colors.grey.shade400,
-                                          onPressed: () {},
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    // Info row
-                                    Row(
-                                      children: [
-                                        _infoChip(Icons.location_on_rounded, item['location'] as String, color),
-                                        const SizedBox(width: 8),
-                                        _infoChip(Icons.schedule_rounded, item['duration'] as String, color),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    // Tags + stipend row
-                                    Row(
-                                      children: [
-                                        ...tags.map((t) => Padding(
-                                              padding: const EdgeInsets.only(right: 6),
-                                              child: Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                                decoration: BoxDecoration(
-                                                  color: const Color(0xFFF1F5F9),
-                                                  borderRadius: BorderRadius.circular(8),
-                                                ),
-                                                child: Text(
-                                                  t,
-                                                  style: const TextStyle(
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Color(0xFF475569),
-                                                  ),
-                                                ),
-                                              ),
-                                            )),
-                                        const Spacer(),
-                                        Text(
-                                          '${item['stipend']}/mo',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w800,
-                                            color: color,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: color,
-                                          foregroundColor: Colors.white,
-                                          elevation: 0,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(vertical: 11),
-                                        ),
-                                        onPressed: () {},
-                                        child: const Text(
-                                          'Apply Now',
-                                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-                                        ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
+                      childCount: filtered.length,
                     ),
-                  );
-                },
-                childCount: _internships.length,
-              ),
-            ),
-          ),
+                  ),
+                ),
         ],
       ),
     );
@@ -515,6 +636,53 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
           Text(label, style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600)),
         ],
       ),
+    );
+  }
+}
+
+class _FilterChipRow extends StatelessWidget {
+  final List<String> options;
+  final String selected;
+  final Color activeColor;
+  final ValueChanged<String> onSelected;
+
+  const _FilterChipRow({
+    required this.options,
+    required this.selected,
+    required this.activeColor,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: options.map((opt) {
+        final isSelected = opt == selected;
+        return GestureDetector(
+          onTap: () => onSelected(opt),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+            decoration: BoxDecoration(
+              color: isSelected ? activeColor : const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: isSelected
+                  ? [BoxShadow(color: activeColor.withValues(alpha: 0.3), blurRadius: 6, offset: const Offset(0, 2))]
+                  : [],
+            ),
+            child: Text(
+              opt,
+              style: TextStyle(
+                color: isSelected ? Colors.white : const Color(0xFF64748B),
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }
