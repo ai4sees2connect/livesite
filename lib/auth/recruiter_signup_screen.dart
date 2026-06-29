@@ -15,6 +15,9 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xFF5B5CEB);
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final hPad = MediaQuery.sizeOf(context).width < 380 ? 20.0 : 24.0;
+    final headerH = (screenHeight * 0.25).clamp(180.0, 280.0);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -25,11 +28,11 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
               Image.network(
                 'https://livesite-two.vercel.app/people/intern_pic.jpeg',
                 width: double.infinity,
-                height: 240,
+                height: headerH,
                 fit: BoxFit.cover,
               ),
               Container(
-                height: 240,
+                height: headerH,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -39,7 +42,7 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
                 ),
               ),
               Positioned(
-                top: 48,
+                top: MediaQuery.paddingOf(context).top + 12,
                 left: 16,
                 child: CircleAvatar(
                   backgroundColor: Colors.white.withValues(alpha: 0.9),
@@ -50,7 +53,7 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
                 ),
               ),
               Positioned(
-                top: 48,
+                top: MediaQuery.paddingOf(context).top + 12,
                 right: 16,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
@@ -60,8 +63,7 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
                     children: [
                       Icon(Icons.business_center_rounded, color: Colors.white, size: 15),
                       SizedBox(width: 5),
-                      Text('Recruiter',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
+                      Text('Recruiter', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
                     ],
                   ),
                 ),
@@ -70,23 +72,23 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 4, 24, 24),
+              padding: EdgeInsets.fromLTRB(hPad, 4, hPad, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Start hiring today 🏢', style: TextStyle(fontSize: 14, color: Colors.grey)),
                   const SizedBox(height: 4),
                   const Text('Create Account',
-                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-                  const SizedBox(height: 24),
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                  const SizedBox(height: 20),
                   _field(hint: 'Full Name', icon: Icons.person_outline_rounded),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
                   _field(hint: 'Company Name', icon: Icons.business_outlined),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
                   _field(hint: 'Work Email', icon: Icons.email_outlined),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
                   _field(hint: 'Phone Number', icon: Icons.phone_outlined),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
                   _field(
                     hint: 'Password',
                     icon: Icons.lock_outline_rounded,
@@ -97,7 +99,7 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
                       onPressed: () => setState(() => _obscurePass = !_obscurePass),
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
                   _field(
                     hint: 'Confirm Password',
                     icon: Icons.lock_outline_rounded,
@@ -108,10 +110,10 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
                       onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
-                    height: 54,
+                    height: 52,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primary,
@@ -123,11 +125,11 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Already have an account?', style: TextStyle(color: Colors.grey)),
+                      const Text('Already have an account?', style: TextStyle(color: Colors.grey, fontSize: 13)),
                       TextButton(
                         onPressed: () => Navigator.pushReplacement(
                           context,
@@ -156,7 +158,7 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
         suffixIcon: suffix,
         filled: true,
         fillColor: const Color(0xFFF8F7FF),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
       ),
     );

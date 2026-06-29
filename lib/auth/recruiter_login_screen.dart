@@ -15,6 +15,9 @@ class _RecruiterLoginScreenState extends State<RecruiterLoginScreen> {
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xFF5B5CEB);
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final hPad = MediaQuery.sizeOf(context).width < 380 ? 20.0 : 24.0;
+    final headerH = (screenHeight * 0.32).clamp(220.0, 340.0);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -25,11 +28,11 @@ class _RecruiterLoginScreenState extends State<RecruiterLoginScreen> {
               Image.network(
                 'https://livesite-two.vercel.app/people/intern_pic.jpeg',
                 width: double.infinity,
-                height: 300,
+                height: headerH,
                 fit: BoxFit.cover,
               ),
               Container(
-                height: 300,
+                height: headerH,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -39,7 +42,7 @@ class _RecruiterLoginScreenState extends State<RecruiterLoginScreen> {
                 ),
               ),
               Positioned(
-                top: 48,
+                top: MediaQuery.paddingOf(context).top + 12,
                 left: 16,
                 child: CircleAvatar(
                   backgroundColor: Colors.white.withValues(alpha: 0.9),
@@ -50,7 +53,7 @@ class _RecruiterLoginScreenState extends State<RecruiterLoginScreen> {
                 ),
               ),
               Positioned(
-                top: 48,
+                top: MediaQuery.paddingOf(context).top + 12,
                 right: 16,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
@@ -60,8 +63,7 @@ class _RecruiterLoginScreenState extends State<RecruiterLoginScreen> {
                     children: [
                       Icon(Icons.business_center_rounded, color: Colors.white, size: 15),
                       SizedBox(width: 5),
-                      Text('Recruiter',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
+                      Text('Recruiter', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
                     ],
                   ),
                 ),
@@ -70,15 +72,15 @@ class _RecruiterLoginScreenState extends State<RecruiterLoginScreen> {
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 4, 24, 24),
+              padding: EdgeInsets.fromLTRB(hPad, 4, hPad, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Welcome back 👋', style: TextStyle(fontSize: 14, color: Colors.grey)),
                   const SizedBox(height: 4),
                   const Text('Recruiter Login',
-                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-                  const SizedBox(height: 28),
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                  const SizedBox(height: 24),
                   _field(hint: 'Work Email', icon: Icons.email_outlined),
                   const SizedBox(height: 14),
                   _field(
@@ -91,7 +93,7 @@ class _RecruiterLoginScreenState extends State<RecruiterLoginScreen> {
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
@@ -103,7 +105,7 @@ class _RecruiterLoginScreenState extends State<RecruiterLoginScreen> {
                   const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,
-                    height: 54,
+                    height: 52,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primary,
@@ -118,25 +120,24 @@ class _RecruiterLoginScreenState extends State<RecruiterLoginScreen> {
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Don't have an account?", style: TextStyle(color: Colors.grey)),
+                      const Text("Don't have an account?", style: TextStyle(color: Colors.grey, fontSize: 13)),
                       TextButton(
                         onPressed: () => Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (_) => const RecruiterSignupScreen()),
                         ),
-                        child: const Text('Sign Up',
-                            style: TextStyle(color: primary, fontWeight: FontWeight.w700)),
+                        child: const Text('Sign Up', style: TextStyle(color: primary, fontWeight: FontWeight.w700)),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 24),
                   Center(
                     child: Text('Hire the Best Talent with InternsNest',
-                        style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600)),
+                        style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600, fontSize: 13)),
                   ),
                 ],
               ),

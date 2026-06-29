@@ -32,7 +32,10 @@ class RecruiterProfileScreen extends StatelessWidget {
               child: SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+                  padding: EdgeInsets.fromLTRB(
+                    MediaQuery.sizeOf(context).width < 380 ? 14 : 20, 20,
+                    MediaQuery.sizeOf(context).width < 380 ? 14 : 20, 32,
+                  ),
                   child: Column(
                     children: [
                       Stack(
@@ -113,7 +116,7 @@ class RecruiterProfileScreen extends StatelessWidget {
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
           SliverToBoxAdapter(
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
+              margin: EdgeInsets.symmetric(horizontal: MediaQuery.sizeOf(context).width < 380 ? 10 : 16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
@@ -162,7 +165,7 @@ class RecruiterProfileScreen extends StatelessWidget {
           const SliverToBoxAdapter(child: SizedBox(height: 12)),
           SliverToBoxAdapter(
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
+              margin: EdgeInsets.symmetric(horizontal: MediaQuery.sizeOf(context).width < 380 ? 10 : 16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),

@@ -36,16 +36,17 @@ class InternshipCard extends StatelessWidget {
               Container(width: 4, color: color),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(14),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Header row
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            width: 44,
-                            height: 44,
+                            width: 42,
+                            height: 42,
                             decoration: BoxDecoration(
                               color: color.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(12),
@@ -53,15 +54,11 @@ class InternshipCard extends StatelessWidget {
                             child: Center(
                               child: Text(
                                 internship.logo,
-                                style: TextStyle(
-                                  color: color,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
+                                style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,93 +66,87 @@ class InternshipCard extends StatelessWidget {
                                 Text(
                                   internship.title,
                                   style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 15,
-                                    color: Color(0xFF1E293B),
-                                  ),
+                                      fontWeight: FontWeight.w800, fontSize: 14, color: Color(0xFF1E293B)),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   internship.company,
-                                  style: TextStyle(
-                                    color: Colors.grey.shade500,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
                           ),
-                          if (internship.featured)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFEF3C7),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Text(
-                                '⭐ Featured',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFFD97706),
+                          const SizedBox(width: 4),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if (internship.featured)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFEF3C7),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Text('⭐ Featured',
+                                      style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: Color(0xFFD97706))),
+                                ),
+                              GestureDetector(
+                                onTap: () {},
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Icon(Icons.bookmark_border_rounded, size: 19, color: Colors.grey.shade400),
                                 ),
                               ),
-                            ),
-                          IconButton(
-                            icon: const Icon(Icons.bookmark_border_rounded, size: 20),
-                            color: Colors.grey.shade400,
-                            onPressed: () {},
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
+                            ],
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Info chips
-                      Row(
-                        children: [
-                          _infoChip(Icons.location_on_rounded, internship.location, color),
-                          const SizedBox(width: 8),
-                          _infoChip(Icons.schedule_rounded, internship.duration, color),
                         ],
                       ),
                       const SizedBox(height: 10),
 
-                      // Tags + stipend row
+                      // Info chips
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          _infoChip(Icons.location_on_rounded, internship.location, color),
+                          _infoChip(Icons.schedule_rounded, internship.duration, color),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+
+                      // Tags + stipend
                       Row(
                         children: [
-                          ...internship.tags.take(2).map((t) => Padding(
-                                padding: const EdgeInsets.only(right: 6),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFF1F5F9),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    t,
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF475569),
+                          Flexible(
+                            child: Wrap(
+                              spacing: 6,
+                              runSpacing: 4,
+                              children: internship.tags.take(2).map((t) => Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF1F5F9),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
-                                  ),
-                                ),
-                              )),
-                          const Spacer(),
+                                    child: Text(t,
+                                        style: const TextStyle(
+                                            fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF475569))),
+                                  )).toList(),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
                           Text(
                             internship.paid ? '${internship.stipend}/mo' : 'Unpaid',
                             style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: internship.paid ? color : Colors.grey.shade500,
-                            ),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                color: internship.paid ? color : Colors.grey.shade500),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
 
                       // Apply button
                       SizedBox(
@@ -165,16 +156,12 @@ class InternshipCard extends StatelessWidget {
                             backgroundColor: color,
                             foregroundColor: Colors.white,
                             elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 11),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
                           ),
                           onPressed: onApply,
-                          child: const Text(
-                            'Apply Now',
-                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-                          ),
+                          child: const Text('Apply Now',
+                              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
                         ),
                       ),
                     ],
@@ -198,7 +185,7 @@ class InternshipCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: color),
+          Icon(icon, size: 11, color: color),
           const SizedBox(width: 4),
           Text(label, style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600)),
         ],

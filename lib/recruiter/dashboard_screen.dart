@@ -6,6 +6,8 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xFF5B5CEB);
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final hPad = screenWidth < 380 ? 14.0 : 16.0;
 
     final stats = [
       {'label': 'Active Posts', 'value': '6', 'icon': Icons.work_rounded, 'color': 0xFF5B5CEB},
@@ -20,6 +22,10 @@ class DashboardScreen extends StatelessWidget {
       {'name': 'Rahul Singh', 'role': 'ML Intern', 'status': 'Shortlisted', 'statusColor': 0xFF10B981, 'initials': 'RS', 'avatarColor': 0xFFECFDF5},
       {'name': 'Neha Gupta', 'role': 'Backend Developer Intern', 'status': 'New', 'statusColor': 0xFF5B5CEB, 'initials': 'NG', 'avatarColor': 0xFFEEF2FF},
     ];
+
+    // Responsive stat card aspect ratio
+    final cardW = (screenWidth - hPad * 2 - 12) / 2;
+    final cardAspectRatio = (cardW / 110).clamp(1.2, 1.8);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF1F5F9),
@@ -38,7 +44,7 @@ class DashboardScreen extends StatelessWidget {
               child: SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+                  padding: EdgeInsets.fromLTRB(hPad + 4, 16, hPad + 4, 28),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -49,30 +55,29 @@ class DashboardScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Good Morning,',
-                                    style: TextStyle(
-                                        color: Colors.white.withValues(alpha: 0.8), fontSize: 14)),
+                                    style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13)),
                                 const SizedBox(height: 2),
                                 const Text('TechCorp',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),
+                                    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                                    overflow: TextOverflow.ellipsis),
                               ],
                             ),
                           ),
+                          const SizedBox(width: 8),
                           Stack(
                             children: [
                               CircleAvatar(
-                                radius: 26,
+                                radius: 24,
                                 backgroundColor: Colors.white.withValues(alpha: 0.2),
                                 child: const Text('TC',
-                                    style: TextStyle(
-                                        color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
                               ),
                               Positioned(
                                 right: 0,
                                 top: 0,
                                 child: Container(
-                                  width: 12,
-                                  height: 12,
+                                  width: 11,
+                                  height: 11,
                                   decoration: BoxDecoration(
                                     color: const Color(0xFF10B981),
                                     shape: BoxShape.circle,
@@ -84,15 +89,16 @@ class DashboardScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 18),
+                      // Quick-stat strip — scrollable on very small screens
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             _headerStat('6', 'Posts'),
                             _vDivider(),
@@ -110,14 +116,16 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
           ),
+
+          // Stats grid — responsive aspect ratio
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+            padding: EdgeInsets.fromLTRB(hPad, 20, hPad, 0),
             sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
-                childAspectRatio: 1.5,
+                childAspectRatio: cardAspectRatio,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
@@ -131,27 +139,30 @@ class DashboardScreen extends StatelessWidget {
                         BoxShadow(color: color.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 4)),
                       ],
                     ),
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(14),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          width: 38,
-                          height: 38,
+                          width: 36,
+                          height: 36,
                           decoration: BoxDecoration(
                             color: color.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Icon(stat['icon'] as IconData, color: color, size: 20),
+                          child: Icon(stat['icon'] as IconData, color: color, size: 19),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(stat['value'] as String,
-                                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color)),
+                            FittedBox(
+                              child: Text(stat['value'] as String,
+                                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color)),
+                            ),
                             Text(stat['label'] as String,
-                                style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                                style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                                overflow: TextOverflow.ellipsis),
                           ],
                         ),
                       ],
@@ -162,6 +173,7 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
           ),
+
           const SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.fromLTRB(20, 24, 20, 12),
@@ -176,8 +188,9 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
           ),
+
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+            padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 100),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
@@ -194,22 +207,24 @@ class DashboardScreen extends StatelessWidget {
                       ],
                     ),
                     child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                       leading: CircleAvatar(
-                        radius: 24,
+                        radius: 22,
                         backgroundColor: avatarColor,
                         child: Text(a['initials'] as String,
-                            style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 13)),
+                            style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 12)),
                       ),
                       title: Text(a['name'] as String,
-                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF1E293B))),
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF1E293B)),
+                          overflow: TextOverflow.ellipsis),
                       subtitle: Text(a['role'] as String,
-                          style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                          style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                          overflow: TextOverflow.ellipsis),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: statusColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
@@ -217,8 +232,8 @@ class DashboardScreen extends StatelessWidget {
                             child: Text(a['status'] as String,
                                 style: TextStyle(color: statusColor, fontSize: 11, fontWeight: FontWeight.w700)),
                           ),
-                          const SizedBox(width: 4),
-                          Icon(Icons.chevron_right, color: Colors.grey.shade300, size: 18),
+                          const SizedBox(width: 2),
+                          Icon(Icons.chevron_right, color: Colors.grey.shade300, size: 16),
                         ],
                       ),
                     ),
@@ -235,12 +250,13 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _headerStat(String value, String label) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold)),
         Text(label, style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 11)),
       ],
     );
   }
 
-  Widget _vDivider() => Container(width: 1, height: 28, color: Colors.white.withValues(alpha: 0.25));
+  Widget _vDivider() => Container(width: 1, height: 26, color: Colors.white.withValues(alpha: 0.25));
 }

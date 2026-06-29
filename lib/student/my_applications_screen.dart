@@ -15,11 +15,12 @@ class MyApplicationsScreen extends StatelessWidget {
         child: Consumer<ApplicationProvider>(
           builder: (context, appProvider, _) {
             final applications = appProvider.applications;
+            final hPad = MediaQuery.sizeOf(context).width < 380 ? 14.0 : 20.0;
             return Column(
               children: [
                 Container(
                   color: Colors.white,
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                  padding: EdgeInsets.fromLTRB(hPad, 16, hPad, 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

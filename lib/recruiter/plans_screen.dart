@@ -41,6 +41,8 @@ class _PlansScreenState extends State<PlansScreen> {
       },
     ];
 
+    final hPad = MediaQuery.sizeOf(context).width < 380 ? 14.0 : 20.0;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       body: SafeArea(
@@ -49,7 +51,7 @@ class _PlansScreenState extends State<PlansScreen> {
             children: [
               Container(
                 color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                padding: EdgeInsets.fromLTRB(hPad, 16, hPad, 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -84,7 +86,7 @@ class _PlansScreenState extends State<PlansScreen> {
                 final features = plan['features'] as List<String>;
 
                 return Container(
-                  margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+                  margin: EdgeInsets.fromLTRB(hPad, 0, hPad, 14),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(18),
