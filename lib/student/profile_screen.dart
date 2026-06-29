@@ -23,7 +23,6 @@ class ProfileScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Profile header
               Container(
                 width: double.infinity,
                 color: Colors.white,
@@ -36,14 +35,9 @@ class ProfileScreen extends StatelessWidget {
                         CircleAvatar(
                           radius: 48,
                           backgroundColor: primary.withValues(alpha: 0.12),
-                          child: const Text(
-                            'RB',
-                            style: TextStyle(
-                              color: primary,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: const Text('RB',
+                              style: TextStyle(
+                                  color: primary, fontSize: 28, fontWeight: FontWeight.bold)),
                         ),
                         CircleAvatar(
                           radius: 14,
@@ -53,21 +47,13 @@ class ProfileScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 14),
-                    const Text(
-                      'Rajnikant Behera',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
+                    const Text('Rajnikant Behera',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
                     const SizedBox(height: 4),
-                    Text(
-                      'rajnikantb2002@gmail.com',
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-                    ),
+                    Text('rajnikantb2002@gmail.com',
+                        style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
                     const SizedBox(height: 16),
-                    // Stats row
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -81,10 +67,7 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 12),
-
-              // Menu items
               Container(
                 color: Colors.white,
                 child: Column(
@@ -92,73 +75,45 @@ class ProfileScreen extends StatelessWidget {
                     return Column(
                       children: [
                         ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 2),
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                           leading: CircleAvatar(
                             radius: 20,
                             backgroundColor: primary.withValues(alpha: 0.08),
-                            child: Icon(
-                              item['icon'] as IconData,
-                              color: primary,
-                              size: 20,
-                            ),
+                            child: Icon(item['icon'] as IconData, color: primary, size: 20),
                           ),
-                          title: Text(
-                            item['label'] as String,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: Color(0xFF1E293B),
-                            ),
-                          ),
-                          trailing: const Icon(Icons.chevron_right,
-                              color: Colors.grey),
+                          title: Text(item['label'] as String,
+                              style: const TextStyle(fontSize: 15, color: Color(0xFF1E293B))),
+                          trailing: const Icon(Icons.chevron_right, color: Colors.grey),
                           onTap: () {},
                         ),
                         if (item != menuItems.last)
-                          Divider(
-                            height: 1,
-                            indent: 64,
-                            color: Colors.grey.shade100,
-                          ),
+                          Divider(height: 1, indent: 64, color: Colors.grey.shade100),
                       ],
                     );
                   }).toList(),
                 ),
               ),
-
               const SizedBox(height: 12),
-
-              // Logout
               Container(
                 color: Colors.white,
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 2),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                   leading: CircleAvatar(
                     radius: 20,
-                    backgroundColor:
-                        const Color(0xFFEF4444).withValues(alpha: 0.1),
-                    child: const Icon(Icons.logout,
-                        color: Color(0xFFEF4444), size: 20),
+                    backgroundColor: const Color(0xFFEF4444).withValues(alpha: 0.1),
+                    child: const Icon(Icons.logout, color: Color(0xFFEF4444), size: 20),
                   ),
-                  title: const Text(
-                    'Logout',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Color(0xFFEF4444),
-                      fontWeight: FontWeight.w600,
-                    ),
+                  title: const Text('Logout',
+                      style: TextStyle(
+                          fontSize: 15, color: Color(0xFFEF4444), fontWeight: FontWeight.w600)),
+                  onTap: () => Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const StudentLoginScreen()),
+                    (_) => false,
                   ),
-                  onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const StudentLoginScreen()),
-                      (_) => false,
-                    );
-                  },
                 ),
               ),
-
               const SizedBox(height: 24),
             ],
           ),
@@ -172,24 +127,14 @@ class ProfileScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1E293B),
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-          ),
+          Text(value,
+              style: const TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+          Text(label, style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
         ],
       ),
     );
   }
 
-  Widget _divider() {
-    return Container(height: 30, width: 1, color: Colors.grey.shade200);
-  }
+  Widget _divider() => Container(height: 30, width: 1, color: Colors.grey.shade200);
 }

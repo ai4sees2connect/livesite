@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:internship_app/choose_role_screen.dart';
+import 'package:internship_app/auth/choose_role_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -30,7 +30,6 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -40,8 +39,6 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
           ),
-
-          // Top-right circle arc
           Positioned(
             top: -70,
             right: -70,
@@ -54,35 +51,27 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
           ),
-
-          // Dot grid – top left
           const Positioned(top: 52, left: 16, child: _DotGrid()),
-
-          // Plus sign – right side
           Positioned(
             top: size.height * 0.38,
             right: 20,
             child: const _PlusSign(color: Color(0xFF3B82F6)),
           ),
-
-          // Plus sign – left side lower
           Positioned(
             top: size.height * 0.58,
             left: 14,
             child: const _PlusSign(color: Color(0xFFADB5FF)),
           ),
-
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Headline ──────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 22, 24, 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 60),
+                      const SizedBox(height: 60),
                       RichText(
                         text: const TextSpan(
                           style: TextStyle(
@@ -100,30 +89,21 @@ class _SplashScreenState extends State<SplashScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 8),
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 16),
-
-                // ── Photo + Floating icons ─────────────────────────
                 Expanded(
                   child: Center(
                     child: Transform.scale(
-                      scale: 1.019, // Change to 1.1, 1.2, 1.3 as needed
+                      scale: 1.019,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24),
-                        child: Image.asset(
-                          'assets/splash.png',
-                          fit: BoxFit.contain,
-                        ),
+                        child: Image.asset('assets/splash.png', fit: BoxFit.contain),
                       ),
                     ),
                   ),
                 ),
-
-                // ── Bottom logo bar ────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 12, 24, 20),
                   child: Center(
@@ -144,7 +124,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-// ── Dot grid ───────────────────────────────────────────────────────────────
 class _DotGrid extends StatelessWidget {
   const _DotGrid();
 
@@ -164,10 +143,7 @@ class _DotGrid extends StatelessWidget {
                 margin: const EdgeInsets.only(right: 8),
                 width: 4,
                 height: 4,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xFFBFC8FF),
-                ),
+                decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFFBFC8FF)),
               ),
             ),
           ),
@@ -177,7 +153,6 @@ class _DotGrid extends StatelessWidget {
   }
 }
 
-// ── Plus sign ──────────────────────────────────────────────────────────────
 class _PlusSign extends StatelessWidget {
   final Color color;
   const _PlusSign({required this.color});
@@ -202,59 +177,14 @@ class _PlusPainter extends CustomPainter {
       ..color = color
       ..strokeWidth = 2
       ..strokeCap = StrokeCap.round;
-    canvas.drawLine(
-      Offset(size.width / 2, 0),
-      Offset(size.width / 2, size.height),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(0, size.height / 2),
-      Offset(size.width, size.height / 2),
-      paint,
-    );
+    canvas.drawLine(Offset(size.width / 2, 0), Offset(size.width / 2, size.height), paint);
+    canvas.drawLine(Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
   }
 
   @override
   bool shouldRepaint(_) => false;
 }
 
-// ── Floating icon card ─────────────────────────────────────────────────────
-// ignore: unused_element
-class _FloatingIcon extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final Color bgColor;
-
-  const _FloatingIcon({
-    required this.icon,
-    required this.iconColor,
-    required this.bgColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 52,
-      height: 52,
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: iconColor.withValues(alpha: 0.2),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Icon(icon, color: iconColor, size: 26),
-    );
-  }
-}
-
-// ── Wavy underline ─────────────────────────────────────────────────────────
-
-// ── Dashed connector lines ─────────────────────────────────────────────────
 // ignore: unused_element
 class _ConnectorPainter extends CustomPainter {
   final double screenWidth;
@@ -283,13 +213,9 @@ class _ConnectorPainter extends CustomPainter {
       }
     }
 
-    // center of briefcase icon
     final briefcase = Offset(screenWidth * 0.42 + 26, 26);
-    // center of search icon
     final search = Offset(30, size.height * 0.12 + 26);
-    // center of document icon
     final document = Offset(size.width - 30, size.height * 0.12 + 26);
-
     drawDashed(briefcase, search);
     drawDashed(briefcase, document);
     drawDashed(search, document);

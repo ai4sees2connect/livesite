@@ -25,7 +25,6 @@ class DashboardScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF1F5F9),
       body: CustomScrollView(
         slivers: [
-          // Gradient header
           SliverToBoxAdapter(
             child: Container(
               decoration: const BoxDecoration(
@@ -49,22 +48,13 @@ class DashboardScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Good Morning,',
-                                  style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.8),
-                                    fontSize: 14,
-                                  ),
-                                ),
+                                Text('Good Morning,',
+                                    style: TextStyle(
+                                        color: Colors.white.withValues(alpha: 0.8), fontSize: 14)),
                                 const SizedBox(height: 2),
-                                const Text(
-                                  'TechCorp',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                const Text('TechCorp',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ),
@@ -73,14 +63,9 @@ class DashboardScreen extends StatelessWidget {
                               CircleAvatar(
                                 radius: 26,
                                 backgroundColor: Colors.white.withValues(alpha: 0.2),
-                                child: const Text(
-                                  'TC',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                  ),
-                                ),
+                                child: const Text('TC',
+                                    style: TextStyle(
+                                        color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
                               ),
                               Positioned(
                                 right: 0,
@@ -100,7 +85,6 @@ class DashboardScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      // Quick-stat strip
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                         decoration: BoxDecoration(
@@ -126,8 +110,6 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Stats grid
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
             sliver: SliverGrid(
@@ -146,11 +128,7 @@ class DashboardScreen extends StatelessWidget {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(18),
                       boxShadow: [
-                        BoxShadow(
-                          color: color.withValues(alpha: 0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
+                        BoxShadow(color: color.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 4)),
                       ],
                     ),
                     padding: const EdgeInsets.all(16),
@@ -170,18 +148,10 @@ class DashboardScreen extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              stat['value'] as String,
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: color,
-                              ),
-                            ),
-                            Text(
-                              stat['label'] as String,
-                              style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-                            ),
+                            Text(stat['value'] as String,
+                                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color)),
+                            Text(stat['label'] as String,
+                                style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
                           ],
                         ),
                       ],
@@ -192,28 +162,20 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Recent applicants header
           const SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.fromLTRB(20, 24, 20, 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Recent Applicants',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF1E293B)),
-                  ),
-                  Text(
-                    'See all',
-                    style: TextStyle(fontSize: 13, color: primary, fontWeight: FontWeight.w600),
-                  ),
+                  Text('Recent Applicants',
+                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF1E293B))),
+                  Text('See all',
+                      style: TextStyle(fontSize: 13, color: primary, fontWeight: FontWeight.w600)),
                 ],
               ),
             ),
           ),
-
-          // Applicant cards
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
             sliver: SliverList(
@@ -228,11 +190,7 @@ class DashboardScreen extends StatelessWidget {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
                       ],
                     ),
                     child: ListTile(
@@ -240,23 +198,13 @@ class DashboardScreen extends StatelessWidget {
                       leading: CircleAvatar(
                         radius: 24,
                         backgroundColor: avatarColor,
-                        child: Text(
-                          a['initials'] as String,
-                          style: TextStyle(
-                            color: statusColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                        ),
+                        child: Text(a['initials'] as String,
+                            style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 13)),
                       ),
-                      title: Text(
-                        a['name'] as String,
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF1E293B)),
-                      ),
-                      subtitle: Text(
-                        a['role'] as String,
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-                      ),
+                      title: Text(a['name'] as String,
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF1E293B))),
+                      subtitle: Text(a['role'] as String,
+                          style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -266,10 +214,8 @@ class DashboardScreen extends StatelessWidget {
                               color: statusColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: Text(
-                              a['status'] as String,
-                              style: TextStyle(color: statusColor, fontSize: 11, fontWeight: FontWeight.w700),
-                            ),
+                            child: Text(a['status'] as String,
+                                style: TextStyle(color: statusColor, fontSize: 11, fontWeight: FontWeight.w700)),
                           ),
                           const SizedBox(width: 4),
                           Icon(Icons.chevron_right, color: Colors.grey.shade300, size: 18),

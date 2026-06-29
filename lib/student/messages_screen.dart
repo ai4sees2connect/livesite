@@ -50,7 +50,6 @@ class MessagesScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF1F5F9),
       body: Column(
         children: [
-          // Header
           Container(
             decoration: const BoxDecoration(
               color: Colors.white,
@@ -69,14 +68,9 @@ class MessagesScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Messages',
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E293B),
-                          ),
-                        ),
+                        const Text('Messages',
+                            style: TextStyle(
+                                fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
@@ -118,10 +112,7 @@ class MessagesScreen extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 12),
-
-          // Chat list
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -152,14 +143,8 @@ class MessagesScreen extends StatelessWidget {
                         CircleAvatar(
                           radius: 26,
                           backgroundColor: color.withValues(alpha: 0.15),
-                          child: Text(
-                            chat['initials'] as String,
-                            style: TextStyle(
-                              color: color,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
+                          child: Text(chat['initials'] as String,
+                              style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14)),
                         ),
                         if (isOnline)
                           Positioned(
@@ -226,10 +211,7 @@ class MessagesScreen extends StatelessWidget {
                               child: Text(
                                 chat['unread'] as String,
                                 style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                                    color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
                               ),
                             ),
                           ],

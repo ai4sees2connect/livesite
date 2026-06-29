@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:internship_app/recruiter/dashboard_screen.dart';
 import 'package:internship_app/recruiter/post_internship_screen.dart';
-import 'package:internship_app/recruiter/recruiter_messages_screen.dart';
-import 'package:internship_app/recruiter/plans_pricing_screen.dart';
-import 'package:internship_app/recruiter/recruiter_profile_screen.dart';
+import 'package:internship_app/recruiter/messages_screen.dart';
+import 'package:internship_app/recruiter/plans_screen.dart';
+import 'package:internship_app/recruiter/profile_screen.dart';
 
 class RecruiterHomeScreen extends StatefulWidget {
   const RecruiterHomeScreen({super.key});
@@ -19,7 +19,7 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     DashboardScreen(),
     PostInternshipScreen(),
     RecruiterMessagesScreen(),
-    PlansPricingScreen(),
+    PlansScreen(),
     RecruiterProfileScreen(),
   ];
 

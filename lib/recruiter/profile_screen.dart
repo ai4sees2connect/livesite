@@ -19,7 +19,6 @@ class RecruiterProfileScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF1F5F9),
       body: CustomScrollView(
         slivers: [
-          // Gradient header
           SliverToBoxAdapter(
             child: Container(
               decoration: const BoxDecoration(
@@ -48,10 +47,8 @@ class RecruiterProfileScreen extends StatelessWidget {
                               border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 3),
                             ),
                             child: const Center(
-                              child: Text(
-                                'TC',
-                                style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
-                              ),
+                              child: Text('TC',
+                                  style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
                             ),
                           ),
                           Container(
@@ -67,15 +64,11 @@ class RecruiterProfileScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 14),
-                      const Text(
-                        'TechCorp',
-                        style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-                      ),
+                      const Text('TechCorp',
+                          style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
-                      Text(
-                        'hr@techcorp.com',
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 14),
-                      ),
+                      Text('hr@techcorp.com',
+                          style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 14)),
                       const SizedBox(height: 10),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
@@ -88,10 +81,8 @@ class RecruiterProfileScreen extends StatelessWidget {
                           children: [
                             Icon(Icons.workspace_premium_rounded, color: Colors.amber, size: 14),
                             SizedBox(width: 5),
-                            Text(
-                              'Pro Plan',
-                              style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
-                            ),
+                            Text('Pro Plan',
+                                style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
                           ],
                         ),
                       ),
@@ -119,10 +110,7 @@ class RecruiterProfileScreen extends StatelessWidget {
               ),
             ),
           ),
-
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
-
-          // Menu
           SliverToBoxAdapter(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -130,11 +118,7 @@ class RecruiterProfileScreen extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 2)),
                 ],
               ),
               child: Column(
@@ -154,10 +138,8 @@ class RecruiterProfileScreen extends StatelessWidget {
                           ),
                           child: Icon(item['icon'] as IconData, color: color, size: 20),
                         ),
-                        title: Text(
-                          item['label'] as String,
-                          style: const TextStyle(fontSize: 15, color: Color(0xFF1E293B), fontWeight: FontWeight.w500),
-                        ),
+                        title: Text(item['label'] as String,
+                            style: const TextStyle(fontSize: 15, color: Color(0xFF1E293B), fontWeight: FontWeight.w500)),
                         trailing: Container(
                           width: 28,
                           height: 28,
@@ -177,10 +159,7 @@ class RecruiterProfileScreen extends StatelessWidget {
               ),
             ),
           ),
-
           const SliverToBoxAdapter(child: SizedBox(height: 12)),
-
-          // Logout
           SliverToBoxAdapter(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -188,11 +167,7 @@ class RecruiterProfileScreen extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 2)),
                 ],
               ),
               child: ListTile(
@@ -206,21 +181,16 @@ class RecruiterProfileScreen extends StatelessWidget {
                   ),
                   child: const Icon(Icons.logout_rounded, color: Color(0xFFEF4444), size: 20),
                 ),
-                title: const Text(
-                  'Logout',
-                  style: TextStyle(fontSize: 15, color: Color(0xFFEF4444), fontWeight: FontWeight.w600),
+                title: const Text('Logout',
+                    style: TextStyle(fontSize: 15, color: Color(0xFFEF4444), fontWeight: FontWeight.w600)),
+                onTap: () => Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RecruiterLoginScreen()),
+                  (_) => false,
                 ),
-                onTap: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const RecruiterLoginScreen()),
-                    (_) => false,
-                  );
-                },
               ),
             ),
           ),
-
           const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),

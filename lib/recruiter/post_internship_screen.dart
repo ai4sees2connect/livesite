@@ -20,20 +20,14 @@ class _PostInternshipScreenState extends State<PostInternshipScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
             Container(
               color: Colors.white,
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
               child: const Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  'Post Internship',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
-                  ),
-                ),
+                child: Text('Post Internship',
+                    style: TextStyle(
+                        fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
               ),
             ),
             Expanded(
@@ -49,16 +43,11 @@ class _PostInternshipScreenState extends State<PostInternshipScreen> {
                     _section('Location'),
                     _field('e.g. Bangalore / Remote'),
                     _section('Work Type'),
-                    _chips(['Remote', 'On-site', 'Hybrid'], _selectedType, (v) {
-                      setState(() => _selectedType = v);
-                    }, primary),
+                    _chips(['Remote', 'On-site', 'Hybrid'], _selectedType,
+                        (v) => setState(() => _selectedType = v), primary),
                     _section('Duration'),
-                    _chips(
-                      ['1 month', '2 months', '3 months', '6 months'],
-                      _selectedDuration,
-                      (v) => setState(() => _selectedDuration = v),
-                      primary,
-                    ),
+                    _chips(['1 month', '2 months', '3 months', '6 months'], _selectedDuration,
+                        (v) => setState(() => _selectedDuration = v), primary),
                     _section('Stipend (per month)'),
                     _field('e.g. ₹15,000', keyboardType: TextInputType.number),
                     _section('Number of Openings'),
@@ -66,10 +55,7 @@ class _PostInternshipScreenState extends State<PostInternshipScreen> {
                     _section('Skills Required'),
                     _field('e.g. Flutter, Dart, Firebase'),
                     _section('Job Description'),
-                    _field(
-                      'Describe responsibilities, requirements...',
-                      maxLines: 5,
-                    ),
+                    _field('Describe responsibilities, requirements...', maxLines: 5),
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
@@ -78,26 +64,16 @@ class _PostInternshipScreenState extends State<PostInternshipScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primary,
                           elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                        onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Internship posted successfully!'),
+                            backgroundColor: Color(0xFF10B981),
                           ),
                         ),
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Internship posted successfully!'),
-                              backgroundColor: Color(0xFF10B981),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          'Post Internship',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        child: const Text('Post Internship',
+                            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -111,19 +87,11 @@ class _PostInternshipScreenState extends State<PostInternshipScreen> {
     );
   }
 
-  Widget _section(String label) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 8),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-          color: Color(0xFF1E293B),
-        ),
-      ),
-    );
-  }
+  Widget _section(String label) => Padding(
+        padding: const EdgeInsets.only(top: 16, bottom: 8),
+        child: Text(label,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF1E293B))),
+      );
 
   Widget _field(String hint, {int maxLines = 1, TextInputType? keyboardType}) {
     return TextField(
@@ -151,12 +119,7 @@ class _PostInternshipScreenState extends State<PostInternshipScreen> {
     );
   }
 
-  Widget _chips(
-    List<String> options,
-    String selected,
-    ValueChanged<String> onSelect,
-    Color primary,
-  ) {
+  Widget _chips(List<String> options, String selected, ValueChanged<String> onSelect, Color primary) {
     return Wrap(
       spacing: 8,
       children: options
@@ -172,9 +135,7 @@ class _PostInternshipScreenState extends State<PostInternshipScreen> {
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
-                  side: BorderSide(
-                    color: selected == o ? primary : Colors.grey.shade300,
-                  ),
+                  side: BorderSide(color: selected == o ? primary : Colors.grey.shade300),
                 ),
               ))
           .toList(),
