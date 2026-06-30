@@ -14,6 +14,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool _pickingImage = false;
+
   static const _primary = Color(0xFF3B82F6);
   static const _primaryDark = Color(0xFF1D4ED8);
   static const _bg = Color(0xFFF1F5F9);
@@ -1432,36 +1434,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // ── Media pickers ─────────────────────────────────────────────────────────────
   Future<void> _pickAndUploadProfilePicture(
       StudentProfileProvider pv) async {
-    final picked = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, imageQuality: 80);
-    if (picked == null) return;
-    final bytes = await picked.readAsBytes();
-    final ok = await pv.uploadProfilePicture(bytes.toList(), picked.name);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(ok ? 'Profile picture updated!' : 'Upload failed.'),
-        backgroundColor: ok ? _primary : _danger,
-        behavior: SnackBarBehavior.floating,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ));
+    if (_pickingImage) return;
+    _pickingImage = true;
+    try {
+      final picked = await ImagePicker()
+          .pickImage(source: ImageSource.gallery, imageQuality: 80);
+      if (picked == null) return;
+      final bytes = await picked.readAsBytes();
+      final ok = await pv.uploadProfilePicture(bytes.toList(), picked.name);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(ok ? 'Profile picture updated!' : 'Upload failed.'),
+          backgroundColor: ok ? _primary : _danger,
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ));
+      }
+    } finally {
+      _pickingImage = false;
     }
   }
 
   Future<void> _pickAndUploadResume(StudentProfileProvider pv) async {
-    final picked =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked == null) return;
-    final bytes = await picked.readAsBytes();
-    final ok = await pv.uploadResume(bytes.toList(), picked.name);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(ok ? 'Resume uploaded!' : 'Upload failed.'),
-        backgroundColor: ok ? _primary : _danger,
-        behavior: SnackBarBehavior.floating,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ));
+    if (_pickingImage) return;
+    _pickingImage = true;
+    try {
+      final picked =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (picked == null) return;
+      final bytes = await picked.readAsBytes();
+      final ok = await pv.uploadResume(bytes.toList(), picked.name);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(ok ? 'Resume uploaded!' : 'Upload failed.'),
+          backgroundColor: ok ? _primary : _danger,
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ));
+      }
+    } finally {
+      _pickingImage = false;
     }
   }
 
