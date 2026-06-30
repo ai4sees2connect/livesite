@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:internship_app/auth/choose_role_screen.dart';
 import 'package:internship_app/auth/recruiter_signup_screen.dart';
+import 'package:internship_app/core/storage/auth_storage.dart';
 import 'package:internship_app/recruiter/home_screen.dart';
 
 class RecruiterLoginScreen extends StatefulWidget {
@@ -48,7 +50,10 @@ class _RecruiterLoginScreenState extends State<RecruiterLoginScreen> {
                   backgroundColor: Colors.white.withValues(alpha: 0.9),
                   child: IconButton(
                     icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: Color(0xFF1E293B)),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ChooseRoleScreen()),
+                    ),
                   ),
                 ),
               ),
@@ -112,10 +117,14 @@ class _RecruiterLoginScreenState extends State<RecruiterLoginScreen> {
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
-                      onPressed: () => Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const RecruiterHomeScreen()),
-                      ),
+                      onPressed: () async {
+                        await AuthStorage.saveRecruiterSession();
+                        if (!context.mounted) return;
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => const RecruiterHomeScreen()),
+                        );
+                      },
                       child: const Text('Login',
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
                     ),

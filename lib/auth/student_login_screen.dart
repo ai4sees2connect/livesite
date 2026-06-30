@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:internship_app/auth/choose_role_screen.dart';
 import 'package:internship_app/auth/student_signup_screen.dart';
 import 'package:internship_app/auth/student_forgot_password_screen.dart';
 import 'package:internship_app/core/storage/auth_storage.dart';
@@ -115,7 +116,10 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                   child: IconButton(
                     icon: const Icon(Icons.arrow_back_ios_new_rounded,
                         size: 18, color: Color(0xFF1E293B)),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ChooseRoleScreen()),
+                    ),
                   ),
                 ),
               ),

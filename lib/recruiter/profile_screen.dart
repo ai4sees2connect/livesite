@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:internship_app/auth/choose_role_screen.dart';
+import 'package:internship_app/auth/recruiter_login_screen.dart';
+import 'package:internship_app/core/storage/auth_storage.dart';
 
 class RecruiterProfileScreen extends StatelessWidget {
   const RecruiterProfileScreen({super.key});
@@ -186,11 +187,15 @@ class RecruiterProfileScreen extends StatelessWidget {
                 ),
                 title: const Text('Logout',
                     style: TextStyle(fontSize: 15, color: Color(0xFFEF4444), fontWeight: FontWeight.w600)),
-                onTap: () => Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ChooseRoleScreen()),
-                  (_) => false,
-                ),
+                onTap: () async {
+                  await AuthStorage.clearRecruiterSession();
+                  if (!context.mounted) return;
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const RecruiterLoginScreen()),
+                    (_) => false,
+                  );
+                },
               ),
             ),
           ),

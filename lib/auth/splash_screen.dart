@@ -1,6 +1,9 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:internship_app/auth/choose_role_screen.dart';
+import 'package:internship_app/core/storage/auth_storage.dart';
+import 'package:internship_app/student/home_screen.dart';
+import 'package:internship_app/recruiter/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,13 +16,30 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
+    Future.delayed(const Duration(seconds: 3), _navigate);
+  }
+
+  Future<void> _navigate() async {
+    final token = await AuthStorage.getToken();
+    final isRecruiter = await AuthStorage.isRecruiterLoggedIn();
+    if (!mounted) return;
+
+    if (token != null && token.isNotEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const StudentHomeScreen()),
+      );
+    } else if (isRecruiter) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const RecruiterHomeScreen()),
+      );
+    } else {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const ChooseRoleScreen()),
       );
-    });
+    }
   }
 
   @override

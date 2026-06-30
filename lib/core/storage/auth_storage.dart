@@ -53,6 +53,19 @@ class AuthStorage {
   static Future<String?> getExperience() async =>
       (await SharedPreferences.getInstance()).getString(_experienceKey);
 
+  // ── Recruiter session ─────────────────────────────────────────────────────────
+  static const _recruiterKey = 'recruiter_logged_in';
+
+  static Future<void> saveRecruiterSession() async =>
+      (await SharedPreferences.getInstance()).setBool(_recruiterKey, true);
+
+  static Future<bool> isRecruiterLoggedIn() async =>
+      (await SharedPreferences.getInstance()).getBool(_recruiterKey) ?? false;
+
+  static Future<void> clearRecruiterSession() async =>
+      (await SharedPreferences.getInstance()).remove(_recruiterKey);
+
+  // ── Student id helper ─────────────────────────────────────────────────────────
   static Future<void> saveStudentId(String id) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_studentIdKey, id);

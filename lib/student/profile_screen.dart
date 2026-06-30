@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:internship_app/auth/choose_role_screen.dart';
+import 'package:internship_app/auth/student_login_screen.dart';
 import 'package:internship_app/core/storage/auth_storage.dart';
 import 'package:internship_app/models/student_profile_model.dart';
 import 'package:internship_app/providers/student_profile_provider.dart';
@@ -330,7 +330,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => const ChooseRoleScreen()),
+                                builder: (_) => const StudentLoginScreen()),
                             (_) => false,
                           );
                         },
