@@ -15,7 +15,13 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   static const _primary = Color(0xFF3B82F6);
-  static const _bg = Color(0xFFF8FAFC);
+  static const _primaryDark = Color(0xFF1D4ED8);
+  static const _bg = Color(0xFFF1F5F9);
+  static const _surface = Colors.white;
+  static const _textDark = Color(0xFF0F172A);
+  static const _textMid = Color(0xFF475569);
+  static const _textLight = Color(0xFF94A3B8);
+  static const _danger = Color(0xFFEF4444);
 
   @override
   void initState() {
@@ -27,397 +33,547 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<StudentProfileProvider>();
+    final pv = context.watch<StudentProfileProvider>();
+
+    if (pv.state == LoadState.loading) {
+      return const Scaffold(
+        backgroundColor: _bg,
+        body: Center(
+          child: CircularProgressIndicator(color: _primary),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: _bg,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            if (provider.state == LoadState.loading)
-              const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    // ── Profile header ─────────────────────────────────────
-                    _card(
-                      child: Column(
-                        children: [
-                          // Avatar
-                          GestureDetector(
-                            onTap: () => _pickAndUploadProfilePicture(provider),
-                            child: Container(
-                              width: 90,
-                              height: 90,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                    color: Colors.grey.shade300, width: 2),
-                              ),
-                              child: provider.profilePictureUrl.isNotEmpty
-                                  ? ClipOval(
-                                      child: Image.network(
-                                        provider.profilePictureUrl,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (ctx, e, st) =>
-                                            const _CameraPlaceholder(),
-                                      ),
-                                    )
-                                  : const _CameraPlaceholder(),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            provider.name.isNotEmpty
-                                ? provider.name
-                                : 'Student',
-                            style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF1E293B)),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(provider.email,
-                              style: TextStyle(
-                                  fontSize: 13, color: Colors.grey.shade500)),
-                          const SizedBox(height: 16),
-                          Divider(color: Colors.grey.shade100),
-                          const SizedBox(height: 8),
-                          _profileRow(
-                            value: provider.location.isNotEmpty
-                                ? provider.location
-                                : 'Add Location',
-                            onEdit: () => _editField(
-                              label: 'Location',
-                              initial: provider.location,
-                              onSave: provider.updateLocation,
-                            ),
-                          ),
-                          _profileRow(
-                            value: provider.experience.isNotEmpty
-                                ? provider.experience
-                                : 'Add Experience',
-                            onEdit: () => _editField(
-                              label: 'Experience',
-                              initial: provider.experience,
-                              onSave: provider.updateExperience,
-                            ),
-                          ),
-                          _profileRow(
-                            value: provider.gender.isNotEmpty
-                                ? provider.gender
-                                : 'Add Gender',
-                            onEdit: () => _editGender(provider),
-                          ),
-                        ],
+      body: CustomScrollView(
+        slivers: [
+          // ── Hero header sliver ──────────────────────────────────────────────
+          SliverToBoxAdapter(child: _buildHero(pv)),
+
+          // ── Content ─────────────────────────────────────────────────────────
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                const SizedBox(height: 16),
+                _buildInfoChips(pv),
+                const SizedBox(height: 16),
+                _buildResumeCard(pv),
+                const SizedBox(height: 14),
+                _buildSection(
+                  icon: Icons.school_rounded,
+                  iconColor: const Color(0xFF6366F1),
+                  iconBg: const Color(0xFFEEF2FF),
+                  title: 'Education',
+                  badge: 'Required',
+                  badgeColor: const Color(0xFF6366F1),
+                  onAdd: () => _showAddEducationSheet(pv),
+                  emptyMsg: 'Add your educational background',
+                  emptyIcon: Icons.school_outlined,
+                  items: List.generate(pv.education.length,
+                      (i) => _eduItem(pv.education[i], () => pv.deleteEducation(i))),
+                ),
+                const SizedBox(height: 14),
+                _buildSection(
+                  icon: Icons.work_rounded,
+                  iconColor: const Color(0xFF0EA5E9),
+                  iconBg: const Color(0xFFE0F2FE),
+                  title: 'Work Experience',
+                  onAdd: () => _showAddWorkExpSheet(pv),
+                  emptyMsg: 'Add your work history',
+                  emptyIcon: Icons.business_center_outlined,
+                  items: List.generate(pv.workExperience.length,
+                      (i) => _workItem(pv.workExperience[i], () => pv.deleteWorkExperience(i))),
+                ),
+                const SizedBox(height: 14),
+                _buildSection(
+                  icon: Icons.verified_rounded,
+                  iconColor: const Color(0xFF10B981),
+                  iconBg: const Color(0xFFD1FAE5),
+                  title: 'Certificates',
+                  onAdd: () => _showAddCertSheet(pv),
+                  emptyMsg: 'Add your certifications',
+                  emptyIcon: Icons.card_membership_outlined,
+                  items: List.generate(pv.certificates.length,
+                      (i) => _certItem(pv.certificates[i], () => pv.deleteCertificate(i))),
+                ),
+                const SizedBox(height: 14),
+                _buildSection(
+                  icon: Icons.rocket_launch_rounded,
+                  iconColor: const Color(0xFFF59E0B),
+                  iconBg: const Color(0xFFFEF3C7),
+                  title: 'Personal Projects',
+                  onAdd: () => _showAddProjectSheet(pv),
+                  emptyMsg: 'Showcase your side projects',
+                  emptyIcon: Icons.laptop_mac_outlined,
+                  items: List.generate(pv.projects.length,
+                      (i) => _projectItem(pv.projects[i], () => pv.deleteProject(i))),
+                ),
+                const SizedBox(height: 14),
+                _buildSkillsSection(pv),
+                const SizedBox(height: 14),
+                _buildSection(
+                  icon: Icons.travel_explore_rounded,
+                  iconColor: const Color(0xFFEC4899),
+                  iconBg: const Color(0xFFFCE7F3),
+                  title: 'Portfolio & Links',
+                  onAdd: () => _showAddPortfolioSheet(pv),
+                  emptyMsg: 'Add GitHub, LinkedIn, portfolio…',
+                  emptyIcon: Icons.link_outlined,
+                  items: List.generate(pv.portfolioLinks.length,
+                      (i) => _portfolioItem(pv.portfolioLinks[i], () => pv.deletePortfolioLink(i))),
+                ),
+                const SizedBox(height: 24),
+                _buildLogoutButton(),
+              ]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Hero ──────────────────────────────────────────────────────────────────────
+  Widget _buildHero(StudentProfileProvider pv) {
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.bottomCenter,
+      children: [
+        // Gradient banner
+        Container(
+          height: 170,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [_primary, _primaryDark],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('My Profile',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.3)),
+                  // Settings icon
+                  GestureDetector(
+                    onTap: () => _showMenu(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                      child: const Icon(Icons.tune_rounded,
+                          color: Colors.white, size: 20),
                     ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
 
-                    const SizedBox(height: 14),
+        // White panel below avatar
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: 72,
+            decoration: const BoxDecoration(
+              color: _surface,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+          ),
+        ),
 
-                    // ── Resume ─────────────────────────────────────────────
-                    _card(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Text('Resume',
-                              style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1E293B))),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Your resume is the first impression you make on '
-                            'potential employers. Craft it carefully to secure '
-                            'your desired job or internship.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey.shade600,
-                                height: 1.5),
-                          ),
-                          if (provider.resume != null) ...[
-                            const SizedBox(height: 10),
-                            Text(provider.resume!.fileName,
-                                style: const TextStyle(
-                                    color: _primary,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14)),
-                            const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(provider.resume!.uploadedAt,
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.grey.shade600)),
-                                Row(children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.download_rounded,
-                                        color: _primary, size: 22),
-                                    onPressed: () => _openUrl(provider.resume!.url),
-                                    padding: EdgeInsets.zero,
-                                    constraints: const BoxConstraints(),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete_rounded,
-                                        color: Color(0xFFEF4444), size: 22),
-                                    onPressed: () => provider.deleteResume(),
-                                    padding: EdgeInsets.zero,
-                                    constraints: const BoxConstraints(),
-                                  ),
-                                ]),
-                              ],
-                            ),
-                          ],
-                          const SizedBox(height: 12),
-                          OutlinedButton(
-                            onPressed: () => _pickAndUploadResume(provider),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: _primary,
-                              side: const BorderSide(color: _primary),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20)),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 10),
-                            ),
-                            child: const Text('Update Resume',
-                                style: TextStyle(fontWeight: FontWeight.w600)),
-                          ),
-                          const SizedBox(height: 6),
-                          Text('Supported formats: PDF',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.grey.shade500)),
-                        ],
-                      ),
+        // Avatar
+        Positioned(
+          bottom: 28,
+          child: GestureDetector(
+            onTap: () => _pickAndUploadProfilePicture(
+                context.read<StudentProfileProvider>()),
+            child: Stack(
+              children: [
+                Container(
+                  width: 96,
+                  height: 96,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [_primary, _primaryDark],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-
-                    const SizedBox(height: 14),
-
-                    // ── Education ──────────────────────────────────────────
-                    _sectionCard(
-                      icon: Icons.school_rounded,
-                      title: 'Education',
-                      required: true,
-                      onAdd: () => _showAddEducationSheet(provider),
-                      emptyMsg: 'No education added yet.',
-                      items: List.generate(
-                        provider.education.length,
-                        (i) => _educationCard(
-                          provider.education[i],
-                          onDelete: () => provider.deleteEducation(i),
-                        ),
-                      ),
+                    boxShadow: [
+                      BoxShadow(
+                          color: _primary.withValues(alpha: 0.4),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4)),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(3),
+                  child: ClipOval(
+                    child: pv.profilePictureUrl.isNotEmpty
+                        ? Image.network(pv.profilePictureUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, e, st) =>
+                                const _AvatarPlaceholder())
+                        : const _AvatarPlaceholder(),
+                  ),
+                ),
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: _primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
                     ),
+                    child: const Icon(Icons.camera_alt_rounded,
+                        color: Colors.white, size: 12),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-                    const SizedBox(height: 14),
-
-                    // ── Work Experience ────────────────────────────────────
-                    _sectionCard(
-                      icon: Icons.work_rounded,
-                      title: 'Work Experience',
-                      optional: true,
-                      onAdd: () => _showAddWorkExpSheet(provider),
-                      emptyMsg: 'No work experience added yet.',
-                      items: List.generate(
-                        provider.workExperience.length,
-                        (i) => _workCard(
-                          provider.workExperience[i],
-                          onDelete: () => provider.deleteWorkExperience(i),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // ── Certificates ───────────────────────────────────────
-                    _sectionCard(
-                      icon: Icons.verified_rounded,
-                      title: 'Certificates',
-                      optional: true,
-                      onAdd: () => _showAddCertSheet(provider),
-                      emptyMsg: 'No certificates added yet.',
-                      items: List.generate(
-                        provider.certificates.length,
-                        (i) => _certificateCard(
-                          provider.certificates[i],
-                          onDelete: () => provider.deleteCertificate(i),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // ── Personal Projects ──────────────────────────────────
-                    _sectionCard(
-                      icon: Icons.laptop_mac_rounded,
-                      title: 'Personal Projects',
-                      optional: true,
-                      onAdd: () => _showAddProjectSheet(provider),
-                      emptyMsg: 'No personal projects added yet.',
-                      items: List.generate(
-                        provider.projects.length,
-                        (i) => _projectCard(
-                          provider.projects[i],
-                          onDelete: () => provider.deleteProject(i),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // ── Skills ─────────────────────────────────────────────
-                    _sectionCard(
-                      icon: Icons.handyman_rounded,
-                      title: 'Skills',
-                      required: true,
-                      onAdd: () => _showAddSkillSheet(provider),
-                      emptyMsg: 'No skills added yet.',
-                      items: List.generate(
-                        provider.skills.length,
-                        (i) => _skillCard(
-                          provider.skills[i],
-                          onDelete: () => provider.deleteSkill(i),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // ── Portfolio ──────────────────────────────────────────
-                    _sectionCard(
-                      icon: Icons.link_rounded,
-                      title: 'Portfolio',
-                      optional: true,
-                      onAdd: () => _showAddPortfolioSheet(provider),
-                      emptyMsg: 'No portfolio links added yet.',
-                      items: List.generate(
-                        provider.portfolioLinks.length,
-                        (i) => _portfolioCard(
-                          provider.portfolioLinks[i],
-                          onDelete: () => provider.deletePortfolioLink(i),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // ── Logout ─────────────────────────────────────────────
-                    _card(
-                      child: ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: CircleAvatar(
-                          radius: 20,
-                          backgroundColor:
-                              const Color(0xFFEF4444).withValues(alpha: 0.1),
-                          child: const Icon(Icons.logout,
-                              color: Color(0xFFEF4444), size: 20),
-                        ),
-                        title: const Text('Logout',
-                            style: TextStyle(
-                                color: Color(0xFFEF4444),
-                                fontWeight: FontWeight.w600)),
-                        trailing: const Icon(Icons.chevron_right,
-                            color: Color(0xFFEF4444)),
-                        onTap: () async {
-                          await AuthStorage.clear();
-                          if (!context.mounted) return;
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const StudentLoginScreen()),
-                            (_) => false,
-                          );
-                        },
-                      ),
-                    ),
-                  ]),
+  // ── Info chips row ────────────────────────────────────────────────────────────
+  Widget _buildInfoChips(StudentProfileProvider pv) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: _cardDeco(),
+      child: Column(
+        children: [
+          Text(
+            pv.name.isNotEmpty ? pv.name : 'Student Name',
+            style: const TextStyle(
+                fontSize: 22, fontWeight: FontWeight.bold, color: _textDark),
+          ),
+          const SizedBox(height: 4),
+          if (pv.email.isNotEmpty)
+            Text(pv.email,
+                style: const TextStyle(fontSize: 13, color: _textLight)),
+          const SizedBox(height: 16),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _infoChip(
+                icon: Icons.location_on_rounded,
+                label: pv.location.isNotEmpty ? pv.location : 'Location',
+                isEmpty: pv.location.isEmpty,
+                onTap: () => _editField(
+                  label: 'Location',
+                  initial: pv.location,
+                  onSave: pv.updateLocation,
                 ),
               ),
+              _infoChip(
+                icon: Icons.work_history_rounded,
+                label: pv.experience.isNotEmpty
+                    ? '${pv.experience} exp'
+                    : 'Experience',
+                isEmpty: pv.experience.isEmpty,
+                onTap: () => _editField(
+                  label: 'Experience',
+                  initial: pv.experience,
+                  onSave: pv.updateExperience,
+                ),
+              ),
+              _infoChip(
+                icon: Icons.person_rounded,
+                label: pv.gender.isNotEmpty ? pv.gender : 'Gender',
+                isEmpty: pv.gender.isEmpty,
+                onTap: () => _editGender(pv),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoChip({
+    required IconData icon,
+    required String label,
+    required bool isEmpty,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: isEmpty
+              ? const Color(0xFFF8FAFC)
+              : _primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isEmpty
+                ? const Color(0xFFE2E8F0)
+                : _primary.withValues(alpha: 0.25),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon,
+                size: 14,
+                color: isEmpty ? _textLight : _primary),
+            const SizedBox(width: 6),
+            Text(label,
+                style: TextStyle(
+                    fontSize: 13,
+                    color: isEmpty ? _textLight : _textDark,
+                    fontWeight: isEmpty ? FontWeight.normal : FontWeight.w600)),
+            const SizedBox(width: 4),
+            Icon(Icons.edit_rounded,
+                size: 11, color: isEmpty ? _textLight : _primary),
           ],
         ),
       ),
     );
   }
 
-  // ── Section card ──────────────────────────────────────────────────────────────
-  Widget _sectionCard({
-    required IconData icon,
-    required String title,
-    required String emptyMsg,
-    required VoidCallback onAdd,
-    required List<Widget> items,
-    bool required = false,
-    bool optional = false,
-  }) {
-    return _card(
+  // ── Resume ────────────────────────────────────────────────────────────────────
+  Widget _buildResumeCard(StudentProfileProvider pv) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: _cardDeco(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, color: _primary, size: 20),
-              const SizedBox(width: 8),
-              Text(title,
-                  style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B))),
-              if (required)
-                const Text(' *',
-                    style: TextStyle(color: Colors.red, fontSize: 15)),
-              if (optional)
-                Text(' (Optional)',
-                    style: TextStyle(
-                        fontSize: 12, color: Colors.grey.shade500)),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF7ED),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.description_rounded,
+                    color: Color(0xFFF97316), size: 20),
+              ),
+              const SizedBox(width: 12),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Resume',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: _textDark)),
+                  Text('PDF · Max 5MB',
+                      style: TextStyle(fontSize: 12, color: _textLight)),
+                ],
+              ),
               const Spacer(),
+              GestureDetector(
+                onTap: () => _pickAndUploadResume(pv),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                  decoration: BoxDecoration(
+                    color: _primary,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text('Upload',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700)),
+                ),
+              ),
+            ],
+          ),
+          if (pv.resume != null) ...[
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEF4444).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.picture_as_pdf_rounded,
+                        color: Color(0xFFEF4444), size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(pv.resume!.fileName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: _textDark)),
+                        Text(pv.resume!.uploadedAt,
+                            style: const TextStyle(
+                                fontSize: 11, color: _textLight)),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.download_rounded,
+                        color: _primary, size: 20),
+                    onPressed: () => _openUrl(pv.resume!.url),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  const SizedBox(width: 12),
+                  IconButton(
+                    icon: const Icon(Icons.delete_rounded,
+                        color: _danger, size: 20),
+                    onPressed: () => pv.deleteResume(),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+            ),
+          ] else ...[
+            const SizedBox(height: 14),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                    color: const Color(0xFFE2E8F0), style: BorderStyle.solid),
+              ),
+              child: const Column(
+                children: [
+                  Icon(Icons.upload_file_rounded,
+                      size: 32, color: _textLight),
+                  SizedBox(height: 6),
+                  Text('No resume uploaded yet',
+                      style: TextStyle(fontSize: 13, color: _textLight)),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // ── Generic section ───────────────────────────────────────────────────────────
+  Widget _buildSection({
+    required IconData icon,
+    required Color iconColor,
+    required Color iconBg,
+    required String title,
+    required VoidCallback onAdd,
+    required String emptyMsg,
+    required IconData emptyIcon,
+    required List<Widget> items,
+    String? badge,
+    Color? badgeColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: _cardDeco(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: iconBg, borderRadius: BorderRadius.circular(10)),
+                child: Icon(icon, color: iconColor, size: 18),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Row(
+                  children: [
+                    Text(title,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: _textDark)),
+                    if (badge != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: (badgeColor ?? _primary)
+                              .withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(badge,
+                            style: TextStyle(
+                                fontSize: 10,
+                                color: badgeColor ?? _primary,
+                                fontWeight: FontWeight.w700)),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
               GestureDetector(
                 onTap: onAdd,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _primary.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(8),
+                    color: _primary,
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.add, color: _primary, size: 16),
-                      SizedBox(width: 2),
+                      Icon(Icons.add_rounded, color: Colors.white, size: 14),
+                      SizedBox(width: 4),
                       Text('Add',
                           style: TextStyle(
-                              color: _primary,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600)),
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700)),
                     ],
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           if (items.isEmpty)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 18),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(emptyMsg,
-                  textAlign: TextAlign.center,
-                  style:
-                      TextStyle(color: Colors.grey.shade500, fontSize: 13)),
-            )
+            _emptyState(emptyMsg, emptyIcon)
           else
             ...items.map((w) => Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(bottom: 10),
                   child: w,
                 )),
         ],
@@ -425,219 +581,434 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ── Item cards ────────────────────────────────────────────────────────────────
-  Widget _educationCard(EducationModel e,
-      {required VoidCallback onDelete}) {
-    return _itemContainer(
+  Widget _emptyState(String msg, IconData icon) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, size: 28, color: _textLight),
+          const SizedBox(height: 8),
+          Text(msg,
+              style: const TextStyle(fontSize: 13, color: _textLight)),
+        ],
+      ),
+    );
+  }
+
+  // ── Skills section (chips) ────────────────────────────────────────────────────
+  Widget _buildSkillsSection(StudentProfileProvider pv) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: _cardDeco(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: const Color(0xFFE0F2FE),
+                    borderRadius: BorderRadius.circular(10)),
+                child: const Icon(Icons.auto_awesome_rounded,
+                    color: Color(0xFF0EA5E9), size: 18),
+              ),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Row(
+                  children: [
+                    Text('Skills',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: _textDark)),
+                    SizedBox(width: 8),
+                    _RequiredBadge(),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () => _showAddSkillSheet(pv),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _primary,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.add_rounded, color: Colors.white, size: 14),
+                      SizedBox(width: 4),
+                      Text('Add',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          if (pv.skills.isEmpty)
+            _emptyState('Add skills like React, Python, Figma…',
+                Icons.extension_outlined)
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: List.generate(pv.skills.length, (i) {
+                final s = pv.skills[i];
+                const levelColors = {
+                  'Beginner': Color(0xFF10B981),
+                  'Intermediate': Color(0xFFF59E0B),
+                  'Advanced': Color(0xFF6366F1),
+                };
+                final color = levelColors[s.level] ?? _primary;
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 7),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                        color: color.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(s.name,
+                          style: TextStyle(
+                              fontSize: 13,
+                              color: color,
+                              fontWeight: FontWeight.w600)),
+                      const SizedBox(width: 6),
+                      GestureDetector(
+                        onTap: () => pv.deleteSkill(i),
+                        child: Icon(Icons.close_rounded,
+                            size: 14, color: color),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // ── Item widgets ──────────────────────────────────────────────────────────────
+  Widget _eduItem(EducationModel e, VoidCallback onDelete) {
+    return _itemCard(
+      accentColor: const Color(0xFF6366F1),
       onDelete: onDelete,
+      icon: Icons.school_rounded,
+      iconColor: const Color(0xFF6366F1),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(e.degree,
             style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: Color(0xFF1E293B))),
-        if (e.field.isNotEmpty)
+                fontWeight: FontWeight.bold, fontSize: 14, color: _textDark)),
+        if (e.field.isNotEmpty) ...[
+          const SizedBox(height: 2),
           Text(e.field,
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
-        if (e.institute.isNotEmpty)
+              style: const TextStyle(fontSize: 13, color: _textMid)),
+        ],
+        if (e.institute.isNotEmpty) ...[
+          const SizedBox(height: 2),
           Text(e.institute,
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
-        if (e.year.trim() != '-')
-          Text(e.year,
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
-        if (e.score.isNotEmpty) ...[
+              style: const TextStyle(fontSize: 12, color: _textLight)),
+        ],
+        if (e.year.trim().isNotEmpty && e.year.trim() != '-') ...[
           const SizedBox(height: 4),
-          Text('Score: ${e.score}',
-              style: const TextStyle(
-                  color: _primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13)),
+          Row(children: [
+            const Icon(Icons.calendar_today_rounded,
+                size: 11, color: _textLight),
+            const SizedBox(width: 4),
+            Text(e.year,
+                style: const TextStyle(fontSize: 11, color: _textLight)),
+            if (e.score.isNotEmpty) ...[
+              const SizedBox(width: 12),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6366F1).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(e.score,
+                    style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF6366F1),
+                        fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ]),
         ],
       ]),
     );
   }
 
-  Widget _workCard(WorkExperienceModel e,
-      {required VoidCallback onDelete}) {
-    return _itemContainer(
+  Widget _workItem(WorkExperienceModel e, VoidCallback onDelete) {
+    return _itemCard(
+      accentColor: const Color(0xFF0EA5E9),
       onDelete: onDelete,
+      icon: Icons.work_rounded,
+      iconColor: const Color(0xFF0EA5E9),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('${e.role} at ${e.company}',
+        Text(e.role,
             style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: Color(0xFF1E293B))),
-        if (e.type.isNotEmpty)
-          Text(e.type,
-              style: const TextStyle(color: _primary, fontSize: 13)),
-        if (e.duration.trim() != '-')
-          Text('Duration: ${e.duration}',
-              style: TextStyle(
-                  fontSize: 12, color: Colors.grey.shade500)),
-        if (e.description.isNotEmpty)
+                fontWeight: FontWeight.bold, fontSize: 14, color: _textDark)),
+        if (e.company.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Text(e.company,
+              style: const TextStyle(fontSize: 13, color: _textMid)),
+        ],
+        const SizedBox(height: 4),
+        Row(children: [
+          if (e.type.isNotEmpty)
+            _tag(e.type, const Color(0xFF0EA5E9)),
+          if (e.duration.trim().isNotEmpty && e.duration.trim() != '-') ...[
+            const SizedBox(width: 8),
+            const Icon(Icons.schedule_rounded, size: 11, color: _textLight),
+            const SizedBox(width: 3),
+            Text(e.duration,
+                style: const TextStyle(fontSize: 11, color: _textLight)),
+          ],
+        ]),
+        if (e.description.isNotEmpty) ...[
+          const SizedBox(height: 4),
           Text(e.description,
-              style: TextStyle(
-                  fontSize: 13, color: Colors.grey.shade600)),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 12, color: _textLight)),
+        ],
       ]),
     );
   }
 
-  Widget _certificateCard(CertificateModel c,
-      {required VoidCallback onDelete}) {
-    return _itemContainer(
+  Widget _certItem(CertificateModel c, VoidCallback onDelete) {
+    return _itemCard(
+      accentColor: const Color(0xFF10B981),
       onDelete: onDelete,
+      icon: Icons.verified_rounded,
+      iconColor: const Color(0xFF10B981),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(c.name,
             style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: Color(0xFF1E293B))),
-        if (c.issuer.isNotEmpty)
+                fontWeight: FontWeight.bold, fontSize: 14, color: _textDark)),
+        if (c.issuer.isNotEmpty) ...[
+          const SizedBox(height: 2),
           Text(c.issuer,
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
-        if (c.date.isNotEmpty)
-          Text(c.date,
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+              style: const TextStyle(fontSize: 13, color: _textMid)),
+        ],
+        if (c.date.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Row(children: [
+            const Icon(Icons.calendar_today_rounded,
+                size: 11, color: _textLight),
+            const SizedBox(width: 4),
+            Text(c.date,
+                style: const TextStyle(fontSize: 11, color: _textLight)),
+          ]),
+        ],
       ]),
     );
   }
 
-  Widget _projectCard(ProjectModel p, {required VoidCallback onDelete}) {
-    return _itemContainer(
+  Widget _projectItem(ProjectModel p, VoidCallback onDelete) {
+    return _itemCard(
+      accentColor: const Color(0xFFF59E0B),
       onDelete: onDelete,
+      icon: Icons.rocket_launch_rounded,
+      iconColor: const Color(0xFFF59E0B),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(p.title,
             style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: Color(0xFF1E293B))),
-        if (p.description.isNotEmpty)
+                fontWeight: FontWeight.bold, fontSize: 14, color: _textDark)),
+        if (p.description.isNotEmpty) ...[
+          const SizedBox(height: 4),
           Text(p.description,
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
-        if (p.link.isNotEmpty)
-          Text(p.link,
-              style: const TextStyle(color: _primary, fontSize: 13)),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 12, color: _textLight)),
+        ],
+        if (p.link.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Row(children: [
+            const Icon(Icons.link_rounded, size: 12, color: _primary),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(p.link,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontSize: 12,
+                      color: _primary,
+                      fontWeight: FontWeight.w500)),
+            ),
+          ]),
+        ],
       ]),
     );
   }
 
-  Widget _skillCard(SkillModel s, {required VoidCallback onDelete}) {
-    const levelColors = {
-      'Beginner': Color(0xFF10B981),
-      'Intermediate': Color(0xFFF59E0B),
-      'Advanced': Color(0xFFEF4444),
-    };
-    final color = levelColors[s.level] ?? _primary;
-    return _itemContainer(
+  Widget _portfolioItem(PortfolioLinkModel p, VoidCallback onDelete) {
+    final icon = _portfolioIcon(p.label);
+    return _itemCard(
+      accentColor: const Color(0xFFEC4899),
       onDelete: onDelete,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(s.name,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: Color(0xFF1E293B))),
-        const SizedBox(height: 6),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(s.level,
-              style: TextStyle(
-                  color: color,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600)),
-        ),
-      ]),
-    );
-  }
-
-  Widget _portfolioCard(PortfolioLinkModel p,
-      {required VoidCallback onDelete}) {
-    return _itemContainer(
-      onDelete: onDelete,
+      icon: icon,
+      iconColor: const Color(0xFFEC4899),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         if (p.label.isNotEmpty)
           Text(p.label,
               style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Color(0xFF1E293B))),
+                  fontWeight: FontWeight.bold, fontSize: 14, color: _textDark)),
+        const SizedBox(height: 2),
         Text(p.url,
-            style: const TextStyle(color: _primary, fontSize: 13)),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, color: _primary)),
       ]),
     );
   }
 
-  Widget _itemContainer(
-      {required Widget child, required VoidCallback onDelete}) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(child: child),
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            IconButton(
-              icon: const Icon(Icons.edit, color: _primary, size: 18),
-              onPressed: () {},
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.delete_rounded,
-                  color: Color(0xFFEF4444), size: 18),
-              onPressed: onDelete,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-          ]),
-        ],
-      ),
-    );
+  IconData _portfolioIcon(String label) {
+    final l = label.toLowerCase();
+    if (l.contains('github')) return Icons.code_rounded;
+    if (l.contains('linkedin')) return Icons.person_pin_rounded;
+    if (l.contains('twitter') || l.contains('x.com')) return Icons.tag_rounded;
+    if (l.contains('youtube')) return Icons.play_circle_rounded;
+    return Icons.travel_explore_rounded;
   }
 
-  // ── Shared helpers ────────────────────────────────────────────────────────────
-  Widget _card({required Widget child}) {
+  Widget _itemCard({
+    required Color accentColor,
+    required VoidCallback onDelete,
+    required IconData icon,
+    required Color iconColor,
+    required Widget child,
+  }) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2)),
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 4,
+              offset: const Offset(0, 1)),
         ],
       ),
-      child: child,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Left accent bar
+            Container(
+              width: 4,
+              decoration: BoxDecoration(
+                color: accentColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  bottomLeft: Radius.circular(12),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Icon(icon, color: iconColor, size: 18),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 12, 8, 12),
+                child: child,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline_rounded,
+                  color: _danger, size: 18),
+              onPressed: onDelete,
+              padding: const EdgeInsets.all(8),
+              constraints: const BoxConstraints(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _profileRow(
-      {required String value, required VoidCallback onEdit}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(value,
-              style:
-                  TextStyle(fontSize: 13, color: Colors.grey.shade700)),
-          const SizedBox(width: 6),
-          GestureDetector(
-              onTap: onEdit,
-              child: const Icon(Icons.edit, size: 14, color: Colors.grey)),
-        ],
+  Widget _tag(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
       ),
+      child: Text(label,
+          style: TextStyle(
+              fontSize: 11, color: color, fontWeight: FontWeight.w600)),
+    );
+  }
+
+  // ── Logout ────────────────────────────────────────────────────────────────────
+  Widget _buildLogoutButton() {
+    return GestureDetector(
+      onTap: () async {
+        await AuthStorage.clear();
+        if (!mounted) return;
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const StudentLoginScreen()),
+          (_) => false,
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: _danger.withValues(alpha: 0.4)),
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.logout_rounded, color: _danger, size: 18),
+            SizedBox(width: 8),
+            Text('Sign Out',
+                style: TextStyle(
+                    color: _danger,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Card decoration ───────────────────────────────────────────────────────────
+  BoxDecoration _cardDeco() {
+    return BoxDecoration(
+      color: _surface,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 2)),
+      ],
     );
   }
 
@@ -651,187 +1022,117 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => Padding(
-        padding: EdgeInsets.fromLTRB(
-            20, 20, 20, MediaQuery.viewInsetsOf(context).bottom + 20),
+      backgroundColor: Colors.transparent,
+      builder: (_) => _SheetWrapper(
+        title: 'Edit $label',
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Edit $label',
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            _sheetField(ctrl, label),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: _primary,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12))),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  await onSave(ctrl.text.trim());
-                },
-                child: const Text('Save',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w700)),
-              ),
-            ),
+            _sheetField(ctrl, label, icon: Icons.edit_rounded),
+            const SizedBox(height: 4),
+            _sheetSaveBtn(onPressed: () async {
+              Navigator.pop(context);
+              await onSave(ctrl.text.trim());
+            }),
           ],
         ),
       ),
     );
   }
 
-  void _editGender(StudentProfileProvider provider) {
+  void _editGender(StudentProfileProvider pv) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 16),
-          const Text('Select Gender',
-              style:
-                  TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          ...['Male', 'Female', 'Other'].map((g) => ListTile(
-                title: Text(g),
-                leading: Icon(
-                  provider.gender == g
-                      ? Icons.radio_button_checked
-                      : Icons.radio_button_unchecked,
-                  color: _primary,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _SheetWrapper(
+        title: 'Select Gender',
+        child: Column(
+          children: ['Male', 'Female', 'Other'].map((g) {
+            final selected = pv.gender == g;
+            return GestureDetector(
+              onTap: () async {
+                Navigator.pop(context);
+                await pv.updateGender(g);
+              },
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? _primary.withValues(alpha: 0.08)
+                      : const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: selected ? _primary : const Color(0xFFE2E8F0),
+                    width: selected ? 1.5 : 1,
+                  ),
                 ),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await provider.updateGender(g);
-                },
-              )),
-          const SizedBox(height: 8),
-        ],
+                child: Row(
+                  children: [
+                    Icon(
+                      selected
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_unchecked,
+                      color: selected ? _primary : _textLight,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(g,
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: selected
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                            color: selected ? _textDark : _textMid)),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
 
-  void _showAddEducationSheet(StudentProfileProvider provider) {
+  void _showAddEducationSheet(StudentProfileProvider pv) {
     final degreeCtrl = TextEditingController();
     final fieldCtrl = TextEditingController();
     final instituteCtrl = TextEditingController();
     final yearCtrl = TextEditingController();
     final scoreCtrl = TextEditingController();
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => Padding(
-        padding: EdgeInsets.fromLTRB(
-            20, 20, 20, MediaQuery.viewInsetsOf(context).bottom + 20),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Add Education',
-                  style: TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              _sheetField(degreeCtrl, 'Degree (e.g. B.Tech)'),
-              _sheetField(fieldCtrl, 'Field of Study'),
-              _sheetField(instituteCtrl, 'Institute Name'),
-              _sheetField(yearCtrl, 'Year (e.g. 2020 - 2024)'),
-              _sheetField(scoreCtrl, 'Score (e.g. 8.5 CGPA)'),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: _primary,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12))),
-                  onPressed: () {
-                    if (degreeCtrl.text.isNotEmpty) {
-                      Navigator.pop(context);
-                      provider.addEducation({
-                        'degree': degreeCtrl.text.trim(),
-                        'field': fieldCtrl.text.trim(),
-                        'institute': instituteCtrl.text.trim(),
-                        'year': yearCtrl.text.trim(),
-                        'score': scoreCtrl.text.trim(),
-                      });
-                    }
-                  },
-                  child: const Text('Add',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700)),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showAddProjectSheet(StudentProfileProvider provider) {
-    final titleCtrl = TextEditingController();
-    final descCtrl = TextEditingController();
-    final linkCtrl = TextEditingController();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => Padding(
-        padding: EdgeInsets.fromLTRB(
-            20, 20, 20, MediaQuery.viewInsetsOf(context).bottom + 20),
+      backgroundColor: Colors.transparent,
+      builder: (_) => _SheetWrapper(
+        title: 'Add Education',
+        scrollable: true,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Add Project',
-                style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            _sheetField(titleCtrl, 'Project Title'),
-            _sheetField(descCtrl, 'Description'),
-            _sheetField(linkCtrl, 'Project Link (optional)'),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: _primary,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12))),
-                onPressed: () async {
-                  if (titleCtrl.text.isNotEmpty) {
-                    Navigator.pop(context);
-                    await provider.addProject({
-                      'title': titleCtrl.text.trim(),
-                      'description': descCtrl.text.trim(),
-                      'link': linkCtrl.text.trim(),
-                    });
-                  }
-                },
-                child: const Text('Add',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700)),
-              ),
+            _sheetField(degreeCtrl, 'Degree (e.g. B.Tech)',
+                icon: Icons.school_rounded),
+            _sheetField(fieldCtrl, 'Field of Study',
+                icon: Icons.menu_book_rounded),
+            _sheetField(instituteCtrl, 'Institute / University',
+                icon: Icons.account_balance_rounded),
+            _sheetField(yearCtrl, 'Year (e.g. 2020 – 2024)',
+                icon: Icons.calendar_month_rounded),
+            _sheetField(scoreCtrl, 'Score / CGPA (optional)',
+                icon: Icons.star_rounded),
+            const SizedBox(height: 4),
+            _sheetSaveBtn(
+              label: 'Add Education',
+              onPressed: () {
+                if (degreeCtrl.text.isNotEmpty) {
+                  Navigator.pop(context);
+                  pv.addEducation({
+                    'degree': degreeCtrl.text.trim(),
+                    'field': fieldCtrl.text.trim(),
+                    'institute': instituteCtrl.text.trim(),
+                    'year': yearCtrl.text.trim(),
+                    'score': scoreCtrl.text.trim(),
+                  });
+                }
+              },
             ),
           ],
         ),
@@ -839,157 +1140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showAddSkillSheet(StudentProfileProvider provider) {
-    final nameCtrl = TextEditingController();
-    String level = 'Beginner';
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => StatefulBuilder(
-        builder: (_, setSheet) => Padding(
-          padding: EdgeInsets.fromLTRB(
-              20, 20, 20, MediaQuery.viewInsetsOf(context).bottom + 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Add Skill',
-                  style: TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              _sheetField(nameCtrl, 'Skill Name (e.g. React.js)'),
-              const Text('Level',
-                  style: TextStyle(fontSize: 13, color: Colors.grey)),
-              const SizedBox(height: 8),
-              Row(
-                children: ['Beginner', 'Intermediate', 'Advanced']
-                    .map((l) {
-                  final selected = level == l;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: GestureDetector(
-                      onTap: () => setSheet(() => level = l),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: selected
-                              ? _primary
-                              : _primary.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(l,
-                            style: TextStyle(
-                                color: selected
-                                    ? Colors.white
-                                    : _primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600)),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: _primary,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12))),
-                  onPressed: () async {
-                    if (nameCtrl.text.isNotEmpty) {
-                      Navigator.pop(context);
-                      provider.addSkill({
-                        'skill': nameCtrl.text.trim(),
-                        'level': level,
-                      });
-                    }
-                  },
-                  child: const Text('Add',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700)),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _sheetField(TextEditingController ctrl, String hint) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: TextField(
-        controller: ctrl,
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle:
-              const TextStyle(color: Colors.grey, fontSize: 13),
-          filled: true,
-          fillColor: const Color(0xFFF1F5F9),
-          contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14, vertical: 12),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _pickAndUploadProfilePicture(
-      StudentProfileProvider provider) async {
-    final picker = ImagePicker();
-    final picked =
-        await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
-    if (picked == null) return;
-    final bytes = await picked.readAsBytes();
-    final ok = await provider.uploadProfilePicture(
-        bytes.toList(), picked.name);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(ok ? 'Profile picture updated!' : 'Upload failed.'),
-        backgroundColor: ok ? _primary : Colors.red,
-      ));
-    }
-  }
-
-  Future<void> _pickAndUploadResume(StudentProfileProvider provider) async {
-    final picker = ImagePicker();
-    // image_picker doesn't support PDFs; show a snackbar directing user
-    // to use a file picker package. For now pick from gallery as fallback.
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked == null) return;
-    final bytes = await picked.readAsBytes();
-    final ok =
-        await provider.uploadResume(bytes.toList(), picked.name);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(ok ? 'Resume uploaded!' : 'Upload failed.'),
-        backgroundColor: ok ? _primary : Colors.red,
-      ));
-    }
-  }
-
-  void _openUrl(String url) {
-    // URL launching requires url_launcher; show snackbar with the URL for now
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(url.isNotEmpty ? url : 'No URL available'),
-        backgroundColor: _primary,
-      ),
-    );
-  }
-
-  void _showAddWorkExpSheet(StudentProfileProvider provider) {
+  void _showAddWorkExpSheet(StudentProfileProvider pv) {
     final roleCtrl = TextEditingController();
     final companyCtrl = TextEditingController();
     final typeCtrl = TextEditingController();
@@ -998,49 +1149,187 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => Padding(
-        padding: EdgeInsets.fromLTRB(
-            20, 20, 20, MediaQuery.viewInsetsOf(context).bottom + 20),
-        child: SingleChildScrollView(
+      backgroundColor: Colors.transparent,
+      builder: (_) => _SheetWrapper(
+        title: 'Add Work Experience',
+        scrollable: true,
+        child: Column(
+          children: [
+            _sheetField(roleCtrl, 'Job Title / Role',
+                icon: Icons.badge_rounded),
+            _sheetField(companyCtrl, 'Company / Organization',
+                icon: Icons.business_rounded),
+            _sheetField(typeCtrl, 'Type (Job · Internship · Freelance)',
+                icon: Icons.category_rounded),
+            _sheetField(durationCtrl, 'Duration (e.g. Jun 2023 – Dec 2023)',
+                icon: Icons.date_range_rounded),
+            _sheetField(descCtrl, 'Brief description',
+                icon: Icons.notes_rounded, maxLines: 3),
+            const SizedBox(height: 4),
+            _sheetSaveBtn(
+              label: 'Add Experience',
+              onPressed: () {
+                if (roleCtrl.text.isNotEmpty) {
+                  Navigator.pop(context);
+                  pv.addWorkExperience({
+                    'role': roleCtrl.text.trim(),
+                    'company': companyCtrl.text.trim(),
+                    'type': typeCtrl.text.trim(),
+                    'duration': durationCtrl.text.trim(),
+                    'description': descCtrl.text.trim(),
+                  });
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddCertSheet(StudentProfileProvider pv) {
+    final nameCtrl = TextEditingController();
+    final issuerCtrl = TextEditingController();
+    final dateCtrl = TextEditingController();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _SheetWrapper(
+        title: 'Add Certificate',
+        child: Column(
+          children: [
+            _sheetField(nameCtrl, 'Certificate Name',
+                icon: Icons.verified_rounded),
+            _sheetField(issuerCtrl, 'Issuing Organization',
+                icon: Icons.business_rounded),
+            _sheetField(dateCtrl, 'Issue Date (e.g. Jan 2024)',
+                icon: Icons.calendar_month_rounded),
+            const SizedBox(height: 4),
+            _sheetSaveBtn(
+              label: 'Add Certificate',
+              onPressed: () {
+                if (nameCtrl.text.isNotEmpty) {
+                  Navigator.pop(context);
+                  pv.addCertificate({
+                    'name': nameCtrl.text.trim(),
+                    'issuer': issuerCtrl.text.trim(),
+                    'date': dateCtrl.text.trim(),
+                  });
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddProjectSheet(StudentProfileProvider pv) {
+    final titleCtrl = TextEditingController();
+    final descCtrl = TextEditingController();
+    final linkCtrl = TextEditingController();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _SheetWrapper(
+        title: 'Add Project',
+        child: Column(
+          children: [
+            _sheetField(titleCtrl, 'Project Title',
+                icon: Icons.rocket_launch_rounded),
+            _sheetField(descCtrl, 'Description (optional)',
+                icon: Icons.notes_rounded, maxLines: 3),
+            _sheetField(linkCtrl, 'Project Link (optional)',
+                icon: Icons.link_rounded),
+            const SizedBox(height: 4),
+            _sheetSaveBtn(
+              label: 'Add Project',
+              onPressed: () async {
+                if (titleCtrl.text.isNotEmpty) {
+                  Navigator.pop(context);
+                  await pv.addProject({
+                    'title': titleCtrl.text.trim(),
+                    'description': descCtrl.text.trim(),
+                    'link': linkCtrl.text.trim(),
+                  });
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddSkillSheet(StudentProfileProvider pv) {
+    final nameCtrl = TextEditingController();
+    String level = 'Beginner';
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => StatefulBuilder(
+        builder: (_, setSheet) => _SheetWrapper(
+          title: 'Add Skill',
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Add Work Experience',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              _sheetField(nameCtrl, 'Skill name (e.g. Flutter, Python)',
+                  icon: Icons.auto_awesome_rounded),
+              const Text('Proficiency Level',
+                  style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: _textMid)),
+              const SizedBox(height: 10),
+              Row(
+                children: ['Beginner', 'Intermediate', 'Advanced'].map((l) {
+                  final sel = level == l;
+                  const levelColors = {
+                    'Beginner': Color(0xFF10B981),
+                    'Intermediate': Color(0xFFF59E0B),
+                    'Advanced': Color(0xFF6366F1),
+                  };
+                  final color = levelColors[l]!;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () => setSheet(() => level = l),
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 6),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: sel ? color : color.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              color: sel
+                                  ? color
+                                  : color.withValues(alpha: 0.3)),
+                        ),
+                        child: Text(l,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: sel ? Colors.white : color,
+                                fontWeight: FontWeight.w700)),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
               const SizedBox(height: 16),
-              _sheetField(roleCtrl, 'Role / Title'),
-              _sheetField(companyCtrl, 'Company / Organization'),
-              _sheetField(typeCtrl, 'Type (e.g. Job, Internship)'),
-              _sheetField(durationCtrl, 'Duration (e.g. Jun 2023 - Dec 2023)'),
-              _sheetField(descCtrl, 'Description'),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: _primary,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12))),
-                  onPressed: () {
-                    if (roleCtrl.text.isNotEmpty) {
-                      Navigator.pop(context);
-                      provider.addWorkExperience({
-                        'role': roleCtrl.text.trim(),
-                        'company': companyCtrl.text.trim(),
-                        'type': typeCtrl.text.trim(),
-                        'duration': durationCtrl.text.trim(),
-                        'description': descCtrl.text.trim(),
-                      });
-                    }
-                  },
-                  child: const Text('Add',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w700)),
-                ),
+              _sheetSaveBtn(
+                label: 'Add Skill',
+                onPressed: () async {
+                  if (nameCtrl.text.isNotEmpty) {
+                    Navigator.pop(context);
+                    pv.addSkill({
+                      'skill': nameCtrl.text.trim(),
+                      'level': level,
+                    });
+                  }
+                },
               ),
             ],
           ),
@@ -1049,100 +1338,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showAddCertSheet(StudentProfileProvider provider) {
-    final nameCtrl = TextEditingController();
-    final issuerCtrl = TextEditingController();
-    final dateCtrl = TextEditingController();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => Padding(
-        padding: EdgeInsets.fromLTRB(
-            20, 20, 20, MediaQuery.viewInsetsOf(context).bottom + 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Add Certificate',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            _sheetField(nameCtrl, 'Certificate Name'),
-            _sheetField(issuerCtrl, 'Issuing Organization'),
-            _sheetField(dateCtrl, 'Issue Date (e.g. Jan 2024)'),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: _primary,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12))),
-                onPressed: () {
-                  if (nameCtrl.text.isNotEmpty) {
-                    Navigator.pop(context);
-                    provider.addCertificate({
-                      'name': nameCtrl.text.trim(),
-                      'issuer': issuerCtrl.text.trim(),
-                      'date': dateCtrl.text.trim(),
-                    });
-                  }
-                },
-                child: const Text('Add',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w700)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showAddPortfolioSheet(StudentProfileProvider provider) {
+  void _showAddPortfolioSheet(StudentProfileProvider pv) {
     final labelCtrl = TextEditingController();
     final urlCtrl = TextEditingController();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => Padding(
-        padding: EdgeInsets.fromLTRB(
-            20, 20, 20, MediaQuery.viewInsetsOf(context).bottom + 20),
+      backgroundColor: Colors.transparent,
+      builder: (_) => _SheetWrapper(
+        title: 'Add Portfolio Link',
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Add Portfolio Link',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            _sheetField(labelCtrl, 'Label (e.g. GitHub, LinkedIn)'),
-            _sheetField(urlCtrl, 'URL (https://...)'),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: _primary,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12))),
-                onPressed: () {
-                  if (urlCtrl.text.isNotEmpty) {
-                    Navigator.pop(context);
-                    provider.addPortfolioLink({
-                      'label': labelCtrl.text.trim(),
-                      'url': urlCtrl.text.trim(),
-                    });
-                  }
-                },
-                child: const Text('Add',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w700)),
-              ),
+            _sheetField(labelCtrl, 'Label (e.g. GitHub, Portfolio)',
+                icon: Icons.label_rounded),
+            _sheetField(urlCtrl, 'URL (https://...)',
+                icon: Icons.link_rounded),
+            const SizedBox(height: 4),
+            _sheetSaveBtn(
+              label: 'Add Link',
+              onPressed: () {
+                if (urlCtrl.text.isNotEmpty) {
+                  Navigator.pop(context);
+                  pv.addPortfolioLink({
+                    'label': labelCtrl.text.trim(),
+                    'url': urlCtrl.text.trim(),
+                  });
+                }
+              },
             ),
           ],
         ),
@@ -1150,47 +1372,243 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // ── Sheet helpers ─────────────────────────────────────────────────────────────
+  Widget _sheetField(TextEditingController ctrl, String hint,
+      {IconData? icon, int maxLines = 1}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TextField(
+        controller: ctrl,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: const TextStyle(color: _textLight, fontSize: 13),
+          prefixIcon: icon != null
+              ? Icon(icon, size: 18, color: _textLight)
+              : null,
+          filled: true,
+          fillColor: const Color(0xFFF8FAFC),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: _primary, width: 1.5),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _sheetSaveBtn(
+      {String label = 'Save', required VoidCallback onPressed}) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _primary,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14)),
+        ),
+        onPressed: onPressed,
+        child: Text(label,
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700)),
+      ),
+    );
+  }
+
+  // ── Media pickers ─────────────────────────────────────────────────────────────
+  Future<void> _pickAndUploadProfilePicture(
+      StudentProfileProvider pv) async {
+    final picked = await ImagePicker()
+        .pickImage(source: ImageSource.gallery, imageQuality: 80);
+    if (picked == null) return;
+    final bytes = await picked.readAsBytes();
+    final ok = await pv.uploadProfilePicture(bytes.toList(), picked.name);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(ok ? 'Profile picture updated!' : 'Upload failed.'),
+        backgroundColor: ok ? _primary : _danger,
+        behavior: SnackBarBehavior.floating,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ));
+    }
+  }
+
+  Future<void> _pickAndUploadResume(StudentProfileProvider pv) async {
+    final picked =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked == null) return;
+    final bytes = await picked.readAsBytes();
+    final ok = await pv.uploadResume(bytes.toList(), picked.name);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(ok ? 'Resume uploaded!' : 'Upload failed.'),
+        backgroundColor: ok ? _primary : _danger,
+        behavior: SnackBarBehavior.floating,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ));
+    }
+  }
+
+  void _openUrl(String url) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(url.isNotEmpty ? url : 'No URL available'),
+      backgroundColor: _primary,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ));
+  }
+
   void _showMenu(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 12),
-          ListTile(
-            leading:
-                const Icon(Icons.notifications_outlined, color: _primary),
-            title: const Text('Notifications'),
-            onTap: () => Navigator.pop(context),
-          ),
-          ListTile(
-            leading:
-                const Icon(Icons.help_outline, color: _primary),
-            title: const Text('Help & Support'),
-            onTap: () => Navigator.pop(context),
-          ),
-          ListTile(
-            leading: const Icon(Icons.info_outline, color: _primary),
-            title: const Text('About'),
-            onTap: () => Navigator.pop(context),
-          ),
-          const SizedBox(height: 8),
-        ],
+      backgroundColor: Colors.transparent,
+      builder: (_) => _SheetWrapper(
+        title: 'More',
+        child: Column(
+          children: [
+            _menuTile(Icons.notifications_outlined, 'Notifications', _primary,
+                () => Navigator.pop(context)),
+            _menuTile(Icons.help_outline_rounded, 'Help & Support',
+                const Color(0xFF10B981), () => Navigator.pop(context)),
+            _menuTile(Icons.info_outline_rounded, 'About', _textMid,
+                () => Navigator.pop(context)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _menuTile(
+      IconData icon, String label, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+        ),
+        child: Row(children: [
+          Icon(icon, color: color, size: 20),
+          const SizedBox(width: 14),
+          Text(label,
+              style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: _textDark)),
+          const Spacer(),
+          const Icon(Icons.chevron_right_rounded,
+              color: _textLight, size: 18),
+        ]),
       ),
     );
   }
 }
 
-class _CameraPlaceholder extends StatelessWidget {
-  const _CameraPlaceholder();
+// ── Sheet wrapper ─────────────────────────────────────────────────────────────
+class _SheetWrapper extends StatelessWidget {
+  final String title;
+  final Widget child;
+  final bool scrollable;
+
+  const _SheetWrapper({
+    required this.title,
+    required this.child,
+    this.scrollable = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return const CircleAvatar(
-      backgroundColor: Color(0xFFEFF2F7),
-      child: Icon(Icons.camera_alt_outlined, color: Colors.grey, size: 32),
+    final content = Padding(
+      padding: EdgeInsets.fromLTRB(
+          20, 0, 20, MediaQuery.viewInsetsOf(context).bottom + 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(top: 12, bottom: 20),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE2E8F0),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          Text(title,
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0F172A))),
+          const SizedBox(height: 20),
+          child,
+        ],
+      ),
+    );
+
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: scrollable
+          ? SingleChildScrollView(child: content)
+          : content,
+    );
+  }
+}
+
+// ── Avatar placeholder ────────────────────────────────────────────────────────
+class _AvatarPlaceholder extends StatelessWidget {
+  const _AvatarPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color(0xFFDDE8FF),
+      child: const Icon(Icons.person_rounded,
+          color: Color(0xFF3B82F6), size: 48),
+    );
+  }
+}
+
+// ── Required badge ────────────────────────────────────────────────────────────
+class _RequiredBadge extends StatelessWidget {
+  const _RequiredBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE0F2FE),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Text('Required',
+          style: TextStyle(
+              fontSize: 10,
+              color: Color(0xFF0EA5E9),
+              fontWeight: FontWeight.w700)),
     );
   }
 }
