@@ -6,6 +6,7 @@ import 'package:internship_app/providers/internship_provider.dart';
 import 'package:internship_app/providers/application_provider.dart';
 import 'package:internship_app/providers/student_provider.dart';
 import 'package:internship_app/providers/recruiter_provider.dart';
+import 'package:internship_app/providers/student_profile_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ApplicationProvider()),
         ChangeNotifierProvider(create: (_) => StudentProvider()),
         ChangeNotifierProvider(create: (_) => RecruiterProvider()),
+        ChangeNotifierProvider(create: (_) => StudentProfileProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -37,6 +37,8 @@ dependencies:
   lottie: ^3.3.3
   provider: ^6.1.2
   http: ^1.2.2
+  shared_preferences: ^2.5.5
+  image_picker: ^1.2.2
 
 dev_dependencies:
   flutter_test:

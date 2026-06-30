@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:internship_app/auth/student_signup_screen.dart';
 import 'package:internship_app/auth/student_forgot_password_screen.dart';
+import 'package:internship_app/core/storage/auth_storage.dart';
 import 'package:internship_app/student/home_screen.dart';
 
 class StudentLoginScreen extends StatefulWidget {
@@ -52,6 +53,16 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
       );
       if (!mounted) return;
       if (res.statusCode == 200 || res.statusCode == 201) {
+        final body = jsonDecode(res.body) as Map<String, dynamic>;
+        final token = body['token'] as String?;
+        // saveToken also decodes JWT to extract id, name, email automatically
+        if (token != null) await AuthStorage.saveToken(token);
+        // If backend sends studentId alongside token, persist it explicitly
+        final studentId = (body['studentId'] ?? body['id'] ?? body['_id'])?.toString();
+        if (studentId != null) await AuthStorage.saveStudentId(studentId);
+        // If backend sends name/email alongside token, AuthStorage already
+        // handles them; nothing extra needed here.
+        if (!mounted) return;
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const StudentHomeScreen()),
