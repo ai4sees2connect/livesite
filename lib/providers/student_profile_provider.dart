@@ -27,8 +27,42 @@ class StudentProfileProvider extends ChangeNotifier {
   List<SkillModel> skills = [];
   List<PortfolioLinkModel> portfolioLinks = [];
 
+  // ── Reset ─────────────────────────────────────────────────────────────────────
+  void reset() {
+    name = '';
+    email = '';
+    location = '';
+    experience = '';
+    gender = '';
+    profilePictureUrl = '';
+    resume = null;
+    education = [];
+    workExperience = [];
+    certificates = [];
+    projects = [];
+    skills = [];
+    portfolioLinks = [];
+    state = LoadState.idle;
+    notifyListeners();
+  }
+
   // ── Load all ──────────────────────────────────────────────────────────────────
   Future<void> loadAll() async {
+    // Clear stale data from any previous session before loading new account
+    name = '';
+    email = '';
+    location = '';
+    experience = '';
+    gender = '';
+    profilePictureUrl = '';
+    resume = null;
+    education = [];
+    workExperience = [];
+    certificates = [];
+    projects = [];
+    skills = [];
+    portfolioLinks = [];
+
     state = LoadState.loading;
     notifyListeners();
     try {
