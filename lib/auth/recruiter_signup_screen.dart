@@ -11,6 +11,37 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
   bool _obscurePass = true;
   bool _obscureConfirm = true;
 
+  final _passCtrl = TextEditingController();
+  final _confirmCtrl = TextEditingController();
+  String? _error;
+
+  @override
+  void dispose() {
+    _passCtrl.dispose();
+    _confirmCtrl.dispose();
+    super.dispose();
+  }
+
+  String? _validatePassword(String pass) {
+    if (pass.length < 8) return 'Password must be at least 8 characters.';
+    if (!pass.contains(RegExp(r'[A-Z]'))) return 'Password must include an uppercase letter.';
+    if (!pass.contains(RegExp(r'[a-z]'))) return 'Password must include a lowercase letter.';
+    if (!pass.contains(RegExp(r'[0-9]'))) return 'Password must include a number.';
+    if (!pass.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-]'))) return 'Password must include a special character.';
+    return null;
+  }
+
+  void _submit() {
+    final pass = _passCtrl.text;
+    final confirm = _confirmCtrl.text;
+    if (pass.isEmpty) { setState(() => _error = 'Enter a password.'); return; }
+    final err = _validatePassword(pass);
+    if (err != null) { setState(() => _error = err); return; }
+    if (pass != confirm) { setState(() => _error = 'Passwords do not match.'); return; }
+    setState(() => _error = null);
+    // TODO: call recruiter signup API
+  }
+
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xFF5B5CEB);
@@ -91,6 +122,7 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
                   _field(
                     hint: 'Password',
                     icon: Icons.lock_outline_rounded,
+                    ctrl: _passCtrl,
                     obscure: _obscurePass,
                     suffix: IconButton(
                       icon: Icon(_obscurePass ? Icons.visibility_off_outlined : Icons.visibility_outlined,
@@ -102,6 +134,7 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
                   _field(
                     hint: 'Confirm Password',
                     icon: Icons.lock_outline_rounded,
+                    ctrl: _confirmCtrl,
                     obscure: _obscureConfirm,
                     suffix: IconButton(
                       icon: Icon(_obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined,
@@ -109,6 +142,23 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
                       onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
                     ),
                   ),
+                  if (_error != null) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFEEEE),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.error_outline, color: Color(0xFFEF4444), size: 16),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text(_error!, style: const TextStyle(color: Color(0xFFEF4444), fontSize: 13))),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
@@ -119,7 +169,7 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
-                      onPressed: () {},
+                      onPressed: _submit,
                       child: const Text('Create Account',
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
                     ),
@@ -144,8 +194,9 @@ class _RecruiterSignupScreenState extends State<RecruiterSignupScreen> {
     );
   }
 
-  Widget _field({required String hint, required IconData icon, bool obscure = false, Widget? suffix}) {
+  Widget _field({required String hint, required IconData icon, TextEditingController? ctrl, bool obscure = false, Widget? suffix}) {
     return TextField(
+      controller: ctrl,
       obscureText: obscure,
       decoration: InputDecoration(
         hintText: hint,

@@ -132,10 +132,8 @@ class _StudentSignupScreenState extends State<StudentSignupScreen> {
       _setError('Enter a password.');
       return;
     }
-    if (pass.length < 6) {
-      _setError('Password must be at least 6 characters.');
-      return;
-    }
+    final passError = _validatePassword(pass);
+    if (passError != null) { _setError(passError); return; }
     if (pass != confirm) {
       _setError('Passwords do not match.');
       return;
@@ -172,6 +170,15 @@ class _StudentSignupScreenState extends State<StudentSignupScreen> {
   }
 
   void _setError(String msg) => setState(() => _error = msg);
+
+  String? _validatePassword(String pass) {
+    if (pass.length < 8) return 'Password must be at least 8 characters.';
+    if (!pass.contains(RegExp(r'[A-Z]'))) return 'Password must include an uppercase letter.';
+    if (!pass.contains(RegExp(r'[a-z]'))) return 'Password must include a lowercase letter.';
+    if (!pass.contains(RegExp(r'[0-9]'))) return 'Password must include a number.';
+    if (!pass.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-]'))) return 'Password must include a special character.';
+    return null;
+  }
 
   void _showSuccess() {
     showDialog(
