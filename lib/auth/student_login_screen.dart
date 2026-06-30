@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:internship_app/auth/student_signup_screen.dart';
+import 'package:internship_app/auth/student_forgot_password_screen.dart';
 import 'package:internship_app/student/home_screen.dart';
 
 class StudentLoginScreen extends StatefulWidget {
@@ -178,7 +179,11 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const StudentForgotPasswordScreen()),
+                      ),
                       child: const Text('Forgot Password?',
                           style: TextStyle(
                               color: _primary, fontWeight: FontWeight.w600)),
