@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:internship_app/student/home_screen.dart';
 
 class StudentSignupScreen extends StatefulWidget {
   const StudentSignupScreen({super.key});
@@ -199,9 +200,9 @@ class _StudentSignupScreenState extends State<StudentSignupScreen> {
                       borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
+                  Navigator.pushAndRemoveUntil(
                     context,
-                    '/student/home',
+                    MaterialPageRoute(builder: (_) => const StudentHomeScreen()),
                     (_) => false,
                   );
                 },
