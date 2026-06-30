@@ -547,7 +547,8 @@ class _OtpBox extends StatelessWidget {
               borderSide: BorderSide.none),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF3B82F6), width: 2)),
+              borderSide:
+                  const BorderSide(color: Color(0xFF3B82F6), width: 2)),
         ),
         onChanged: onChanged,
       ),
