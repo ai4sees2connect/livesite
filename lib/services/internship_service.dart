@@ -1,108 +1,91 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:internship_app/core/storage/auth_storage.dart';
 import 'package:internship_app/models/internship_model.dart';
 
+class InternshipPageResult {
+  final List<InternshipModel> items;
+  final int totalPages;
+  final int totalCount;
+
+  InternshipPageResult({
+    required this.items,
+    required this.totalPages,
+    required this.totalCount,
+  });
+}
+
 class InternshipService {
-  static List<InternshipModel> getMockInternships() {
-    return const [
-      InternshipModel(
-        id: '1',
-        title: 'Flutter Developer Intern',
-        company: 'TechCorp',
-        location: 'Remote',
-        workType: 'Remote',
-        duration: '3 months',
-        stipend: '₹15,000',
-        stipendValue: 15000,
-        logo: 'TC',
-        color: 0xFF3B82F6,
-        tags: ['Flutter', 'Dart'],
-        skills: ['Flutter', 'Dart', 'Firebase', 'REST APIs'],
-        perks: ['Certificate', 'Letter of Recommendation', 'Flexible Hours'],
-        description:
-            'Join our team as a Flutter Developer Intern and work on real-world mobile applications. You will collaborate with senior engineers to build and ship features for our product.',
-        openings: 5,
-        featured: true,
-        paid: true,
-      ),
-      InternshipModel(
-        id: '2',
-        title: 'UI/UX Design Intern',
-        company: 'DesignHub',
-        location: 'Bangalore',
-        workType: 'On-site',
-        duration: '6 months',
-        stipend: '₹12,000',
-        stipendValue: 12000,
-        logo: 'DH',
-        color: 0xFF3B82F6,
-        tags: ['Figma', 'Adobe XD'],
-        skills: ['Figma', 'Adobe XD', 'Prototyping', 'User Research'],
-        perks: ['Certificate', 'Mentorship', 'Portfolio Projects'],
-        description:
-            'Work with our design team to create beautiful, user-centric interfaces. You will conduct user research, create wireframes, and prototype solutions for our clients.',
-        openings: 3,
-        featured: false,
-        paid: true,
-      ),
-      InternshipModel(
-        id: '3',
-        title: 'Backend Developer Intern',
-        company: 'DataSoft',
-        location: 'On-site',
-        workType: 'On-site',
-        duration: '4 months',
-        stipend: '₹18,000',
-        stipendValue: 18000,
-        logo: 'DS',
-        color: 0xFF3B82F6,
-        tags: ['Node.js', 'MongoDB'],
-        skills: ['Node.js', 'MongoDB', 'Express.js', 'Docker'],
-        perks: ['Certificate', 'Pre-Placement Offer', 'Team Lunches'],
-        description:
-            'Build and maintain scalable backend services. You will work on RESTful APIs, database design, and cloud deployments as part of our engineering team.',
-        openings: 2,
-        featured: false,
-        paid: true,
-      ),
-      InternshipModel(
-        id: '4',
-        title: 'Machine Learning Intern',
-        company: 'AI Labs',
-        location: 'Remote',
-        workType: 'Remote',
-        duration: '6 months',
-        stipend: '₹20,000',
-        stipendValue: 20000,
-        logo: 'AL',
-        color: 0xFF3B82F6,
-        tags: ['Python', 'TensorFlow'],
-        skills: ['Python', 'TensorFlow', 'PyTorch', 'Data Analysis'],
-        perks: ['Certificate', 'Research Paper Co-authorship', 'Flexible Hours'],
-        description:
-            'Work on cutting-edge ML models for computer vision and NLP tasks. You will participate in model training, evaluation, and deployment pipelines.',
-        openings: 4,
-        featured: true,
-        paid: true,
-      ),
-      InternshipModel(
-        id: '5',
-        title: 'Product Management Intern',
-        company: 'StartupX',
-        location: 'Hybrid',
-        workType: 'Hybrid',
-        duration: '3 months',
-        stipend: 'Unpaid',
-        stipendValue: 0,
-        logo: 'SX',
-        color: 0xFF3B82F6,
-        tags: ['Agile', 'Jira'],
-        skills: ['Agile', 'Jira', 'Product Roadmapping', 'User Stories'],
-        perks: ['Certificate', 'Networking Events', 'Mentorship from Founders'],
-        description:
-            'Get hands-on experience in product lifecycle management. You will work directly with the founders to define product vision, prioritize features, and track KPIs.',
-        openings: 1,
-        featured: false,
-        paid: false,
-      ),
-    ];
+  static const _base = 'https://livesite-backend-74ut.onrender.com';
+
+  Future<Map<String, String>> _headers() async {
+    final token = await AuthStorage.getToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
+
+  /// Fetches a single page from `/student/internships?page=`.
+  ///
+  /// The backend returns the internship list as an object with numeric
+  /// string keys (e.g. `{"0": {...}, "1": {...}, "totalPages": 6,
+  /// "numOfInternships": 47}`) rather than a plain JSON array, so entries
+  /// are picked out by numeric key and sorted by index.
+  Future<InternshipPageResult> getInternshipsPage({int page = 1}) async {
+    final res = await http.get(
+      Uri.parse('$_base/student/internships?page=$page'),
+      headers: await _headers(),
+    );
+    if (res.statusCode != 200) {
+      throw 'Failed to load internships (${res.statusCode})';
+    }
+    final body = jsonDecode(res.body);
+
+    List rawItems;
+    int totalPages = 1;
+    int totalCount = 0;
+
+    if (body is List) {
+      rawItems = body;
+      totalCount = rawItems.length;
+    } else if (body is Map) {
+      totalPages = (body['totalPages'] as num?)?.toInt() ?? 1;
+      totalCount = (body['numOfInternships'] as num?)?.toInt() ?? 0;
+      final listField = body['internships'] ?? body['data'];
+      if (listField is List) {
+        rawItems = listField;
+      } else {
+        final numericEntries = body.entries
+            .where((e) => int.tryParse(e.key.toString()) != null)
+            .toList()
+          ..sort((a, b) =>
+              int.parse(a.key.toString()).compareTo(int.parse(b.key.toString())));
+        rawItems = numericEntries.map((e) => e.value).toList();
+      }
+    } else {
+      rawItems = [];
+    }
+
+    final items = rawItems
+        .map((e) => InternshipModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+
+    return InternshipPageResult(
+      items: items,
+      totalPages: totalPages,
+      totalCount: totalCount == 0 ? items.length : totalCount,
+    );
+  }
+
+  /// Fetches every page and returns the combined internship list.
+  Future<List<InternshipModel>> getAllInternships() async {
+    final first = await getInternshipsPage(page: 1);
+    final all = [...first.items];
+    for (var page = 2; page <= first.totalPages; page++) {
+      final next = await getInternshipsPage(page: page);
+      all.addAll(next.items);
+    }
+    return all;
   }
 }

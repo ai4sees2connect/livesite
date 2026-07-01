@@ -2,8 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:internship_app/models/internship_model.dart';
 import 'package:internship_app/services/internship_service.dart';
 
+enum InternshipLoadState { idle, loading, loaded, error }
+
 class InternshipProvider extends ChangeNotifier {
-  final List<InternshipModel> _all = InternshipService.getMockInternships();
+  final InternshipService _service = InternshipService();
+
+  List<InternshipModel> _all = [];
+  InternshipLoadState state = InternshipLoadState.idle;
+  String? errorMessage;
+
+  InternshipProvider() {
+    loadInternships();
+  }
 
   String _selectedPay = 'All';
   String _selectedWorkType = 'All';
@@ -14,6 +24,20 @@ class InternshipProvider extends ChangeNotifier {
   RangeValues get stipendRange => _stipendRange;
 
   List<InternshipModel> get all => _all;
+
+  Future<void> loadInternships() async {
+    state = InternshipLoadState.loading;
+    errorMessage = null;
+    notifyListeners();
+    try {
+      _all = await _service.getAllInternships();
+      state = InternshipLoadState.loaded;
+    } catch (e) {
+      errorMessage = e.toString();
+      state = InternshipLoadState.error;
+    }
+    notifyListeners();
+  }
 
   List<InternshipModel> get filtered {
     return _all.where((item) {

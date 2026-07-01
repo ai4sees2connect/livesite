@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:internship_app/providers/internship_provider.dart';
+import 'package:internship_app/providers/internship_provider.dart' show InternshipProvider, InternshipLoadState;
 import 'package:internship_app/student/apply_screen.dart';
 import 'package:internship_app/widgets/internship_card.dart';
 
@@ -188,7 +188,35 @@ class InternshipsScreen extends StatelessWidget {
               ),
 
               // Cards
-              filtered.isEmpty
+              provider.state == InternshipLoadState.loading
+                  ? const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 60),
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                    )
+                  : provider.state == InternshipLoadState.error
+                      ? SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 60),
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  Icon(Icons.error_outline_rounded, size: 52, color: Colors.grey.shade300),
+                                  const SizedBox(height: 12),
+                                  Text(provider.errorMessage ?? 'Failed to load internships',
+                                      style: TextStyle(color: Colors.grey.shade500, fontSize: 14)),
+                                  const SizedBox(height: 12),
+                                  TextButton(
+                                    onPressed: () => provider.loadInternships(),
+                                    child: const Text('Retry'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      : filtered.isEmpty
                   ? SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 60),
